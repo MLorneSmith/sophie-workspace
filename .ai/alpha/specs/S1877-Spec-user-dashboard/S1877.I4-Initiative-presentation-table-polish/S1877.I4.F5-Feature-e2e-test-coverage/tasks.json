@@ -1,0 +1,504 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1877.I4.F5",
+    "feature_name": "E2E Test Coverage",
+    "feature_slug": "e2e-test-coverage",
+    "initiative_id": "S1877.I4",
+    "spec_id": "S1877",
+    "created_at": "2026-01-28T00:00:00.000Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1877.I4.F5.T1",
+      "type": "task",
+      "name": "Create presentation table test fixtures",
+      "action": { "verb": "Create", "target": "test fixtures" },
+      "purpose": "Define test data for different presentation table scenarios (empty, populated, pagination)",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 1,
+      "group": 1,
+      "context": {
+        "files": ["apps/e2e/tests/helpers/test-users.ts"],
+        "dependencies": ["TEST_USERS from test-users.ts", "building_blocks_submissions table structure"],
+        "constraints": ["Follow existing seed data patterns from apps/web/supabase/seeds/01_main_seed.sql"]
+      },
+      "input_state": "No presentation test fixtures exist",
+      "output_state": "presentation-table-fixtures.ts with test data for empty, normal, and pagination states",
+      "acceptance_criterion": "Fixtures file exists and exports test presentation data for all scenarios",
+      "verification_command": "test -f apps/e2e/tests/user/presentation-table-fixtures.ts && grep -q 'export.*PRESENTATION_FIXTURES' apps/e2e/tests/user/presentation-table-fixtures.ts",
+      "outputs": [
+        { "type": "new", "path": "apps/e2e/tests/user/presentation-table-fixtures.ts" }
+      ],
+      "dependencies": { "blocked_by": [], "blocks": ["S1877.I4.F5.T3", "S1877.I4.F5.T4", "S1877.I4.F5.T5", "S1877.I4.F5.T6"] },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F5.T2",
+      "type": "task",
+      "name": "Create user test directory",
+      "action": { "verb": "Create", "target": "user test directory" },
+      "purpose": "Create directory for user dashboard E2E tests",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "context": {
+        "files": ["apps/e2e/tests/"],
+        "dependencies": [],
+        "constraints": ["Follow existing test directory structure (authentication, team-accounts, etc.)"]
+      },
+      "input_state": "No user directory exists in tests/",
+      "output_state": "apps/e2e/tests/user/ directory created",
+      "acceptance_criterion": "apps/e2e/tests/user/ directory exists",
+      "verification_command": "test -d apps/e2e/tests/user",
+      "outputs": [
+        { "type": "new", "path": "apps/e2e/tests/user/" }
+      ],
+      "dependencies": { "blocked_by": [], "blocks": ["S1877.I4.F5.T1", "S1877.I4.F5.T3", "S1877.I4.F5.T4", "S1877.I4.F5.T5", "S1877.I4.F5.T6"] },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F5.T3",
+      "type": "task",
+      "name": "Create PresentationTablePageObject",
+      "action": { "verb": "Create", "target": "PresentationTablePageObject class" },
+      "purpose": "Page Object for presentation table with methods for sorting, filtering, pagination",
+      "status": "draft",
+      "estimated_hours": 5,
+      "priority": 1,
+      "group": 2,
+      "context": {
+        "files": ["apps/e2e/tests/authentication/auth.po.ts", "apps/e2e/tests/account/account.po.ts"],
+        "dependencies": ["Page", "expect from @playwright/test", "AuthPageObject for login helper"],
+        "constraints": ["Follow Page Object pattern: constructor accepts Page, methods for table interactions"]
+      },
+      "input_state": "No presentation table Page Object exists",
+      "output_state": "presentation-table.po.ts with reusable interaction methods",
+      "acceptance_criterion": "Page Object class exists with methods for table interaction",
+      "verification_command": "test -f apps/e2e/tests/user/presentation-table.po.ts && grep -q 'class PresentationTablePageObject' apps/e2e/tests/user/presentation-table.po.ts",
+      "outputs": [
+        { "type": "new", "path": "apps/e2e/tests/user/presentation-table.po.ts" }
+      ],
+      "dependencies": { "blocked_by": ["S1877.I4.F5.T1", "S1877.I4.F5.T2"], "blocks": ["S1877.I4.F5.T4", "S1877.I4.F5.T5", "S1877.I4.F5.T6", "S1877.I4.F5.T7", "S1877.I4.F5.T8", "S1877.I4.F5.T9"] },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F5.T4",
+      "type": "task",
+      "name": "Create presentation table rendering test",
+      "action": { "verb": "Create", "target": "dashboard rendering test" },
+      "purpose": "Verify presentation table displays correctly with seeded data",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 2,
+      "group": 3,
+      "context": {
+        "files": ["apps/e2e/tests/user/presentation-table.po.ts", "apps/e2e/tests/authentication/auth-simple.spec.ts"],
+        "dependencies": ["PresentationTablePageObject", "AuthPageObject.loginAsUser", "TEST_USERS"],
+        "constraints": ["Follow test.describe pattern from auth-simple.spec.ts", "Use data-testid selectors"]
+      },
+      "input_state": "No presentation table rendering test exists",
+      "output_state": "Test verifies table displays user's presentations correctly",
+      "acceptance_criterion": "Test passes and verifies table displays seeded presentations",
+      "verification_command": "grep -q 'dashboard page load' apps/e2e/tests/user/presentation-table.spec.ts",
+      "outputs": [
+        { "type": "new", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
+      ],
+      "dependencies": { "blocked_by": ["S1877.I4.F5.T3"], "blocks": [] },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F5.T5",
+      "type": "task",
+      "name": "Create table sorting tests",
+      "action": { "Verb": "Create", "target": "sorting tests" },
+      "purpose": "Verify all columns sort correctly in both directions",
+      "status": "draft",
+      "estimated_hours": 6,
+      "priority": 3,
+      "group": 3,
+      "context": {
+        "files": ["apps/e2e/tests/user/presentation-table.po.ts", "apps/e2e/tests/user/presentation-table.spec.ts"],
+        "dependencies": ["PresentationTablePageObject methods for sorting", "column headers"],
+        "constraints": ["Test title asc/desc, type asc/desc, updated asc/desc"]
+      },
+      "input_state": "No sorting tests exist",
+      "output_state": "Tests verify all columns sort correctly in both directions",
+      "acceptance_criterion": "Sorting tests pass for all columns",
+      "verification_command": "grep -q 'sort.*title\|sort.*type\|sort.*updated' apps/e2e/tests/user/presentation-table.spec.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
+      ],
+      "dependencies": { "blocked_by": ["S1877.I4.F5.T3"], "blocks": [] },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F5.T6",
+      "type": "task",
+      "name": "Create table filtering tests",
+      "action": { "verb": "Create", "target": "filtering tests" },
+      "purpose": "Verify presentation type filter works correctly",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 3,
+      "group": 4,
+      "context": {
+        "files": ["apps/e2e/tests/user/presentation-table.po.ts", "apps/e2e/tests/user/presentation-table.spec.ts"],
+        "dependencies": ["PresentationTablePageObject filter methods", "presentation_type values"],
+        "constraints": ["Test each type (Informative, Persuasive, Inspirational), plus 'All'"]
+      },
+      "input_state": "No filtering tests exist",
+      "output_state": "Tests verify type filter works for all options",
+      "acceptance_criterion": "Filtering tests pass for all presentation types",
+      "verification_command": "grep -q 'filter.*type\|filter.*presentation' apps/e2e/tests/user/presentation-table.spec.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
+      ],
+      "dependencies": { "blocked_by": ["S1877.I4.F5.T3", "S1877.I4.F5.T5"], "blocks": [] },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F5.T7",
+      "type": "task",
+      "name": "Create table pagination tests",
+      "action": { "verb": "Create", "target": "pagination tests" },
+      "purpose": "Verify next, previous, and page number navigation",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 4,
+      "group": 4,
+      "context": {
+        "files": ["apps/e2e/tests/user/presentation-table.po.ts", "apps/e2e/tests/user/presentation-table.spec.ts"],
+        "dependencies": ["PresentationTablePageObject pagination methods", "pagination controls"],
+        "constraints": ["Test next button, previous button, page number links"]
+      },
+      "input_state": "No pagination tests exist",
+      "output_state": "Tests verify pagination works correctly",
+      "acceptance_criterion": "Pagination tests pass for all navigation controls",
+      "verification_command": "grep -q 'pagination\|next\|previous\|page.*number' apps/e2e/tests/user/presentation-table.spec.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
+      ],
+      "dependencies": { "blocked_by": ["S1877.I4.F5.T3", "S1877.I4.F5.T6"], "blocks": [] },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F5.T8",
+      "type": "task",
+      "name": "Create empty state and loading state tests",
+      "action": { "verb": "Create", "target": "state tests" },
+      "purpose": "Verify empty state and loading skeleton display correctly",
+      "status": "draft",
+      "estimated_hours": 5,
+      "priority": 5,
+      "group": 5,
+      "context": {
+        "files": ["apps/e2e/tests/user/presentation-table.po.ts", "apps/e2e/tests/user/presentation-table.spec.ts"],
+        "dependencies": ["PresentationTablePageObject state methods", "empty state CTA", "skeleton elements"],
+        "constraints": ["Test 'No presentations yet' message, 'Create First Presentation' CTA, skeleton during fetch"]
+      },
+      "input_state": "No state tests exist",
+      "output_state": "Tests verify empty and loading states display correctly",
+      "acceptance_criterion": "State tests pass for empty and loading scenarios",
+      "verification_command": "grep -q 'empty state\|loading.*skeleton\|no presentations' apps/e2e/tests/user/presentation-table.spec.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
+      ],
+      "dependencies": { "blocked_by": ["S1877.I4.F5.T3"], "blocks": [] },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F5.T9",
+      "type": "task",
+      "name": "Create navigation tests for Edit Outline buttons",
+      "action": { "verb": "Create", "target": "navigation tests" },
+      "purpose": "Verify Edit Outline buttons navigate to storyboard page",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 6,
+      "group": 6,
+      "context": {
+        "files": ["apps/e2e/tests/user/presentation-table.po.ts", "apps/e2e/tests/user/presentation-table.spec.ts"],
+        "dependencies": ["PresentationTablePageObject click methods", "Edit Outline buttons", "storyboard route"],
+        "constraints": ["Verify navigation to /home/(user)/ai/storyboard?id={submission_id}"]
+      },
+      "input_state": "No navigation tests exist",
+      "output_state": "Tests verify Edit Outline buttons navigate correctly",
+      "acceptance_criterion": "Navigation tests pass for all Edit buttons",
+      "verification_command": "grep -q 'edit.*outline\|navigate.*storyboard\|click.*edit' apps/e2e/tests/user/presentation-table.spec.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
+      ],
+      "dependencies": { "blocked_by": ["S1877.I4.F5.T3"], "blocks": [] },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F5.T10",
+      "type": "task",
+      "name": "Create RLS isolation test",
+      "action": { "verb": "Create", "target": "RLS isolation test" },
+      "purpose": "Verify user A cannot see user B's presentations",
+      "status": "draft",
+      "estimated_hours": 5,
+      "priority": 7,
+      "group": 6,
+      "context": {
+        "files": ["apps/e2e/tests/user/presentation-table.po.ts", "apps/e2e/tests/user/presentation-table.spec.ts", "apps/e2e/tests/helpers/test-users.ts"],
+        "dependencies": ["TEST_USERS.user1", "TEST_USERS.user2", "AuthPageObject.loginAsUser"],
+        "constraints": ["Seed user 1 presentations, sign in as user 2, verify cannot see user 1's data"]
+      },
+      "input_state": "No RLS test exists",
+      "output_state": "Test verifies RLS prevents cross-user access",
+      "acceptance_criterion": "RLS isolation test passes",
+      "verification_command": "grep -q 'RLS\|isolation\|user.*cannot.*see\|cross.*user' apps/e2e/tests/user/presentation-table.spec.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
+      ],
+      "dependencies": { "blocked_by": ["S1877.I4.F5.T3"], "blocks": [] },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F5.T11",
+      "type": "task",
+      "name": "Create mobile responsive test",
+      "action": { "verb": "Create", "target": "mobile test" },
+      "purpose": "Verify table scrolls horizontally on mobile screens",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 8,
+      "group": 6,
+      "context": {
+        "files": ["apps/e2e/tests/user/presentation-table.po.ts", "apps/e2e/tests/user/presentation-table.spec.ts"],
+        "dependencies": ["PresentationTablePageObject viewport methods", "mobile viewport size"],
+        "constraints": ["Test at 375px width, verify horizontal scroll exists"]
+      },
+      "input_state": "No mobile test exists",
+      "output_state": "Test verifies mobile horizontal scrolling works",
+      "acceptance_criterion": "Mobile test passes with horizontal scroll verification",
+      "verification_command": "grep -q 'mobile\|viewport\|responsive\|scroll.*horizontal' apps/e2e/tests/user/presentation-table.spec.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
+      ],
+      "dependencies": { "blocked_by": ["S1877.I4.F5.T3"], "blocks": [] },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F5.T12",
+      "type": "task",
+      "name": "Run presentation table E2E test suite",
+      "action": { "verb": "Test", "target": "test suite" },
+      "purpose": "Execute all E2E tests and verify they pass",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 7,
+      "context": {
+        "files": ["apps/e2e/tests/user/presentation-table.spec.ts"],
+        "dependencies": ["All test cases implemented", "pnpm test:web-e2e"],
+        "constraints": ["Use --grep 'presentation-table' to run only these tests"]
+      },
+      "input_state": "All tests written but not executed",
+      "output_state": "All presentation table E2E tests pass",
+      "acceptance_criterion": "All tests pass with no failures",
+      "verification_command": "pnpm --filter web-e2e test --grep 'presentation-table' && echo 'Tests executed successfully'",
+      "outputs": [],
+      "dependencies": { "blocked_by": ["S1877.I4.F5.T4", "S1877.I4.F5.T5", "S1877.I4.F5.T6", "S1877.I4.F5.T7", "S1877.I4.F5.T8", "S1877.I4.F5.T9", "S1877.I4.F5.T10", "S1877.I4.F5.T11"], "blocks": [] },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Test Infrastructure Setup",
+        "task_ids": ["S1877.I4.F5.T1", "S1877.I4.F5.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Page Object Creation",
+        "task_ids": ["S1877.I4.F5.T3"],
+        "depends_on_groups": [1],
+        "estimated_hours": 5,
+        "parallel_hours": 5
+      },
+      {
+        "id": 3,
+        "name": "Core Rendering Tests",
+        "task_ids": ["S1877.I4.F5.T4"],
+        "depends_on_groups": [2],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 4,
+        "name": "Interactive Feature Tests",
+        "task_ids": ["S1877.I4.F5.T5", "S1877.I4.F5.T6", "S1877.I4.F5.T7"],
+        "depends_on_groups": [2],
+        "estimated_hours": 14,
+        "parallel_hours": 6
+      },
+      {
+        "id": 5,
+        "name": "State Tests",
+        "task_ids": ["S1877.I4.F5.T8"],
+        "depends_on_groups": [2],
+        "estimated_hours": 5,
+        "parallel_hours": 5
+      },
+      {
+        "id": 6,
+        "name": "Navigation and Security Tests",
+        "task_ids": ["S1877.I4.F5.T9", "S1877.I4.F5.T10", "S1877.I4.F5.T11"],
+        "depends_on_groups": [2],
+        "estimated_hours": 12,
+        "parallel_hours": 5
+      },
+      {
+        "id": 7,
+        "name": "Test Execution",
+        "task_ids": ["S1877.I4.F5.T12"],
+        "depends_on_groups": [3, 4, 5, 6],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": [
+      "S1877.I4.F5.T1",
+      "S1877.I4.F5.T2",
+      "S1877.I4.F5.T3",
+      "S1877.I4.F5.T4",
+      "S1877.I4.F5.T5",
+      "S1877.I4.F5.T6",
+      "S1877.I4.F5.T7",
+      "S1877.I4.F5.T8",
+      "S1877.I4.F5.T9",
+      "S1877.I4.F5.T10",
+      "S1877.I4.F5.T11",
+      "S1877.I4.F5.T12"
+    ],
+    "duration": {
+      "sequential": 50,
+      "parallel": 31,
+      "time_saved_percent": 38
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": false
+  }
+}

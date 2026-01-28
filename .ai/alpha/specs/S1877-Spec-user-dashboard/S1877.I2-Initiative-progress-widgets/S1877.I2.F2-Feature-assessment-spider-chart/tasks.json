@@ -1,0 +1,365 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1877.I2.F2",
+    "feature_name": "Assessment Spider Chart Widget",
+    "feature_slug": "assessment-spider-chart",
+    "initiative_id": "S1877.I2",
+    "spec_id": 1877,
+    "created_at": "2026-01-28T12:00:00Z",
+    "complexity": {
+      "score": 25,
+      "level": "LOW",
+      "target_steps": { "min": 3, "max": 6 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1877.I2.F2.T1",
+      "type": "task",
+      "name": "Create assessment data types",
+      "action": { "verb": "Create", "target": "assessment data types" },
+      "purpose": "Define TypeScript types for assessment spider chart widget data structures",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/supabase/migrations/20250319104724_web_survey_system.sql"
+        ],
+        "dependencies": [
+          "apps/web/app/home/(user)/assessment/_lib/client/hooks/use-survey-scores.ts exports CategoryScores type"
+        ],
+        "constraints": [
+          "Use existing CategoryScores type from use-survey-scores hook",
+          "Ensure types work with server component props"
+        ]
+      },
+      "input_state": "No types exist for assessment widget data",
+      "output_state": "AssessmentData and CategoryScores types defined and exported",
+      "acceptance_criterion": "AssessmentData type with category_scores, highest_scoring_category, lowest_scoring_category fields is defined",
+      "verification_command": "grep -q 'export type AssessmentData' apps/web/app/home/(user)/_lib/server/assessment-data.loader.ts",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_lib/server/assessment-data.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1877.I2.F2.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I2.F2.T2",
+      "type": "task",
+      "name": "Create assessment data loader",
+      "action": { "verb": "Create", "target": "assessment data loader" },
+      "purpose": "Query survey_responses table for latest user assessment category scores",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/assessment/_lib/client/hooks/use-survey-scores.ts",
+          "apps/web/supabase/migrations/20250319104724_web_survey_system.sql"
+        ],
+        "dependencies": [
+          "AssessmentData type from T1",
+          "getSupabaseServerClient from @kit/supabase/server-client"
+        ],
+        "constraints": [
+          "Import 'server-only' to enforce server-side execution",
+          "Query survey_responses table with user_id and survey_id",
+          "Return AssessmentData type or null if no response exists",
+          "Handle errors gracefully with try/catch"
+        ]
+      },
+      "input_state": "AssessmentData type is defined, Supabase client available",
+      "output_state": "loadAssessmentData function fetches survey response and returns AssessmentData",
+      "acceptance_criterion": "loadAssessmentData function returns AssessmentData with category_scores from latest survey response, or null if none exists",
+      "verification_command": "pnpm typecheck && grep -q 'export.*loadAssessmentData' apps/web/app/home/(user)/_lib/server/assessment-data.loader.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/assessment-data.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I2.F2.T1"],
+        "blocks": ["S1877.I2.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I2.F2.T3",
+      "type": "task",
+      "name": "Create AssessmentSpiderWidget component",
+      "action": { "verb": "Create", "target": "AssessmentSpiderWidget component" },
+      "purpose": "Build client component with Card container for radar chart display",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx"
+        ],
+        "dependencies": [
+          "AssessmentData from T2",
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+          "RadarChart component from assessment/survey/_components/radar-chart.tsx",
+          "Button from @kit/ui/button",
+          "ArrowRight from lucide-react"
+        ],
+        "constraints": [
+          "Use 'use client' directive for interactivity",
+          "Max height 250px for chart container",
+          "Follow card pattern from shadcn/ui Card components"
+        ]
+      },
+      "input_state": "AssessmentData type exists, RadarChart component available",
+      "output_state": "AssessmentSpiderWidget component renders Card with RadarChart for populated data",
+      "acceptance_criterion": "AssessmentSpiderWidget renders Card containing RadarChart when category_scores exist, shows empty state when null",
+      "verification_command": "pnpm typecheck && grep -q 'AssessmentSpiderWidget' apps/web/app/home/(user)/_components/dashboard/assessment-spider-widget.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_components/dashboard/assessment-spider-widget.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I2.F2.T2"],
+        "blocks": ["S1877.I2.F2.T4", "S1877.I2.F2.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I2.F2.T4",
+      "type": "task",
+      "name": "Add empty state with CTA",
+      "action": { "verb": "Add", "target": "empty state with CTA to AssessmentSpiderWidget" },
+      "purpose": "Display 'Complete Assessment' button when no survey response exists",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/assessment/page.tsx"
+        ],
+        "dependencies": [
+          "Button from @kit/ui/button",
+          "ArrowRight from lucide-react",
+          "Link from next/link"
+        ],
+        "constraints": [
+          "Check if assessmentData is null or category_scores empty",
+          "Show 'Complete Assessment' button linking to /home/assessment/survey",
+          "Use ArrowRight icon for visual cue"
+        ]
+      },
+      "input_state": "AssessmentSpiderWidget component skeleton exists",
+      "output_state": "AssessmentSpiderWidget shows empty state CTA when no assessment data exists",
+      "acceptance_criterion": "When assessmentData is null, AssessmentSpiderWidget shows 'Complete Assessment' button with ArrowRight icon linking to survey page",
+      "verification_command": "grep -Pzo 'Complete Assessment[^<]*Button' apps/web/app/home/(user)/_components/dashboard/assessment-spider-widget.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/assessment-spider-widget.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I2.F2.T3"],
+        "blocks": ["S1877.I2.F2.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I2.F2.T5",
+      "type": "task",
+      "name": "Add loading skeleton state",
+      "action": { "verb": "Add", "target": "loading skeleton state to AssessmentSpiderWidget" },
+      "purpose": "Display Skeleton placeholder while assessment data is being fetched",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card from @kit/ui/card"
+        ],
+        "constraints": [
+          "Show skeleton when isLoading prop is true",
+          "Use circular skeleton to mimic radar chart shape",
+          "Match card dimensions for smooth transition"
+        ]
+      },
+      "input_state": "AssessmentSpiderWidget component with empty state exists",
+      "output_state": "AssessmentSpiderWidget shows Skeleton loader when isLoading is true",
+      "acceptance_criterion": "When isLoading prop is true, AssessmentSpiderWidget displays Skeleton component matching Card dimensions",
+      "verification_command": "grep -q 'Skeleton' apps/web/app/home/(user)/_components/dashboard/assessment-spider-widget.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/assessment-spider-widget.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I2.F2.T3", "S1877.I2.F2.T4"],
+        "blocks": ["S1877.I2.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I2.F2.T6",
+      "type": "task",
+      "name": "Wire AssessmentSpiderWidget to dashboard page",
+      "action": { "verb": "Wire", "target": "AssessmentSpiderWidget to dashboard page" },
+      "purpose": "Import and render widget in dashboard grid with data from loader",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Survey Results" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          ".ai/alpha/specs/S1877-Spec-user-dashboard/S1877.I1-Initiative-dashboard-foundation/S1877.I1.F1-Feature-dashboard-page-grid/feature.md"
+        ],
+        "dependencies": [
+          "AssessmentSpiderWidget component from T5",
+          "loadAssessmentData from T2",
+          "Promise.all() pattern for parallel data fetching"
+        ],
+        "constraints": [
+          "Call loadAssessmentData in Promise.all() with other widget loaders",
+          "Pass assessmentData prop to AssessmentSpiderWidget",
+          "Place widget in dashboard grid (position 2 in 3-column layout)"
+        ]
+      },
+      "input_state": "AssessmentSpiderWidget component complete with all states, dashboard page has grid layout",
+      "output_state": "AssessmentSpiderWidget renders in dashboard with real assessment data",
+      "acceptance_criterion": "Dashboard page imports AssessmentSpiderWidget, calls loadAssessmentData in Promise.all(), and renders widget with assessmentData prop in grid position 2",
+      "verification_command": "pnpm typecheck && grep -q 'AssessmentSpiderWidget' apps/web/app/home/(user)/page.tsx && grep -q 'loadAssessmentData' apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/page.tsx" },
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I2.F2.T5", "S1877.I1.F2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Data Layer",
+        "task_ids": ["S1877.I2.F2.T1", "S1877.I2.F2.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 1
+      },
+      {
+        "id": 2,
+        "name": "Component Implementation",
+        "task_ids": ["S1877.I2.F2.T3", "S1877.I2.F2.T4", "S1877.I2.F2.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 6,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Integration",
+        "task_ids": ["S1877.I2.F2.T6"],
+        "depends_on_groups": [1, 2],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1877.I2.F2.T1", "S1877.I2.F2.T2", "S1877.I2.F2.T3", "S1877.I2.F2.T4", "S1877.I2.F2.T5", "S1877.I2.F2.T6"],
+      "total_hours": 10
+    },
+    "duration": {
+      "sequential": 10,
+      "parallel": 5,
+      "time_saved_percent": 50
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": false
+  }
+}

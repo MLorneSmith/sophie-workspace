@@ -1,0 +1,485 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1877.I4.F4",
+    "feature_name": "Accessibility Audit & Fixes",
+    "feature_slug": "accessibility-audit-fixes",
+    "initiative_id": "S1877.I4",
+    "spec_id": "S1877",
+    "created_at": "2026-01-28T12:00:00Z",
+    "complexity": {
+      "score": 53,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1877.I4.F4.T2", "S1877.I4.F4.T3", "S1877.I4.F4.T4", "S1877.I4.F4.T5"]
+  },
+  "tasks": [
+    {
+      "id": "S1877.I4.F4.T1",
+      "type": "task",
+      "name": "Audit ARIA labeling issues",
+      "action": { "verb": "Audit", "target": "ARIA labeling issues" },
+      "purpose": "Identify missing or incorrect ARIA labels on presentation table interactive elements",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/presentation-table-widget.tsx",
+          "apps/web/app/home/(user)/_components/table-column-definitions.ts"
+        ],
+        "dependencies": ["HybridAccessibilityTester from apps/e2e/tests/accessibility/hybrid-a11y.ts"],
+        "constraints": [
+          "Requires F1 (Presentation Table Widget) and F3 (Empty/Loading States) to be implemented first",
+          "Manual browser testing required for accurate audit"
+        ],
+        "feature_dependencies": ["S1877.I4.F1", "S1877.I4.F3"]
+      },
+      "input_state": "Presentation table widget exists with potential ARIA labeling issues",
+      "output_state": "Documented list of ARIA issues with element locations and severity",
+      "acceptance_criterion": "ARIA issues documented in feature directory with specific element selectors and required fixes",
+      "verification_command": "test -f .ai/alpha/specs/S1877-Spec-user-dashboard/S1877.I4-Initiative-presentation-table-polish/S1877.I4.F4-Feature-accessibility-audit/aria-findings.md && grep -q 'Edit Outline' .ai/alpha/specs/S1877-Spec-user-dashboard/S1877.I4-Initiative-presentation-table-polish/S1877.I4.F4-Feature-accessibility-audit/aria-findings.md",
+      "outputs": [
+        { "type": "new", "path": ".ai/alpha/specs/S1877-Spec-user-dashboard/S1877.I4-Initiative-presentation-table-polish/S1877.I4.F4-Feature-accessibility-audit/aria-findings.md" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1877.I4.F4.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F4.T2",
+      "type": "task",
+      "name": "Fix ARIA labeling on table elements",
+      "action": { "verb": "Fix", "target": "ARIA labeling on table elements" },
+      "purpose": "Add proper aria-label attributes to buttons and interactive elements",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 2,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          { "command": "find role", "target": "button" }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/presentation-table-widget.tsx",
+          "apps/web/app/home/(user)/_components/table-column-definitions.ts"
+        ],
+        "dependencies": [
+          "Button component from @kit/ui/button (supports aria-label)",
+          "Table components from @kit/ui/table"
+        ],
+        "constraints": [
+          "Edit Outline buttons must have aria-label with presentation title",
+          "Table headers should have proper text content for screen readers",
+          "Filter dropdown controls need aria-label if icon-only"
+        ]
+      },
+      "input_state": "Presentation table widget with documented ARIA issues",
+      "output_state": "Table widget with complete ARIA labeling for all interactive elements",
+      "acceptance_criterion": "All buttons have aria-label or visible text, table headers are screen reader accessible",
+      "verification_command": "pnpm typecheck && grep -P 'aria-label=\"[^\"]*\"' apps/web/app/home/(user)/_components/presentation-table-widget.tsx | wc -l | xargs -I {} test {} -gt 0",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/presentation-table-widget.tsx" },
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/table-column-definitions.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F4.T1"],
+        "blocks": ["S1877.I4.F4.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F4.T3",
+      "type": "task",
+      "name": "Audit keyboard navigation issues",
+      "action": { "verb": "Audit", "target": "keyboard navigation issues" },
+      "purpose": "Verify Tab/Enter navigation works correctly through presentation table",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/presentation-table-widget.tsx",
+          "apps/web/app/home/(user)/_components/table-column-definitions.ts"
+        ],
+        "dependencies": ["HybridAccessibilityTester from apps/e2e/tests/accessibility/hybrid-a11y.ts"],
+        "constraints": ["Requires manual keyboard-only testing", "Check Tab order, Enter activation, focus indicators"]
+      },
+      "input_state": "Presentation table widget with ARIA fixes applied",
+      "output_state": "Documented list of keyboard navigation issues with severity",
+      "acceptance_criterion": "Keyboard navigation issues documented with specific scenarios and required fixes",
+      "verification_command": "test -f .ai/alpha/specs/S1877-Spec-user-dashboard/S1877.I4-Initiative-presentation-table-polish/S1877.I4.F4-Feature-accessibility-audit/keyboard-findings.md",
+      "outputs": [
+        { "type": "new", "path": ".ai/alpha/specs/S1877-Spec-user-dashboard/S1877.I4-Initiative-presentation-table-polish/S1877.I4.F4-Feature-accessibility-audit/keyboard-findings.md" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F4.T2"],
+        "blocks": ["S1877.I4.F4.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F4.T4",
+      "type": "task",
+      "name": "Fix keyboard navigation",
+      "action": { "verb": "Fix", "target": "keyboard navigation" },
+      "purpose": "Ensure Tab order is correct and Enter activates interactive elements",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 3,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          { "command": "find role", "target": "button" },
+          { "command": "find role", "target": "grid" }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/presentation-table-widget.tsx",
+          "apps/web/app/home/(user)/_components/table-column-definitions.ts"
+        ],
+        "dependencies": [
+          "Button component from @kit/ui/button (has focus-visible:ring-ring)",
+          "Table components from @kit/ui/table"
+        ],
+        "constraints": [
+          "All interactive elements must be Tab-navigable",
+          "Enter key must activate buttons and links",
+          "Filter dropdown must trap focus when open",
+          "Focus must return to trigger on dropdown close"
+        ]
+      },
+      "input_state": "Presentation table widget with documented keyboard navigation issues",
+      "output_state": "Table widget with full keyboard navigation support",
+      "acceptance_criterion": "Tab navigates through all elements, Enter activates buttons, focus is visible and tracked",
+      "verification_command": "pnpm typecheck && grep -P 'focus-visible' apps/web/app/home/(user)/_components/presentation-table-widget.tsx | wc -l | xargs -I {} test {} -gt 0",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/presentation-table-widget.tsx" },
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/table-column-definitions.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F4.T3"],
+        "blocks": ["S1877.I4.F4.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F4.T5",
+      "type": "task",
+      "name": "Verify focus indicators and color contrast",
+      "action": { "verb": "Verify", "target": "focus indicators and color contrast" },
+      "purpose": "Ensure focus rings are visible and colors meet WCAG 2.1 AA standards",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 1,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          { "command": "is visible", "target": "Presentations" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/presentation-table-widget.tsx",
+          "apps/web/app/home/(user)/_components/table-column-definitions.ts"
+        ],
+        "dependencies": [
+          "Tailwind focus-visible class provides visible focus ring",
+          "Semantic color classes (text-foreground, text-muted-foreground)"
+        ],
+        "constraints": [
+          "Focus ring must be visible on all interactive elements",
+          "Color contrast must meet 4.5:1 for normal text",
+          "Use contrast checker tool (axe DevTools or WebAIM)",
+          "Focus moves to table content after page load"
+        ]
+      },
+      "input_state": "Presentation table widget with keyboard navigation fixes",
+      "output_state": "Verified focus indicators and color contrast compliance",
+      "acceptance_criterion": "Focus indicators visible on Tab, all text meets WCAG 2.1 AA contrast ratio",
+      "verification_command": "pnpm typecheck && grep -P 'focus-visible:ring-ring' apps/web/app/home/(user)/_components/presentation-table-widget.tsx | wc -l | xargs -I {} test {} -gt 0",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F4.T4"],
+        "blocks": ["S1877.I4.F4.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F4.T6",
+      "type": "task",
+      "name": "Audit empty and loading state accessibility",
+      "action": { "verb": "Audit", "target": "empty and loading state accessibility" },
+      "purpose": "Ensure empty state text and skeleton loading are screen reader accessible",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 1,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/presentation-table-widget.tsx",
+          "apps/web/app/home/(user)/_components/presentation-empty-state.tsx",
+          "apps/web/app/home/(user)/_components/table-skeleton-rows.tsx"
+        ],
+        "dependencies": [
+          "Skeleton component from @kit/ui/skeleton",
+          "EmptyState component from @kit/ui/makerkit"
+        ],
+        "constraints": [
+          "Empty state text must be screen reader accessible",
+          "Skeleton must have aria-hidden to avoid announcing loading content",
+          "Loading state transition should be announced"
+        ],
+        "feature_dependencies": ["S1877.I4.F3"]
+      },
+      "input_state": "Empty and loading state components exist from F3",
+      "output_state": "Documented accessibility issues in empty and loading states",
+      "acceptance_criterion": "Empty/loading state accessibility documented with required aria attributes",
+      "verification_command": "test -f .ai/alpha/specs/S1877-Spec-user-dashboard/S1877.I4-Initiative-presentation-table-polish/S1877.I4.F4-Feature-accessibility-audit/state-findings.md",
+      "outputs": [
+        { "type": "new", "path": ".ai/alpha/specs/S1877-Spec-user-dashboard/S1877.I4-Initiative-presentation-table-polish/S1877.I4.F4-Feature-accessibility-audit/state-findings.md" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1877.I4.F4.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F4.T7",
+      "type": "task",
+      "name": "Fix empty and loading state accessibility",
+      "action": { "verb": "Fix", "target": "empty and loading state accessibility" },
+      "purpose": "Add aria-hidden to skeleton and ensure empty state is announced",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 4,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/presentation-table-widget.tsx",
+          "apps/web/app/home/(user)/_components/presentation-empty-state.tsx",
+          "apps/web/app/home/(user)/_components/table-skeleton-rows.tsx"
+        ],
+        "dependencies": [
+          "Skeleton component from @kit/ui/skeleton",
+          "EmptyState component from @kit/ui/makerkit"
+        ],
+        "constraints": [
+          "Skeleton wrapper must have aria-hidden=\"true\"",
+          "Empty state text must be visible to screen readers",
+          "Live region announcement when table loads"
+        ]
+      },
+      "input_state": "Empty/loading states with documented accessibility issues",
+      "output_state": "Empty/loading states with proper ARIA attributes",
+      "acceptance_criterion": "Skeleton has aria-hidden, empty state announced to screen readers",
+      "verification_command": "pnpm typecheck && grep -P 'aria-hidden' apps/web/app/home/(user)/_components/table-skeleton-rows.tsx | wc -l | xargs -I {} test {} -gt 0",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/presentation-table-widget.tsx" },
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/table-skeleton-rows.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F4.T5", "S1877.I4.F4.T6"],
+        "blocks": ["S1877.I4.F4.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F4.T8",
+      "type": "task",
+      "name": "Create E2E accessibility test suite",
+      "action": { "verb": "Create", "target": "E2E accessibility test suite" },
+      "purpose": "Add comprehensive E2E tests for presentation table accessibility",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 8,
+      "group": 5,
+      "context": {
+        "files": [
+          "apps/e2e/tests/accessibility/accessibility-hybrid.spec.ts"
+        ],
+        "dependencies": [
+          "HybridAccessibilityTester from apps/e2e/tests/accessibility/hybrid-a11y.ts",
+          "Base test utilities from apps/e2e/tests/utils/base-test.ts",
+          "Playwright test API"
+        ],
+        "constraints": [
+          "Test presentation table specifically at /home",
+          "Include keyboard navigation tests",
+          "Include ARIA labeling verification",
+          "Include color contrast checks (skip based on accessibility-hybrid.spec.ts pattern)",
+          "Follow Page Object pattern from apps/e2e/CLAUDE.md",
+          "Use data-testid attributes for reliable selectors"
+        ]
+      },
+      "input_state": "All accessibility fixes applied to presentation table",
+      "output_state": "E2E test suite covering presentation table accessibility",
+      "acceptance_criterion": "Tests pass with zero critical/serious violations, keyboard navigation verified",
+      "verification_command": "pnpm typecheck && test -f apps/e2e/tests/user/dashboard-presentation-table-accessibility.spec.ts && grep -P '(test|describe)' apps/e2e/tests/user/dashboard-presentation-table-accessibility.spec.ts | wc -l | xargs -I {} test {} -gt 3",
+      "outputs": [
+        { "type": "new", "path": "apps/e2e/tests/user/dashboard-presentation-table-accessibility.spec.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F4.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Audit Phase",
+        "task_ids": ["S1877.I4.F4.T1", "S1877.I4.F4.T3", "S1877.I4.F4.T5", "S1877.I4.F4.T6"],
+        "depends_on_groups": [],
+        "estimated_hours": 7,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "ARIA Fixes",
+        "task_ids": ["S1877.I4.F4.T2"],
+        "depends_on_groups": [1],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Keyboard Navigation Fixes",
+        "task_ids": ["S1877.I4.F4.T4"],
+        "depends_on_groups": [2],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 4,
+        "name": "State Accessibility Fixes",
+        "task_ids": ["S1877.I4.F4.T7"],
+        "depends_on_groups": [1],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 5,
+        "name": "Test Suite",
+        "task_ids": ["S1877.I4.F4.T8"],
+        "depends_on_groups": [4],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1877.I4.F4.T1", "S1877.I4.F4.T2", "S1877.I4.F4.T3", "S1877.I4.F4.T4", "S1877.I4.F4.T5", "S1877.I4.F4.T7", "S1877.I4.F4.T8"],
+      "total_hours": 20
+    },
+    "duration": {
+      "sequential": 19,
+      "parallel": 15,
+      "time_saved_percent": 21
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": false
+  }
+}
