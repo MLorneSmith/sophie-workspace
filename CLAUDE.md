@@ -768,6 +768,62 @@ Send all tool calls in single message for parallel execution (3-5x faster).
 └── rules/agent-coordination.md
 ```
 
+## Alpha Workflow Validation Checklist
+
+Use this checklist before running the Alpha workflow orchestrator to ensure quality gates are in place.
+
+### Feature Decomposition (`/alpha:feature-decompose`)
+
+Before finalizing features:
+
+- [ ] All features with database tasks have `requires_database: true`
+- [ ] Schema features ordered before data features (F1, F2 priority)
+- [ ] Features using tables have `blockedBy` on schema features
+- [ ] Feature dependency graph has no cycles
+- [ ] All features pass INVEST-V criteria
+- [ ] Cross-initiative dependencies use feature-level IDs (not initiative-level)
+
+### Task Decomposition (`/alpha:task-decompose`)
+
+Before finalizing tasks.json:
+
+- [ ] All database-referencing tasks have `requires_database: true`
+- [ ] All `verification_commands` include `pnpm typecheck`
+- [ ] Database tasks include type generation steps:
+  - `pnpm --filter web supabase migration up`
+  - `pnpm supabase:web:typegen`
+  - `grep '[table_name]' apps/web/lib/database.types.ts`
+- [ ] Tasks importing database types have `blockedBy` dependencies
+- [ ] Feature tasks.json has correct execution groups and parallelization
+
+### Implementation (`/alpha:implement`)
+
+During and after implementation:
+
+- [ ] After each task: typecheck passes for modified packages
+- [ ] Before each commit: global `pnpm typecheck` passes
+- [ ] Before feature completion: typecheck, lint, imports all pass
+- [ ] Database types verified to exist after generation
+- [ ] Progress file updated with validation results
+
+### Quick Validation Commands
+
+```bash
+# Pre-flight check - run before orchestrator
+pnpm typecheck
+pnpm lint
+grep -c "^export type" apps/web/lib/database.types.ts
+
+# Verify database types exist
+grep 'table_name' apps/web/lib/database.types.ts
+
+# Check for unresolved imports
+pnpm typecheck 2>&1 | grep -c "Cannot find module"  # Should be 0
+
+# Verify spec files committed
+git diff origin/dev --stat -- .ai/alpha/specs/
+```
+
 ## Commands & Scripts
 
 ### Custom Commands

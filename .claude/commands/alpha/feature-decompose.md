@@ -71,6 +71,115 @@ A **vertical slice** feature:
 
 ---
 
+## Database Feature Prerequisites
+
+When decomposing features that involve new database tables, enforce schema-first ordering:
+
+### Prerequisite: Schema Feature MUST Exist
+
+For EACH new table referenced in the initiative:
+
+1. **Create a "Schema Foundation" feature** (or equivalent)
+2. This feature MUST:
+   - Create the schema file(s)
+   - Generate the database migration
+   - Include type generation task
+   - Have `requires_database: true` flag at feature level
+3. This feature MUST be **ordered BEFORE** any feature using that table
+
+### Example: Correct Decomposition
+
+```
+Initiative S1864.I3 (Activity Aggregation):
+
+F1: Schema Foundation - Activity Tables
+    - Tasks: Create schema, migration, types
+    - requires_database: true
+    - blockedBy: [] (no dependencies)
+
+F2: Activity Data Aggregation (uses activity_logs table)
+    - blockedBy: [S1864.I3.F1]
+    - Cannot start until F1 types are generated
+
+F3: Activity Feed Widget (uses activity data from F2)
+    - blockedBy: [S1864.I3.F2]
+    - Cannot start until F2's types and data structures exist
+```
+
+### Validation During Decomposition
+
+Before finalizing feature list, check:
+
+**1. Table Reference Detection**:
+```bash
+# Search initiative and feature docs for table references
+grep -rE "CREATE TABLE|activity_logs|user_activities|new table" feature.md initiative.md
+```
+
+**2. Schema Feature Check**:
+For each table found:
+- Verify a schema feature exists that creates it
+- Schema features MUST come before data features in priority order
+- Schema features should be named consistently (e.g., "Schema Foundation", "Database Setup", "Table Setup")
+
+**3. Feature Ordering Validation**:
+Feature dependency graph must show:
+- Schema features with no dependencies (F1, F2 priority)
+- Data features blocking consumption features
+- No cycles
+- Correct topological order
+
+### Feature-Level `requires_database` Flag
+
+**For features with schema creation tasks:**
+```json
+{
+  "id": "S1864.I3.F1",
+  "name": "Schema Foundation - Activity Tables",
+  "requires_database": true,
+  "provides_types": ["activity_logs", "user_activities"],
+  "blocks": ["S1864.I3.F2", "S1864.I3.F3"]
+}
+```
+
+**For features consuming those types:**
+```json
+{
+  "id": "S1864.I3.F2",
+  "name": "Activity Data Aggregation",
+  "requires_types_from": ["S1864.I3.F1"],
+  "blockedBy": ["S1864.I3.F1"]
+}
+```
+
+### Database-First Decomposition Rules
+
+**IF the initiative creates new database tables:**
+
+1. **Create schema feature FIRST**
+   - Must be F1 or explicitly ordered first
+   - Include all migration and type generation steps
+   - Mark as `requires_database: true`
+
+2. **Block data features on schema feature**
+   - Any feature using those tables must have:
+     ```json
+     "blockedBy": ["S1864.I3.F1"],
+     "requires_types_from": ["S1864.I3.F1"]
+     ```
+
+3. **Document table names in feature metadata**
+   - Makes validation easier for downstream steps
+   - Prevents feature decomposition gaps
+
+4. **FAIL decomposition if**:
+   - Table references found without schema feature
+   - Features using tables don't block on schema feature
+   - Blocking relationships create cycles
+   - Schema features are ordered after data features
+
+---
+
 ## Instructions
 
 ### Phase 0: Pre-flight Validation

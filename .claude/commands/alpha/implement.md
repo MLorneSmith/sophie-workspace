@@ -670,7 +670,63 @@ If typecheck fails:
 3. **Match context.patterns** - Follow existing code patterns
 4. **Produce outputs** - Create/modify files as specified
 5. **Run verification** - Execute verification_command
-6. **Meet acceptance_criterion** - Binary done/not-done
+6. **Run Conditional Typecheck** - If task modified .ts/.tsx files (see below)
+7. **Meet acceptance_criterion** - Binary done/not-done
+
+### Task-Level Typecheck Validation (MANDATORY)
+
+After each task's `verification_command` passes, run a conditional typecheck:
+
+```
+IF task modified or created any .ts or .tsx files:
+    Log: "🔍 Running task-level typecheck..."
+
+    1. Determine affected package(s):
+       - apps/web/* → pnpm typecheck --filter web
+       - apps/e2e/* → pnpm typecheck --filter web-e2e
+       - packages/ui/* → pnpm typecheck --filter @kit/ui
+       - packages/*/* → pnpm typecheck --filter @kit/[package-name]
+
+    2. Run targeted typecheck:
+       pnpm typecheck --filter [affected-packages]
+
+    3. Handle result:
+       IF typecheck passes:
+           Log: "✅ Task-level typecheck passed"
+           Proceed to next task
+
+       IF typecheck fails:
+           Log: "❌ TypeScript errors detected - fixing before proceeding"
+           Log all errors to console
+           DO NOT proceed to next task
+           Fix type errors in implementation
+           Re-run typecheck to validate fix
+           Only mark task complete when typecheck passes
+           Increment verification_attempts in progress file
+
+IF task only modified non-TS files (docs, config, .json, .sql, etc.):
+    Log: "📝 Non-TypeScript task - skipping typecheck"
+    Proceed normally
+```
+
+**Package Detection Logic**:
+```bash
+# Extract package name from file path
+file_path="apps/web/src/components/foo.tsx"
+if [[ $file_path =~ ^apps/([^/]+) ]]; then
+    package="${BASH_REMATCH[1]}"
+    echo "pnpm typecheck --filter $package"
+elif [[ $file_path =~ ^packages/([^/]+) ]]; then
+    package="@kit/${BASH_REMATCH[1]}"
+    echo "pnpm typecheck --filter $package"
+fi
+```
+
+**Why Task-Level Typecheck?**
+- Catches type errors immediately after they're introduced
+- Faster feedback than waiting for group-level check
+- Targeted to affected packages (faster than full check)
+- Prevents cascading errors in subsequent tasks
 
 ### Database Task Handling
 
@@ -1107,12 +1163,63 @@ Note: Click testing is more reliable but requires the dev server and proper auth
 
 After each execution group:
 
-1. **Run group validations**:
-   ```bash
-   # Type check
+### Group-Level Typecheck Validation (MANDATORY - Before Commit)
+
+Before committing any task group completion, run comprehensive validation:
+
+```
+Log: "🔍 Running group-level validation before commit..."
+
+1. **Global Typecheck** (MANDATORY):
    pnpm typecheck
 
-   # Lint
+   This validates ALL packages, catching cross-package type errors.
+
+   IF typecheck fails:
+       Log: "❌ Global typecheck failed - fixing before commit"
+       Log all errors to console
+       Fix type errors immediately
+       Re-run typecheck to confirm fix
+       DO NOT commit until typecheck passes
+
+2. **Lint Validation**:
+   pnpm lint --filter [affected-packages]
+
+   IF lint fails with errors:
+       Try auto-fix: pnpm lint:fix --filter [affected-packages]
+       Re-run lint to verify
+       Warnings are acceptable, errors must be fixed
+
+3. **Database Type Verification** (if any task had requires_database: true):
+   For tasks with requires_database flag in this group:
+       - Extract table names from task context
+       - Run: grep '[table_name]' apps/web/lib/database.types.ts
+       - IF types missing:
+           Run: pnpm supabase:web:typegen
+           Re-verify types exist
+           IF still missing: Block and report error
+
+4. **Commit Gate**:
+   Only proceed to git commit when ALL pass:
+   - [ ] All verification_commands passed
+   - [ ] pnpm typecheck succeeded (zero errors)
+   - [ ] pnpm lint passed (errors fixed, warnings OK)
+   - [ ] Database types verified (if applicable)
+
+   IF any validation fails:
+       DO NOT commit
+       Fix all errors first
+       Log fix details to progress file
+```
+
+**Applies to BOTH parallel and sequential execution modes.**
+
+1. **Run group validations**:
+   ```bash
+   # Type check (MANDATORY - must pass)
+   pnpm typecheck
+
+   # Lint (errors must be fixed)
    pnpm lint
    ```
 
@@ -1205,6 +1312,85 @@ EOF
 ```
 
 **CRITICAL**: Every progress file write MUST include `last_heartbeat` set to the current timestamp. The orchestrator uses this to detect stalled sessions.
+
+### Phase 4.5: Feature-Level Validation (MANDATORY - Before Completion)
+
+Before reporting a feature as complete, run comprehensive validation:
+
+```
+Log: "🔍 Running feature-level validation before completion..."
+
+1. **Full Typecheck** (MANDATORY):
+   pnpm typecheck
+
+   Verify: Zero TypeScript errors across ALL packages
+
+   IF typecheck fails:
+       Log: "❌ Feature-level typecheck failed"
+       Log all errors with file:line references
+       DO NOT mark feature as complete
+       Fix all errors first
+       Re-run typecheck to verify
+
+2. **Lint Validation**:
+   pnpm lint
+
+   Verify: Zero lint errors (warnings acceptable)
+
+   IF lint errors exist:
+       Try: pnpm lint:fix
+       Re-run lint
+       IF errors persist: Fix manually before completion
+
+3. **Database Type Verification** (for features with database tasks):
+   For any task in this feature with requires_database: true:
+       - Extract table names from task context
+       - Verify types exist:
+         grep '[table_name]' apps/web/lib/database.types.ts
+
+       IF types missing:
+           Log: "⚠️ Database types missing - regenerating..."
+           Run: pnpm supabase:web:typegen
+           Re-verify types exist
+
+           IF still missing:
+               Log: "❌ Database types failed to generate"
+               DO NOT mark feature complete
+               Document issue in progress file
+
+4. **Module Import Verification**:
+   Run: pnpm typecheck 2>&1 | grep "Cannot find module"
+
+   Count MUST be zero.
+
+   IF any "Cannot find module" errors:
+       Log: "❌ Unresolved imports detected"
+       List all missing modules
+       Fix imports before feature completion
+       Re-run typecheck
+
+5. **Validation Report Summary**:
+   Log validation results to .initiative-progress.json:
+
+   "validation": {
+       "typecheck": "PASS" | "FAIL (N errors)",
+       "lint": "PASS" | "FAIL (N errors, M warnings)",
+       "database_types": "VERIFIED (N tables)" | "SKIPPED" | "FAILED",
+       "imports": "RESOLVED" | "FAILED (N missing)",
+       "validated_at": "[timestamp]"
+   }
+
+   IF all pass:
+       Log: "✅ Feature-level validation PASSED"
+       Proceed to mark feature complete
+
+   IF any fail:
+       Log: "❌ Feature-level validation FAILED"
+       DO NOT mark feature complete
+       Fix issues and re-validate
+```
+
+**This validation is BLOCKING** - a feature cannot be marked "complete" until all checks pass.
 
 ### Phase 5: Exit Conditions
 
@@ -1440,6 +1626,88 @@ Commits: 3
 Look for group.parallel_batches in tasks.json
 If batch.task_ids.length > 1 → Tasks will run in parallel
 If group.parallelization_analysis.speedup_potential > 1 → Worth parallelizing
+```
+
+## Typecheck Verification Reference
+
+### When to Run `pnpm typecheck`
+
+| Situation | Command | Blocking |
+|-----------|---------|----------|
+| Task modifies .ts/.tsx files | `pnpm typecheck --filter [package]` | YES - must pass |
+| After each task group | `pnpm typecheck` | YES - must pass |
+| Before feature completion | `pnpm typecheck` | YES - must pass |
+| Task modifies only docs/config | Not required | NO |
+
+### Package Detection
+
+To determine affected packages for targeted typecheck:
+
+```bash
+# Get package name from file path
+file_path="apps/web/src/components/foo.tsx"
+if [[ $file_path =~ ^apps/([^/]+) ]]; then
+    package="${BASH_REMATCH[1]}"
+elif [[ $file_path =~ ^packages/([^/]+) ]]; then
+    package="@kit/${BASH_REMATCH[1]}"
+fi
+echo "pnpm typecheck --filter $package"
+```
+
+### Database Type Verification
+
+For tasks with `requires_database: true`:
+
+```bash
+# Before task starts
+before=$(grep -c "^export type" apps/web/lib/database.types.ts)
+
+# [Task executes and generates types]
+
+# After task completes
+after=$(grep -c "^export type" apps/web/lib/database.types.ts)
+
+if [ $after -le $before ]; then
+    echo "ERROR: Type generation failed - no new types exported"
+    exit 1
+fi
+```
+
+### Common Typecheck Error Patterns
+
+| Error Pattern | Cause | Fix |
+|---------------|-------|-----|
+| `TS2307: Cannot find module` | Missing import or ungenerated types | Check path, run typegen if DB |
+| `TS2554: Expected X arguments` | Function signature mismatch | Check function definition |
+| `TS2769: No overload matches` | Wrong parameter types | Check type definitions |
+| `TS2741: Property missing` | Incomplete object shape | Add required properties |
+
+### Validation Flow Summary
+
+```
+Task Start
+    ↓
+Run Task Implementation
+    ↓
+Run verification_command
+    ↓
+IF modified .ts/.tsx → Run task-level typecheck
+    ↓
+Mark Task Complete
+    ↓
+[Repeat for all tasks in group]
+    ↓
+Run group-level typecheck (global)
+    ↓
+Run lint validation
+    ↓
+Commit changes
+    ↓
+[Repeat for all groups]
+    ↓
+Run feature-level validation
+    ↓
+Mark Feature Complete
 ```
 
 ## Arguments
