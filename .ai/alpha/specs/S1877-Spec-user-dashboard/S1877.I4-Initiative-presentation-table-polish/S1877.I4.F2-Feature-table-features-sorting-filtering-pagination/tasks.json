@@ -1,0 +1,360 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1877.I4.F2",
+    "feature_name": "Table Features - Sorting, Filtering, Pagination",
+    "feature_slug": "table-features-sorting-filtering-pagination",
+    "initiative_id": "S1877.I4",
+    "spec_id": "S1877",
+    "created_at": "2026-01-28T12:00:00.000Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1877.I4.F2.T1",
+      "type": "task",
+      "name": "Create type-safe column definitions for presentation table",
+      "action": { "verb": "Create", "target": "column definitions" },
+      "purpose": "Define TanStack Table columns with sorting configuration for Title, Presentation Type, and Last Updated",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/data-table.tsx",
+          "apps/web/supabase/migrations/20250211000000_web_create_building_blocks_submissions.sql"
+        ],
+        "dependencies": [
+          "DataTable with getSortedRowModel",
+          "ColumnDef from @tanstack/react-table",
+          "building_blocks_submissions table structure"
+        ],
+        "constraints": [
+          "Columns must match table schema",
+          "Use getSortedRowModel for sorting",
+          "Export ColumnDef type from data-table"
+        ]
+      },
+      "input_state": "DataTable component exists with sorting support, building_blocks_submissions table has id, title, presentation_type, updated_at columns",
+      "output_state": "table-column-definitions.ts file exports PresentationColumn interface and columns array with sorting enabled for Title, Type, Updated columns",
+      "acceptance_criterion": "table-column-definitions.ts exists and exports columns array with ColumnDef<PresentationRow>[] type",
+      "verification_command": "grep -q 'export.*columns.*ColumnDef' apps/web/app/home/(user)/_components/table-column-definitions.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_components/table-column-definitions.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F1"],
+        "blocks": ["S1877.I4.F2.T2"]
+      }
+    },
+    {
+      "id": "S1877.I4.F2.T2",
+      "type": "task",
+      "name": "Create presentation type filter dropdown component",
+      "action": { "verb": "Create", "target": "presentation type filter dropdown" },
+      "purpose": "Add Select component for filtering presentations by type (All, Informative, Persuasive, Inspirational)",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/select.tsx",
+          "apps/web/app/home/(user)/ai/blocks/_components/PresentationTypeSelect.tsx"
+        ],
+        "dependencies": [
+          "Select from @kit/ui",
+          "SelectContent, SelectItem, SelectTrigger, SelectValue components",
+          "presentation_type enum values"
+        ],
+        "constraints": [
+          "Use Shadcn Select component",
+          "Support All option to clear filter",
+          "Type-safe value handling"
+        ]
+      },
+      "input_state": "Select component available from @kit/ui, presentation_type column contains Informative, Persuasive, Inspirational values",
+      "output_state": "PresentationTypeFilter component with Select dropdown, options for All + presentation types, onChange callback for filter value",
+      "acceptance_criterion": "PresentationTypeFilter component exists and renders Select with All, Informative, Persuasive, Inspirational options",
+      "verification_command": "grep -q 'PresentationTypeFilter' apps/web/app/home/(user)/_components/presentation-type-filter.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_components/presentation-type-filter.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1877.I4.F2.T3"]
+      }
+    },
+    {
+      "id": "S1877.I4.F2.T3",
+      "type": "task",
+      "name": "Create client-side filtering function for presentations",
+      "action": { "verb": "Create", "target": "client-side filtering function" },
+      "purpose": "Implement filter logic that filters presentations array by presentation_type when filter is active",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "Array.filter for client-side filtering",
+          "PresentationRow type from column definitions"
+        ],
+        "constraints": [
+          "Filter on presentation_type column",
+          "Return all presentations when filter is All or null",
+          "Pure function for testability"
+        ]
+      },
+      "input_state": "PresentationTypeFilter component provides filter value, presentations array available from parent",
+      "output_state": "filterPresentationsByType function that accepts presentations array and filter value, returns filtered array",
+      "acceptance_criterion": "filterPresentationsByType function correctly filters by type and returns all presentations for All selection",
+      "verification_command": "grep -q 'filterPresentationsByType' apps/web/app/home/(user)/_components/presentation-type-filter.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_components/presentation-type-filter.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F2.T2"],
+        "blocks": ["S1877.I4.F2.T4"]
+      }
+    },
+    {
+      "id": "S1877.I4.F2.T4",
+      "type": "task",
+      "name": "Add sorting state management to presentation table widget",
+      "action": { "verb": "Add", "target": "sorting state management" },
+      "purpose": "Integrate TanStack Table sorting state with DataTable onSortingChange callback and set default sort",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/presentation-table-widget.tsx",
+          "packages/ui/src/makerkit/data-table.tsx"
+        ],
+        "dependencies": [
+          "useState from React for sorting state",
+          "DataTable onSortingChange prop",
+          "manualSorting prop set to false for client-side sorting",
+          "SortingState type from @tanstack/react-table"
+        ],
+        "constraints": [
+          "Default sort by updated_at descending",
+          "Pass sorting state to DataTable",
+          "Handle onSortingChange callback"
+        ]
+      },
+      "input_state": "PresentationTableWidget component exists, DataTable component with sorting support, column definitions with sortable columns",
+      "output_state": "PresentationTableWidget has sorting state initialized to { id: 'updated_at', desc: true }, sorting state passed to DataTable",
+      "acceptance_criterion": "PresentationTableWidget initializes sorting state and passes it to DataTable onSortingChange prop",
+      "verification_command": "grep -q 'useState.*SortingState' apps/web/app/home/(user)/_components/presentation-table-widget.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/presentation-table-widget.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F1", "S1877.I4.F2.T1"],
+        "blocks": ["S1877.I4.F2.T5"]
+      }
+    },
+    {
+      "id": "S1877.I4.F2.T5",
+      "type": "task",
+      "name": "Add filtering state to presentation table widget",
+      "action": { "verb": "Add", "target": "filtering state" },
+      "purpose": "Add filter state management to PresentationTableWidget and connect filter dropdown",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/presentation-table-widget.tsx"
+        ],
+        "dependencies": [
+          "useState for filter state",
+          "PresentationTypeFilter component",
+          "filterPresentationsByType function"
+        ],
+        "constraints": [
+          "Initialize filter to null or All",
+          "Apply filter to presentations before passing to DataTable",
+          "Render filter dropdown above table"
+        ]
+      },
+      "input_state": "PresentationTableWidget exists, PresentationTypeFilter component ready with onChange callback",
+      "output_state": "PresentationTableWidget has filter state, renders PresentationTypeFilter above table, applies filter to presentations array",
+      "acceptance_criterion": "PresentationTableWidget renders filter dropdown, applies filter to presentations, passes filtered data to DataTable",
+      "verification_command": "grep -q 'PresentationTypeFilter' apps/web/app/home/(user)/_components/presentation-table-widget.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/presentation-table-widget.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F2.T3", "S1877.I4.F2.T4"],
+        "blocks": ["S1877.I4.F2.T6"]
+      }
+    },
+    {
+      "id": "S1877.I4.F2.T6",
+      "type": "task",
+      "name": "Configure pagination in presentation table widget",
+      "action": { "verb": "Configure", "target": "pagination" },
+      "purpose": "Set up DataTable pagination with pageSize of 10, calculate pageCount, handle page changes",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/presentation-table-widget.tsx",
+          "packages/ui/src/makerkit/data-table.tsx"
+        ],
+        "dependencies": [
+          "DataTable pageIndex, pageSize, pageCount props",
+          "onPaginationChange callback",
+          "Math.ceil for page count calculation"
+        ],
+        "constraints": [
+          "Page size: 10 rows per page",
+          "Calculate pageCount from filtered presentations length",
+          "Handle onPaginationChange callback"
+        ]
+      },
+      "input_state": "PresentationTableWidget has filtered presentations array, DataTable supports pagination props",
+      "output_state": "PresentationTableWidget passes pageIndex=0, pageSize=10, pageCount to DataTable, handles page navigation",
+      "acceptance_criterion": "PresentationTableWidget passes pagination props to DataTable with pageSize=10",
+      "verification_command": "grep -q 'pageSize.*10' apps/web/app/home/(user)/_components/presentation-table-widget.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/presentation-table-widget.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F2.T5"],
+        "blocks": ["S1877.I4.F2.T7"]
+      }
+    },
+    {
+      "id": "S1877.I4.F2.T7",
+      "type": "task",
+      "name": "Verify sort indicators display correctly on column headers",
+      "action": { "verb": "Verify", "target": "sort indicators" },
+      "purpose": "Confirm sort arrows appear on sorted column and toggle direction on click",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/presentation-table-widget.tsx"
+        ],
+        "dependencies": [
+          "DataTable sorting UI with ChevronUp/ChevronDown icons",
+          "Column getIsSorted() method"
+        ],
+        "constraints": [
+          "Sort indicator visible on currently sorted column",
+          "Arrow color changes based on sort direction",
+          "Clicking header toggles asc/desc"
+        ]
+      },
+      "input_state": "PresentationTableWidget has sorting state, DataTable renders sort indicators on sortable headers",
+      "output_state": "Sort indicators render correctly on Title, Type, Updated columns, clicking toggles sort direction",
+      "acceptance_criterion": "Sort arrows appear on sorted column header with correct color (foreground when active, muted otherwise)",
+      "verification_command": "pnpm typecheck",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F2.T6"],
+        "blocks": []
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Column Definitions & Filter Component",
+        "task_ids": ["S1877.I4.F2.T1", "S1877.I4.F2.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Filtering Logic & Sorting State",
+        "task_ids": ["S1877.I4.F2.T3", "S1877.I4.F2.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Integration & Pagination",
+        "task_ids": ["S1877.I4.F2.T5", "S1877.I4.F2.T6"],
+        "depends_on_groups": [2],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Verification",
+        "task_ids": ["S1877.I4.F2.T7"],
+        "depends_on_groups": [3],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1877.I4.F2.T1",
+        "S1877.I4.F2.T4",
+        "S1877.I4.F2.T3",
+        "S1877.I4.F2.T5",
+        "S1877.I4.F2.T6",
+        "S1877.I4.F2.T7"
+      ],
+      "total_hours": 10
+    },
+    "duration": {
+      "sequential": 12,
+      "parallel": 7,
+      "time_saved_percent": 42
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

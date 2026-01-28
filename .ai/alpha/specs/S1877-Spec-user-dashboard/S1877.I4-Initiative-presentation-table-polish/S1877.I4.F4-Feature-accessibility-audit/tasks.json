@@ -446,14 +446,14 @@
         "id": 5,
         "name": "Test Suite",
         "task_ids": ["S1877.I4.F4.T8"],
-        "depends_on_groups": [4],
+        "depends_on_groups": [3, 4],
         "estimated_hours": 4,
         "parallel_hours": 4
       }
     ],
     "critical_path": {
-      "task_ids": ["S1877.I4.F4.T1", "S1877.I4.F4.T2", "S1877.I4.F4.T3", "S1877.I4.F4.T4", "S1877.I4.F4.T5", "S1877.I4.F4.T7", "S1877.I4.F4.T8"],
-      "total_hours": 20
+      "task_ids": ["S1877.I4.F4.T1", "S1877.I4.F4.T2", "S1877.I4.F4.T3", "S1877.I4.F4.T4", "S1877.I4.F4.T8"],
+      "total_hours": 14
     },
     "duration": {
       "sequential": 19,
@@ -480,6 +480,6 @@
   },
   "github": {
     "issues_created": false,
-    "spec_issue_commented": false
+    "spec_issue_commented": true
   }
 }

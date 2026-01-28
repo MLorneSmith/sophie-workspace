@@ -150,12 +150,12 @@
       "id": "S1877.I4.F5.T5",
       "type": "task",
       "name": "Create table sorting tests",
-      "action": { "Verb": "Create", "target": "sorting tests" },
+      "action": { "verb": "Create", "target": "sorting tests" },
       "purpose": "Verify all columns sort correctly in both directions",
       "status": "draft",
       "estimated_hours": 6,
       "priority": 3,
-      "group": 3,
+      "group": 4,
       "context": {
         "files": ["apps/e2e/tests/user/presentation-table.po.ts", "apps/e2e/tests/user/presentation-table.spec.ts"],
         "dependencies": ["PresentationTablePageObject methods for sorting", "column headers"],
@@ -164,7 +164,7 @@
       "input_state": "No sorting tests exist",
       "output_state": "Tests verify all columns sort correctly in both directions",
       "acceptance_criterion": "Sorting tests pass for all columns",
-      "verification_command": "grep -q 'sort.*title\|sort.*type\|sort.*updated' apps/e2e/tests/user/presentation-table.spec.ts",
+      "verification_command": "grep -q 'sort.*title|sort.*type|sort.*updated' apps/e2e/tests/user/presentation-table.spec.ts",
       "outputs": [
         { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
       ],
@@ -196,7 +196,7 @@
       "input_state": "No filtering tests exist",
       "output_state": "Tests verify type filter works for all options",
       "acceptance_criterion": "Filtering tests pass for all presentation types",
-      "verification_command": "grep -q 'filter.*type\|filter.*presentation' apps/e2e/tests/user/presentation-table.spec.ts",
+      "verification_command": "grep -q 'filter.*type|filter.*presentation' apps/e2e/tests/user/presentation-table.spec.ts",
       "outputs": [
         { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
       ],
@@ -228,7 +228,7 @@
       "input_state": "No pagination tests exist",
       "output_state": "Tests verify pagination works correctly",
       "acceptance_criterion": "Pagination tests pass for all navigation controls",
-      "verification_command": "grep -q 'pagination\|next\|previous\|page.*number' apps/e2e/tests/user/presentation-table.spec.ts",
+      "verification_command": "grep -q 'pagination|next|previous|page.*number' apps/e2e/tests/user/presentation-table.spec.ts",
       "outputs": [
         { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
       ],
@@ -245,22 +245,22 @@
     {
       "id": "S1877.I4.F5.T8",
       "type": "task",
-      "name": "Create empty state and loading state tests",
-      "action": { "verb": "Create", "target": "state tests" },
-      "purpose": "Verify empty state and loading skeleton display correctly",
+      "name": "Create empty state test",
+      "action": { "verb": "Create", "target": "empty state test" },
+      "purpose": "Verify empty state displays correctly",
       "status": "draft",
-      "estimated_hours": 5,
+      "estimated_hours": 4,
       "priority": 5,
       "group": 5,
       "context": {
         "files": ["apps/e2e/tests/user/presentation-table.po.ts", "apps/e2e/tests/user/presentation-table.spec.ts"],
-        "dependencies": ["PresentationTablePageObject state methods", "empty state CTA", "skeleton elements"],
-        "constraints": ["Test 'No presentations yet' message, 'Create First Presentation' CTA, skeleton during fetch"]
+        "dependencies": ["PresentationTablePageObject state methods", "empty state CTA"],
+        "constraints": ["Test 'No presentations yet' message, 'Create First Presentation' CTA"]
       },
-      "input_state": "No state tests exist",
-      "output_state": "Tests verify empty and loading states display correctly",
-      "acceptance_criterion": "State tests pass for empty and loading scenarios",
-      "verification_command": "grep -q 'empty state\|loading.*skeleton\|no presentations' apps/e2e/tests/user/presentation-table.spec.ts",
+      "input_state": "No empty state test exists",
+      "output_state": "Test verifies empty state displays correctly",
+      "acceptance_criterion": "Empty state test passes",
+      "verification_command": "grep -q 'empty state|no presentations' apps/e2e/tests/user/presentation-table.spec.ts",
       "outputs": [
         { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
       ],
@@ -292,7 +292,7 @@
       "input_state": "No navigation tests exist",
       "output_state": "Tests verify Edit Outline buttons navigate correctly",
       "acceptance_criterion": "Navigation tests pass for all Edit buttons",
-      "verification_command": "grep -q 'edit.*outline\|navigate.*storyboard\|click.*edit' apps/e2e/tests/user/presentation-table.spec.ts",
+      "verification_command": "grep -q 'edit.*outline|navigate.*storyboard|click.*edit' apps/e2e/tests/user/presentation-table.spec.ts",
       "outputs": [
         { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
       ],
@@ -324,7 +324,7 @@
       "input_state": "No RLS test exists",
       "output_state": "Test verifies RLS prevents cross-user access",
       "acceptance_criterion": "RLS isolation test passes",
-      "verification_command": "grep -q 'RLS\|isolation\|user.*cannot.*see\|cross.*user' apps/e2e/tests/user/presentation-table.spec.ts",
+      "verification_command": "grep -q 'RLS|isolation|user.*cannot.*see|cross.*user' apps/e2e/tests/user/presentation-table.spec.ts",
       "outputs": [
         { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
       ],
@@ -356,7 +356,7 @@
       "input_state": "No mobile test exists",
       "output_state": "Test verifies mobile horizontal scrolling works",
       "acceptance_criterion": "Mobile test passes with horizontal scroll verification",
-      "verification_command": "grep -q 'mobile\|viewport\|responsive\|scroll.*horizontal' apps/e2e/tests/user/presentation-table.spec.ts",
+      "verification_command": "grep -q 'mobile|viewport|responsive|scroll.*horizontal' apps/e2e/tests/user/presentation-table.spec.ts",
       "outputs": [
         { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
       ],

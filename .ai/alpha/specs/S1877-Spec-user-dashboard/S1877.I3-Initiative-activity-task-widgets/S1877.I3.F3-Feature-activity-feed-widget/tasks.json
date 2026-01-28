@@ -690,6 +690,7 @@
   },
   "github": {
     "issues_created": false,
-    "spec_issue_commented": false
+    "spec_issue_commented": true,
+    "spec_issue_url": "https://github.com/MLorneSmith/2025slideheroes/issues/1877#issuecomment-3812525749"
   }
 }
