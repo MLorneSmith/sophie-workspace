@@ -5,17 +5,17 @@ Write individual emails following a campaign strategy, using Andre Chaperon's me
 ## Usage
 
 ```
-/email-write [campaign-name] [position]
-/email-write [campaign-name] [position] --validate
+/content/email-write [campaign-name] [position]
+/content/email-write [campaign-name] [position] --validate
 ```
 
 ### Examples
 
 ```
-/email-write course-launch 1
-/email-write course-launch 2
-/email-write bpm-onboarding 17
-/email-write cold-reactivation 3 --validate
+/content/email-write course-launch 1
+/content/email-write course-launch 2
+/content/email-write bpm-onboarding 17
+/content/email-write cold-reactivation 3 --validate
 ```
 
 ### Arguments: $ARGUMENTS
@@ -43,7 +43,7 @@ If not found, inform user:
 No strategy found for campaign "[campaign-name]".
 
 Create one first with:
-/email-campaign [campaign-name] "[description]"
+/content/email-campaign [campaign-name] "[description]"
 
 Or write a standalone email with:
 /email-style write [type] "[hook]"
@@ -238,7 +238,7 @@ If no campaign strategy exists and user wants to write anyway:
 ```
 No strategy found. Would you like to:
 
-A) Create a campaign strategy first (/email-campaign)
+A) Create a campaign strategy first (/content/email-campaign)
 B) Write a standalone email (provide hook and type)
 ```
 

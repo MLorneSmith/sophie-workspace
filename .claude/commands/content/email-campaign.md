@@ -5,15 +5,15 @@ Design compelling email campaigns by identifying hooks, mapping narrative arcs, 
 ## Usage
 
 ```
-/email-campaign [campaign-name] "[audience or trigger description]"
+/content/email-campaign [campaign-name] "[audience or trigger description]"
 ```
 
 ### Examples
 
 ```
-/email-campaign course-launch "announcing DDM course to existing subscribers"
-/email-campaign webinar-followup "nurturing webinar attendees who didn't purchase"
-/email-campaign cold-reactivation "re-engaging subscribers who haven't opened in 90 days"
+/content/email-campaign course-launch "announcing DDM course to existing subscribers"
+/content/email-campaign webinar-followup "nurturing webinar attendees who didn't purchase"
+/content/email-campaign cold-reactivation "re-engaging subscribers who haven't opened in 90 days"
 ```
 
 ### Arguments: $ARGUMENTS
