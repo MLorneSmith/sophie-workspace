@@ -11,6 +11,7 @@
 ## Context
 
 - SlideHeroes / 2025slideheroes is an active project area.
+- Background (safe to save): longtime Mastercard leader in Cyber & Intelligence Solutions / Enterprise Risk & Security; deep expertise in payments/cards, fraud/cybersecurity, identity/biometrics, strategy, M&A, standards, and device/application ecosystems (chip/contactless, mobile, wearables, POS/mPOS, IoT). Previously Mastercard Advisors (payments consulting) and Lloyds Banking Group (strategy consulting).
 
 ## Boundaries
 
