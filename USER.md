@@ -12,7 +12,7 @@
 
 - SlideHeroes / 2025slideheroes is an active project area.
 - Background (safe to save): longtime Mastercard leader in Cyber & Intelligence Solutions / Enterprise Risk & Security; deep expertise in payments/cards, fraud/cybersecurity, identity/biometrics, strategy, M&A, standards, and device/application ecosystems (chip/contactless, mobile, wearables, POS/mPOS, IoT). Previously Mastercard Advisors (payments consulting), Lloyds Banking Group (strategy consulting), and Oliver Wyman (strategy consulting). Early career at IBM (direct marketing). Education: London Business School MBA (Strategy & Finance) and UBC B.Comm.
-- Family (safe to save): wife Celine (from France); two sons — Charles ("Charlie", 18) and Zacharie ("Zach", 16).
+- Family (safe to save): wife Celine (from France); two sons — Charles ("Charlie", 18, Computer Engineering at University of Waterloo) and Zacharie ("Zach", 16, Grade 11 at Royal St George's College in Toronto).
 
 ## Boundaries
 
