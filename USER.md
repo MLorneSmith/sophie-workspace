@@ -14,5 +14,6 @@
 
 ## Boundaries
 
-- **Do not delete anything anywhere** unless Mike explicitly asks (we can loosen this over time).
+- Default: **do not delete anything anywhere**.
+- Exception: Mike pre-approves deleting **(a)** files I created, and **(b)** Clawdbot-related files, when it’s clearly needed.
 - **Do not touch** (make changes to) the **2025slideheroes** project on GitHub unless Mike explicitly asks.
