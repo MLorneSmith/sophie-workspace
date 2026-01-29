@@ -191,7 +191,8 @@ export function aggregateRequiredEnvVars(
 		for (const v of featureVars) {
 			if (varsMap.has(v.name)) {
 				// Add feature to existing var
-				const existing = varsMap.get(v.name)!;
+				const existing = varsMap.get(v.name);
+				if (!existing) continue;
 				if (!existing.features.includes(feature.id)) {
 					existing.features.push(feature.id);
 				}
