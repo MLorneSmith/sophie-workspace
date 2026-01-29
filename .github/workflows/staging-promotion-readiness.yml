@@ -316,50 +316,50 @@ jobs:
 
             const body = `## 🏭 Automated Promotion: Staging → Production
 
-This PR was automatically created after successful staging validation.
+            This PR was automatically created after successful staging validation.
 
-### 📊 Promotion Score: ${report.score}/100
+            ### 📊 Promotion Score: ${report.score}/100
 
-### ✅ Quality Gates Passed
-- Staging Health: Web ✅, Payload ✅
-- Success Rate: ${report.metrics.successRate.toFixed(1)}%
-- Code Coverage: ${report.metrics.codeCoverage}%
-- Recent Failures: ${report.metrics.recentFailures}
-- Changed Files: ${report.changedFiles}
-${breakingChanges > 0 ? `\n### ⚠️ Breaking Changes: ${breakingChanges} detected\n` : ''}
+            ### ✅ Quality Gates Passed
+            - Staging Health: Web ✅, Payload ✅
+            - Success Rate: ${report.metrics.successRate.toFixed(1)}%
+            - Code Coverage: ${report.metrics.codeCoverage}%
+            - Recent Failures: ${report.metrics.recentFailures}
+            - Changed Files: ${report.changedFiles}
+            ${breakingChanges > 0 ? `\n### ⚠️ Breaking Changes: ${breakingChanges} detected\n` : ''}
 
-### 📝 Changes Included
-${changelog}
+            ### 📝 Changes Included
+            ${changelog}
 
-### 🧪 Staging Validation
-- Staging Deployment: ✅ Healthy
-- Smoke Tests: ✅ Passed
-- Load Tests: ${report.metrics.hasLoadTest ? '✅ Completed' : '⏭️ Skipped'}
-- Security Scan: ${report.metrics.hasSecurityScan ? '✅ Completed' : '⏭️ Skipped'}
+            ### 🧪 Staging Validation
+            - Staging Deployment: ✅ Healthy
+            - Smoke Tests: ✅ Passed
+            - Load Tests: ${report.metrics.hasLoadTest ? '✅ Completed' : '⏭️ Skipped'}
+            - Security Scan: ${report.metrics.hasSecurityScan ? '✅ Completed' : '⏭️ Skipped'}
 
-### 📋 Pre-Merge Checklist
-- [ ] Reviewed all changes
-- [ ] Verified staging environment manually
-- [ ] Checked for breaking changes
-- [ ] Confirmed deployment timing (low-traffic window preferred)
-- [ ] Notified relevant stakeholders
-${breakingChanges > 0 ? '- [ ] Migration plan reviewed and ready' : ''}
+            ### 📋 Pre-Merge Checklist
+            - [ ] Reviewed all changes
+            - [ ] Verified staging environment manually
+            - [ ] Checked for breaking changes
+            - [ ] Confirmed deployment timing (low-traffic window preferred)
+            - [ ] Notified relevant stakeholders
+            ${breakingChanges > 0 ? '- [ ] Migration plan reviewed and ready' : ''}
 
-### ⚠️ Important Notes
-- **Auto-merge is DISABLED** for production safety
-- This PR requires manual review and approval
-- Consider deploying during low-traffic hours
-- Monitor production closely after merge
+            ### ⚠️ Important Notes
+            - **Auto-merge is DISABLED** for production safety
+            - This PR requires manual review and approval
+            - Consider deploying during low-traffic hours
+            - Monitor production closely after merge
 
-### 🔄 Post-Merge Flow
-1. Merge this PR manually after review
-2. Production deployment triggers automatically
-3. Health checks run post-deployment
-4. Auto-rollback available if health checks fail
+            ### 🔄 Post-Merge Flow
+            1. Merge this PR manually after review
+            2. Production deployment triggers automatically
+            3. Health checks run post-deployment
+            4. Auto-rollback available if health checks fail
 
----
-*🤖 Generated automatically by Staging Promotion Readiness workflow*
-*Run ID: ${context.runId}*`;
+            ---
+            *🤖 Generated automatically by Staging Promotion Readiness workflow*
+            *Run ID: ${context.runId}*`;
 
             const pr = await github.rest.pulls.create({
               owner,
