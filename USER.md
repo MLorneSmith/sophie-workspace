@@ -16,4 +16,6 @@
 
 - Default: **do not delete anything anywhere**.
 - Exception: Mike pre-approves deleting **(a)** files I created, and **(b)** Clawdbot-related files, when it’s clearly needed.
+  - “Clawdbot-related” includes: logs; cache/temp files; generated task artifacts (screenshots, exported PDFs, audio/TTS, bundled outputs); one-off scratch scripts/notes I created; old tool outputs (snapshots/recordings) after they’re no longer useful.
+  - Not included: anything Mike created manually; project source code/repos (unless explicitly created as throwaway); anything in/related to **2025slideheroes**.
 - **Do not touch** (make changes to) the **2025slideheroes** project on GitHub unless Mike explicitly asks.
