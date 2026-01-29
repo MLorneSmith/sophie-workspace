@@ -4,17 +4,19 @@ Write compelling email marketing in Andre Chaperon's "Art of Email" style, using
 
 ## Two-Command Workflow
 
-Use the two-stage email creation process:
+Use two-stage email creation process:
 
-1. **`/email-campaign`** - Strategy & hook development (run once per campaign)
+1. **`/content/email-campaign`** - Strategy & hook development (run once per campaign)
    - Loads product context and POVs
    - Develops compelling hooks with quality scoring
    - Creates campaign strategy document
 
-2. **`/email-write`** - Email execution (run for each email)
+2. **`/content/email-write`** - Email execution (run for each email)
    - Reads campaign strategy
    - Writes individual emails with planned hooks
    - Maintains narrative continuity
+
+The `/content/email-campaign` and `/content/email-write` commands use this skill's resources and guidelines.
 
 ---
 
@@ -25,8 +27,9 @@ This skill provides reference documentation for email creation:
 2. **Hook Development** - How to develop compelling hooks through research
 3. **Validation** - How to check drafts against Andre's style patterns
 4. **Campaign Structure** - How to view and work with email sequences
+5. **Onboarding Reference** - Product adoption patterns for new user sequences (below)
 
-The `/email-campaign` and `/email-write` commands use this skill's resources and guidelines.
+The `/content/email-campaign` and `/content/email-write` commands use this skill's resources and guidelines.
 
 ## Core Resources
 
@@ -48,6 +51,7 @@ Load these for SlideHeroes-specific content and voice:
 | Situation | Load Context? |
 |-----------|---------------|
 | Writing for SlideHeroes campaigns | Yes - all context files |
+| Writing for SlideHeroes onboarding | Yes - all context files + onboarding reference |
 | Generic email style practice | No - core resources only |
 | Hook development | Yes - POVs provide hook angles |
 | Validation | No - core resources only |
@@ -61,7 +65,7 @@ When developing or evaluating hooks, score against these 5 criteria:
 | Open Loop Power | 3 | Creates unresolved psychological tension (Zeigarnik Effect) |
 | Specificity | 2 | Uses concrete details vs. generic abstractions |
 | Relevance | 2 | Connects to audience's real pain points and desires |
-| Bridge Potential | 2 | Naturally transitions to the email's main message |
+| Bridge Potential | 2 | Naturally transitions to main message |
 | Authenticity | 1 | Rings true to SlideHeroes voice and experience |
 
 **Scoring:** Rate each 1-5, multiply by weight. Total: XX/50
@@ -80,6 +84,8 @@ Use POVs from `presentation-povs.yaml` to ground hooks in SlideHeroes beliefs:
 | Evidence ("demonstrate, don't assert") | Story (with proof), Data |
 | Design ("minimalist ethos") | Contrarian, Permission |
 | Delivery ("have conviction") | Tough Love, Empathy |
+
+---
 
 ## Extended Corpus (On-Demand)
 
@@ -130,19 +136,6 @@ The `_campaign.yaml` manifest contains:
 | Write for existing campaign | `core/*` + campaign manifest + adjacent emails in sequence |
 | Create similar campaign | `core/*` + full campaign directory as reference |
 
-### When to Load Extended Examples
-
-Load additional examples from `emails/[type]/` when:
-- User requests high fidelity to Andre's style
-- The email type has few examples in `best-examples.yaml`
-- User explicitly asks for more examples
-
-Load from `emails/campaigns/` when:
-- User is writing for an existing campaign (e.g., BPM onboarding)
-- User wants to understand sequence flow before writing
-- User is creating a new campaign modeled on an existing one
-- Maintaining narrative continuity matters (callbacks, open loops)
-
 ### Selecting Examples to Load
 
 **When loading by type** from `emails/[type]/`:
@@ -151,53 +144,74 @@ Load from `emails/campaigns/` when:
 3. **Campaign match** if user specified one (LEM, ARM, TWN, etc.)
 
 **When loading by campaign** from `emails/campaigns/[name]/`:
-1. **Always load `_campaign.yaml`** first - understand the narrative arc
+1. **Always load `_campaign.yaml`** first - understand narrative arc
 2. **Load adjacent emails** if writing for a specific position (e.g., emails 5-7 when writing email 6)
-3. **Load phase examples** - emails from the same campaign phase
+3. **Load phase examples** - emails from same campaign phase
 4. **Note open loops** - check what was promised in earlier emails
 
-## Invocation
+### When to Load Extended Examples
 
-```bash
-# Stage 1: Design campaign strategy
-/email-campaign [campaign-name] "[audience description]"
+Load additional examples from `emails/[type]/` when:
+- User requests high fidelity to Andre's style
+- The email type has few examples in `best-examples.yaml`
+- User explicitly asks for more examples
+- User is writing for an existing campaign (e.g., BPM onboarding)
 
-# Stage 2: Write individual emails
-/email-write [campaign-name] [position]
-/email-write [campaign-name] [position] --validate  # Validate existing draft
+---
+
+## Onboarding Reference
+
+Superhuman onboarding emails are **feature-first** and serve as reference for **product adoption** campaigns. These use a different philosophy than Andre's relationship-first storytelling approach.
+
+**When to use:** For SlideHeroes new user onboarding campaigns.
+
+**When NOT to use:** For nurture, story, sales, or general relationship building.
+
+**Why separate from Andre's framework:**
+- **Different philosophy:** Superhuman is utility/product-focused; Andre is curiosity/storytelling-focused
+- **Different structure:** Feature → Benefit → CTA; Andre uses Hook → Story → Open Loop
+- **Different hook approach:** Problem statements vs. story hooks
+- **Different pacing:** Daily, feature-by-feature vs. narrative-driven arcs
+
+**Superhuman patterns to consider:**
+- Problem-first opening ("You're sending a crucial email...")
+- Feature-benefit framing ("You'll fly through your inbox, save 4+ hours...")
+- Multiple instructional CTAs per email
+- Emoji usage for subject lines
+- Screenshot/video demonstrations
+- Keyboard shortcut emphasis
+
+**Location of examples:**
+```
+.claude/skills/email-style/emails/onboarding/
+├── 01-welcome.yaml
+├── 02-inbox-zero.yaml
+├── 03-respond-faster.yaml
+├── 04-ask-ai.yaml
+├── 05-split-inbox.yaml
+├── 06-auto-labels.yaml
+├── 07-unsubscribe.yaml
+├── 08-share-comment.yaml
+├── 09-snippets.yaml
+├── 10-auto-summarize.yaml
+├── 11-read-statuses.yaml
+├── 12-superhuman-command.yaml
+├── 13-a-game.yaml
+├── 14-delight.yaml
+├── 15-gift-a-month.yaml
+├── 16-carbon.yaml
+├── 17-offline.yaml
+└── README.md  # Quick reference guide
 ```
 
-## Output Locations
-
-| Content | Location |
-|---------|----------|
-| Campaign strategies | `.ai/content/emails/strategies/[campaign-name]-strategy.yaml` |
-| Individual emails | `.ai/content/emails/[campaign-name]/[position]-[slug].yaml` |
-| Existing campaigns | `.claude/skills/email-style/emails/campaigns/` |
-
-### Campaign-Aware Writing
-
-When writing for an existing campaign:
-```
-/email-style write --campaign bpm-onboarding --position 17 "introducing the DDM course offer"
-```
-
-This loads:
-1. The campaign manifest (`_campaign.yaml`)
-2. Adjacent emails (positions 15-16) for context
-3. Core techniques and principles
-
-The skill will ensure:
-- Continuity with previous emails (callbacks, fulfilled promises)
-- Consistent subject line patterns (`[BPM]` or `[5S]` prefix)
-- Appropriate phase positioning in narrative arc
+**Note:** Do not mix Superhuman's feature-first patterns with Andre's story-driven hooks in the same email. They serve different purposes and audiences.
 
 ---
 
 ## Writing Emails
 
 ### Input Requirements
-- **type**: welcome | nurture | story | sales | newsletter
+- **type**: welcome | nurture | story | sales | newsletter | **onboarding**
 - **hook**: The opening concept/story/angle (or topic if developing hook inline)
 - **context** (optional): Campaign name, sequence position, previous email summary
 
@@ -208,6 +222,7 @@ Determine email type and identify applicable techniques:
 
 | Email Type | Primary Techniques |
 |------------|-------------------|
+| onboarding | Problem Statement, Feature Benefits, Multiple Instructional CTAs |
 | welcome | Personal Greeting, Campaign Abbreviation, Soft Sell, Open Loop, P.S. Subplot |
 | nurture | Story Hook, Curiosity Gap, Future Pacing, Reply Prompt |
 | story | Story Hook, Episode Framework, Open Loop, Conversational Asides |
@@ -217,21 +232,16 @@ Determine email type and identify applicable techniques:
 #### Step 2: Load Relevant Examples
 
 **From core (always):**
-Load 2-3 examples from `best-examples.yaml` that match the email type.
+Load 2-3 examples from `best-examples.yaml` that match email type.
 
 **From extended corpus (when beneficial):**
 If more context would help, load 2-3 additional emails from `emails/[type]/`:
 
-```
-# Example: Writing a welcome email
-Read: emails/welcome/2024-08-02_134851_tiny-worlds-a-new-frontier-email-1-of-7.yaml
-Read: emails/welcome/2019-08-09_163739_lem-lucrative-email-marketing-prologue.yaml
-```
-
 **Selection criteria:**
-- Match the campaign style if specified
+- Match campaign style if specified
 - Pick emails with high technique diversity
 - For sequences, load emails with similar position numbers
+- For onboarding, load examples from `emails/onboarding/` for feature-first reference
 
 #### Step 3: Draft Email
 
@@ -247,10 +257,16 @@ Apply these SITUATIONAL elements (based on type):
 - [ ] **Campaign Abbreviation** - If part of named series
 - [ ] **Reply Prompt** - To encourage engagement
 - [ ] **Soft Sell** - If product mention is relevant
+- [ ] **Future Pacing** - Paint transformation picture
+
+**Onboarding-specific elements:**
+- [ ] **Problem Statement** - Clear pain point ("You're sending a crucial email...")
+- [ ] **Feature Benefit** - Concrete value proposition ("save 4+ hours every week")
+- [ ] **Instructional CTA** - Multiple clear action steps ("Hit Cmd+K to Add Account")
 
 #### Step 4: Self-Review Checklist
 
-Before presenting the draft, verify:
+Before presenting draft, verify:
 
 **Hook Quality**
 - [ ] Specific and concrete (not generic)
@@ -272,13 +288,19 @@ Before presenting the draft, verify:
 - [ ] Conversational asides add personality
 - [ ] No pushy sales language
 
+**Onboarding-specific checks:**
+- [ ] Feature-first structure (problem → benefit → CTA)
+- [ ] Multiple clear instructional steps
+- [ ] Concrete, quantified benefits
+- [ ] Screenshot/video references included
+
 **Technique Application**
 - [ ] At least 3 named techniques consciously applied
 - [ ] Techniques feel natural, not forced
 
 #### Step 5: Present Draft
 
-Present the email with technique annotations:
+Present email with technique annotations:
 
 ```
 ## Draft Email
@@ -309,12 +331,11 @@ Present the email with technique annotations:
 
 ## Developing Hooks
 
-When the user needs help finding the right hook, enter interactive hook development mode.
+When user needs help finding the right hook, enter interactive hook development mode.
 
 ### Process
 
 #### Step 1: Gather Context (ask user)
-
 ```
 ## Hook Development Mode
 
@@ -335,7 +356,7 @@ Let's find the perfect hook for your email.
 
 #### Step 2: Research Phase (optional)
 
-If the user wants research-augmented hooks, use the perplexity-expert agent:
+If user wants research-augmented hooks, use perplexity-expert agent:
 
 **Search queries to try:**
 - "Stories about [topic] that illustrate [concept]"
@@ -361,14 +382,6 @@ Present 3 hook concepts mixing user ideas + research:
 ### Option 2: [Hook Type] - "[Short Description]"
 > [Full hook text]
 ...
-
-### Option 3: [Hook Type] - "[Short Description]"
-> [Full hook text]
-...
-
----
-
-**Which direction resonates? Or should we explore something else?**
 ```
 
 #### Step 4: Refine Chosen Hook
@@ -381,7 +394,7 @@ Once user selects direction:
 
 #### Step 5: Proceed to Write Mode
 
-With refined hook, offer to write the full email.
+With refined hook, offer to write full email.
 
 ---
 
@@ -392,7 +405,7 @@ Check a draft email against Andre's style patterns.
 ### Process
 
 #### Step 1: Read Draft
-Load the draft from provided file path or inline content.
+Load draft from provided file path or inline content.
 
 #### Step 2: Technique Analysis
 
@@ -463,18 +476,16 @@ Compare against best examples for:
 
 ## Viewing Campaigns
 
-View the structure and narrative arc of an existing campaign.
+View structure and narrative arc of an existing campaign.
 
 ### Process
 
 #### Step 1: Load Campaign Manifest
-
 ```
 Read: emails/campaigns/[name]/_campaign.yaml
 ```
 
 #### Step 2: Present Campaign Overview
-
 ```
 ## Campaign: [Campaign Name]
 
@@ -495,36 +506,28 @@ Read: emails/campaigns/[name]/_campaign.yaml
 ### Email Sequence
 
 | # | Subject | Phase | Purpose |
-|---|---------|-------|---------|
+|---|---------|---------|--------|
 | 1 | [subject] | [phase] | [one-line purpose] |
 | 2 | ... | ... | ... |
 
 ### Key Techniques Used
-- [Technique patterns across the campaign]
+- [Technique patterns across campaign]
 - [Subject line conventions]
 - [Open loop strategies]
 
 ---
 
 **What would you like to do?**
-- Write the next email in this sequence
+- Write next email in this sequence
 - Write a specific position (e.g., email 17)
-- Create a similar campaign for a different product
-```
-
-#### Step 3: Offer Next Actions
-
-Based on campaign view, offer to:
-1. Write the next email in sequence
-2. Write for a specific position
-3. Extend the campaign with new emails
-4. Create a parallel campaign for different product/audience
+- Extend the campaign with new emails
+- Create a parallel campaign for different product/audience
 
 ---
 
 ## Quick Reference: Andre's Voice
 
-### Do:
+### Do
 - Use "Hey, it's [Name]" openings
 - Write in short, punchy lines
 - Include conversational asides in parentheses
@@ -534,22 +537,21 @@ Based on campaign view, offer to:
 - Use specific details over generic statements
 - Ask for replies to build relationship
 
-### Don't:
+### Don't
 - Use "Dear subscriber" or formal openings
 - Write long paragraphs or walls of text
 - Push hard sells or create fake urgency
 - Use corporate marketing language
-- Skip the P.S.
+- Skip P.S.
 - Start with "I" as the first word
 - Use generic, vague hooks
 - Overuse techniques to the point of manipulation
 
-### Signature Phrases:
+### Signature Phrases
 - "Here's the thing..."
 - "But wait, there's more..." (used ironically)
 - "Anyhoo..."
 - "Just saying."
-- "Same time, same place."
 - "(But only if you PROMISE to use it responsibly...)"
 
 ---
@@ -573,19 +575,164 @@ Based on campaign view, offer to:
 
 **Step 1: Design campaign strategy**
 ```bash
-/email-campaign course-launch "announcing DDM to existing subscribers"
+/content/email-campaign course-launch "announcing DDM to existing subscribers"
 ```
 This creates `.ai/content/emails/strategies/course-launch-strategy.yaml`
 
 **Step 2: Write individual emails**
 ```bash
-/email-write course-launch 1
-/email-write course-launch 2
-/email-write course-launch 3
+/content/email-write course-launch 1
+/content/email-write course-launch 2
+/content/email-write course-launch 3
 ```
 Each email is saved to `.ai/content/emails/course-launch/`
 
 **Validate a draft**
 ```bash
-/email-write course-launch 3 --validate
+/content/email-write course-launch 3 --validate
 ```
+
+---
+
+## Extended Corpus (On-Demand)
+
+The `emails/` directory contains 83 annotated emails organized two ways:
+
+### By Type (for style patterns)
+```
+emails/
+├── welcome/     # 6 emails - Welcome sequence openers
+├── nurture/     # 39 emails - Relationship-building sequences
+├── story/       # 12 emails - Story-driven emails
+├── sales/       # 3 emails - Sales/offer emails
+└── newsletter/  # 23 emails - Newsletter issues
+```
+
+### By Campaign (for sequence context)
+```
+emails/campaigns/
+└── bpm-onboarding/          # 16-email SlideHeroes onboarding sequence
+    ├── _campaign.yaml       # Campaign manifest with narrative arc
+    └── 01-*.yaml → 16-*.yaml  # Symlinks in sequence order
+```
+
+The `_campaign.yaml` manifest contains:
+- Campaign metadata (name, audience, goals)
+- Narrative arc description (phases and progression)
+- Email sequence with position, purpose, and techniques per email
+
+### Loading Strategy
+
+**By Type** (learning style patterns):
+
+| Request | What to Load |
+|---------|--------------|
+| Basic email with hook | `core/*` only |
+| Write welcome email | `core/*` + 2-3 from `emails/welcome/` |
+| Write nurture email | `core/*` + 2-3 from `emails/nurture/` |
+| Write story email | `core/*` + 2-3 from `emails/story/` |
+| Write sales email | `core/*` + all 3 from `emails/sales/` |
+| Write newsletter | `core/*` + 2-3 from `emails/newsletter/` |
+| Hook development | `core/*` + perplexity research |
+
+**By Campaign** (sequence context):
+
+| Request | What to Load |
+|---------|--------------|
+| View campaign structure | `emails/campaigns/[name]/_campaign.yaml` |
+| Write for existing campaign | `core/*` + campaign manifest + adjacent emails in sequence |
+| Create similar campaign | `core/*` + full campaign directory as reference |
+
+### Selecting Examples to Load
+
+**When loading by type** from `emails/[type]/`:
+1. **Technique diversity** - pick emails demonstrating different techniques
+2. **Recent emails** - more representative of current style
+3. **Campaign match** if user specified one (LEM, ARM, TWN, etc.)
+
+**When to Load Extended Examples**
+
+Load additional examples from `emails/[type]/` when:
+- User requests high fidelity to Andre's style
+- The email type has few examples in `best-examples.yaml`
+- User explicitly asks for more examples
+- User is writing for an existing campaign (e.g., BPM onboarding)
+- **For onboarding campaigns:** Load from `emails/onboarding/` for feature-first reference patterns
+
+---
+
+## Invocation
+
+```bash
+# Design campaign strategy
+/content/email-campaign [campaign-name] "[audience description]"
+
+# Write individual emails
+/content/email-write [campaign-name] [position]
+/content/email-write [campaign-name] [position] --validate  # Validate existing draft
+
+# For onboarding campaigns, include --onboarding flag to load Superhuman reference patterns:
+/content/email-write [campaign-name] [position] --onboarding
+```
+
+## Output Locations
+
+| Content | Location |
+|---------|----------|
+| Campaign strategies | `.ai/content/emails/strategies/[campaign-name]-strategy.yaml` |
+| Individual emails | `.ai/content/emails/[campaign-name]/[position]-[slug].yaml` |
+| Existing campaigns | `.claude/skills/email-style/emails/campaigns/` |
+
+### Campaign-Aware Writing
+
+When writing for an existing campaign:
+```
+/content/email-write bpm-onboarding 17 "introducing DDM course offer"
+```
+
+This loads:
+1. The campaign manifest (`_campaign.yaml`)
+2. Adjacent emails (positions 15-16) for context
+3. Core techniques and principles
+
+The skill will ensure:
+- Continuity with previous emails (callbacks, fulfilled promises)
+- Consistent subject line patterns (`[BPM]` or `[5S]` prefix)
+- Appropriate phase positioning in narrative arc
+
+---
+
+## Writing Emails
+
+### Input Requirements
+- **type**: welcome | nurture | story | sales | newsletter | **onboarding**
+- **hook**: The opening concept/story/angle (or topic if developing hook inline)
+- **context** (optional): Campaign name, sequence position, previous email summary
+
+---
+
+## Quick Reference: SlideHeroes Voice
+
+**Do:**
+- Use "Hey, it's [Name]" openings
+- Write in short, punchy lines
+- Include conversational asides in parentheses
+- End with clever signature
+- Reference SlideHeroes POVs naturally
+- Challenge bad presentation advice
+
+**Don't:**
+- Use formal corporate language
+- Write long paragraphs or walls of text
+- Push hard sells
+- Use generic hooks without product context
+- Forget P.S. section
+
+---
+
+**For Onboarding (from Superhuman patterns):**
+- Use problem-first opening: "We all get too much email..."
+- Feature-benefit framing: Concrete value propositions ("save 4+ hours")
+- Multiple instructional CTAs: Clear action steps with keyboard shortcuts
+- Screenshot/video demonstrations: Include visuals for features
+- Daily cadence for feature education

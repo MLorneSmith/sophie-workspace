@@ -1,0 +1,332 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1879.I1.F3",
+    "feature_name": "Verification & Screenshots",
+    "feature_slug": "verification-and-screenshots",
+    "initiative_id": "S1879.I1",
+    "spec_id": "S1879",
+    "created_at": "2026-01-28T00:00:00Z",
+    "complexity": {
+      "score": 25,
+      "level": "LOW",
+      "target_steps": { "min": 3, "max": 6 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1879.I1.F3.T1",
+      "type": "task",
+      "name": "Configure development server for visual verification",
+      "action": { "verb": "Configure", "target": "development server" },
+      "purpose": "Launch application to verify F1 and F2 design token implementations",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Ensure F1 (CSS tokens) and F2 (fonts) are complete",
+          "Server runs on port 3001",
+          "No TypeScript errors in implementation"
+        ]
+      },
+      "input_state": "Dev server is not running, F1 and F2 implementations complete",
+      "output_state": "Dev server running successfully at http://localhost:3001",
+      "acceptance_criterion": "Dev server starts without errors and serves pages at http://localhost:3001",
+      "verification_command": "pnpm dev &",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1879.I1.F3.T2", "S1879.I1.F3.T3", "S1879.I1.F3.T4", "S1879.I1.F3.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1879.I1.F3.T2",
+      "type": "task",
+      "name": "Test light mode contrast ratios",
+      "action": { "verb": "Test", "target": "light mode contrast ratios" },
+      "purpose": "Validate WCAG AA compliance (4.5:1) for light mode color combinations",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/styles/shadcn-ui.css"],
+        "dependencies": ["online contrast checker tool"],
+        "constraints": [
+          "Primary cyan HSL: 195 78% 51% (#24a9e0)",
+          "Accent orange HSL: 38 92% 50% (#f59e0b)",
+          "WCAG AA minimum: 4.5:1 contrast"
+        ]
+      },
+      "input_state": "Dev server running, light mode active",
+      "output_state": "Light mode contrast ratios documented with pass/fail status",
+      "acceptance_criterion": "All color pairs verified: primary vs white, accent vs white, primary vs neutrals, accent vs neutrals meet WCAG AA 4.5:1",
+      "verification_command": "echo 'Manual verification - see findings documentation'",
+      "outputs": [
+        { "type": "modified", "path": ".ai/screenshots/S1879-design-system-v1-modern-vibrant/findings.md" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1879.I1.F3.T1"],
+        "blocks": ["S1879.I1.F3.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1879.I1.F3.T3",
+      "type": "task",
+      "name": "Test dark mode contrast ratios",
+      "action": { "verb": "Test", "target": "dark mode contrast ratios" },
+      "purpose": "Validate WCAG AA compliance (4.5:1) for dark mode color combinations",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/styles/shadcn-ui.css"],
+        "dependencies": ["online contrast checker tool"],
+        "constraints": [
+          "Dark primary cyan HSL: 195 78% 55% (lighter for dark mode)",
+          "Dark accent orange HSL: 38 92% 55% (lighter for dark mode)",
+          "WCAG AA minimum: 4.5:1 contrast"
+        ]
+      },
+      "input_state": "Dev server running with dark mode enabled",
+      "output_state": "Dark mode contrast ratios documented with pass/fail status",
+      "acceptance_criterion": "All color pairs verified: primary vs dark bg, accent vs dark bg, primary vs neutrals, accent vs neutrals meet WCAG AA 4.5:1",
+      "verification_command": "echo 'Manual verification - see findings documentation'",
+      "outputs": [
+        { "type": "modified", "path": ".ai/screenshots/S1879-design-system-v1-modern-vibrant/findings.md" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1879.I1.F3.T2"],
+        "blocks": ["S1879.I1.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1879.I1.F3.T4",
+      "type": "task",
+      "name": "Test visual rendering on key pages",
+      "action": { "verb": "Test", "target": "visual rendering on key pages" },
+      "purpose": "Verify fonts render correctly and colors appear as specified across target pages",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/home/[account]/page.tsx",
+          "apps/web/app/ui-showcase/page.tsx",
+          "apps/web/app/test-colors/page.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Expected fonts: Outfit (headings), Nunito Sans (body)",
+          "Expected colors: Brand cyan primary, warm orange accent",
+          "Check in both light and dark modes"
+        ]
+      },
+      "input_state": "Dev server running, contrast verified",
+      "output_state": "Visual inspection documented with any issues or regressions",
+      "acceptance_criterion": "Visual inspection complete for /, /home/[account], /ui-showcase, /test-colors with findings documented",
+      "verification_command": "echo 'Manual inspection - see findings documentation'",
+      "outputs": [
+        { "type": "modified", "path": ".ai/screenshots/S1879-design-system-v1-modern-vibrant/findings.md" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1879.I1.F3.T3"],
+        "blocks": ["S1879.I1.F3.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1879.I1.F3.T5",
+      "type": "task",
+      "name": "Create screenshots directory structure",
+      "action": { "verb": "Create", "target": "screenshots directory structure" },
+      "purpose": "Set up directory for storing verification screenshots",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Directory: .ai/screenshots/S1879-design-system-v1-modern-vibrant/",
+          "Ensure directory exists before screenshot capture"
+        ]
+      },
+      "input_state": "Screenshots directory does not exist",
+      "output_state": "Screenshots directory created at .ai/screenshots/S1879-design-system-v1-modern-vibrant/",
+      "acceptance_criterion": "Directory .ai/screenshots/S1879-design-system-v1-modern-vibrant/ exists with subdirectory for screenshots",
+      "verification_command": "mkdir -p .ai/screenshots/S1879-design-system-v1-modern-vibrant/ && ls -la .ai/screenshots/S1879-design-system-v1-modern-vibrant/",
+      "outputs": [
+        { "type": "new", "path": ".ai/screenshots/S1879-design-system-v1-modern-vibrant/" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1879.I1.F3.T4"],
+        "blocks": ["S1879.I1.F3.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1879.I1.F3.T6",
+      "type": "task",
+      "name": "Add screenshots of target pages",
+      "action": { "verb": "Add", "target": "screenshots of target pages" },
+      "purpose": "Document visual state of key pages for A/B comparison and evaluation",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": ["agent-browser or manual screenshot tool"],
+        "constraints": [
+          "Capture in light mode for all pages",
+          "Optionally capture in dark mode for key pages",
+          "Target pages: /, /home/[account], /ui-showcase"
+        ]
+      },
+      "input_state": "Screenshots directory created, dev server running",
+      "output_state": "Screenshots saved for all target pages",
+      "acceptance_criterion": "Screenshots exist: home-page.png, dashboard-page.png, ui-showcase.png (and optionally dark mode variants)",
+      "verification_command": "ls -la .ai/screenshots/S1879-design-system-v1-modern-vibrant/*.png",
+      "outputs": [
+        { "type": "new", "path": ".ai/screenshots/S1879-design-system-v1-modern-vibrant/home-page.png" },
+        { "type": "new", "path": ".ai/screenshots/S1879-design-system-v1-modern-vibrant/dashboard-page.png" },
+        { "type": "new", "path": ".ai/screenshots/S1879-design-system-v1-modern-vibrant/ui-showcase.png" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1879.I1.F3.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Environment Setup",
+        "task_ids": ["S1879.I1.F3.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 2,
+        "name": "Contrast Verification",
+        "task_ids": ["S1879.I1.F3.T2", "S1879.I1.F3.T3"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Visual Inspection",
+        "task_ids": ["S1879.I1.F3.T4"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Documentation & Screenshots",
+        "task_ids": ["S1879.I1.F3.T5", "S1879.I1.F3.T6"],
+        "depends_on_groups": [3],
+        "estimated_hours": 3,
+        "parallel_hours": 2.5
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1879.I1.F3.T1", "S1879.I1.F3.T2", "S1879.I1.F3.T3", "S1879.I1.F3.T4", "S1879.I1.F3.T5", "S1879.I1.F3.T6"],
+      "total_hours": 10
+    },
+    "duration": {
+      "sequential": 10,
+      "parallel": 10,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

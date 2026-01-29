@@ -233,6 +233,7 @@ export type OrchestratorEventType =
 	| "completion_phase_start"
 	| "sandbox_killing"
 	| "review_sandbox_creating"
+	| "review_sandbox_failed" // Bug fix #1883: Emit when review sandbox creation fails
 	| "dev_server_starting"
 	| "dev_server_ready"
 	| "dev_server_failed"

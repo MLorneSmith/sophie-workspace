@@ -104,6 +104,7 @@ function getOrchestratorEventMessage(eventType: OrchestratorEventType): string {
 		completion_phase_start: "Starting completion phase",
 		sandbox_killing: "Killing sandboxes",
 		review_sandbox_creating: "Creating review sandbox",
+		review_sandbox_failed: "Review sandbox creation failed", // Bug fix #1883
 		dev_server_starting: "Starting development server",
 		dev_server_ready: "Development server ready",
 		dev_server_failed: "Development server failed",

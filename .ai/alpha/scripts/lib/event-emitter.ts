@@ -45,6 +45,8 @@ export type OrchestratorCompletionEventType =
 	| "sandbox_killing"
 	/** Emitted when creating a fresh review sandbox */
 	| "review_sandbox_creating"
+	/** Emitted when review sandbox creation fails (Bug fix #1883) */
+	| "review_sandbox_failed"
 	/** Emitted when starting the dev server on review sandbox */
 	| "dev_server_starting"
 	/** Emitted when dev server is successfully running and accessible */

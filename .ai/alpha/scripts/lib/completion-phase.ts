@@ -146,8 +146,13 @@ export async function setupReviewSandbox(
 		log("   ✅ Review sandbox created successfully");
 		return reviewSandbox;
 	} catch (error) {
-		log(
-			`   ⚠️ Failed to create review sandbox: ${error instanceof Error ? error.message : error}`,
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		log(`   ⚠️ Failed to create review sandbox: ${errorMessage}`);
+		// Bug fix #1883: Emit failure event so UI can display the reason
+		emitOrchestratorEvent(
+			"review_sandbox_failed",
+			`Failed to create review sandbox: ${errorMessage}`,
+			{ error: errorMessage },
 		);
 		return null;
 	}

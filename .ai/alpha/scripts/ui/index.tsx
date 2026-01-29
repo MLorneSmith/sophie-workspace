@@ -170,9 +170,14 @@ const OrchestratorApp: React.FC<{
 				"completion_phase_start",
 				"sandbox_killing",
 				"review_sandbox_creating",
+				"review_sandbox_failed", // Bug fix #1883
 				"dev_server_starting",
 				"dev_server_ready",
 				"dev_server_failed",
+				// Documentation generation event types (Bug fix: missing from validTypes)
+				"documentation_start",
+				"documentation_complete",
+				"documentation_failed",
 			];
 
 			if (validTypes.includes(eventType as OrchestratorEventType)) {
@@ -218,6 +223,7 @@ const OrchestratorApp: React.FC<{
 				completion_phase_start: "Starting completion phase",
 				sandbox_killing: "Terminating sandbox",
 				review_sandbox_creating: "Creating review sandbox",
+				review_sandbox_failed: "Review sandbox creation failed", // Bug fix #1883
 				dev_server_starting: "Starting dev server",
 				dev_server_ready: "Dev server ready",
 				dev_server_failed: "Dev server failed",
