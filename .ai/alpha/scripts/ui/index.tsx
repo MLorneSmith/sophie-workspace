@@ -174,6 +174,10 @@ const OrchestratorApp: React.FC<{
 				"dev_server_starting",
 				"dev_server_ready",
 				"dev_server_failed",
+				// Documentation generation event types (Bug fix: missing from validTypes)
+				"documentation_start",
+				"documentation_complete",
+				"documentation_failed",
 			];
 
 			if (validTypes.includes(eventType as OrchestratorEventType)) {
