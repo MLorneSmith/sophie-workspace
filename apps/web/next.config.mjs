@@ -74,7 +74,7 @@ const config = {
 		process.env.NEXT_PUBLIC_CI === "true"
 			? false
 			: {
-					position: "bottom-right",
+					position: "bottom-left",
 				},
 	reactCompiler: ENABLE_REACT_COMPILER,
 	experimental: {

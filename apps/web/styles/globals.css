@@ -30,9 +30,58 @@
 @layer base {
 	body {
 		@apply bg-background text-foreground;
+		font-family: var(--font-sans);
 		font-feature-settings:
 			"rlig" 1,
 			"calt" 1;
+	}
+
+	/* Heading Typography - applies Plus Jakarta Sans */
+	h1, h2, h3, h4, h5, h6,
+	.h1, .h2, .h3, .h4, .h5, .h6 {
+		font-family: var(--font-heading);
+		font-weight: 700;
+	}
+
+	/* Default (Internal App) Typography */
+	h1, .h1 {
+		font-size: var(--text-app-display);
+		line-height: var(--text-app-display--line-height);
+		letter-spacing: var(--text-app-display--letter-spacing);
+	}
+
+	h2, .h2 {
+		font-size: var(--text-app-h2);
+		line-height: var(--text-app-h2--line-height);
+		letter-spacing: var(--text-app-h2--letter-spacing);
+	}
+
+	h3, .h3 {
+		font-size: var(--text-app-h3);
+		line-height: var(--text-app-h3--line-height);
+		letter-spacing: var(--text-app-h3--letter-spacing);
+	}
+
+	/* Marketing Typography - larger, more impactful scale */
+	[data-marketing] h1,
+	[data-marketing] .h1 {
+		font-size: var(--text-display);
+		line-height: var(--text-display--line-height);
+		letter-spacing: var(--text-display--letter-spacing);
+	}
+
+	[data-marketing] h2,
+	[data-marketing] .h2 {
+		font-size: var(--text-h2);
+		line-height: var(--text-h2--line-height);
+		letter-spacing: var(--text-h2--letter-spacing);
+	}
+
+	[data-marketing] h3,
+	[data-marketing] .h3 {
+		font-size: var(--text-h3);
+		line-height: var(--text-h3--line-height);
+		letter-spacing: var(--text-h3--letter-spacing);
 	}
 
 	html,

@@ -10,7 +10,7 @@ function SiteLayout(props: React.PropsWithChildren) {
 	const user: JWTUserData | null = null;
 
 	return (
-		<div className={"flex min-h-[100vh] flex-col"}>
+		<div data-marketing className={"flex min-h-[100vh] flex-col"}>
 			<SiteHeader user={user} />
 
 			{props.children}
