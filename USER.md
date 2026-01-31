@@ -15,6 +15,13 @@
 - Background (safe to save): longtime Mastercard leader in Cyber & Intelligence Solutions / Enterprise Risk & Security; deep expertise in payments/cards, fraud/cybersecurity, identity/biometrics, strategy, M&A, standards, and device/application ecosystems (chip/contactless, mobile, wearables, POS/mPOS, IoT). Previously Mastercard Advisors (payments consulting), Lloyds Banking Group (strategy consulting), and Oliver Wyman (strategy consulting). Early career at IBM (direct marketing). Education: London Business School MBA (Strategy & Finance) and UBC B.Comm.
 - Family (safe to save): wife Celine (from France); two sons — Charles ("Charlie", 18, Computer Engineering at University of Waterloo) and Zacharie ("Zach", 16, Grade 11 at Royal St George's College in Toronto).
 
+## Preferences
+
+- **Default model (Sophie):** Opus 4.5 (`anthropic/claude-opus-4-5`) — conversation, planning, research, complex reasoning.
+- **Coding sub-agents:** GPT-5.2 (`openai-codex/gpt-5.2`) — spawn sub-agents with this model for implementation work.
+- **Coding fallback:** GLM 4.7 (`zai/glm-4.7`) — use if GPT-5.2 fails/unavailable.
+- **Basic/slow tasks (GLM):** Use GLM for bulk processing, scheduled background jobs, draft generation, data extraction, translation, async code review, research summaries — anything where latency doesn't matter.
+
 ## Boundaries
 
 - Default: **do not delete anything anywhere**.

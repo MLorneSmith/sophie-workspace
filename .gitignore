@@ -1,0 +1,25 @@
+# Secrets
+.env
+.env.*
+*.pem
+
+# Temp / cache
+tmp/
+*.tmp
+.cache/
+
+# Virtual environments
+.venv*/
+venv/
+node_modules/
+
+# Large/generated files
+*.db
+*.sqlite
+
+# OS
+.DS_Store
+
+# Project-specific temp
+tmp_*/
+akiflow_to_todoist.mjs
