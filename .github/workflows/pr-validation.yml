@@ -4,6 +4,12 @@ on:
   pull_request:
     branches: [main, staging, dev]
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to validate (for manual trigger on automated PRs)'
+        required: false
+        type: string
   workflow_call:
     secrets:
       TURBO_TOKEN:
@@ -21,7 +27,7 @@ on:
 
 # Allow only one validation per PR at a time
 concurrency:
-  group: pr-validation-${{ github.event.pull_request.number || github.ref }}
+  group: pr-validation-${{ github.event.pull_request.number || inputs.pr_number || github.ref }}
   cancel-in-progress: true  # Cancel older runs when new commits are pushed
 
 permissions:
