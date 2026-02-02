@@ -54,6 +54,7 @@ import {
 	saveManifest,
 } from "./manifest.js";
 import {
+	checkDependencyCycles,
 	checkPreFlightSilent,
 	formatPreFlightForDryRun,
 	runPreFlightCheck,
@@ -336,6 +337,21 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		} else {
 			// Non-interactive mode: just check and warn
 			checkPreFlightSilent(manifest, log);
+		}
+	}
+
+	// =========================================================================
+	// Validate Dependency Graph for Circular Dependencies
+	// Bug fix #1916: Catch circular dependencies before wasting resources
+	// =========================================================================
+	if (!options.dryRun) {
+		log("\n🔍 Running dependency cycle validation...");
+		const cycleCheckResult = checkDependencyCycles(manifest, log);
+		if (!cycleCheckResult.proceed) {
+			console.error(
+				"❌ Circular dependencies detected. Fix and regenerate manifest.",
+			);
+			process.exit(1);
 		}
 	}
 

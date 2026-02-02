@@ -18,6 +18,8 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+import { validateDependencyGraph } from "./lib/cycle-detector.js";
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -742,6 +744,24 @@ async function main() {
 			}
 		}
 	}
+
+	// =========================================================================
+	// Pass 2b: Validate dependency graph for circular dependencies
+	// Bug fix #1916: Prevent circular dependencies from causing orchestrator hang
+	// =========================================================================
+	console.log("🔍 Pass 2b: Validating dependency graph...");
+
+	const cycleResult = validateDependencyGraph(featureQueue, console.log);
+	if (cycleResult.hasCycles) {
+		console.error(
+			"\n❌ MANIFEST GENERATION FAILED: Circular dependencies detected",
+		);
+		console.error(
+			"   Fix the dependencies in feature.md files and regenerate the manifest.",
+		);
+		process.exit(1);
+	}
+	console.log("   ✅ No circular dependencies found");
 
 	// =========================================================================
 	// Pass 3: Propagate initiative-level dependencies to features
