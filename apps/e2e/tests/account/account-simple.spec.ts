@@ -281,10 +281,12 @@ test.describe("Account Settings - Simple @account @integration", () => {
 		});
 
 		// Rapid open/close/open cycle to test timing resilience
+		// Note: 350ms waits accommodate Radix UI's close animation (~200-300ms)
+		// and dismissable layer cleanup to prevent pointer-events blocking
 		await accountDropdownTrigger.click();
-		await page.waitForTimeout(100); // Brief pause
+		await page.waitForTimeout(350); // Wait for Radix animation
 		await accountDropdownTrigger.click(); // Close
-		await page.waitForTimeout(100); // Brief pause
+		await page.waitForTimeout(350); // Wait for Radix animation
 		await accountDropdownTrigger.click(); // Open again
 
 		// Wait for menu to be visible
