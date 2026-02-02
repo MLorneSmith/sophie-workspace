@@ -1,0 +1,691 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1890.I7.F1",
+    "feature_name": "Loading Skeletons",
+    "feature_slug": "loading-skeletons",
+    "initiative_id": "S1890.I7",
+    "spec_id": "1890",
+    "created_at": "2026-02-02T00:00:00Z",
+    "complexity": {
+      "score": 62.5,
+      "level": "HIGH",
+      "target_steps": { "min": 12, "max": 20 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S1890.I7.F1.T1",
+      "S1890.I7.F1.T2",
+      "S1890.I7.F1.T3",
+      "S1890.I7.F1.T4",
+      "S1890.I7.F1.T5",
+      "S1890.I7.F1.T6",
+      "S1890.I7.F1.T7",
+      "S1890.I7.F1.T8",
+      "S1890.I7.F1.T9"
+    ],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1890.I7.F1.T1",
+      "type": "task",
+      "name": "Create skeletons directory with barrel export",
+      "action": {
+        "verb": "Create",
+        "target": "skeletons directory structure"
+      },
+      "purpose": "Establish directory structure and index file for skeleton component exports",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["filesystem", "typescript"],
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Directory must be _components/skeletons/ following Next.js convention",
+          "Barrel export index.ts must use named exports"
+        ]
+      },
+      "input_state": "No skeletons directory exists",
+      "output_state": "Empty skeletons directory with index.ts barrel file created",
+      "acceptance_criterion": "Directory exists at apps/web/app/home/(user)/_components/skeletons/ with index.ts file",
+      "verification_command": "test -d apps/web/app/home/\\(user\\)/_components/skeletons && test -f apps/web/app/home/\\(user\\)/_components/skeletons/index.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/skeletons/index.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1890.I7.F1.T2",
+          "S1890.I7.F1.T3",
+          "S1890.I7.F1.T4",
+          "S1890.I7.F1.T5",
+          "S1890.I7.F1.T6",
+          "S1890.I7.F1.T7",
+          "S1890.I7.F1.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I7.F1.T2",
+      "type": "task",
+      "name": "Create Course Progress Radial Chart skeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "course progress skeleton"
+      },
+      "purpose": "Render placeholder matching radial chart widget structure during loading",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["react", "ui-components", "skeleton-loading"],
+      "visual_verification": {
+        "route": "/home/dashboard",
+        "wait_ms": 2000,
+        "checks": [
+          { "command": "is visible", "target": "Course Progress" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card, CardHeader, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Must use circular skeleton shapes to match radial chart",
+          "Must maintain Card structure with header and content",
+          "Must use consistent pulse animation from Skeleton primitive"
+        ]
+      },
+      "input_state": "Skeletons directory exists with empty barrel export",
+      "output_state": "CourseProgressSkeleton component created with circular placeholder matching radial chart layout",
+      "acceptance_criterion": "Component renders Card with circular Skeleton elements and exports from barrel",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/skeletons/course-progress-skeleton.tsx && grep -q 'CourseProgressSkeleton' apps/web/app/home/\\(user\\)/_components/skeletons/index.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/skeletons/course-progress-skeleton.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/skeletons/index.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I7.F1.T1"],
+        "blocks": ["S1890.I7.F1.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I7.F1.T3",
+      "type": "task",
+      "name": "Create Skills Spider Diagram skeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "skills spider skeleton"
+      },
+      "purpose": "Render placeholder matching radar chart widget structure during loading",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["react", "ui-components", "skeleton-loading"],
+      "visual_verification": {
+        "route": "/home/dashboard",
+        "wait_ms": 2000,
+        "checks": [
+          { "command": "is visible", "target": "Skills" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card, CardHeader, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Must use pentagon/radar shape skeleton elements",
+          "Must maintain Card structure with header and content",
+          "Must use consistent pulse animation from Skeleton primitive"
+        ]
+      },
+      "input_state": "Skeletons directory exists with CourseProgressSkeleton component",
+      "output_state": "SkillsSpiderSkeleton component created with pentagon/radar placeholder matching spider diagram layout",
+      "acceptance_criterion": "Component renders Card with pentagon-shaped Skeleton elements and exports from barrel",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/skeletons/skills-spider-skeleton.tsx && grep -q 'SkillsSpiderSkeleton' apps/web/app/home/\\(user\\)/_components/skeletons/index.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/skeletons/skills-spider-skeleton.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/skeletons/index.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I7.F1.T1"],
+        "blocks": ["S1890.I7.F1.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I7.F1.T4",
+      "type": "task",
+      "name": "Create Kanban Summary Card skeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "kanban summary skeleton"
+      },
+      "purpose": "Render placeholder matching task list widget structure during loading",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["react", "ui-components", "skeleton-loading"],
+      "visual_verification": {
+        "route": "/home/dashboard",
+        "wait_ms": 2000,
+        "checks": [
+          { "command": "is visible", "target": "Tasks" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card, CardHeader, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Must use list item skeleton shapes (3-5 rows)",
+          "Must maintain Card structure with header and content",
+          "Must use consistent pulse animation from Skeleton primitive"
+        ]
+      },
+      "input_state": "Skeletons directory exists with chart skeleton components",
+      "output_state": "KanbanSummarySkeleton component created with list item placeholders matching task summary layout",
+      "acceptance_criterion": "Component renders Card with 3-5 row Skeleton elements and exports from barrel",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/skeletons/kanban-summary-skeleton.tsx && grep -q 'KanbanSummarySkeleton' apps/web/app/home/\\(user\\)/_components/skeletons/index.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/skeletons/kanban-summary-skeleton.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/skeletons/index.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I7.F1.T1"],
+        "blocks": ["S1890.I7.F1.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I7.F1.T5",
+      "type": "task",
+      "name": "Create Recent Activity Feed skeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "activity feed skeleton"
+      },
+      "purpose": "Render placeholder matching timeline widget structure during loading",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["react", "ui-components", "skeleton-loading"],
+      "visual_verification": {
+        "route": "/home/dashboard",
+        "wait_ms": 2000,
+        "checks": [
+          { "command": "is visible", "target": "Recent Activity" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card, CardHeader, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Must use timeline-style skeleton shapes with icon + text pattern",
+          "Must maintain Card structure with header and content",
+          "Must use consistent pulse animation from Skeleton primitive"
+        ]
+      },
+      "input_state": "Skeletons directory exists with chart and kanban skeleton components",
+      "output_state": "ActivityFeedSkeleton component created with timeline placeholders matching activity feed layout",
+      "acceptance_criterion": "Component renders Card with timeline Skeleton elements (icon + text pattern) and exports from barrel",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/skeletons/activity-feed-skeleton.tsx && grep -q 'ActivityFeedSkeleton' apps/web/app/home/\\(user\\)/_components/skeletons/index.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/skeletons/activity-feed-skeleton.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/skeletons/index.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I7.F1.T1"],
+        "blocks": ["S1890.I7.F1.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I7.F1.T6",
+      "type": "task",
+      "name": "Create Quick Actions Panel skeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "quick actions skeleton"
+      },
+      "purpose": "Render placeholder matching button group widget structure during loading",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["react", "ui-components", "skeleton-loading"],
+      "visual_verification": {
+        "route": "/home/dashboard",
+        "wait_ms": 2000,
+        "checks": [
+          { "command": "is visible", "target": "Quick Actions" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card, CardHeader, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Must use button-shaped skeleton elements (4-6 buttons)",
+          "Must maintain Card structure with header and content",
+          "Must use consistent pulse animation from Skeleton primitive"
+        ]
+      },
+      "input_state": "Skeletons directory exists with chart, kanban, and activity skeleton components",
+      "output_state": "QuickActionsSkeleton component created with button placeholders matching quick actions layout",
+      "acceptance_criterion": "Component renders Card with 4-6 button-shaped Skeleton elements and exports from barrel",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/skeletons/quick-actions-skeleton.tsx && grep -q 'QuickActionsSkeleton' apps/web/app/home/\\(user\\)/_components/skeletons/index.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/skeletons/quick-actions-skeleton.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/skeletons/index.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I7.F1.T1"],
+        "blocks": ["S1890.I7.F1.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I7.F1.T7",
+      "type": "task",
+      "name": "Create Coaching Sessions Widget skeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "coaching sessions skeleton"
+      },
+      "purpose": "Render placeholder matching sessions card widget structure during loading",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["react", "ui-components", "skeleton-loading"],
+      "visual_verification": {
+        "route": "/home/dashboard",
+        "wait_ms": 2000,
+        "checks": [
+          { "command": "is visible", "target": "Coaching" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card, CardHeader, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Must use session card skeleton shapes (2-3 session cards)",
+          "Must maintain Card structure with header and content",
+          "Must use consistent pulse animation from Skeleton primitive"
+        ]
+      },
+      "input_state": "Skeletons directory exists with 5 previous skeleton components",
+      "output_state": "CoachingSessionsSkeleton component created with session card placeholders matching coaching widget layout",
+      "acceptance_criterion": "Component renders Card with 2-3 session card Skeleton elements and exports from barrel",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/skeletons/coaching-sessions-skeleton.tsx && grep -q 'CoachingSessionsSkeleton' apps/web/app/home/\\(user\\)/_components/skeletons/index.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/skeletons/coaching-sessions-skeleton.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/skeletons/index.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I7.F1.T1"],
+        "blocks": ["S1890.I7.F1.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I7.F1.T8",
+      "type": "task",
+      "name": "Create Presentation Table skeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "presentation table skeleton"
+      },
+      "purpose": "Render placeholder matching data table widget structure during loading",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["react", "ui-components", "skeleton-loading"],
+      "visual_verification": {
+        "route": "/home/dashboard",
+        "wait_ms": 2000,
+        "checks": [
+          { "command": "is visible", "target": "Presentations" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card, CardHeader, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Must use table row skeleton shapes (4-5 rows with columns)",
+          "Must maintain Card structure with header and content",
+          "Must use consistent pulse animation from Skeleton primitive"
+        ]
+      },
+      "input_state": "Skeletons directory exists with 6 previous skeleton components",
+      "output_state": "PresentationTableSkeleton component created with table row placeholders matching presentation table layout",
+      "acceptance_criterion": "Component renders Card with 4-5 table row Skeleton elements and exports from barrel",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/skeletons/presentation-table-skeleton.tsx && grep -q 'PresentationTableSkeleton' apps/web/app/home/\\(user\\)/_components/skeletons/index.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/skeletons/presentation-table-skeleton.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/skeletons/index.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I7.F1.T1"],
+        "blocks": ["S1890.I7.F1.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I7.F1.T9",
+      "type": "task",
+      "name": "Verify all skeleton components render correctly",
+      "action": {
+        "verb": "Test",
+        "target": "skeleton component rendering"
+      },
+      "purpose": "Ensure all 7 skeleton components render with correct layout and animations",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["testing", "ui-components"],
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/skeletons/index.ts",
+          "apps/web/app/home/(user)/_components/skeletons/course-progress-skeleton.tsx",
+          "apps/web/app/home/(user)/_components/skeletons/skills-spider-skeleton.tsx",
+          "apps/web/app/home/(user)/_components/skeletons/kanban-summary-skeleton.tsx",
+          "apps/web/app/home/(user)/_components/skeletons/activity-feed-skeleton.tsx",
+          "apps/web/app/home/(user)/_components/skeletons/quick-actions-skeleton.tsx",
+          "apps/web/app/home/(user)/_components/skeletons/coaching-sessions-skeleton.tsx",
+          "apps/web/app/home/(user)/_components/skeletons/presentation-table-skeleton.tsx"
+        ],
+        "dependencies": [
+          "All 7 skeleton components",
+          "Barrel export index.ts"
+        ],
+        "constraints": [
+          "All components must use Skeleton primitive from @kit/ui/skeleton",
+          "All components must maintain Card structure",
+          "All components must pass typecheck"
+        ]
+      },
+      "input_state": "All 7 skeleton components created and exported from barrel",
+      "output_state": "All skeleton components verified to render correctly with pulse animation and proper layout",
+      "acceptance_criterion": "All components import successfully, typecheck passes, and visual verification confirms proper rendering",
+      "verification_command": "ls apps/web/app/home/\\(user\\)/_components/skeletons/*.tsx 2>/dev/null | wc -l | xargs -I {} test {} -ge 7 && pnpm typecheck && echo '✓ All skeleton components verified'",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I7.F1.T2",
+          "S1890.I7.F1.T3",
+          "S1890.I7.F1.T4",
+          "S1890.I7.F1.T5",
+          "S1890.I7.F1.T6",
+          "S1890.I7.F1.T7",
+          "S1890.I7.F1.T8"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Directory Setup",
+        "task_ids": ["S1890.I7.F1.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 2,
+        "name": "Skeleton Components Creation",
+        "task_ids": [
+          "S1890.I7.F1.T2",
+          "S1890.I7.F1.T3",
+          "S1890.I7.F1.T4",
+          "S1890.I7.F1.T5",
+          "S1890.I7.F1.T6",
+          "S1890.I7.F1.T7",
+          "S1890.I7.F1.T8"
+        ],
+        "depends_on_groups": [1],
+        "estimated_hours": 14,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Verification",
+        "task_ids": ["S1890.I7.F1.T9"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1890.I7.F1.T1",
+        "S1890.I7.F1.T2",
+        "S1890.I7.F1.T9"
+      ],
+      "total_hours": 5
+    },
+    "duration": {
+      "sequential": 17,
+      "parallel": 5,
+      "time_saved_percent": 70.6
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

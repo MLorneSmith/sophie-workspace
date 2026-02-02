@@ -1,0 +1,653 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1890.I7.F5",
+    "feature_name": "Error Boundaries & Accessibility",
+    "feature_slug": "error-boundaries-accessibility",
+    "initiative_id": "S1890.I7",
+    "spec_id": "1890",
+    "created_at": "2026-02-02T18:15:00Z",
+    "complexity": {
+      "score": 56,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1890.I7.F5.T1", "S1890.I7.F5.T3"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1890.I7.F5.T1",
+      "type": "task",
+      "name": "Create widget error fallback UI component",
+      "action": {
+        "verb": "Create",
+        "target": "widget error fallback UI"
+      },
+      "purpose": "Build reusable error display component with friendly message, icon, and retry button",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Unable to load"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+          "Alert, AlertTitle, AlertDescription from @kit/ui/alert",
+          "Button from @kit/ui/button",
+          "AlertTriangle from lucide-react"
+        ],
+        "constraints": [
+          "Must accept widgetName prop for error message customization",
+          "Must accept onRetry callback prop",
+          "Use Alert variant='destructive' or custom muted styling",
+          "Include AlertTriangle icon",
+          "Message format: 'Unable to load [widget name]'",
+          "Description: 'Something went wrong. Please try again.'",
+          "Button text: 'Try Again'",
+          "Use role='alert' for screen readers",
+          "Center content within Card structure"
+        ]
+      },
+      "input_state": "No widget error fallback component exists",
+      "output_state": "WidgetErrorFallback component exists at apps/web/app/home/(user)/_components/widget-error-fallback.tsx",
+      "acceptance_criterion": "Component exports WidgetErrorFallback with widgetName and onRetry props",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/widget-error-fallback.tsx && grep -q 'export.*WidgetErrorFallback' apps/web/app/home/\\(user\\)/_components/widget-error-fallback.tsx && grep -q 'widgetName' apps/web/app/home/\\(user\\)/_components/widget-error-fallback.tsx && grep -q 'onRetry' apps/web/app/home/\\(user\\)/_components/widget-error-fallback.tsx && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widget-error-fallback.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1890.I7.F5.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I7.F5.T2",
+      "type": "task",
+      "name": "Create widget error boundary wrapper component",
+      "action": {
+        "verb": "Create",
+        "target": "widget error boundary wrapper"
+      },
+      "purpose": "Build reusable error boundary that wraps widgets and renders WidgetErrorFallback on error",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/widget-error-fallback.tsx"
+        ],
+        "dependencies": [
+          "ErrorBoundary from @kit/ui/error-boundary",
+          "WidgetErrorFallback from ./widget-error-fallback"
+        ],
+        "constraints": [
+          "Must accept widgetName prop to pass to fallback",
+          "Must accept children prop",
+          "Use ErrorBoundary from @kit/ui as base",
+          "Pass custom fallback function that renders WidgetErrorFallback",
+          "Reset function should trigger re-render of children",
+          "Export as 'use client' component"
+        ]
+      },
+      "input_state": "WidgetErrorFallback exists, no error boundary wrapper exists",
+      "output_state": "WidgetErrorBoundary component exists at apps/web/app/home/(user)/_components/widget-error-boundary.tsx",
+      "acceptance_criterion": "Component exports WidgetErrorBoundary wrapping ErrorBoundary with custom fallback",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/widget-error-boundary.tsx && grep -q 'export.*WidgetErrorBoundary' apps/web/app/home/\\(user\\)/_components/widget-error-boundary.tsx && grep -q \"'use client'\" apps/web/app/home/\\(user\\)/_components/widget-error-boundary.tsx && grep -q 'ErrorBoundary' apps/web/app/home/\\(user\\)/_components/widget-error-boundary.tsx && grep -q 'WidgetErrorFallback' apps/web/app/home/\\(user\\)/_components/widget-error-boundary.tsx && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widget-error-boundary.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I7.F5.T1"],
+        "blocks": ["S1890.I7.F5.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I7.F5.T3",
+      "type": "task",
+      "name": "Wrap all dashboard widgets with WidgetErrorBoundary",
+      "action": {
+        "verb": "Wire",
+        "target": "error boundaries to widgets"
+      },
+      "purpose": "Protect each dashboard widget with individual error boundary for isolation",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Home"
+          },
+          {
+            "command": "find role",
+            "target": "main"
+          }
+        ],
+        "screenshot": true
+      },
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "error_boundary_isolation",
+            "target": "dashboard widgets",
+            "expected_action": "widget errors caught without crashing page",
+            "file_path": "apps/web/app/home/(user)/page.tsx"
+          }
+        ],
+        "validation_command": "grep -c 'WidgetErrorBoundary' apps/web/app/home/\\(user\\)/page.tsx | grep -E '^[7-9]|^[1-9][0-9]+$'"
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/widget-error-boundary.tsx"
+        ],
+        "dependencies": [
+          "WidgetErrorBoundary from ./_components/widget-error-boundary"
+        ],
+        "constraints": [
+          "Wrap each widget Card or widget component individually",
+          "Use descriptive widgetName props matching feature.md widget names",
+          "Widget names: 'course progress', 'skills assessment', 'tasks', 'activity', 'actions', 'coaching sessions', 'presentations'",
+          "Import WidgetErrorBoundary at top of page.tsx",
+          "Do not wrap the entire dashboard - wrap individual widgets for isolation"
+        ]
+      },
+      "input_state": "Dashboard widgets exist without error boundaries, WidgetErrorBoundary component available",
+      "output_state": "Each dashboard widget wrapped in WidgetErrorBoundary with appropriate widgetName",
+      "acceptance_criterion": "All 7 widget sections wrapped with WidgetErrorBoundary in page.tsx",
+      "verification_command": "grep -q \"import.*WidgetErrorBoundary.*from\" apps/web/app/home/\\(user\\)/page.tsx && grep -c 'WidgetErrorBoundary' apps/web/app/home/\\(user\\)/page.tsx | grep -E '^[7-9]|^[1-9][0-9]+$' && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I7.F5.T2"],
+        "blocks": ["S1890.I7.F5.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I7.F5.T4",
+      "type": "task",
+      "name": "Audit dashboard accessibility compliance",
+      "action": {
+        "verb": "Test",
+        "target": "accessibility compliance"
+      },
+      "purpose": "Document accessibility gaps across dashboard for heading hierarchy, ARIA, keyboard nav, contrast",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "All empty state component files from F2, F3, F4"
+        ],
+        "dependencies": [
+          "WCAG 2.1 AA guidelines",
+          "Browser accessibility inspector tools"
+        ],
+        "constraints": [
+          "Check heading hierarchy (h1 -> h2 -> h3, no skips)",
+          "Check all interactive elements for keyboard accessibility",
+          "Verify ARIA labels on empty states, loading states, error states",
+          "Test color contrast ratios (4.5:1 for normal text, 3:1 for large text)",
+          "Verify focus indicators visible on all interactive elements",
+          "Check prefers-reduced-motion for animations",
+          "Document findings in audit report file"
+        ]
+      },
+      "input_state": "Dashboard complete with empty states, no accessibility audit performed",
+      "output_state": "Accessibility audit report exists listing all gaps and required fixes",
+      "acceptance_criterion": "Audit report file exists documenting heading, ARIA, keyboard, and contrast issues",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/a11y-audit-report.md && grep -q 'Heading Hierarchy' apps/web/app/home/\\(user\\)/_components/a11y-audit-report.md && grep -q 'ARIA Attributes' apps/web/app/home/\\(user\\)/_components/a11y-audit-report.md && grep -q 'Keyboard Navigation' apps/web/app/home/\\(user\\)/_components/a11y-audit-report.md && grep -q 'Color Contrast' apps/web/app/home/\\(user\\)/_components/a11y-audit-report.md",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/a11y-audit-report.md"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1890.I7.F5.T5", "S1890.I7.F5.T6", "S1890.I7.F5.T7", "S1890.I7.F5.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I7.F5.T5",
+      "type": "task",
+      "name": "Fix heading hierarchy in empty state components",
+      "action": {
+        "verb": "Update",
+        "target": "heading levels in empty states"
+      },
+      "purpose": "Ensure proper h1 -> h2 -> h3 hierarchy across dashboard empty states",
+      "status": "draft",
+      "estimated_hours": 1.5,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/a11y-audit-report.md",
+          "Empty state component files identified in audit"
+        ],
+        "dependencies": [
+          "CardTitle component from @kit/ui/card",
+          "Heading components or semantic HTML"
+        ],
+        "constraints": [
+          "Page title (PageHeader) should be h1",
+          "Widget titles (CardTitle) should be h2",
+          "Empty state headings should be h3 or use aria-level attribute",
+          "No heading level skips (h1 -> h3 is invalid)",
+          "Update all empty state components to use correct heading levels",
+          "Preserve existing styling while fixing semantic structure"
+        ]
+      },
+      "input_state": "Audit report identifies heading hierarchy issues in empty states",
+      "output_state": "All empty state components use correct h3 level or aria-level for headings",
+      "acceptance_criterion": "All empty state headings are h3 and no heading skips exist in hierarchy",
+      "verification_command": "grep -L '<h1' apps/web/app/home/\\(user\\)/_components/empty-states/*.tsx | wc -l | grep -E '^[5-9]|^[1-9][0-9]+$' && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/empty-states/*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I7.F5.T4"],
+        "blocks": ["S1890.I7.F5.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S1890.I7.F5.T6",
+      "type": "task",
+      "name": "Add ARIA attributes to empty states",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA attributes to empty states"
+      },
+      "purpose": "Add role, aria-live, aria-label, and aria-describedby attributes for screen reader support",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/a11y-audit-report.md",
+          "Empty state component files",
+          "Loading skeleton components"
+        ],
+        "dependencies": [
+          "ARIA specification for role, aria-live, aria-label"
+        ],
+        "constraints": [
+          "Empty state containers: role='status' or aria-live='polite'",
+          "Loading skeletons: aria-busy='true' and aria-label describing loading state",
+          "Error states: role='alert' (already on Alert component)",
+          "CTAs: aria-label where button text is insufficient",
+          "Interactive elements: aria-describedby linking to explanatory text",
+          "Avoid redundant labels (don't duplicate visible text in aria-label)"
+        ]
+      },
+      "input_state": "Audit report identifies missing ARIA attributes on empty states and loading states",
+      "output_state": "All empty states, loading states, and CTAs have appropriate ARIA attributes",
+      "acceptance_criterion": "Empty states have role='status', skeletons have aria-busy, CTAs have descriptive labels",
+      "verification_command": "grep -r \"role=\\\"status\\\"\" apps/web/app/home/\\(user\\)/_components/empty-states/ | wc -l | grep -E '^[3-9]|^[1-9][0-9]+$' && grep -r 'aria-busy' apps/web/app/home/\\(user\\)/_components/ | grep -q 'true' && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/empty-states/*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/*skeleton*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I7.F5.T4"],
+        "blocks": ["S1890.I7.F5.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S1890.I7.F5.T7",
+      "type": "task",
+      "name": "Fix keyboard navigation and focus management",
+      "action": {
+        "verb": "Update",
+        "target": "keyboard navigation"
+      },
+      "purpose": "Ensure all interactive elements are keyboard accessible with visible focus indicators",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/a11y-audit-report.md",
+          "Empty state CTA components",
+          "Error boundary retry button"
+        ],
+        "dependencies": [
+          "Tailwind focus utilities (focus:ring, focus-visible:outline)"
+        ],
+        "constraints": [
+          "All CTAs must be keyboard accessible via Tab key",
+          "Focus order must follow visual order (top to bottom, left to right)",
+          "Focus indicators must be visible (outline or ring with sufficient contrast)",
+          "Error retry button should return focus to widget after retry",
+          "Use focus-visible: for keyboard-only focus indicators",
+          "Test with Tab, Shift+Tab, Enter, Space for all interactive elements",
+          "Add focus management to WidgetErrorFallback retry logic"
+        ]
+      },
+      "input_state": "Audit report identifies keyboard navigation issues and missing focus indicators",
+      "output_state": "All CTAs keyboard accessible, focus indicators visible, retry button restores focus",
+      "acceptance_criterion": "Tab navigation works, visible focus indicators on all interactive elements, focus restored after retry",
+      "verification_command": "grep -r 'focus-visible:\\|focus:' apps/web/app/home/\\(user\\)/_components/ | wc -l | grep -E '^[5-9]|^[1-9][0-9]+$' && grep -q 'focus()' apps/web/app/home/\\(user\\)/_components/widget-error-fallback.tsx && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/widget-error-fallback.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/empty-states/*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I7.F5.T4"],
+        "blocks": ["S1890.I7.F5.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S1890.I7.F5.T8",
+      "type": "task",
+      "name": "Verify color contrast compliance",
+      "action": {
+        "verb": "Test",
+        "target": "color contrast ratios"
+      },
+      "purpose": "Ensure all text meets WCAG AA contrast ratios (4.5:1 normal, 3:1 large, 3:1 focus indicators)",
+      "status": "draft",
+      "estimated_hours": 1.5,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/a11y-audit-report.md",
+          "All empty state and error UI components"
+        ],
+        "dependencies": [
+          "Browser DevTools accessibility inspector",
+          "Contrast checker tools (WebAIM, Axe)",
+          "Tailwind semantic color classes (text-foreground, text-muted-foreground)"
+        ],
+        "constraints": [
+          "Normal text (< 18px): 4.5:1 contrast ratio minimum",
+          "Large text (>= 18px or 14px bold): 3:1 contrast ratio minimum",
+          "Focus indicators: 3:1 contrast against adjacent colors",
+          "Test both light and dark modes",
+          "Use Tailwind semantic classes to ensure mode compatibility",
+          "Document any contrast failures and fixes in audit report",
+          "Update classes if needed to meet standards"
+        ]
+      },
+      "input_state": "Audit report identifies potential contrast issues",
+      "output_state": "All text and focus indicators meet WCAG AA contrast standards in both modes",
+      "acceptance_criterion": "Color contrast audit passes for all text and interactive elements in light and dark modes",
+      "verification_command": "grep -q 'Color Contrast: PASS' apps/web/app/home/\\(user\\)/_components/a11y-audit-report.md && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/a11y-audit-report.md"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/empty-states/*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I7.F5.T4"],
+        "blocks": ["S1890.I7.F5.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S1890.I7.F5.T9",
+      "type": "task",
+      "name": "Verify dark mode and reduced motion support",
+      "action": {
+        "verb": "Test",
+        "target": "dark mode and reduced motion"
+      },
+      "purpose": "Final verification that all states render correctly in dark mode and respect prefers-reduced-motion",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 9,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "All error boundary and empty state components"
+        ],
+        "dependencies": [
+          "Browser DevTools for theme toggle and motion preference simulation"
+        ],
+        "constraints": [
+          "Test all empty states in dark mode for contrast and visibility",
+          "Test error fallback UI in dark mode",
+          "Verify skeleton pulse animations respect prefers-reduced-motion",
+          "Check that focus indicators are visible in both modes",
+          "Verify no hard-coded colors that break in dark mode",
+          "Test with browser dev tools motion preference emulation",
+          "Document any dark mode or motion issues found"
+        ]
+      },
+      "input_state": "All accessibility fixes complete, error boundaries integrated",
+      "output_state": "All dashboard states verified working in dark mode and with reduced motion",
+      "acceptance_criterion": "Dark mode renders correctly, animations respect prefers-reduced-motion, no visual regressions",
+      "verification_command": "grep -r 'prefers-reduced-motion' apps/web/app/home/\\(user\\)/_components/ | grep -q 'motion-reduce' && pnpm typecheck --filter web && pnpm lint --filter web",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/*skeleton*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I7.F5.T3", "S1890.I7.F5.T5", "S1890.I7.F5.T6", "S1890.I7.F5.T7", "S1890.I7.F5.T8"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Error Boundary Components",
+        "task_ids": ["S1890.I7.F5.T1", "S1890.I7.F5.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Dashboard Integration",
+        "task_ids": ["S1890.I7.F5.T3"],
+        "depends_on_groups": [1],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Accessibility Audit & Fixes",
+        "task_ids": ["S1890.I7.F5.T4", "S1890.I7.F5.T5", "S1890.I7.F5.T6", "S1890.I7.F5.T7", "S1890.I7.F5.T8"],
+        "depends_on_groups": [],
+        "estimated_hours": 9,
+        "parallel_hours": 5
+      },
+      {
+        "id": 4,
+        "name": "Final Verification",
+        "task_ids": ["S1890.I7.F5.T9"],
+        "depends_on_groups": [2, 3],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1890.I7.F5.T1", "S1890.I7.F5.T2", "S1890.I7.F5.T3", "S1890.I7.F5.T9"],
+      "total_hours": 7
+    },
+    "duration": {
+      "sequential": 16,
+      "parallel": 12,
+      "time_saved_percent": 25
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
