@@ -1,0 +1,458 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1890.I2.F3",
+    "feature_name": "Activity Aggregation",
+    "feature_slug": "activity-aggregation",
+    "initiative_id": "S1890.I2",
+    "spec_id": 1890,
+    "created_at": "2026-02-02T00:00:00Z",
+    "complexity": {
+      "score": 37.5,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1890.I2.F3.T1",
+      "type": "task",
+      "name": "Create activity aggregation file skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "activity aggregation file skeleton"
+      },
+      "purpose": "Establish server-side aggregation file with proper imports and structure",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/user-dashboard.loader.ts",
+          "apps/web/app/home/(user)/_lib/types/user-dashboard.types.ts"
+        ],
+        "dependencies": [
+          "@kit/supabase/server-client.getSupabaseServerClient",
+          "ActivityFeedItem type from F1"
+        ],
+        "constraints": [
+          "Must include 'import server-only' directive at top",
+          "Must import Database types and ActivityFeedItem",
+          "File location: apps/web/app/home/(user)/_lib/server/activity-aggregation.ts"
+        ]
+      },
+      "input_state": "No aggregation file exists; ActivityFeedItem type exists from F1",
+      "output_state": "Aggregation file exists with imports, function signatures, and JSDoc comments",
+      "acceptance_criterion": "File exists with server-only directive, imports ActivityFeedItem, and has function stubs",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && grep -q \"import 'server-only'\" apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && grep -q 'ActivityFeedItem' apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/activity-aggregation.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1890.I2.F3.T2",
+          "S1890.I2.F3.T3",
+          "S1890.I2.F3.T4",
+          "S1890.I2.F3.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I2.F3.T2",
+      "type": "task",
+      "name": "Implement quiz attempts to activity mapper",
+      "action": {
+        "verb": "Implement",
+        "target": "quiz attempts mapper function"
+      },
+      "purpose": "Transform quiz_attempts table rows to ActivityFeedItem with type 'quiz_completed'",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Database['public']['Tables']['quiz_attempts']['Row']",
+          "ActivityFeedItem type"
+        ],
+        "constraints": [
+          "Filter to last 30 days using completed_at timestamp",
+          "Map to ActivityFeedItem with type: 'quiz_completed'",
+          "Include quiz_id, score, passed fields",
+          "Return empty array if no data (not error)"
+        ]
+      },
+      "input_state": "Skeleton file exists without mapper implementations",
+      "output_state": "Function mapQuizAttemptsToActivity() exists and transforms quiz attempts to ActivityFeedItem[]",
+      "acceptance_criterion": "Function exists, queries quiz_attempts for last 30 days, returns typed ActivityFeedItem[] with quiz_completed type",
+      "verification_command": "grep -q 'mapQuizAttemptsToActivity' apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && grep -q \"from('quiz_attempts')\" apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && grep -q 'quiz_completed' apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/activity-aggregation.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I2.F3.T1"
+        ],
+        "blocks": [
+          "S1890.I2.F3.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I2.F3.T3",
+      "type": "task",
+      "name": "Implement lesson progress to activity mapper",
+      "action": {
+        "verb": "Implement",
+        "target": "lesson progress mapper function"
+      },
+      "purpose": "Transform lesson_progress table rows to ActivityFeedItem with type 'lesson_completed'",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Database['public']['Tables']['lesson_progress']['Row']",
+          "ActivityFeedItem type"
+        ],
+        "constraints": [
+          "Filter to last 30 days using completed_at timestamp",
+          "Filter to completed lessons (completion_percentage = 100 or completed_at is not null)",
+          "Map to ActivityFeedItem with type: 'lesson_completed'",
+          "Include lesson_id, course_id fields",
+          "Return empty array if no data (not error)"
+        ]
+      },
+      "input_state": "Skeleton file exists without mapper implementations",
+      "output_state": "Function mapLessonProgressToActivity() exists and transforms completed lessons to ActivityFeedItem[]",
+      "acceptance_criterion": "Function exists, queries lesson_progress for completed lessons in last 30 days, returns typed ActivityFeedItem[] with lesson_completed type",
+      "verification_command": "grep -q 'mapLessonProgressToActivity' apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && grep -q \"from('lesson_progress')\" apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && grep -q 'lesson_completed' apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/activity-aggregation.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I2.F3.T1"
+        ],
+        "blocks": [
+          "S1890.I2.F3.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I2.F3.T4",
+      "type": "task",
+      "name": "Implement presentations to activity mapper",
+      "action": {
+        "verb": "Implement",
+        "target": "presentations mapper function"
+      },
+      "purpose": "Transform building_blocks_submissions table rows to ActivityFeedItem with type 'presentation_updated'",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Database['public']['Tables']['building_blocks_submissions']['Row']",
+          "ActivityFeedItem type"
+        ],
+        "constraints": [
+          "Filter to last 30 days using updated_at timestamp",
+          "Map to ActivityFeedItem with type: 'presentation_updated'",
+          "Include submission_id, presentation_type fields",
+          "Return empty array if no data (not error)"
+        ]
+      },
+      "input_state": "Skeleton file exists without mapper implementations",
+      "output_state": "Function mapPresentationsToActivity() exists and transforms submissions to ActivityFeedItem[]",
+      "acceptance_criterion": "Function exists, queries building_blocks_submissions for last 30 days, returns typed ActivityFeedItem[] with presentation_updated type",
+      "verification_command": "grep -q 'mapPresentationsToActivity' apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && grep -q \"from('building_blocks_submissions')\" apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && grep -q 'presentation_updated' apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/activity-aggregation.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I2.F3.T1"
+        ],
+        "blocks": [
+          "S1890.I2.F3.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I2.F3.T5",
+      "type": "task",
+      "name": "Implement aggregation function with merge and sort",
+      "action": {
+        "verb": "Implement",
+        "target": "aggregation function"
+      },
+      "purpose": "Combine all activity mappers, sort by timestamp descending, limit to 20 items",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/activity-aggregation.ts"
+        ],
+        "dependencies": [
+          "mapQuizAttemptsToActivity",
+          "mapLessonProgressToActivity",
+          "mapPresentationsToActivity",
+          "Promise.all for parallel execution"
+        ],
+        "constraints": [
+          "Use Promise.all to fetch all sources in parallel",
+          "Merge arrays into single ActivityFeedItem[]",
+          "Sort by timestamp descending (newest first)",
+          "Limit to 20 items",
+          "Handle empty activity gracefully (return empty array)",
+          "Export as aggregateActivityFeed()"
+        ]
+      },
+      "input_state": "Three mapper functions exist but not combined",
+      "output_state": "Exported aggregateActivityFeed() function fetches, merges, sorts, and limits activity feed",
+      "acceptance_criterion": "Function exists, calls all 3 mappers in parallel, merges results, sorts descending, limits to 20",
+      "verification_command": "grep -q 'export.*aggregateActivityFeed' apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && grep -q 'Promise.all' apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && grep -q 'sort' apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && grep -q '\\.slice(0.*20' apps/web/app/home/\\(user\\)/_lib/server/activity-aggregation.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/activity-aggregation.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I2.F3.T2",
+          "S1890.I2.F3.T3",
+          "S1890.I2.F3.T4"
+        ],
+        "blocks": [
+          "S1890.I2.F3.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I2.F3.T6",
+      "type": "task",
+      "name": "Integrate aggregation with main loader",
+      "action": {
+        "verb": "Integrate",
+        "target": "aggregation with loader"
+      },
+      "purpose": "Call aggregateActivityFeed from loadUserDashboardData and include in return type",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/user-dashboard.loader.ts",
+          "apps/web/app/home/(user)/_lib/server/activity-aggregation.ts"
+        ],
+        "dependencies": [
+          "aggregateActivityFeed from activity-aggregation.ts",
+          "loadUserDashboardData from F2",
+          "UserDashboardData type from F1"
+        ],
+        "constraints": [
+          "Import aggregateActivityFeed in loader",
+          "Add to Promise.all in loadUserDashboardData",
+          "Assign to recentActivity field in UserDashboardData",
+          "Maintain parallel execution pattern"
+        ]
+      },
+      "input_state": "aggregateActivityFeed function exists; main loader exists without activity feed",
+      "output_state": "Main loader calls aggregateActivityFeed in parallel with other queries and includes in UserDashboardData",
+      "acceptance_criterion": "Loader imports aggregateActivityFeed, calls it in Promise.all, returns recentActivity in UserDashboardData",
+      "verification_command": "grep -q 'aggregateActivityFeed' apps/web/app/home/\\(user\\)/_lib/server/user-dashboard.loader.ts && grep -q 'recentActivity' apps/web/app/home/\\(user\\)/_lib/server/user-dashboard.loader.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/user-dashboard.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I2.F3.T5"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Skeleton Setup",
+        "task_ids": [
+          "S1890.I2.F3.T1"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Mapper Implementation",
+        "task_ids": [
+          "S1890.I2.F3.T2",
+          "S1890.I2.F3.T3",
+          "S1890.I2.F3.T4"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 6,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Aggregation Assembly",
+        "task_ids": [
+          "S1890.I2.F3.T5"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Loader Integration",
+        "task_ids": [
+          "S1890.I2.F3.T6"
+        ],
+        "depends_on_groups": [
+          3
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1890.I2.F3.T1",
+        "S1890.I2.F3.T2",
+        "S1890.I2.F3.T5",
+        "S1890.I2.F3.T6"
+      ],
+      "total_hours": 8
+    },
+    "duration": {
+      "sequential": 12,
+      "parallel": 8,
+      "time_saved_percent": 33.3
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

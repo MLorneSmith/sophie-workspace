@@ -1,6 +1,7 @@
 import { Toaster } from "@kit/ui/sonner";
 import { headers } from "next/headers";
 
+import { AgentationWrapper } from "~/components/agentation-wrapper";
 import { RootProviders } from "~/components/root-providers";
 import { getFontsClassName } from "~/lib/fonts";
 import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
@@ -31,6 +32,7 @@ export default async function RootLayout({
 				</RootProviders>
 
 				<Toaster theme={theme} position="bottom-right" />
+				<AgentationWrapper />
 			</body>
 		</html>
 	);

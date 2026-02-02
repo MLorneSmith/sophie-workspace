@@ -1,0 +1,50 @@
+{
+  "initiative_id": "S1890.I2",
+  "initiative_name": "Data Layer",
+  "spec_id": "1890",
+  "status": "completed",
+  "current_phase": "finalization",
+  "features": {
+    "S1890.I2.F1": {
+      "name": "Dashboard Types",
+      "priority": 1,
+      "status": "completed",
+      "task_count": 8,
+      "hours_estimate": 16,
+      "hours_parallel": 8,
+      "started_at": "2026-02-02T00:00:00Z",
+      "completed_at": "2026-02-02T00:01:00Z"
+    },
+    "S1890.I2.F2": {
+      "name": "Dashboard Loader",
+      "priority": 2,
+      "status": "completed",
+      "task_count": 8,
+      "hours_estimate": 17,
+      "hours_parallel": 7,
+      "started_at": "2026-02-02T00:01:00Z",
+      "completed_at": "2026-02-02T00:02:00Z",
+      "blocked_by": ["S1890.I2.F1"]
+    },
+    "S1890.I2.F3": {
+      "name": "Activity Aggregation",
+      "priority": 3,
+      "status": "completed",
+      "task_count": 6,
+      "hours_estimate": 12,
+      "hours_parallel": 8,
+      "started_at": "2026-02-02T00:02:00Z",
+      "completed_at": "2026-02-02T00:03:00Z",
+      "blocked_by": ["S1890.I2.F1", "S1890.I2.F2"]
+    }
+  },
+  "total_features": 3,
+  "completed_features": 3,
+  "total_tasks": 22,
+  "total_spikes": 0,
+  "spikes_pending": [],
+  "total_hours_sequential": 45,
+  "total_hours_parallel": 23,
+  "started_at": "2026-02-02T00:00:00Z",
+  "completed_at": "2026-02-02T00:03:00Z"
+}

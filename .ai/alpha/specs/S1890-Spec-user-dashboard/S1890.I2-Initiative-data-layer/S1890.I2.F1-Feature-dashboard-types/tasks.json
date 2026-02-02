@@ -1,0 +1,550 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1890.I2.F1",
+    "feature_name": "Dashboard Types",
+    "feature_slug": "dashboard-types",
+    "initiative_id": "S1890.I2",
+    "spec_id": 1890,
+    "created_at": "2026-02-02T00:00:00Z",
+    "complexity": {
+      "score": 37.5,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1890.I2.F1.T1",
+      "type": "task",
+      "name": "Create types directory structure",
+      "action": {
+        "verb": "Create",
+        "target": "types directory at _lib/types/"
+      },
+      "purpose": "Establish directory structure for dashboard type definitions following project conventions",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Must follow existing pattern: apps/web/app/home/(user)/_lib/types/",
+          "Directory should be created with proper permissions"
+        ]
+      },
+      "input_state": "Directory apps/web/app/home/(user)/_lib/ exists but no types/ subdirectory",
+      "output_state": "Directory apps/web/app/home/(user)/_lib/types/ exists and is ready for type files",
+      "acceptance_criterion": "Directory apps/web/app/home/(user)/_lib/types/ exists",
+      "verification_command": "test -d apps/web/app/home/\\(user\\)/_lib/types && echo '✓ Types directory exists'",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/types/"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1890.I2.F1.T2"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I2.F1.T2",
+      "type": "task",
+      "name": "Create base types file with imports",
+      "action": {
+        "verb": "Create",
+        "target": "user-dashboard.types.ts file with Database imports"
+      },
+      "purpose": "Set up type file skeleton with proper imports from Supabase-generated Database types",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Database type from apps/web/lib/database.types.ts"
+        ],
+        "constraints": [
+          "Must import Database type from apps/web/lib/database.types.ts",
+          "File must be at apps/web/app/home/(user)/_lib/types/user-dashboard.types.ts",
+          "Use export interface pattern (not export type)"
+        ]
+      },
+      "input_state": "Directory _lib/types/ exists; Database types available in apps/web/lib/database.types.ts",
+      "output_state": "File user-dashboard.types.ts exists with Database import and file header comment",
+      "acceptance_criterion": "File exists and imports Database type correctly",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && grep -q \"import.*Database\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/types/user-dashboard.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I2.F1.T1"
+        ],
+        "blocks": [
+          "S1890.I2.F1.T3",
+          "S1890.I2.F1.T4",
+          "S1890.I2.F1.T5",
+          "S1890.I2.F1.T6",
+          "S1890.I2.F1.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I2.F1.T3",
+      "type": "task",
+      "name": "Add CourseProgressData interface",
+      "action": {
+        "verb": "Add",
+        "target": "CourseProgressData interface"
+      },
+      "purpose": "Define type for radial chart widget data derived from course_progress and lesson_progress tables",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Database['public']['Tables']['course_progress']['Row']",
+          "Database['public']['Tables']['lesson_progress']['Row']"
+        ],
+        "constraints": [
+          "Use Pick/Omit to derive from Database types",
+          "Include completion_percentage, completed_at fields",
+          "Add JSDoc comment explaining purpose"
+        ]
+      },
+      "input_state": "File user-dashboard.types.ts exists with Database import",
+      "output_state": "CourseProgressData interface exists with proper fields derived from Database types",
+      "acceptance_criterion": "CourseProgressData interface is exported and includes completion_percentage field",
+      "verification_command": "grep -q \"export interface CourseProgressData\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && grep -q \"completion_percentage\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/types/user-dashboard.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I2.F1.T2"
+        ],
+        "blocks": [
+          "S1890.I2.F1.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I2.F1.T4",
+      "type": "task",
+      "name": "Add SurveyScoresData interface",
+      "action": {
+        "verb": "Add",
+        "target": "SurveyScoresData interface"
+      },
+      "purpose": "Define type for spider diagram widget data derived from survey_responses table",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Database['public']['Tables']['survey_responses']['Row']"
+        ],
+        "constraints": [
+          "Use Pick/Omit to derive from Database types",
+          "Include category_scores, highest_scoring_category, lowest_scoring_category fields",
+          "category_scores is Json type from Database",
+          "Add JSDoc comment explaining purpose"
+        ]
+      },
+      "input_state": "File user-dashboard.types.ts exists with Database import",
+      "output_state": "SurveyScoresData interface exists with category_scores and related fields",
+      "acceptance_criterion": "SurveyScoresData interface is exported and includes category_scores field",
+      "verification_command": "grep -q \"export interface SurveyScoresData\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && grep -q \"category_scores\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/types/user-dashboard.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I2.F1.T2"
+        ],
+        "blocks": [
+          "S1890.I2.F1.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I2.F1.T5",
+      "type": "task",
+      "name": "Add KanbanSummaryData interface",
+      "action": {
+        "verb": "Add",
+        "target": "KanbanSummaryData interface"
+      },
+      "purpose": "Define type for task summary card widget data derived from tasks and subtasks tables",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Database['public']['Tables']['tasks']['Row']",
+          "Database['public']['Tables']['subtasks']['Row']"
+        ],
+        "constraints": [
+          "Use Pick/Omit to derive from Database types",
+          "Include status, priority, phase fields from tasks",
+          "Should aggregate subtask counts",
+          "Add JSDoc comment explaining purpose"
+        ]
+      },
+      "input_state": "File user-dashboard.types.ts exists with Database import",
+      "output_state": "KanbanSummaryData interface exists with task status and subtask count fields",
+      "acceptance_criterion": "KanbanSummaryData interface is exported and includes status field",
+      "verification_command": "grep -q \"export interface KanbanSummaryData\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && grep -q \"status\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/types/user-dashboard.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I2.F1.T2"
+        ],
+        "blocks": [
+          "S1890.I2.F1.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I2.F1.T6",
+      "type": "task",
+      "name": "Add ActivityFeedItem interface",
+      "action": {
+        "verb": "Add",
+        "target": "ActivityFeedItem union type"
+      },
+      "purpose": "Define type for recent activity timeline widget supporting multiple activity types (lesson, quiz, survey, presentation)",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Database['public']['Tables']['lesson_progress']['Row']",
+          "Database['public']['Tables']['quiz_attempts']['Row']",
+          "Database['public']['Tables']['survey_responses']['Row']",
+          "Database['public']['Tables']['building_blocks_submissions']['Row']"
+        ],
+        "constraints": [
+          "Use discriminated union pattern with 'type' field",
+          "Each activity type should extend base fields (id, created_at, type)",
+          "Support lesson_completed, quiz_completed, survey_completed, presentation_created types",
+          "Add JSDoc comment explaining purpose and union structure"
+        ]
+      },
+      "input_state": "File user-dashboard.types.ts exists with Database import",
+      "output_state": "ActivityFeedItem union type exists with all four activity variants",
+      "acceptance_criterion": "ActivityFeedItem type is exported as discriminated union with type field",
+      "verification_command": "grep -q \"export type ActivityFeedItem\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && grep -q \"type:\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/types/user-dashboard.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I2.F1.T2"
+        ],
+        "blocks": [
+          "S1890.I2.F1.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I2.F1.T7",
+      "type": "task",
+      "name": "Add PresentationOutline interface",
+      "action": {
+        "verb": "Add",
+        "target": "PresentationOutline interface"
+      },
+      "purpose": "Define type for presentations table widget data derived from building_blocks_submissions table",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Database['public']['Tables']['building_blocks_submissions']['Row']"
+        ],
+        "constraints": [
+          "Use Pick to select relevant fields (id, title, created_at, updated_at)",
+          "outline field is Json type from Database",
+          "Add JSDoc comment explaining purpose"
+        ]
+      },
+      "input_state": "File user-dashboard.types.ts exists with Database import",
+      "output_state": "PresentationOutline interface exists with id, title, outline, created_at fields",
+      "acceptance_criterion": "PresentationOutline interface is exported and includes title and outline fields",
+      "verification_command": "grep -q \"export interface PresentationOutline\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && grep -q \"title\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && grep -q \"outline\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/types/user-dashboard.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I2.F1.T2"
+        ],
+        "blocks": [
+          "S1890.I2.F1.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I2.F1.T8",
+      "type": "task",
+      "name": "Add UserDashboardData aggregate interface",
+      "action": {
+        "verb": "Add",
+        "target": "UserDashboardData interface"
+      },
+      "purpose": "Create aggregate interface combining all dashboard widget types as main loader return type",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/types/user-dashboard.types.ts"
+        ],
+        "dependencies": [
+          "CourseProgressData",
+          "SurveyScoresData",
+          "KanbanSummaryData",
+          "ActivityFeedItem",
+          "PresentationOutline"
+        ],
+        "constraints": [
+          "Combine all previously defined types",
+          "Use optional fields where data may not exist (e.g., courseProgress?, surveyScores?)",
+          "ActivityFeedItem should be an array",
+          "PresentationOutline should be an array",
+          "Add JSDoc comment explaining this is the main loader return type"
+        ]
+      },
+      "input_state": "All individual dashboard type interfaces exist (T3-T7)",
+      "output_state": "UserDashboardData interface exists combining all dashboard types with proper optional/array fields",
+      "acceptance_criterion": "UserDashboardData interface is exported and references all dashboard types",
+      "verification_command": "grep -q \"export interface UserDashboardData\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && grep -q \"courseProgress\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && grep -q \"ActivityFeedItem\" apps/web/app/home/\\(user\\)/_lib/types/user-dashboard.types.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/types/user-dashboard.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I2.F1.T3",
+          "S1890.I2.F1.T4",
+          "S1890.I2.F1.T5",
+          "S1890.I2.F1.T6",
+          "S1890.I2.F1.T7"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Setup",
+        "task_ids": [
+          "S1890.I2.F1.T1",
+          "S1890.I2.F1.T2"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Individual Type Definitions",
+        "task_ids": [
+          "S1890.I2.F1.T3",
+          "S1890.I2.F1.T4",
+          "S1890.I2.F1.T5",
+          "S1890.I2.F1.T6",
+          "S1890.I2.F1.T7"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 11,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Aggregate Type",
+        "task_ids": [
+          "S1890.I2.F1.T8"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1890.I2.F1.T1",
+        "S1890.I2.F1.T2",
+        "S1890.I2.F1.T6",
+        "S1890.I2.F1.T8"
+      ],
+      "total_hours": 8
+    },
+    "duration": {
+      "sequential": 16,
+      "parallel": 8,
+      "time_saved_percent": 50
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

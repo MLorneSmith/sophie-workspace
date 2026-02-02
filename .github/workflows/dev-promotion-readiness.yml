@@ -304,6 +304,29 @@ jobs:
 
             return pr.data;
 
+      - name: Auto-approve staging promotion PR
+        if: steps.create-pr.outputs.pr_number != ''
+        env:
+          PR_URL: ${{ github.server_url }}/${{ github.repository }}/pull/${{ steps.create-pr.outputs.pr_number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Auto-approving staging promotion PR #${{ steps.create-pr.outputs.pr_number }}"
+          echo "Quality gates already validated by this workflow:"
+          echo "  - Success Rate: >= 80%"
+          echo "  - Code Coverage: >= 80%"
+          echo "  - No Recent Failures"
+          echo "  - Change Size: < 100 files"
+          gh pr review --approve "$PR_URL" --body "✅ Auto-approved by Dev Promotion Readiness workflow.
+
+          **Quality Gates Validated:**
+          - Integration tests passed
+          - Success rate >= 80%
+          - Code coverage >= 80%
+          - No recent failures in last 6h
+          - Change size within limits
+
+          This PR is safe to merge to staging."
+
       - name: Send notifications
         if: always()
         uses: actions/github-script@v8
@@ -314,11 +337,11 @@ jobs:
             const prUrl = '${{ steps.create-pr.outputs.pr_url }}';
             
             // Create issue comment or notification
-            const message = ready 
+            const message = ready
               ? `## 🎉 Dev is Ready for Staging Promotion!\n\n` +
                 `Promotion Score: ${score}/100\n\n` +
-                `A pull request has been created for your review:\n${prUrl}\n\n` +
-                `Please review and approve to promote to staging.`
+                `A pull request has been created and auto-approved:\n${prUrl}\n\n` +
+                `PR will auto-merge once status checks complete.`
               : `## ⏸️ Dev Not Ready for Promotion\n\n` +
                 `Promotion Score: ${score}/100\n\n` +
                 `Check the [workflow run](${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`;

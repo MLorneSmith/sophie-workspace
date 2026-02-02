@@ -1,0 +1,38 @@
+{
+  "initiative_id": "S1890.I4",
+  "initiative_name": "Task & Activity Widgets",
+  "spec_id": "1890",
+  "status": "completed",
+  "current_phase": "finalization",
+  "completed_at": "2026-02-02T12:30:00Z",
+  "started_at": "2026-02-02T12:00:00Z",
+  "features": {
+    "S1890.I4.F1": {
+      "name": "Kanban Summary Card",
+      "status": "completed",
+      "task_count": 9,
+      "estimated_hours": 18
+    },
+    "S1890.I4.F2": {
+      "name": "Activity Aggregation Query",
+      "status": "completed",
+      "task_count": 9,
+      "estimated_hours": 24
+    },
+    "S1890.I4.F3": {
+      "name": "Activity Feed Timeline",
+      "status": "completed",
+      "task_count": 12,
+      "estimated_hours": 29
+    }
+  },
+  "totals": {
+    "features_completed": 3,
+    "features_total": 3,
+    "total_tasks": 30,
+    "total_spikes": 0,
+    "total_hours_sequential": 71,
+    "total_hours_parallel": 48
+  },
+  "spikes_pending": []
+}

@@ -1,0 +1,40 @@
+{
+  "initiative_id": "S1890.I6",
+  "initiative_name": "Coaching Integration",
+  "spec_id": "S1890",
+  "status": "completed",
+  "current_phase": "finalization",
+  "started_at": "2026-02-02T00:00:00Z",
+  "completed_at": "2026-02-02T00:30:00Z",
+  "features": {
+    "S1890.I6.F1": {
+      "name": "Cal.com API Client",
+      "status": "completed",
+      "task_count": 7,
+      "hours_sequential": 18,
+      "hours_parallel": 18
+    },
+    "S1890.I6.F2": {
+      "name": "Coaching Sessions Widget",
+      "status": "completed",
+      "task_count": 9,
+      "hours_sequential": 20,
+      "hours_parallel": 10
+    },
+    "S1890.I6.F3": {
+      "name": "Booking Embed Fallback",
+      "status": "completed",
+      "task_count": 5,
+      "hours_sequential": 11,
+      "hours_parallel": 9
+    }
+  },
+  "totals": {
+    "features_completed": 3,
+    "features_total": 3,
+    "tasks_total": 21,
+    "spikes_pending": [],
+    "hours_sequential": 49,
+    "hours_parallel": 37
+  }
+}

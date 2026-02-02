@@ -187,8 +187,20 @@ jobs:
   # Sharded E2E test execution - runs tests in parallel for faster completion
   test-shards:
     name: E2E Shard ${{ matrix.shard }}
-    # Use slash-separated format with unique run_id+job-index to prevent runner stealing (RunsOn docs)
-    runs-on: "runs-on=${{ github.run_id }}-job-${{ strategy.job-index }}/runner=4cpu-linux-x64"
+    # IMPORTANT: Runner Configuration
+    # ================================
+    # Using ubuntu-latest instead of RunsOn self-hosted runners.
+    #
+    # RunsOn labels with dynamic job-index (runs-on=${{ github.run_id }}-job-${{ strategy.job-index }}/...)
+    # caused matrix job scheduling failures:
+    # - Shards 9-12 stuck in "queued" state indefinitely (runner label mismatch)
+    # - Shards 2-8 failed with JWT validation error PGRST301 (inconsistent environment isolation)
+    #
+    # This configuration matches the proven working e2e-sharded.yml workflow.
+    # See: Issue #1896, #1897 - Staging Deploy E2E Shards Stuck with RunsOn Runner Issues
+    # See: Issue #1709, #1710 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
+    # See: Issue #951, #952, #959, #961 - Historical RunsOn label matching race conditions
+    runs-on: ubuntu-latest
     needs: [check-validation, test-setup]
     if: |
       always() && !failure() && !cancelled() &&

@@ -1,24 +1,29 @@
 import { cn } from "@kit/ui/utils";
-import { Inter as SansFont } from "next/font/google";
+import { DM_Sans, Plus_Jakarta_Sans } from "next/font/google";
 
 /**
  * @sans
- * @description Define here the sans font.
- * By default, it uses the Inter font from Google Fonts.
+ * @description DM Sans - Contemporary, friendly, highly readable body font.
  */
-const sans = SansFont({
+const sans = DM_Sans({
 	subsets: ["latin"],
 	variable: "--font-sans",
 	fallback: ["system-ui", "Helvetica Neue", "Helvetica", "Arial"],
 	preload: true,
-	weight: ["300", "400", "500", "600", "700"],
+	weight: ["400", "500", "700"],
 });
 
 /**
  * @heading
- * @description Define here the heading font.
+ * @description Plus Jakarta Sans - Modern, geometric heading font.
  */
-const heading = sans;
+const heading = Plus_Jakarta_Sans({
+	subsets: ["latin"],
+	variable: "--font-heading",
+	fallback: ["system-ui", "Helvetica Neue", "Helvetica", "Arial"],
+	preload: true,
+	weight: ["400", "500", "600", "700"],
+});
 
 // we export these fonts into the root layout
 export { sans, heading };
