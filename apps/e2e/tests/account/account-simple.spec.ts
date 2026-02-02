@@ -282,10 +282,11 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 		// Rapid open/close/open cycle to test timing resilience
 		// Note: 350ms waits accommodate Radix UI's close animation (~200-300ms)
-		// and dismissable layer cleanup to prevent pointer-events blocking
+		// Note: Using force:true on clicks when dropdown is open to bypass Radix UI's
+		// DismissableLayer which applies pointer-events:none to <html> (see issue #1912)
 		await accountDropdownTrigger.click();
 		await page.waitForTimeout(350); // Wait for Radix animation
-		await accountDropdownTrigger.click(); // Close
+		await accountDropdownTrigger.click({ force: true }); // Close - force bypasses DismissableLayer
 		await page.waitForTimeout(350); // Wait for Radix animation
 		await accountDropdownTrigger.click(); // Open again
 
