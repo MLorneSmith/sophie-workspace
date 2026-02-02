@@ -1,0 +1,39 @@
+{
+  "initiative_id": "S1890.I5",
+  "initiative_name": "Action Widgets",
+  "spec_id": 1890,
+  "status": "completed",
+  "current_phase": "finalization",
+  "started_at": "2026-02-02T00:00:00Z",
+  "completed_at": "2026-02-02T00:00:00Z",
+  "features": {
+    "S1890.I5.F1": {
+      "name": "Quick Actions Panel",
+      "status": "completed",
+      "task_count": 7,
+      "sequential_hours": 16,
+      "parallel_hours": 11,
+      "spikes": [],
+      "tasks_file": "S1890.I5.F1-Feature-quick-actions-panel/tasks.json"
+    },
+    "S1890.I5.F2": {
+      "name": "Presentation Outline Table",
+      "status": "completed",
+      "task_count": 6,
+      "sequential_hours": 12,
+      "parallel_hours": 10,
+      "spikes": [],
+      "tasks_file": "S1890.I5.F2-Feature-presentation-table/tasks.json"
+    }
+  },
+  "summary": {
+    "total_features": 2,
+    "completed_features": 2,
+    "failed_features": 0,
+    "total_tasks": 13,
+    "total_spikes": 0,
+    "spikes_pending": [],
+    "total_hours_sequential": 28,
+    "total_hours_parallel": 21
+  }
+}
