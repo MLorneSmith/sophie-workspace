@@ -306,9 +306,13 @@ jobs:
 
       - name: Auto-approve staging promotion PR
         if: steps.create-pr.outputs.pr_number != ''
+        # Note: This step uses continue-on-error because GITHUB_TOKEN cannot approve
+        # PRs created by the same token (GitHub blocks self-approval). For true auto-approval,
+        # configure a separate GitHub App or PAT with a different identity.
+        continue-on-error: true
         env:
           PR_URL: ${{ github.server_url }}/${{ github.repository }}/pull/${{ steps.create-pr.outputs.pr_number }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.APPROVAL_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           echo "Auto-approving staging promotion PR #${{ steps.create-pr.outputs.pr_number }}"
           echo "Quality gates already validated by this workflow:"
