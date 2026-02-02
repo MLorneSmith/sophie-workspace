@@ -93,8 +93,11 @@
 	--radius-lg: var(--radius);
 
 	/* Font families */
-	--font-sans: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-	--font-heading: var(--font-heading), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	--font-sans:
+		var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	--font-heading:
+		var(--font-heading), -apple-system, BlinkMacSystemFont, "Segoe UI",
+		sans-serif;
 
 	/* Animation utilities */
 	--animate-fade-up: fade-up 0.5s;
