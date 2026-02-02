@@ -46,7 +46,7 @@ export function usePersonalAccountData(
 		queryFn,
 		enabled: !!userId,
 		refetchOnWindowFocus: false,
-		refetchOnMount: false,
+		refetchOnMount: true,
 		initialData: partialAccount?.id
 			? {
 					id: partialAccount.id,
