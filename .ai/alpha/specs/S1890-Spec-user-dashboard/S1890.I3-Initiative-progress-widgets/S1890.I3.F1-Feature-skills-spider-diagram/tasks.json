@@ -1,0 +1,336 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1890.I3.F1",
+    "feature_name": "Self-Assessment Spider Diagram",
+    "feature_slug": "skills-spider-diagram",
+    "initiative_id": "S1890.I3",
+    "spec_id": 1890,
+    "created_at": "2026-02-02T00:00:00Z",
+    "complexity": {
+      "score": 37.5,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1890.I3.F1.T1"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1890.I3.F1.T1",
+      "type": "task",
+      "name": "Create SkillsSpiderDiagram component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "SkillsSpiderDiagram component file"
+      },
+      "purpose": "Establish component file structure with imports and TypeScript interface",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "5S Skills Assessment"
+          },
+          {
+            "command": "find role",
+            "target": "heading"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx",
+          "packages/ui/src/shadcn/chart.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Card, CardContent, CardHeader, CardTitle from @kit/ui/card",
+          "ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent from @kit/ui/chart",
+          "PolarAngleAxis, PolarGrid, Radar, RadarChart from recharts"
+        ],
+        "constraints": [
+          "Component must be client-side ('use client' directive)",
+          "Props interface: categoryScores: Record<string, number> | undefined",
+          "Title must be '5S Skills Assessment' not 'Survey Results'"
+        ]
+      },
+      "input_state": "Existing radar-chart.tsx component exists as reference pattern",
+      "output_state": "New skills-spider-diagram.tsx file exists with component scaffold, imports, and TypeScript interface",
+      "acceptance_criterion": "File exists at apps/web/app/home/(user)/_components/skills-spider-diagram.tsx with 'use client' directive, all imports, and CategoryScores interface defined",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/skills-spider-diagram.tsx && grep -q '\"use client\"' apps/web/app/home/\\(user\\)/_components/skills-spider-diagram.tsx && grep -q 'export interface CategoryScores' apps/web/app/home/\\(user\\)/_components/skills-spider-diagram.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/skills-spider-diagram.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1890.I3.F1.T2",
+          "S1890.I3.F1.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I3.F1.T2",
+      "type": "task",
+      "name": "Add empty state rendering logic",
+      "action": {
+        "verb": "Add",
+        "target": "empty state conditional rendering"
+      },
+      "purpose": "Handle case when no survey data exists with informative message and CTA",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/skills-spider-diagram.tsx",
+          "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx"
+        ],
+        "dependencies": [
+          "Card, CardContent, CardHeader, CardTitle from @kit/ui/card"
+        ],
+        "constraints": [
+          "Check if categoryScores is undefined or empty object",
+          "Empty state must include CTA to take assessment",
+          "Use Card wrapper for consistency",
+          "Message should be user-friendly: 'No skills assessment data yet'"
+        ]
+      },
+      "input_state": "Component skeleton exists with imports and interface",
+      "output_state": "Component renders Card with empty state message and 'Take Assessment' CTA when categoryScores is empty",
+      "acceptance_criterion": "Component returns Card with 'No skills assessment data yet' message and CTA when categoryScores is undefined or empty",
+      "verification_command": "grep -q 'if (!categoryScores' apps/web/app/home/\\(user\\)/_components/skills-spider-diagram.tsx && grep -q 'No.*assessment.*data' apps/web/app/home/\\(user\\)/_components/skills-spider-diagram.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/skills-spider-diagram.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I3.F1.T1"
+        ],
+        "blocks": [
+          "S1890.I3.F1.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I3.F1.T3",
+      "type": "task",
+      "name": "Add data transformation logic",
+      "action": {
+        "verb": "Add",
+        "target": "categoryScores to chartData transformation"
+      },
+      "purpose": "Convert Record<string, number> to array format required by Recharts",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/skills-spider-diagram.tsx",
+          "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx"
+        ],
+        "dependencies": [
+          "Object.entries() for transformation"
+        ],
+        "constraints": [
+          "Transform Record<string, number> to array of {category: string, score: number}",
+          "Use pattern from existing radar-chart.tsx: Object.entries(categoryScores).map()",
+          "Must handle case where categoryScores exists but is empty object"
+        ]
+      },
+      "input_state": "Component skeleton exists with imports and empty state logic",
+      "output_state": "Component includes chartData transformation: Object.entries(categoryScores).map(([category, score]) => ({ category, score }))",
+      "acceptance_criterion": "chartData const exists using Object.entries().map() transformation matching radar-chart.tsx pattern",
+      "verification_command": "grep -q 'Object.entries(categoryScores).map' apps/web/app/home/\\(user\\)/_components/skills-spider-diagram.tsx && grep -q 'category.*score' apps/web/app/home/\\(user\\)/_components/skills-spider-diagram.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/skills-spider-diagram.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I3.F1.T1"
+        ],
+        "blocks": [
+          "S1890.I3.F1.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I3.F1.T4",
+      "type": "task",
+      "name": "Add RadarChart rendering with ChartContainer",
+      "action": {
+        "verb": "Add",
+        "target": "RadarChart JSX with theme wrapper"
+      },
+      "purpose": "Render the actual radar chart visualization with proper theming",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/skills-spider-diagram.tsx",
+          "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx",
+          "packages/ui/src/shadcn/chart.tsx"
+        ],
+        "dependencies": [
+          "ChartContainer from @kit/ui/chart",
+          "RadarChart, PolarGrid, PolarAngleAxis, Radar from recharts",
+          "ChartConfig type and chartConfig const"
+        ],
+        "constraints": [
+          "Wrap RadarChart in ChartContainer with config prop",
+          "Use ChartContainer className: 'mx-auto aspect-square max-h-[250px]'",
+          "ChartConfig with score: { label: 'Score', color: 'hsl(var(--chart-1))' }",
+          "PolarAngleAxis dataKey='category'",
+          "Radar dataKey='score', fill='var(--color-score)', fillOpacity={0.6}",
+          "Include ChartTooltip with ChartTooltipContent"
+        ]
+      },
+      "input_state": "Component has empty state and data transformation logic",
+      "output_state": "Component renders Card with ChartContainer wrapping RadarChart when data exists",
+      "acceptance_criterion": "Component returns Card with ChartContainer > RadarChart structure matching radar-chart.tsx pattern",
+      "verification_command": "grep -q 'ChartContainer' apps/web/app/home/\\(user\\)/_components/skills-spider-diagram.tsx && grep -q 'RadarChart' apps/web/app/home/\\(user\\)/_components/skills-spider-diagram.tsx && grep -q 'PolarAngleAxis.*category' apps/web/app/home/\\(user\\)/_components/skills-spider-diagram.tsx && grep -q 'fillOpacity' apps/web/app/home/\\(user\\)/_components/skills-spider-diagram.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/skills-spider-diagram.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I3.F1.T2",
+          "S1890.I3.F1.T3"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Foundation",
+        "task_ids": [
+          "S1890.I3.F1.T1",
+          "S1890.I3.F1.T2",
+          "S1890.I3.F1.T3"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 6,
+        "parallel_hours": 6
+      },
+      {
+        "id": 2,
+        "name": "Chart Implementation",
+        "task_ids": [
+          "S1890.I3.F1.T4"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1890.I3.F1.T1",
+        "S1890.I3.F1.T2",
+        "S1890.I3.F1.T4"
+      ],
+      "total_hours": 7
+    },
+    "duration": {
+      "sequential": 9,
+      "parallel": 9,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
