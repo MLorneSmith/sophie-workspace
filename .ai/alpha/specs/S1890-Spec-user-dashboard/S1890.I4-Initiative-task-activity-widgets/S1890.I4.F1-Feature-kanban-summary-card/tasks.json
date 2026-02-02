@@ -1,0 +1,746 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1890.I4.F1",
+    "feature_name": "Kanban Summary Card",
+    "feature_slug": "kanban-summary-card",
+    "initiative_id": "S1890.I4",
+    "spec_id": 1890,
+    "created_at": "2026-02-02T18:30:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S1890.I4.F1.T1",
+      "S1890.I4.F1.T2",
+      "S1890.I4.F1.T3",
+      "S1890.I4.F1.T4",
+      "S1890.I4.F1.T5",
+      "S1890.I4.F1.T6"
+    ],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1890.I4.F1.T1",
+      "type": "task",
+      "name": "Create KanbanSummaryCard component skeleton with Card structure",
+      "action": {
+        "verb": "Create",
+        "target": "KanbanSummaryCard component file"
+      },
+      "purpose": "Establish the component file with Card container, header, and placeholder content sections",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Your Tasks"
+          },
+          {
+            "command": "find role",
+            "target": "heading"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+          "Trans from @kit/ui/trans"
+        ],
+        "constraints": [
+          "Use 'use client' directive for client component",
+          "Export as named export KanbanSummaryCard",
+          "Add data-testid='kanban-summary-card'"
+        ]
+      },
+      "input_state": "No component exists yet. Dashboard page.tsx exists from I1.F1.",
+      "output_state": "Component file exists with Card structure, header 'Your Tasks', and empty content sections for 'Doing' and 'Next Up'",
+      "acceptance_criterion": "File exists at apps/web/app/home/(user)/_components/kanban-summary-card.tsx with Card skeleton",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"'use client'\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"export.*KanbanSummaryCard\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1890.I4.F1.T2",
+          "S1890.I4.F1.T3",
+          "S1890.I4.F1.T4",
+          "S1890.I4.F1.T5",
+          "S1890.I4.F1.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I4.F1.T2",
+      "type": "task",
+      "name": "Integrate useTasks hook with loading and error states",
+      "action": {
+        "verb": "Add",
+        "target": "useTasks hook call with state handling"
+      },
+      "purpose": "Wire up data fetching from existing kanban hook with proper loading/error UI",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Your Tasks"
+          },
+          {
+            "command": "find role",
+            "target": "status"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/kanban/_lib/hooks/use-tasks.ts",
+          "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        ],
+        "dependencies": [
+          "useTasks hook from kanban/_lib/hooks/use-tasks",
+          "Task type from kanban/_lib/schema/task.schema",
+          "If component from @kit/ui/if",
+          "Spinner from @kit/ui/spinner"
+        ],
+        "constraints": [
+          "Show Spinner during loading",
+          "Show error message if query fails",
+          "Return null if no tasks exist"
+        ]
+      },
+      "input_state": "Component skeleton exists from T1. useTasks hook exists and is functional.",
+      "output_state": "Component calls useTasks(), shows loading spinner, error state, or renders content when data loads",
+      "acceptance_criterion": "useTasks hook is called, loading and error states render appropriately, typecheck passes",
+      "verification_command": "grep -q \"useTasks()\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"isLoading\\|isPending\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"error\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I4.F1.T1"
+        ],
+        "blocks": [
+          "S1890.I4.F1.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I4.F1.T3",
+      "type": "task",
+      "name": "Implement task filtering logic for Doing and Next Up",
+      "action": {
+        "verb": "Add",
+        "target": "filtering functions for task status"
+      },
+      "purpose": "Filter tasks by status ('doing' and 'do'), limit to 3 per section, and sort by priority",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/kanban/_lib/schema/task.schema.ts",
+          "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        ],
+        "dependencies": [
+          "Task type with status enum (do, doing, done)",
+          "Task type with priority enum (low, medium, high)"
+        ],
+        "constraints": [
+          "Filter doing tasks (status === 'doing'), max 3",
+          "Filter todo tasks (status === 'do'), max 3",
+          "Sort by priority: high > medium > low",
+          "Use useMemo for performance"
+        ]
+      },
+      "input_state": "Component has tasks data from useTasks(). Task schema has status and priority fields.",
+      "output_state": "Two filtered arrays: doingTasks (max 3) and nextUpTasks (max 3), both sorted by priority descending",
+      "acceptance_criterion": "Filtering functions exist, doingTasks and nextUpTasks variables are defined, limited to 3 items, sorted by priority",
+      "verification_command": "grep -q \"doingTasks\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"nextUpTasks\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"filter.*status.*doing\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"slice(0, 3)\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I4.F1.T2"
+        ],
+        "blocks": [
+          "S1890.I4.F1.T4",
+          "S1890.I4.F1.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I4.F1.T4",
+      "type": "task",
+      "name": "Create task item display component with priority border and phase badge",
+      "action": {
+        "verb": "Create",
+        "target": "TaskItem sub-component"
+      },
+      "purpose": "Render individual task with colored priority border, title, phase badge, and subtask progress",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Subtasks"
+          },
+          {
+            "command": "find role",
+            "target": "listitem"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/kanban/_components/task-card.tsx",
+          "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        ],
+        "dependencies": [
+          "Badge from @kit/ui/badge",
+          "cn from @kit/ui/utils",
+          "CheckCircle2Icon from lucide-react",
+          "Task type from kanban schema"
+        ],
+        "constraints": [
+          "Priority border classes: high=border-l-destructive, medium=border-l-warning, low=border-l-success, border-l-4",
+          "Phase badge variant='secondary' if phase exists",
+          "Show subtask progress as 'X/Y Subtasks' with CheckCircle2Icon",
+          "Use semantic Tailwind classes for dark mode"
+        ]
+      },
+      "input_state": "Filtered task arrays exist from T3. Task type has priority, phase, title, subtasks fields.",
+      "output_state": "TaskItem component renders task with colored border, title, optional phase badge, subtask progress indicator",
+      "acceptance_criterion": "TaskItem component exists, renders priority border colors correctly, shows phase badge conditionally, displays subtask count",
+      "verification_command": "grep -q \"border-l-destructive\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"border-l-warning\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"border-l-success\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"Badge.*variant.*secondary\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"CheckCircle2Icon\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I4.F1.T3"
+        ],
+        "blocks": [
+          "S1890.I4.F1.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I4.F1.T5",
+      "type": "task",
+      "name": "Add section headers for Doing and Next Up with task counts",
+      "action": {
+        "verb": "Add",
+        "target": "section headers with counts"
+      },
+      "purpose": "Render 'Doing' and 'Next Up' section headers showing total task counts per status",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Doing"
+          },
+          {
+            "command": "is visible",
+            "target": "Next Up"
+          },
+          {
+            "command": "find role",
+            "target": "heading"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        ],
+        "dependencies": [
+          "Trans component for i18n",
+          "doingTasks and nextUpTasks arrays from T3",
+          "text-muted-foreground class for counts"
+        ],
+        "constraints": [
+          "Use Trans component with i18nKey='dashboard:kanban.doingSection' and 'dashboard:kanban.nextUpSection'",
+          "Display count as '(X)' where X is doingTasks.length or nextUpTasks.length",
+          "Use text-sm font-medium for headers",
+          "Add mb-2 spacing below headers"
+        ]
+      },
+      "input_state": "Component has doingTasks and nextUpTasks arrays. TaskItem component exists.",
+      "output_state": "Section headers render 'Doing (X)' and 'Next Up (X)' with actual counts above task lists",
+      "acceptance_criterion": "Section headers exist with Trans i18nKey, counts display correctly, headers are styled consistently",
+      "verification_command": "grep -q \"dashboard:kanban.doingSection\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"dashboard:kanban.nextUpSection\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"doingTasks.length\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"nextUpTasks.length\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I4.F1.T3",
+          "S1890.I4.F1.T4"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I4.F1.T6",
+      "type": "task",
+      "name": "Add View Kanban Board link with ChevronRight icon",
+      "action": {
+        "verb": "Add",
+        "target": "navigation link to kanban board"
+      },
+      "purpose": "Provide link to full kanban board at bottom of card",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "View Kanban Board"
+          },
+          {
+            "command": "find role",
+            "target": "link"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-card.tsx",
+          "apps/web/app/(marketing)/docs/_components/docs-card.tsx"
+        ],
+        "dependencies": [
+          "Button from @kit/ui/button",
+          "ChevronRight from lucide-react",
+          "Link from next/link",
+          "Trans from @kit/ui/trans"
+        ],
+        "constraints": [
+          "Link href='/home/kanban'",
+          "Use Button variant='ghost' size='sm'",
+          "Text via Trans i18nKey='dashboard:kanban.viewBoard'",
+          "ChevronRight icon className='h-4 w-4 ml-1'",
+          "Add mt-4 spacing above link"
+        ]
+      },
+      "input_state": "Component renders task sections. Kanban page exists at /home/(user)/kanban/page.tsx.",
+      "output_state": "Link to /home/kanban renders at bottom of card with 'View Kanban Board' text and chevron icon",
+      "acceptance_criterion": "Link component exists, href='/home/kanban', uses Button variant='ghost', includes ChevronRight icon",
+      "verification_command": "grep -q \"href.*kanban\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"ChevronRight\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && grep -q \"dashboard:kanban.viewBoard\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I4.F1.T1"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I4.F1.T7",
+      "type": "task",
+      "name": "Add dashboard namespace to i18n settings",
+      "action": {
+        "verb": "Add",
+        "target": "dashboard namespace to defaultI18nNamespaces"
+      },
+      "purpose": "Enable dashboard translations to load automatically",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/lib/i18n/i18n.settings.ts"
+        ],
+        "dependencies": [
+          "defaultI18nNamespaces array"
+        ],
+        "constraints": [
+          "Add 'dashboard' to defaultI18nNamespaces array after 'kanban'",
+          "Maintain alphabetical-ish order"
+        ]
+      },
+      "input_state": "defaultI18nNamespaces array exists with 'common', 'auth', 'account', 'teams', 'billing', 'marketing', 'testimonials', 'kanban', 'assessment'",
+      "output_state": "defaultI18nNamespaces includes 'dashboard' entry",
+      "acceptance_criterion": "dashboard namespace is in defaultI18nNamespaces array, typecheck passes",
+      "verification_command": "grep -q \"'dashboard'\" apps/web/lib/i18n/i18n.settings.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/lib/i18n/i18n.settings.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1890.I4.F1.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I4.F1.T8",
+      "type": "task",
+      "name": "Create dashboard.json with kanban widget translations",
+      "action": {
+        "verb": "Create",
+        "target": "dashboard i18n file"
+      },
+      "purpose": "Provide English translations for kanban summary widget",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/public/locales/en/kanban.json"
+        ],
+        "dependencies": [
+          "i18n file structure pattern from kanban.json"
+        ],
+        "constraints": [
+          "Create file at apps/web/public/locales/en/dashboard.json",
+          "Include kanban.doingSection, kanban.nextUpSection, kanban.viewBoard keys",
+          "Follow JSON structure from kanban.json"
+        ]
+      },
+      "input_state": "No dashboard.json exists. Kanban.json exists as reference.",
+      "output_state": "dashboard.json file exists with kanban widget translation keys",
+      "acceptance_criterion": "File exists at apps/web/public/locales/en/dashboard.json with valid JSON containing kanban.* keys",
+      "verification_command": "test -f apps/web/public/locales/en/dashboard.json && cat apps/web/public/locales/en/dashboard.json | jq -e '.kanban.doingSection and .kanban.nextUpSection and .kanban.viewBoard' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/public/locales/en/dashboard.json"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I4.F1.T7"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I4.F1.T9",
+      "type": "task",
+      "name": "Wire KanbanSummaryCard to dashboard page grid",
+      "action": {
+        "verb": "Add",
+        "target": "component import and placement"
+      },
+      "purpose": "Integrate widget into dashboard page layout",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Your Tasks"
+          },
+          {
+            "command": "find role",
+            "target": "main"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        ],
+        "dependencies": [
+          "PageBody from @kit/ui/page",
+          "KanbanSummaryCard component from T1"
+        ],
+        "constraints": [
+          "Import KanbanSummaryCard from ./_components/kanban-summary-card",
+          "Place inside PageBody component",
+          "Wrap in Suspense with Spinner fallback",
+          "Add to responsive grid layout from I1.F1"
+        ]
+      },
+      "input_state": "Dashboard page.tsx exists with PageBody. KanbanSummaryCard component complete from T1-T6.",
+      "output_state": "page.tsx imports and renders KanbanSummaryCard within PageBody grid",
+      "acceptance_criterion": "page.tsx imports KanbanSummaryCard, renders it in grid, typecheck passes",
+      "verification_command": "grep -q \"KanbanSummaryCard\" apps/web/app/home/\\(user\\)/page.tsx && grep -q \"from.*kanban-summary-card\" apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1890.I4.F1.T1",
+          "S1890.I4.F1.T5",
+          "S1890.I4.F1.T6"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Foundation",
+        "task_ids": [
+          "S1890.I4.F1.T1",
+          "S1890.I4.F1.T2"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Task Display Logic",
+        "task_ids": [
+          "S1890.I4.F1.T3",
+          "S1890.I4.F1.T4"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 6,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "UI Polish",
+        "task_ids": [
+          "S1890.I4.F1.T5",
+          "S1890.I4.F1.T6"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "i18n Setup",
+        "task_ids": [
+          "S1890.I4.F1.T7",
+          "S1890.I4.F1.T8"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 1
+      },
+      {
+        "id": 5,
+        "name": "Integration",
+        "task_ids": [
+          "S1890.I4.F1.T9"
+        ],
+        "depends_on_groups": [
+          3,
+          4
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1890.I4.F1.T1",
+        "S1890.I4.F1.T2",
+        "S1890.I4.F1.T3",
+        "S1890.I4.F1.T4",
+        "S1890.I4.F1.T5",
+        "S1890.I4.F1.T9"
+      ],
+      "total_hours": 14
+    },
+    "duration": {
+      "sequential": 18,
+      "parallel": 10,
+      "time_saved_percent": 44
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
