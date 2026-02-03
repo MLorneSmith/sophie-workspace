@@ -549,17 +549,25 @@ jobs:
     name: PR Status Check
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, lint, typecheck, test-unit, yaml-lint, markdown-lint, aikido-security, accessibility-test, docker-scan]
-    if: always()
+    # always() ensures this runs even when jobs are skipped, but !cancelled() prevents
+    # the job from getting stuck when the workflow is cancelled mid-flight
+    if: ${{ always() && !cancelled() }}
     steps:
       - name: Check status
         run: |
+          # If workflow was cancelled, exit cleanly
+          if [[ "${{ needs.check-skip.result }}" == "cancelled" ]]; then
+            echo "⚠️ Workflow was cancelled"
+            exit 0
+          fi
+
           # If validation was skipped, report success
           if [[ "${{ needs.check-skip.outputs.should-skip }}" == "true" ]]; then
             echo "✅ Validation skipped - promotion PR with recent successful checks"
             echo "${{ needs.check-skip.outputs.skip-reason }}"
             exit 0
           fi
-          
+
           # Otherwise, check individual job results
           if [[ "${{ needs.lint.result }}" == "failure" ]] || \
              [[ "${{ needs.typecheck.result }}" == "failure" ]] || \
