@@ -221,6 +221,7 @@ describe("WorkLoop Promise Timeout Monitor", () => {
 				manifest,
 				uiEnabled: false,
 				timeoutSeconds: 3600,
+				provider: "claude" as const,
 			};
 
 			const workLoop = new WorkLoop(options);
@@ -271,6 +272,7 @@ describe("WorkLoop Promise Timeout Monitor", () => {
 				manifest,
 				uiEnabled: false,
 				timeoutSeconds: 3600,
+				provider: "claude" as const,
 			};
 
 			const workLoop = new WorkLoop(options);
@@ -323,6 +325,7 @@ describe("WorkLoop Promise Timeout Monitor", () => {
 				manifest,
 				uiEnabled: false,
 				timeoutSeconds: 3600,
+				provider: "claude" as const,
 			};
 
 			const workLoop = new WorkLoop(options);
@@ -371,6 +374,7 @@ describe("WorkLoop Promise Timeout Monitor", () => {
 				manifest,
 				uiEnabled: false,
 				timeoutSeconds: 3600,
+				provider: "claude" as const,
 			};
 
 			const workLoop = new WorkLoop(options);
@@ -443,6 +447,7 @@ describe("WorkLoop Promise Timeout Monitor", () => {
 				manifest,
 				uiEnabled: false,
 				timeoutSeconds: 3600,
+				provider: "claude" as const,
 			};
 
 			const workLoop = new WorkLoop(options);
@@ -520,6 +525,7 @@ describe("WorkLoop Promise Timeout Monitor", () => {
 				manifest,
 				uiEnabled: false,
 				timeoutSeconds: 3600,
+				provider: "claude" as const,
 			};
 
 			const workLoop = new WorkLoop(options);

@@ -26,10 +26,7 @@ import {
 	getAllEnvVars,
 	validateSupabaseTokensRequired,
 } from "./environment.js";
-import {
-	getProviderDisplayName,
-	getTemplateAlias,
-} from "./provider.js";
+import { getProviderDisplayName, getTemplateAlias } from "./provider.js";
 
 // ============================================================================
 // Timeout Configuration
@@ -492,7 +489,9 @@ async function setupCodexAuth(
 
 	// Check if local auth.json exists
 	if (!fs.existsSync(localAuthPath)) {
-		log("   ⚠️ No local ~/.codex/auth.json found - run 'codex auth' locally first");
+		log(
+			"   ⚠️ No local ~/.codex/auth.json found - run 'codex auth' locally first",
+		);
 		return;
 	}
 
@@ -509,11 +508,15 @@ async function setupCodexAuth(
 			`echo '${authBase64}' | base64 -d > ~/.codex/auth.json`,
 			{ timeoutMs: 5000 },
 		);
-		await sandbox.commands.run("chmod 600 ~/.codex/auth.json", { timeoutMs: 5000 });
+		await sandbox.commands.run("chmod 600 ~/.codex/auth.json", {
+			timeoutMs: 5000,
+		});
 
 		log("   ✅ Codex authentication copied to sandbox");
 	} catch (err) {
-		log(`   ⚠️ Failed to copy Codex auth: ${err instanceof Error ? err.message : String(err)}`);
+		log(
+			`   ⚠️ Failed to copy Codex auth: ${err instanceof Error ? err.message : String(err)}`,
+		);
 	}
 }
 
@@ -552,7 +555,9 @@ export async function createSandbox(
 		);
 	}
 
-	log(`\n📦 Creating sandbox ${label} (${getProviderDisplayName(provider)})...`);
+	log(
+		`\n📦 Creating sandbox ${label} (${getProviderDisplayName(provider)})...`,
+	);
 
 	const sandbox = await Sandbox.create(getTemplateAlias(provider), {
 		timeoutMs: timeout * 1000,

@@ -167,8 +167,10 @@ describe("recovery-manager", () => {
 		it("should wait for process termination", async () => {
 			const sandbox = createMockSandbox({ processCount: 0 });
 
-			const terminated =
-				await recoveryManager.waitForProcessTermination(sandbox, "claude");
+			const terminated = await recoveryManager.waitForProcessTermination(
+				sandbox,
+				"claude",
+			);
 
 			expect(terminated).toBe(true);
 		});

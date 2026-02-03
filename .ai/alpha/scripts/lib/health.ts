@@ -212,10 +212,9 @@ export async function killClaudeProcess(
 
 	try {
 		// Kill any running agent processes
-		await instance.sandbox.commands.run(
-			getForceKillCommand(provider),
-			{ timeoutMs: 10000 },
-		);
+		await instance.sandbox.commands.run(getForceKillCommand(provider), {
+			timeoutMs: 10000,
+		});
 		killSucceeded = true;
 	} catch (error) {
 		log(
