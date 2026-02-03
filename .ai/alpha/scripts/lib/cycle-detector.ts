@@ -112,7 +112,7 @@ export function detectDirectCycles(
 
 			// Check if the dependency also depends on this feature
 			const featureB = featureMap.get(depId);
-			if (featureB && featureB.dependencies.includes(featureA.id)) {
+			if (featureB?.dependencies.includes(featureA.id)) {
 				cycles.push({
 					type: "direct-cycle",
 					path: [featureA.id, depId, featureA.id],
