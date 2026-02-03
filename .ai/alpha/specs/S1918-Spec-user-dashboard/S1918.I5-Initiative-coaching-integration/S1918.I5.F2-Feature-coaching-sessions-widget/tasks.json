@@ -635,53 +635,37 @@
       },
       {
         "id": 2,
-        "name": "Basic States",
-        "task_ids": ["S1918.I5.F2.T3", "S1918.I5.F2.T4"],
+        "name": "States and Populated View",
+        "task_ids": ["S1918.I5.F2.T3", "S1918.I5.F2.T4", "S1918.I5.F2.T5"],
         "depends_on_groups": [1],
-        "estimated_hours": 4,
-        "parallel_hours": 2
-      },
-      {
-        "id": 3,
-        "name": "Populated State",
-        "task_ids": ["S1918.I5.F2.T5"],
-        "depends_on_groups": [1],
-        "estimated_hours": 3,
+        "estimated_hours": 7,
         "parallel_hours": 3
       },
       {
+        "id": 3,
+        "name": "Button Wiring and Error Handling",
+        "task_ids": ["S1918.I5.F2.T6", "S1918.I5.F2.T7", "S1918.I5.F2.T8"],
+        "depends_on_groups": [2],
+        "estimated_hours": 6,
+        "parallel_hours": 2
+      },
+      {
         "id": 4,
-        "name": "Button Wiring",
-        "task_ids": ["S1918.I5.F2.T6", "S1918.I5.F2.T7"],
-        "depends_on_groups": [3],
-        "estimated_hours": 4,
-        "parallel_hours": 2
-      },
-      {
-        "id": 5,
-        "name": "Error Handling",
-        "task_ids": ["S1918.I5.F2.T8"],
-        "depends_on_groups": [3],
-        "estimated_hours": 2,
-        "parallel_hours": 2
-      },
-      {
-        "id": 6,
         "name": "Integration",
         "task_ids": ["S1918.I5.F2.T9"],
-        "depends_on_groups": [3, 5],
+        "depends_on_groups": [3],
         "estimated_hours": 2,
         "parallel_hours": 2
       }
     ],
     "critical_path": {
-      "task_ids": ["S1918.I5.F2.T1", "S1918.I5.F2.T5", "S1918.I5.F2.T6", "S1918.I5.F2.T9"],
+      "task_ids": ["S1918.I5.F2.T1", "S1918.I5.F2.T5", "S1918.I5.F2.T8", "S1918.I5.F2.T9"],
       "total_hours": 9
     },
     "duration": {
       "sequential": 18,
-      "parallel": 13,
-      "time_saved_percent": 27.8
+      "parallel": 9,
+      "time_saved_percent": 50.0
     }
   },
   "validation": {
@@ -703,6 +687,6 @@
   },
   "github": {
     "issues_created": false,
-    "spec_issue_commented": false
+    "spec_issue_commented": true
   }
 }
