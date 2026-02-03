@@ -1,0 +1,488 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1890.I6.F1",
+    "feature_name": "Cal.com API Client",
+    "feature_slug": "calcom-api-client",
+    "initiative_id": "S1890.I6",
+    "spec_id": 1890,
+    "created_at": "2026-02-02T16:45:19Z",
+    "complexity": {
+      "score": 52.5,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": [
+      {
+        "name": "CALCOM_API_KEY",
+        "description": "Cal.com V2 API key prefixed with cal_ for Bearer token authentication",
+        "source": "Cal.com Dashboard → Settings → API Keys → Create V2 API Key",
+        "required": true,
+        "scope": "server"
+      },
+      {
+        "name": "NEXT_PUBLIC_CALCOM_COACH_USERNAME",
+        "description": "Cal.com username for coach booking links",
+        "source": "Cal.com account username from profile settings",
+        "required": true,
+        "scope": "client"
+      },
+      {
+        "name": "NEXT_PUBLIC_CALCOM_EVENT_SLUG",
+        "description": "Event type slug for coaching sessions (e.g., 60min)",
+        "source": "Cal.com event type settings → Event slug field",
+        "required": true,
+        "scope": "client"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1890.I6.F1.T1",
+      "type": "task",
+      "name": "Create CalcomBooking TypeScript types",
+      "action": {
+        "verb": "Create",
+        "target": "calcom-types.ts with TypeScript interfaces"
+      },
+      "purpose": "Define TypeScript interfaces for Cal.com V2 API booking response structure to ensure type safety across the API client",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Must match Cal.com V2 API response structure",
+          "Include required fields: id, title, startTime, endTime, status, attendees, meetingUrl",
+          "Use ISO 8601 date strings for timestamps"
+        ]
+      },
+      "input_state": "No Cal.com types exist in codebase",
+      "output_state": "calcom-types.ts exists with CalcomBooking, CalcomAttendee, and CalcomBookingsResponse interfaces",
+      "acceptance_criterion": "File exists at apps/web/app/home/(user)/_lib/server/calcom-types.ts with exported interfaces matching V2 API structure",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/server/calcom-types.ts && grep -q 'export interface CalcomBooking' apps/web/app/home/\\(user\\)/_lib/server/calcom-types.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/calcom-types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1890.I6.F1.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I6.F1.T2",
+      "type": "task",
+      "name": "Create API client skeleton with server-only directive",
+      "action": {
+        "verb": "Create",
+        "target": "calcom-api.ts with server-only directive and imports"
+      },
+      "purpose": "Establish the API client file structure with server-only directive to prevent accidental client-side usage",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/calcom-types.ts"
+        ],
+        "dependencies": [
+          "import 'server-only'",
+          "import { cache } from 'react'",
+          "CalcomBooking type from calcom-types.ts"
+        ],
+        "constraints": [
+          "Must start with 'server-only' directive",
+          "Must use React cache() for request-level caching",
+          "Function signature: fetchUpcomingBookings(): Promise<CalcomBooking[] | null>"
+        ]
+      },
+      "input_state": "calcom-types.ts exists with TypeScript interfaces",
+      "output_state": "calcom-api.ts exists with imports and empty fetchUpcomingBookings function skeleton",
+      "acceptance_criterion": "File exists with server-only directive and exports cached fetchUpcomingBookings function",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/server/calcom-api.ts && grep -q \"import 'server-only'\" apps/web/app/home/\\(user\\)/_lib/server/calcom-api.ts && grep -q 'export const fetchUpcomingBookings' apps/web/app/home/\\(user\\)/_lib/server/calcom-api.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/calcom-api.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I6.F1.T1"],
+        "blocks": ["S1890.I6.F1.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I6.F1.T3",
+      "type": "task",
+      "name": "Add Bearer token authentication headers",
+      "action": {
+        "verb": "Add",
+        "target": "fetch call with Authorization and cal-api-version headers"
+      },
+      "purpose": "Implement Bearer token authentication with V2 API version header for Cal.com API access",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/calcom-api.ts"
+        ],
+        "dependencies": [
+          "process.env.CALCOM_API_KEY"
+        ],
+        "constraints": [
+          "API endpoint: GET https://api.cal.com/v2/bookings?status=accepted",
+          "Authorization header: Bearer {CALCOM_API_KEY}",
+          "cal-api-version header: 2024-08-13",
+          "Must validate CALCOM_API_KEY exists",
+          "Must check CALCOM_API_KEY starts with 'cal_' prefix"
+        ]
+      },
+      "input_state": "calcom-api.ts exists with empty fetchUpcomingBookings function",
+      "output_state": "fetchUpcomingBookings function makes authenticated fetch call to Cal.com V2 API",
+      "acceptance_criterion": "Function makes fetch call with correct headers and returns response data",
+      "verification_command": "grep -q 'Authorization.*Bearer' apps/web/app/home/\\(user\\)/_lib/server/calcom-api.ts && grep -q 'cal-api-version.*2024-08-13' apps/web/app/home/\\(user\\)/_lib/server/calcom-api.ts && pnpm typecheck",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "env_var_graceful",
+            "target": "CALCOM_API_KEY",
+            "expected_action": "warn and return null if missing",
+            "file_path": "apps/web/app/home/(user)/_lib/server/calcom-api.ts"
+          }
+        ]
+      },
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/calcom-api.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I6.F1.T2"],
+        "blocks": ["S1890.I6.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I6.F1.T4",
+      "type": "task",
+      "name": "Add Next.js fetch caching with 5-minute revalidation",
+      "action": {
+        "verb": "Add",
+        "target": "fetch options with next revalidate configuration"
+      },
+      "purpose": "Enable 5-minute response caching to reduce API calls and improve performance",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/calcom-api.ts"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Use Next.js fetch with next: { revalidate: 300 } for 5-minute cache",
+          "Cache should be request-level using React cache()",
+          "Must not cache error responses"
+        ]
+      },
+      "input_state": "fetchUpcomingBookings makes authenticated API call without caching",
+      "output_state": "fetchUpcomingBookings caches successful responses for 5 minutes",
+      "acceptance_criterion": "fetch call includes next: { revalidate: 300 } option and function is wrapped with cache()",
+      "verification_command": "grep -q 'revalidate.*300' apps/web/app/home/\\(user\\)/_lib/server/calcom-api.ts && grep -q 'cache(' apps/web/app/home/\\(user\\)/_lib/server/calcom-api.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/calcom-api.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I6.F1.T3"],
+        "blocks": ["S1890.I6.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I6.F1.T5",
+      "type": "task",
+      "name": "Add error handling with graceful degradation",
+      "action": {
+        "verb": "Add",
+        "target": "try-catch block with null return on error"
+      },
+      "purpose": "Handle API failures gracefully by returning null instead of throwing, enabling fallback UI rendering",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/calcom-api.ts"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Return null on any error (network, auth, parse)",
+          "Must not throw errors - graceful degradation pattern",
+          "Check for missing CALCOM_API_KEY and return null with warning",
+          "Validate response.ok before parsing JSON"
+        ]
+      },
+      "input_state": "fetchUpcomingBookings makes cached API call without error handling",
+      "output_state": "fetchUpcomingBookings wraps API call in try-catch and returns null on failures",
+      "acceptance_criterion": "Function returns null on errors and validates CALCOM_API_KEY existence",
+      "verification_command": "grep -q 'try {' apps/web/app/home/\\(user\\)/_lib/server/calcom-api.ts && grep -q 'return null' apps/web/app/home/\\(user\\)/_lib/server/calcom-api.ts && grep -q 'CALCOM_API_KEY' apps/web/app/home/\\(user\\)/_lib/server/calcom-api.ts && pnpm typecheck",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "env_var_graceful",
+            "target": "CALCOM_API_KEY",
+            "expected_action": "warn and return null if missing",
+            "file_path": "apps/web/app/home/(user)/_lib/server/calcom-api.ts"
+          }
+        ]
+      },
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/calcom-api.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I6.F1.T4"],
+        "blocks": ["S1890.I6.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I6.F1.T6",
+      "type": "task",
+      "name": "Add logging for API errors and warnings",
+      "action": {
+        "verb": "Add",
+        "target": "logger calls for error and warning scenarios"
+      },
+      "purpose": "Enable debugging and monitoring of Cal.com API integration issues",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/calcom-api.ts"
+        ],
+        "dependencies": [
+          "import { createServiceLogger } from '@kit/shared/logger'"
+        ],
+        "constraints": [
+          "Log warning when CALCOM_API_KEY is missing",
+          "Log error when API call fails with status code",
+          "Log error when JSON parsing fails",
+          "Include context object with error details"
+        ]
+      },
+      "input_state": "fetchUpcomingBookings handles errors but does not log them",
+      "output_state": "fetchUpcomingBookings logs warnings for missing config and errors for API failures",
+      "acceptance_criterion": "Logger is imported and used in error paths with appropriate log levels",
+      "verification_command": "grep -q 'createServiceLogger' apps/web/app/home/\\(user\\)/_lib/server/calcom-api.ts && grep -q 'logger.warn' apps/web/app/home/\\(user\\)/_lib/server/calcom-api.ts && grep -q 'logger.error' apps/web/app/home/\\(user\\)/_lib/server/calcom-api.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/calcom-api.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I6.F1.T5"],
+        "blocks": ["S1890.I6.F1.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I6.F1.T7",
+      "type": "task",
+      "name": "Write unit tests for fetchUpcomingBookings",
+      "action": {
+        "verb": "Create",
+        "target": "calcom-api.test.ts with mocked fetch responses"
+      },
+      "purpose": "Verify API client behavior with mocked Cal.com responses for success and error scenarios",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/calcom-api.ts",
+          "apps/web/app/home/(user)/_lib/server/calcom-types.ts"
+        ],
+        "dependencies": [
+          "vitest",
+          "vi.mock for global fetch"
+        ],
+        "constraints": [
+          "Mock fetch with vi.stubGlobal or vi.mock",
+          "Test successful API response returns bookings array",
+          "Test missing CALCOM_API_KEY returns null with warning",
+          "Test API error response returns null",
+          "Test non-ok response returns null",
+          "Test JSON parse error returns null"
+        ]
+      },
+      "input_state": "calcom-api.ts is complete but has no tests",
+      "output_state": "calcom-api.test.ts exists with 5+ test cases covering success and error paths",
+      "acceptance_criterion": "Test file exists with passing tests for success, missing env, API error, and parse error scenarios",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/server/calcom-api.test.ts && pnpm --filter web test:unit -- calcom-api.test.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/calcom-api.test.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I6.F1.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Types Foundation",
+        "task_ids": ["S1890.I6.F1.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "API Client Implementation",
+        "task_ids": ["S1890.I6.F1.T2", "S1890.I6.F1.T3", "S1890.I6.F1.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 7,
+        "parallel_hours": 7
+      },
+      {
+        "id": 3,
+        "name": "Error Handling & Logging",
+        "task_ids": ["S1890.I6.F1.T5", "S1890.I6.F1.T6"],
+        "depends_on_groups": [2],
+        "estimated_hours": 5,
+        "parallel_hours": 5
+      },
+      {
+        "id": 4,
+        "name": "Testing",
+        "task_ids": ["S1890.I6.F1.T7"],
+        "depends_on_groups": [3],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1890.I6.F1.T1", "S1890.I6.F1.T2", "S1890.I6.F1.T3", "S1890.I6.F1.T4", "S1890.I6.F1.T5", "S1890.I6.F1.T6", "S1890.I6.F1.T7"],
+      "total_hours": 18
+    },
+    "duration": {
+      "sequential": 18,
+      "parallel": 18,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

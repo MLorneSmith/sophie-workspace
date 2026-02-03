@@ -1,0 +1,40 @@
+{
+  "initiative_id": "S1890.I1",
+  "spec_id": "S1890",
+  "status": "completed",
+  "current_phase": "finalization",
+  "started_at": "2026-02-02T12:00:00Z",
+  "completed_at": "2026-02-02T12:30:00Z",
+  "features": {
+    "S1890.I1.F1": {
+      "name": "Dashboard Page & Layout",
+      "status": "completed",
+      "task_count": 5,
+      "sequential_hours": 2.5,
+      "parallel_hours": 2.0
+    },
+    "S1890.I1.F2": {
+      "name": "Widget Placeholder Grid",
+      "status": "completed",
+      "task_count": 3,
+      "sequential_hours": 4.0,
+      "parallel_hours": 4.0
+    },
+    "S1890.I1.F3": {
+      "name": "Navigation & Routing",
+      "status": "completed",
+      "task_count": 3,
+      "sequential_hours": 4.0,
+      "parallel_hours": 4.0
+    }
+  },
+  "totals": {
+    "features_completed": 3,
+    "features_total": 3,
+    "tasks_total": 11,
+    "spikes_pending": [],
+    "sequential_hours": 10.5,
+    "parallel_hours": 10.0,
+    "time_saved_percent": 5
+  }
+}

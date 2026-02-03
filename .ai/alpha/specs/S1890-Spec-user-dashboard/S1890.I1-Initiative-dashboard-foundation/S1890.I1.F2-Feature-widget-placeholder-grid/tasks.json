@@ -1,0 +1,278 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1890.I1.F2",
+    "feature_name": "Widget Placeholder Grid",
+    "feature_slug": "widget-placeholder-grid",
+    "initiative_id": "S1890.I1",
+    "spec_id": "1890",
+    "created_at": "2026-02-02T17:00:00Z",
+    "complexity": {
+      "score": 37.5,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": "dashboard-card"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1890.I1.F2.T1", "S1890.I1.F2.T2", "S1890.I1.F2.T3"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1890.I1.F2.T1",
+      "type": "task",
+      "name": "Create DashboardWidgetPlaceholder component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "DashboardWidgetPlaceholder component"
+      },
+      "purpose": "Create reusable placeholder component with Card, Skeleton, size variants, and dev-mode label support",
+      "status": "draft",
+      "estimated_hours": 1.5,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "article"
+          },
+          {
+            "command": "is visible",
+            "target": "Widget Placeholder"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard-widget-placeholder.tsx"
+        ],
+        "dependencies": [
+          "Card from @kit/ui/card",
+          "Skeleton from @kit/ui/skeleton",
+          "cn from @kit/ui/cn"
+        ],
+        "constraints": [
+          "Component should be server component (no 'use client')",
+          "Three size variants: small (200px), medium (280px), large (320px)",
+          "Dev-mode label using process.env.NODE_ENV === 'development'",
+          "Each instance needs unique data-testid prop",
+          "Use semantic Tailwind classes: bg-card, text-card-foreground, text-muted-foreground"
+        ]
+      },
+      "input_state": "_components directory exists but no placeholder component",
+      "output_state": "DashboardWidgetPlaceholder component exists with size variants and dev label support",
+      "acceptance_criterion": "Component file exists with Card + Skeleton structure, size variants, and label prop",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/dashboard-widget-placeholder.tsx && grep -q 'small.*200' apps/web/app/home/\\(user\\)/_components/dashboard-widget-placeholder.tsx && grep -q 'process.env.NODE_ENV' apps/web/app/home/\\(user\\)/_components/dashboard-widget-placeholder.tsx && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/dashboard-widget-placeholder.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1890.I1.F2.T2", "S1890.I1.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I1.F2.T2",
+      "type": "task",
+      "name": "Replace 6 widget Cards with DashboardWidgetPlaceholder instances",
+      "action": {
+        "verb": "Update",
+        "target": "6 placeholder Cards"
+      },
+      "purpose": "Import DashboardWidgetPlaceholder and replace generic Card placeholders with sized placeholder instances",
+      "status": "draft",
+      "estimated_hours": 1.5,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Progress Overview"
+          },
+          {
+            "command": "is visible",
+            "target": "Task Completion"
+          },
+          {
+            "command": "find role",
+            "target": "article"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "DashboardWidgetPlaceholder component from ./_components/dashboard-widget-placeholder"
+        ],
+        "constraints": [
+          "Add import at top of file: import { DashboardWidgetPlaceholder } from './_components/dashboard-widget-placeholder'",
+          "Row 1 (3 widgets): Progress Overview (medium), Task Completion (medium), Activity Summary (medium)",
+          "Row 2 (3 widgets): Recent Tasks (large), Quick Actions (small), Upcoming Sessions (medium)",
+          "Each placeholder needs unique data-testid: dashboard-widget-progress, dashboard-widget-tasks, etc.",
+          "Use label prop for dev-mode display names"
+        ]
+      },
+      "input_state": "Page has 6 generic Card placeholders from F1, no DashboardWidgetPlaceholder import",
+      "output_state": "Page imports DashboardWidgetPlaceholder and uses 6 instances with proper sizing, labels, test IDs",
+      "acceptance_criterion": "6 DashboardWidgetPlaceholder components exist with unique data-testid attributes and appropriate sizes",
+      "verification_command": "grep -q \"import.*DashboardWidgetPlaceholder.*from.*_components\" apps/web/app/home/\\(user\\)/page.tsx && grep -c 'DashboardWidgetPlaceholder' apps/web/app/home/\\(user\\)/page.tsx | grep -q '^6$' && grep -q 'data-testid=\"dashboard-widget-progress\"' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I1.F2.T1"],
+        "blocks": ["S1890.I1.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I1.F2.T3",
+      "type": "task",
+      "name": "Update presentations section with DashboardWidgetPlaceholder",
+      "action": {
+        "verb": "Update",
+        "target": "presentations section placeholder"
+      },
+      "purpose": "Replace presentations Card placeholder with DashboardWidgetPlaceholder using large size",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Presentations"
+          },
+          {
+            "command": "find role",
+            "target": "article"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "DashboardWidgetPlaceholder component"
+        ],
+        "constraints": [
+          "Use large size variant for presentations",
+          "Keep lg:col-span-3 wrapper for full-width layout",
+          "data-testid should be dashboard-widget-presentations",
+          "Label should be 'Presentations'"
+        ]
+      },
+      "input_state": "Presentations section exists as generic Card placeholder with lg:col-span-3",
+      "output_state": "Presentations section uses DashboardWidgetPlaceholder with large size and proper test ID",
+      "acceptance_criterion": "Presentations placeholder is DashboardWidgetPlaceholder with data-testid and lg:col-span-3 wrapper",
+      "verification_command": "grep -Pzo 'lg:col-span-3[^>]*>[^<]*<DashboardWidgetPlaceholder' apps/web/app/home/\\(user\\)/page.tsx && grep -q 'data-testid=\"dashboard-widget-presentations\"' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I1.F2.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Placeholder Grid Implementation",
+        "task_ids": ["S1890.I1.F2.T1", "S1890.I1.F2.T2", "S1890.I1.F2.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 2.5
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1890.I1.F2.T1", "S1890.I1.F2.T2"],
+      "total_hours": 3
+    },
+    "duration": {
+      "sequential": 4,
+      "parallel": 2.5,
+      "time_saved_percent": 37.5
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

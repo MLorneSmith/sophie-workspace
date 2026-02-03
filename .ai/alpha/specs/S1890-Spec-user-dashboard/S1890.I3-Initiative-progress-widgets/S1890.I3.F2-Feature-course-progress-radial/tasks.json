@@ -1,0 +1,490 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1890.I3.F2",
+    "feature_name": "Course Progress Radial Chart",
+    "feature_slug": "course-progress-radial",
+    "initiative_id": "S1890.I3",
+    "spec_id": "1890",
+    "created_at": "2026-02-02T00:00:00Z",
+    "complexity": {
+      "score": 37.5,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "signals": {
+        "files_affected": {
+          "value": 1,
+          "weight": 0.0
+        },
+        "dependencies": {
+          "value": "few",
+          "weight": 0.5
+        },
+        "estimated_loc": {
+          "value": 150,
+          "weight": 0.5
+        },
+        "feature_type": {
+          "value": "feature",
+          "weight": 0.5
+        }
+      },
+      "pattern_matched": "dashboard-card (adapted for chart)"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1890.I3.F2.T1", "S1890.I3.F2.T2", "S1890.I3.F2.T3", "S1890.I3.F2.T4", "S1890.I3.F2.T5"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1890.I3.F2.T1",
+      "type": "task",
+      "name": "Create CourseProgressChart component scaffold",
+      "action": {
+        "verb": "Create",
+        "target": "CourseProgressChart component scaffold"
+      },
+      "purpose": "Set up component file structure with TypeScript props interface and Card wrapper",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home/dashboard",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Course Progress"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardDescription, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Must be client component ('use client')",
+          "Props: completionPercentage (number), completedLessons (number), totalLessons (number)",
+          "Wrap in Card with 'Course Progress' title"
+        ]
+      },
+      "input_state": "No component file exists",
+      "output_state": "Component file with TypeScript interface, 'use client' directive, Card wrapper, and basic export",
+      "acceptance_criterion": "File exists with CourseProgressChartProps interface, 'use client' directive, and Card wrapper",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/course-progress-chart.tsx && grep -q \"'use client'\" apps/web/app/home/\\(user\\)/_components/course-progress-chart.tsx && grep -q 'CourseProgressChartProps' apps/web/app/home/\\(user\\)/_components/course-progress-chart.tsx && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/course-progress-chart.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1890.I3.F2.T2", "S1890.I3.F2.T3", "S1890.I3.F2.T4", "S1890.I3.F2.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I3.F2.T2",
+      "type": "task",
+      "name": "Implement RadialBarChart with ChartContainer",
+      "action": {
+        "verb": "Add",
+        "target": "RadialBarChart with ChartContainer"
+      },
+      "purpose": "Configure RadialBarChart to display completion percentage as circular progress indicator",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home/dashboard",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Course Progress"
+          },
+          {
+            "command": "find role",
+            "target": "img"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx",
+          "packages/ui/src/shadcn/chart.tsx",
+          ".ai/alpha/specs/S1890-Spec-user-dashboard/research-library/context7-recharts-radial-radar.md"
+        ],
+        "dependencies": [
+          "ChartContainer, ChartConfig from @kit/ui/chart",
+          "RadialBarChart, RadialBar, PolarAngleAxis from recharts",
+          "ResponsiveContainer from recharts"
+        ],
+        "constraints": [
+          "Use ChartContainer with chartConfig",
+          "innerRadius='70%' outerRadius='100%' for donut style",
+          "barSize=20",
+          "Single data point for progress",
+          "Use 'hsl(var(--chart-1))' for fill color",
+          "ResponsiveContainer with initialDimension for SSR",
+          "aspect-square max-h-[250px] on ChartContainer"
+        ]
+      },
+      "input_state": "Component scaffold exists with Card wrapper",
+      "output_state": "RadialBarChart displays in card with completion percentage as radial bar",
+      "acceptance_criterion": "Chart renders with RadialBar, uses ChartContainer, has initialDimension, and displays completion as radial progress",
+      "verification_command": "grep -q 'RadialBarChart' apps/web/app/home/\\(user\\)/_components/course-progress-chart.tsx && grep -q 'initialDimension' apps/web/app/home/\\(user\\)/_components/course-progress-chart.tsx && grep -q 'ChartContainer' apps/web/app/home/\\(user\\)/_components/course-progress-chart.tsx && grep -q 'chartConfig' apps/web/app/home/\\(user\\)/_components/course-progress-chart.tsx && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-chart.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I3.F2.T1"],
+        "blocks": ["S1890.I3.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I3.F2.T3",
+      "type": "task",
+      "name": "Add center percentage label",
+      "action": {
+        "verb": "Add",
+        "target": "center percentage label"
+      },
+      "purpose": "Display completion percentage prominently in center of radial chart",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home/dashboard",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "%"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/course-progress-chart.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Absolute positioned div in center of chart",
+          "Display completionPercentage with % symbol",
+          "Use text-3xl font-bold for percentage",
+          "Center with flex items-center justify-center",
+          "Position absolute with inset-0 on wrapper"
+        ]
+      },
+      "input_state": "RadialBarChart displays in card",
+      "output_state": "Percentage number (e.g., '67%') displays in center of radial chart",
+      "acceptance_criterion": "Center label shows completionPercentage with % symbol, styled with text-3xl font-bold",
+      "verification_command": "grep -Pzo 'absolute.*inset.*67%|completionPercentage.*%' apps/web/app/home/\\(user\\)/_components/course-progress-chart.tsx && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-chart.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I3.F2.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I3.F2.T4",
+      "type": "task",
+      "name": "Add CardDescription with lesson count",
+      "action": {
+        "verb": "Add",
+        "target": "CardDescription with lesson count"
+      },
+      "purpose": "Display lesson completion count below chart title",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home/dashboard",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "lessons completed"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/course-progress-chart.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "CardDescription from @kit/ui/card"
+        ],
+        "constraints": [
+          "Add CardDescription in CardHeader below CardTitle",
+          "Format: '{completedLessons} of {totalLessons} lessons completed'",
+          "Use template literal with props"
+        ]
+      },
+      "input_state": "Card has CardHeader with CardTitle",
+      "output_state": "CardDescription shows 'X of Y lessons completed' below title",
+      "acceptance_criterion": "CardDescription displays lesson count in format 'X of Y lessons completed'",
+      "verification_command": "grep -q 'CardDescription' apps/web/app/home/\\(user\\)/_components/course-progress-chart.tsx && grep -Pzo 'completedLessons.*of.*totalLessons.*lessons completed' apps/web/app/home/\\(user\\)/_components/course-progress-chart.tsx && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-chart.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I3.F2.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I3.F2.T5",
+      "type": "task",
+      "name": "Implement empty state",
+      "action": {
+        "verb": "Add",
+        "target": "empty state"
+      },
+      "purpose": "Show empty state with CTA when course completion is 0%",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home/dashboard",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Start learning"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx",
+          "apps/web/app/home/(user)/_components/course-progress-chart.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Check if completionPercentage === 0",
+          "Return Card with empty state message",
+          "Include CTA text like 'Start your first lesson'",
+          "Use text-muted-foreground for empty state text",
+          "Center content with flex items-center justify-center"
+        ]
+      },
+      "input_state": "Component displays chart with data",
+      "output_state": "Component conditionally renders empty state when completionPercentage is 0",
+      "acceptance_criterion": "Empty state displays when completionPercentage === 0 with CTA message",
+      "verification_command": "grep -Pzo 'completionPercentage.*===.*0|if.*completionPercentage.*0' apps/web/app/home/\\(user\\)/_components/course-progress-chart.tsx && grep -q 'Start' apps/web/app/home/\\(user\\)/_components/course-progress-chart.tsx && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-chart.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I3.F2.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I3.F2.T6",
+      "type": "task",
+      "name": "Add unit tests",
+      "action": {
+        "verb": "Create",
+        "target": "unit tests"
+      },
+      "purpose": "Verify CourseProgressChart renders correctly with various percentages and empty state",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/course-progress-chart.tsx"
+        ],
+        "dependencies": [
+          "@testing-library/react",
+          "vitest"
+        ],
+        "constraints": [
+          "Test renders with non-zero completion (e.g., 67%)",
+          "Test renders empty state when completionPercentage is 0",
+          "Test displays correct lesson count",
+          "Test displays correct percentage in center",
+          "Use testing-library render and screen"
+        ]
+      },
+      "input_state": "Component is complete and functional",
+      "output_state": "Unit tests cover rendering scenarios including empty state",
+      "acceptance_criterion": "Tests pass for various percentages (0%, 50%, 100%) and lesson counts",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/__tests__/course-progress-chart.test.tsx && grep -q 'completionPercentage.*0' apps/web/app/home/\\(user\\)/_components/__tests__/course-progress-chart.test.tsx && pnpm test:unit --filter web -- course-progress-chart.test.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/__tests__/course-progress-chart.test.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I3.F2.T2", "S1890.I3.F2.T3", "S1890.I3.F2.T4", "S1890.I3.F2.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Scaffold",
+        "task_ids": ["S1890.I3.F2.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 2,
+        "name": "Chart Implementation",
+        "task_ids": ["S1890.I3.F2.T2", "S1890.I3.F2.T3", "S1890.I3.F2.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Empty State",
+        "task_ids": ["S1890.I3.F2.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 4,
+        "name": "Testing",
+        "task_ids": ["S1890.I3.F2.T6"],
+        "depends_on_groups": [2, 3],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1890.I3.F2.T1", "S1890.I3.F2.T2", "S1890.I3.F2.T3", "S1890.I3.F2.T6"],
+      "total_hours": 6
+    },
+    "duration": {
+      "sequential": 8,
+      "parallel": 6,
+      "time_saved_percent": 25
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

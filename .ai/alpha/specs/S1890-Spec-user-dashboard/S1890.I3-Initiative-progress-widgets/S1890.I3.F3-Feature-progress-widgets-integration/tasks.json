@@ -1,0 +1,371 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1890.I3.F3",
+    "feature_name": "Progress Widgets Integration",
+    "feature_slug": "progress-widgets-integration",
+    "initiative_id": "S1890.I3",
+    "spec_id": "1890",
+    "created_at": "2026-02-02T00:00:00Z",
+    "complexity": {
+      "score": 40,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "signals": {
+        "files_affected": {
+          "value": 2,
+          "weight": 0.25
+        },
+        "dependencies": {
+          "value": "few",
+          "weight": 0.5
+        },
+        "estimated_loc": {
+          "value": 60,
+          "weight": 0.0
+        },
+        "feature_type": {
+          "value": "integration",
+          "weight": 0.85
+        }
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1890.I3.F3.T3", "S1890.I3.F3.T4"],
+    "required_env_vars": [],
+    "feature_dependencies": {
+      "blocked_by": ["S1890.I3.F1", "S1890.I3.F2", "S1890.I1.F1"],
+      "blocks": ["S1890.I7"]
+    }
+  },
+  "tasks": [
+    {
+      "id": "S1890.I3.F3.T1",
+      "type": "task",
+      "name": "Create ProgressWidgets component scaffold",
+      "action": {
+        "verb": "Create",
+        "target": "ProgressWidgets component with props interface"
+      },
+      "purpose": "Establish component structure with TypeScript types for container that will integrate F1 and F2 chart components",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "React for component creation",
+          "TypeScript for props interface"
+        ],
+        "constraints": [
+          "Must be client component ('use client') due to child chart components",
+          "Props interface: categoryScores (Record<string, number> | null), courseProgress ({ completionPercentage, completedLessons, totalLessons } | null)"
+        ]
+      },
+      "input_state": "No ProgressWidgets component exists",
+      "output_state": "ProgressWidgets component file exists with props interface and basic structure",
+      "acceptance_criterion": "Component file exists at correct path with TypeScript props interface defined",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/progress-widgets.tsx && grep -q 'interface.*Props' apps/web/app/home/\\(user\\)/_components/progress-widgets.tsx && grep -q \"'use client'\" apps/web/app/home/\\(user\\)/_components/progress-widgets.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/progress-widgets.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1890.I3.F3.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I3.F3.T2",
+      "type": "task",
+      "name": "Add responsive grid layout",
+      "action": {
+        "verb": "Add",
+        "target": "grid layout with responsive breakpoints"
+      },
+      "purpose": "Enable mobile (stacked) and desktop (side-by-side) layouts for progress widgets",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/_components/progress-widgets.tsx"],
+        "dependencies": [
+          "Tailwind CSS grid utilities"
+        ],
+        "constraints": [
+          "Mobile (<1024px): Single column (grid-cols-1)",
+          "Desktop (>=1024px): Two columns (lg:grid-cols-2)",
+          "Use gap-6 for consistent spacing"
+        ]
+      },
+      "input_state": "Component scaffold exists without layout",
+      "output_state": "Component has responsive grid container with proper spacing",
+      "acceptance_criterion": "Component contains grid with grid-cols-1 and lg:grid-cols-2 classes",
+      "verification_command": "grep -q 'grid.*grid-cols-1' apps/web/app/home/\\(user\\)/_components/progress-widgets.tsx && grep -q 'lg:grid-cols-2' apps/web/app/home/\\(user\\)/_components/progress-widgets.tsx && grep -q 'gap-6' apps/web/app/home/\\(user\\)/_components/progress-widgets.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/progress-widgets.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I3.F3.T1"],
+        "blocks": ["S1890.I3.F3.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I3.F3.T3",
+      "type": "task",
+      "name": "Wire child chart components to container",
+      "action": {
+        "verb": "Wire",
+        "target": "Skills Spider Diagram and Course Progress Chart to container"
+      },
+      "purpose": "Integrate child chart components and pass data props from container to children",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "5S Skills Assessment"
+          },
+          {
+            "command": "is visible",
+            "target": "Course Progress"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["apps/web/app/home/(user)/_components/progress-widgets.tsx"],
+        "dependencies": [
+          "SkillsSpiderDiagram from ./skills-spider-diagram",
+          "CourseProgressChart from ./course-progress-chart"
+        ],
+        "constraints": [
+          "Pass categoryScores to SkillsSpiderDiagram",
+          "Pass courseProgress (destructured as completionPercentage, completedLessons, totalLessons) to CourseProgressChart",
+          "Handle null data gracefully (pass null to children for their empty states)"
+        ]
+      },
+      "input_state": "Grid layout exists without child components",
+      "output_state": "Both chart components imported, rendered in grid, and receiving props",
+      "acceptance_criterion": "Component imports both charts and renders them with correct prop passing",
+      "verification_command": "grep -q 'SkillsSpiderDiagram\\|skills-spider-diagram' apps/web/app/home/\\(user\\)/_components/progress-widgets.tsx && grep -q 'CourseProgressChart\\|course-progress-chart' apps/web/app/home/\\(user\\)/_components/progress-widgets.tsx && grep -q 'categoryScores=' apps/web/app/home/\\(user\\)/_components/progress-widgets.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/progress-widgets.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I3.F3.T2"],
+        "blocks": ["S1890.I3.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I3.F3.T4",
+      "type": "task",
+      "name": "Add ProgressWidgets to dashboard page",
+      "action": {
+        "verb": "Add",
+        "target": "ProgressWidgets component to page.tsx"
+      },
+      "purpose": "Render progress widgets section on user dashboard",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "main"
+          },
+          {
+            "command": "is visible",
+            "target": "5S Skills Assessment"
+          },
+          {
+            "command": "is visible",
+            "target": "Course Progress"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["apps/web/app/home/(user)/page.tsx"],
+        "dependencies": [
+          "ProgressWidgets from ./_components/progress-widgets",
+          "PageBody from @kit/ui/page"
+        ],
+        "constraints": [
+          "Import ProgressWidgets component",
+          "Render inside PageBody component",
+          "Pass placeholder data (null for now)"
+        ]
+      },
+      "input_state": "Dashboard page shows empty PageBody",
+      "output_state": "Dashboard page renders ProgressWidgets component inside PageBody",
+      "acceptance_criterion": "Page imports and renders ProgressWidgets component",
+      "verification_command": "grep -q 'ProgressWidgets\\|progress-widgets' apps/web/app/home/\\(user\\)/page.tsx && grep -q '<ProgressWidgets' apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I3.F3.T3"],
+        "blocks": ["S1890.I3.F3.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I3.F3.T5",
+      "type": "task",
+      "name": "Add placeholder data structure with TODO markers",
+      "action": {
+        "verb": "Add",
+        "target": "placeholder data with TODO comments"
+      },
+      "purpose": "Prepare for I2 data layer integration by defining expected data structure",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/page.tsx"],
+        "dependencies": [],
+        "constraints": [
+          "Placeholder categoryScores: null (or sample Record<string, number>)",
+          "Placeholder courseProgress: null (or sample { completionPercentage, completedLessons, totalLessons })",
+          "TODO comments marking where I2 loader will replace placeholder data"
+        ]
+      },
+      "input_state": "Page renders ProgressWidgets with no data specified",
+      "output_state": "Page has placeholder data structure and TODO comments for I2 integration",
+      "acceptance_criterion": "TODO comments exist marking I2 integration points",
+      "verification_command": "grep -q 'TODO.*I2\\|TODO.*data.*loader\\|TODO.*placeholder' apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I3.F3.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Integration Implementation",
+        "task_ids": ["S1890.I3.F3.T1", "S1890.I3.F3.T2", "S1890.I3.F3.T3", "S1890.I3.F3.T4", "S1890.I3.F3.T5"],
+        "depends_on_groups": [],
+        "estimated_hours": 10,
+        "parallel_hours": 10
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1890.I3.F3.T1", "S1890.I3.F3.T2", "S1890.I3.F3.T3", "S1890.I3.F3.T4", "S1890.I3.F3.T5"],
+      "total_hours": 10
+    },
+    "duration": {
+      "sequential": 10,
+      "parallel": 10,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true,
+    "spec_issue_comment_url": "https://github.com/MLorneSmith/2025slideheroes/issues/1890#issuecomment-3836450767"
+  }
+}

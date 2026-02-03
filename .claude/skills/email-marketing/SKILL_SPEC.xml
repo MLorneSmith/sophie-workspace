@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skill_specification>
+  <metadata>
+    <name>email-marketing</name>
+    <version>1.0.0</version>
+    <analysis_iterations>7</analysis_iterations>
+    <timelessness_score>8/10</timelessness_score>
+    <created_by>SkillCreator 3.2</created_by>
+    <created_date>2026-02-03</created_date>
+  </metadata>
+
+  <context>
+    <problem_statement>
+      Write compelling marketing emails using Andre Chaperon's methodology
+      with SlideHeroes-specific voice and context. Consolidate existing
+      scattered components into a single portable skill.
+    </problem_statement>
+
+    <existing_landscape>
+      <predecessor>.claude/skills/email-style/</predecessor>
+      <related_commands>
+        <command>.claude/commands/content/email-campaign.md</command>
+        <command>.claude/commands/content/email-write.md</command>
+      </related_commands>
+      <related_tools>
+        <tool>.ai/tools/email-export/</tool>
+      </related_tools>
+    </existing_landscape>
+
+    <distinctiveness>
+      Combines methodology + corpus + voice + tools in single portable package.
+      No other skill provides complete email marketing system with:
+      - 83+ annotated examples
+      - SlideHeroes-specific POVs
+      - Two-stage workflow (strategy → execution)
+      - Hook quality scoring system
+    </distinctiveness>
+  </context>
+
+  <requirements>
+    <explicit>
+      <requirement id="E1">Consolidate commands, skill, export tool</requirement>
+      <requirement id="E2">Keep ALL SlideHeroes-specific content</requirement>
+      <requirement id="E3">Maintain 83+ email corpus</requirement>
+      <requirement id="E4">Make portable for machine transfer</requirement>
+      <requirement id="E5">Include Gmail export functionality</requirement>
+      <requirement id="E6">Create SKILL.md with triggers</requirement>
+      <requirement id="E7">Follow packaging standards</requirement>
+    </explicit>
+
+    <implicit>
+      <requirement id="I1">Self-contained with relative paths</requirement>
+      <requirement id="I2">Clear setup documentation</requirement>
+      <requirement id="I3">Preserve two-stage workflow</requirement>
+      <requirement id="I4">Maintain hook scoring system</requirement>
+      <requirement id="I5">Keep corpus organization structure</requirement>
+    </implicit>
+
+    <discovered>
+      <requirement id="D1">Gmail OAuth setup documentation</requirement>
+      <requirement id="D2">TypeScript build instructions</requirement>
+      <requirement id="D3">Resolve symlinks to actual files</requirement>
+      <requirement id="D4">Email validation scripts</requirement>
+      <requirement id="D5">Hook scoring automation</requirement>
+    </discovered>
+  </requirements>
+
+  <architecture>
+    <pattern>Multi-Phase Workflow with Scripts</pattern>
+    <pattern_rationale>
+      The skill has distinct phases (strategy → execution) and produces
+      verifiable artifacts (YAML files) that benefit from validation scripts.
+    </pattern_rationale>
+
+    <directory_structure>
+      <![CDATA[
+email-marketing/
+├── SKILL.md                     # Main entry point
+├── commands/                    # Portable command files
+│   ├── email-campaign.md        # Strategy workflow
+│   └── email-write.md           # Execution workflow
+├── core/                        # Methodology (always loaded)
+│   ├── techniques.yaml          # 24 techniques, 7 categories
+│   ├── hooks-library.yaml       # 45 hooks, 8 categories
+│   ├── best-examples.yaml       # 12 gold standard emails
+│   └── principles.md            # Andre's 7 core principles
+├── context/                     # SlideHeroes-specific
+│   ├── slideheroes-product.yaml # Product positioning
+│   ├── presentation-povs.yaml   # 32 POVs for hooks
+│   └── ai-presentation-povs.yaml# AI+presentations POVs
+├── corpus/                      # Full email collection
+│   ├── by-type/                 # Organized by email type
+│   │   ├── welcome/
+│   │   ├── nurture/
+│   │   ├── story/
+│   │   ├── sales/
+│   │   ├── newsletter/
+│   │   └── onboarding/
+│   └── campaigns/               # Organized by campaign
+│       └── bpm-onboarding/
+│           └── _campaign.yaml
+├── tools/                       # Export tool (TypeScript)
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── src/
+│   │   ├── index.ts
+│   │   ├── gmail-client.ts
+│   │   ├── yaml-writer.ts
+│   │   └── html-to-text.ts
+│   └── README.md
+├── scripts/                     # Automation scripts
+│   ├── validate_email.py        # Email style validation
+│   ├── score_hook.py            # Hook quality scoring
+│   └── organize_corpus.py       # Corpus management
+└── references/
+    ├── setup-guide.md           # New machine setup
+    └── loading-strategy.md      # When to load what
+      ]]>
+    </directory_structure>
+
+    <phases>
+      <phase name="Campaign Strategy">
+        <trigger>/email-campaign</trigger>
+        <input>Campaign name, audience description</input>
+        <output>Strategy YAML with hooks and arc</output>
+        <loads>core/* + context/*</loads>
+      </phase>
+
+      <phase name="Email Execution">
+        <trigger>/email-write</trigger>
+        <input>Campaign name, position</input>
+        <output>Individual email YAML</output>
+        <loads>core/* + strategy + adjacent emails</loads>
+      </phase>
+
+      <phase name="Validation">
+        <trigger>/email-write --validate</trigger>
+        <input>Email file path</input>
+        <output>Validation report</output>
+        <uses>scripts/validate_email.py</uses>
+      </phase>
+    </phases>
+  </architecture>
+
+  <scripts>
+    <decision_summary>
+      <needs_scripts>true</needs_scripts>
+      <rationale>
+        Email quality can be objectively validated against style criteria.
+        Hook scoring has clear weighted formula. Both are repeatable and
+        benefit from automation.
+      </rationale>
+    </decision_summary>
+
+    <script_inventory>
+      <script>
+        <name>validate_email.py</name>
+        <category>Validation</category>
+        <purpose>Check email against Andre's style patterns</purpose>
+        <inputs>Email YAML file path</inputs>
+        <outputs>Validation report with scores</outputs>
+        <patterns>Result dataclass, argparse, exit codes</patterns>
+      </script>
+
+      <script>
+        <name>score_hook.py</name>
+        <category>Calculation</category>
+        <purpose>Calculate weighted hook quality score</purpose>
+        <inputs>Hook text, criteria scores</inputs>
+        <outputs>Total score, pass/fail verdict</outputs>
+        <patterns>Result dataclass, argparse</patterns>
+      </script>
+
+      <script>
+        <name>organize_corpus.py</name>
+        <category>Transformation</category>
+        <purpose>Organize imported emails into corpus structure</purpose>
+        <inputs>Email YAML files</inputs>
+        <outputs>Files moved to correct directories</outputs>
+        <patterns>Result dataclass, file operations</patterns>
+      </script>
+    </script_inventory>
+
+    <agentic_capabilities>
+      <autonomous>Email validation can run without human input</autonomous>
+      <self_verify>Scripts verify their own outputs</self_verify>
+      <recovery>Clear error messages guide correction</recovery>
+    </agentic_capabilities>
+  </scripts>
+
+  <evolution_analysis>
+    <timelessness_score>8/10</timelessness_score>
+    <timelessness_rationale>
+      - Core methodology (Andre Chaperon) is timeless relationship-based approach
+      - SlideHeroes content is easily swappable for other brands
+      - Email as medium isn't going away
+      - Two-stage workflow is principle-based, not tool-dependent
+      - Gmail API may change but export format (YAML) is stable
+    </timelessness_rationale>
+
+    <extension_points>
+      <point>Add new POV files for additional products</point>
+      <point>Expand corpus with new campaign types</point>
+      <point>Add integrations with ESP APIs</point>
+      <point>Add A/B testing framework</point>
+      <point>Add performance tracking</point>
+    </extension_points>
+
+    <obsolescence_triggers>
+      <trigger>Major shift away from email marketing</trigger>
+      <trigger>Gmail API breaking changes requiring rewrite</trigger>
+      <trigger>Claude context limits preventing corpus loading</trigger>
+    </obsolescence_triggers>
+  </evolution_analysis>
+
+  <anti_patterns>
+    <pattern>
+      <name>Hardcoded paths</name>
+      <why_avoid>Breaks portability</why_avoid>
+      <alternative>All paths relative to skill root</alternative>
+    </pattern>
+
+    <pattern>
+      <name>Symlinks for corpus</name>
+      <why_avoid>Don't survive copy/zip</why_avoid>
+      <alternative>Copy actual files into skill directory</alternative>
+    </pattern>
+
+    <pattern>
+      <name>Loading full corpus always</name>
+      <why_avoid>Wastes context tokens</why_avoid>
+      <alternative>Load on-demand based on email type</alternative>
+    </pattern>
+
+    <pattern>
+      <name>External dependencies in scripts</name>
+      <why_avoid>May not be available on new machine</why_avoid>
+      <alternative>Python stdlib only with graceful fallbacks</alternative>
+    </pattern>
+  </anti_patterns>
+
+  <success_criteria>
+    <criterion>
+      <description>Skill can be copied to new machine and work immediately</description>
+      <verification>Copy to temp directory, invoke triggers, verify commands load</verification>
+    </criterion>
+
+    <criterion>
+      <description>All 83+ emails accessible in corpus</description>
+      <verification>Count files in corpus/, verify no broken symlinks</verification>
+    </criterion>
+
+    <criterion>
+      <description>Hook scoring produces correct weighted totals</description>
+      <verification>Run score_hook.py with known inputs, verify output</verification>
+    </criterion>
+
+    <criterion>
+      <description>Email validation catches missing mandatory elements</description>
+      <verification>Run validate_email.py on email without P.S., verify failure</verification>
+    </criterion>
+
+    <criterion>
+      <description>Gmail export instructions are clear</description>
+      <verification>Follow setup-guide.md on fresh machine</verification>
+    </criterion>
+  </success_criteria>
+</skill_specification>
