@@ -156,6 +156,8 @@
 				"**/.ai/tools/**/*.js",
 				"**/.claude/scripts/**/*.js",
 				"**/.claude/scripts/**/*.cjs",
+				"**/.claude/skills/**/tools/**/*.ts",
+				"**/.claude/skills/**/tools/**/*.js",
 				"**/scripts/**/*.js",
 				"**/scripts/**/*.cjs",
 				"**/scripts/**/*.ts"
