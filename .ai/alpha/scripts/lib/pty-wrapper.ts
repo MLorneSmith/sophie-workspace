@@ -191,10 +191,21 @@ async function attemptProgressFileRecovery(
 ): Promise<WaitWithTimeoutResult> {
 	const sandboxId = sandbox.sandboxId;
 
-	// Poll progress file (allow brief delay for final write)
+	// Poll progress file (allow brief delay for initial/final write)
 	await sleep(PTY_RECOVERY_POLL_INTERVAL_MS);
 
-	const progressResult = await readProgressFile(sandbox);
+	// Retry briefly in case progress file hasn't been created yet
+	let progressResult = await readProgressFile(sandbox);
+	if (!progressResult.success || !progressResult.data) {
+		const maxAttempts = 5;
+		for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+			await sleep(PTY_RECOVERY_POLL_INTERVAL_MS);
+			progressResult = await readProgressFile(sandbox);
+			if (progressResult.success && progressResult.data) {
+				break;
+			}
+		}
+	}
 
 	// Case 1: Progress file doesn't exist or can't be read
 	if (!progressResult.success || !progressResult.data) {

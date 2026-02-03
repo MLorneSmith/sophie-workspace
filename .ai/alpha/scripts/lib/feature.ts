@@ -228,6 +228,28 @@ export async function runFeatureImplementation(
 	} catch {
 		// Ignore - file may not exist
 	}
+	// Initialize progress file immediately to avoid PTY recovery failures
+	try {
+		await instance.sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && python3 - <<'PY'\n` +
+				`import json\n` +
+				`from datetime import datetime, timezone\n` +
+				`progress = {\n` +
+				`  "status": "in_progress",\n` +
+				`  "phase": "starting",\n` +
+				`  "completed_tasks": [],\n` +
+				`  "failed_tasks": [],\n` +
+				`  "context_usage_percent": 0,\n` +
+				`  "last_heartbeat": datetime.now(timezone.utc).isoformat().replace("+00:00","Z")\n` +
+				`}\n` +
+				`with open("${PROGRESS_FILE}", "w", encoding="utf-8") as f:\n` +
+				`  json.dump(progress, f, indent=2)\n` +
+				`PY`,
+			{ timeoutMs: 5000 },
+		);
+	} catch {
+		// Ignore - progress file creation is best effort
+	}
 
 	const prompt = buildImplementationPrompt(provider, feature.id);
 	const authMethod =
