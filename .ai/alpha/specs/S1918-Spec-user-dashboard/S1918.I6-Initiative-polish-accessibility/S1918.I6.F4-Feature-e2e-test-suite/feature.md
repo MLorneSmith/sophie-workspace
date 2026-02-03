@@ -68,12 +68,11 @@ Create comprehensive Playwright E2E tests for the user dashboard, covering page 
 
 ### Blocked By
 - S1918.I1-I5: All widgets must be implemented before testing
-- F1: Loading Skeletons (to test skeleton states)
-- F2: Error Boundaries (to test error states)
-- F3: Accessibility Compliance (may add a11y tests)
 
 ### Parallel With
-- None (depends on F1-F3 for complete coverage)
+- F1: Loading Skeletons (tests can be written in parallel)
+- F2: Error Boundaries (tests can be written in parallel)
+- F3: Accessibility Compliance (tests can be written in parallel)
 
 ## Files to Create/Modify
 
