@@ -1,0 +1,121 @@
+{
+  "initiative_id": "S1918.I1",
+  "initiative_name": "Dashboard Foundation",
+  "spec_id": "S1918",
+  "decomposed_at": "2026-02-03T10:00:00Z",
+  "decomposed_by": "/alpha:feature-decompose",
+  "status": "task_decomposition_in_progress",
+  "current_phase": "task_decomposition",
+  "complexity": {
+    "overall": "LOW",
+    "factors": {
+      "technical_unknowns": "LOW",
+      "external_dependencies": "LOW",
+      "expected_features": "LOW",
+      "dependency_graph": "LOW",
+      "code_reuse_potential": "HIGH"
+    }
+  },
+  "features": [
+    {
+      "id": "S1918.I1.F1",
+      "name": "Dashboard Page Shell",
+      "slug": "dashboard-page-shell",
+      "priority": 1,
+      "estimated_days": 2,
+      "status": "pending_task_decomposition",
+      "task_status": "pending",
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1918.I1.F2", "S1918.I1.F3"]
+      },
+      "invest_v": {
+        "independent": true,
+        "negotiable": true,
+        "valuable": true,
+        "estimable": true,
+        "small": true,
+        "testable": true,
+        "vertical": true
+      }
+    },
+    {
+      "id": "S1918.I1.F2",
+      "name": "Responsive Grid Layout",
+      "slug": "responsive-grid-layout",
+      "priority": 2,
+      "estimated_days": 3,
+      "status": "pending_task_decomposition",
+      "task_status": "pending",
+      "dependencies": {
+        "blocked_by": ["S1918.I1.F1"],
+        "blocks": ["S1918.I1.F3"]
+      },
+      "invest_v": {
+        "independent": true,
+        "negotiable": true,
+        "valuable": true,
+        "estimable": true,
+        "small": true,
+        "testable": true,
+        "vertical": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3",
+      "name": "Widget Placeholder Slots",
+      "slug": "widget-placeholder-slots",
+      "priority": 3,
+      "estimated_days": 3,
+      "status": "pending_task_decomposition",
+      "task_status": "pending",
+      "dependencies": {
+        "blocked_by": ["S1918.I1.F2"],
+        "blocks": ["S1918.I2", "S1918.I3", "S1918.I4", "S1918.I5", "S1918.I6"]
+      },
+      "invest_v": {
+        "independent": true,
+        "negotiable": true,
+        "valuable": true,
+        "estimable": true,
+        "small": true,
+        "testable": true,
+        "vertical": true
+      }
+    }
+  ],
+  "task_decomposition": {
+    "started_at": "2026-02-03T16:00:00Z",
+    "features_processed": 0,
+    "features_total": 3,
+    "total_tasks": 0,
+    "total_hours_sequential": 0,
+    "total_hours_parallel": 0,
+    "spikes_pending": []
+  },
+  "execution": {
+    "parallel_groups": [
+      {
+        "group": 0,
+        "features": ["S1918.I1.F1"],
+        "max_days": 2
+      },
+      {
+        "group": 1,
+        "features": ["S1918.I1.F2"],
+        "max_days": 3
+      },
+      {
+        "group": 2,
+        "features": ["S1918.I1.F3"],
+        "max_days": 3
+      }
+    ],
+    "sequential_days": 8,
+    "parallel_days": 8,
+    "time_saved_days": 0,
+    "time_saved_percent": 0,
+    "max_parallelism": 1
+  },
+  "github_comment_url": "https://github.com/MLorneSmith/2025slideheroes/issues/1918#issuecomment-3841848389"
+}

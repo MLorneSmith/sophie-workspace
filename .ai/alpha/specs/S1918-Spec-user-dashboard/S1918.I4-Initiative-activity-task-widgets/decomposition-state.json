@@ -1,0 +1,37 @@
+{
+  "initiative_id": "S1918.I4",
+  "initiative_name": "Activity & Task Widgets",
+  "status": "in_progress",
+  "current_phase": "decomposition",
+  "started_at": "2026-02-03T00:00:00.000Z",
+  "features": {
+    "S1918.I4.F1": {
+      "name": "Quick Actions Panel Widget",
+      "status": "pending",
+      "task_count": 0
+    },
+    "S1918.I4.F2": {
+      "name": "Kanban Summary Widget",
+      "status": "pending",
+      "task_count": 0
+    },
+    "S1918.I4.F3": {
+      "name": "Presentations Table Widget",
+      "status": "pending",
+      "task_count": 0
+    },
+    "S1918.I4.F4": {
+      "name": "Activity Feed Widget",
+      "status": "pending",
+      "task_count": 0
+    }
+  },
+  "totals": {
+    "features": 4,
+    "completed": 0,
+    "failed": 0,
+    "total_tasks": 0,
+    "total_spikes": 0
+  },
+  "spikes_pending": []
+}

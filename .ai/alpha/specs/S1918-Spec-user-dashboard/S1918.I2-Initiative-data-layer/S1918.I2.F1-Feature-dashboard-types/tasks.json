@@ -1,0 +1,180 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1918.I2.F1",
+    "feature_name": "Dashboard Types",
+    "feature_slug": "dashboard-types",
+    "initiative_id": "S1918.I2",
+    "spec_id": "S1918",
+    "created_at": "2026-02-03T09:40:00Z",
+    "complexity": {
+      "score": 18.75,
+      "level": "MINIMAL",
+      "target_steps": {
+        "min": 1,
+        "max": 3
+      },
+      "signals": {
+        "files_affected": 1,
+        "dependencies": "none",
+        "estimated_loc": 150,
+        "feature_type": "enhancement"
+      }
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1918.I2.F1.T1",
+      "type": "task",
+      "name": "Create dashboard types file with all widget interfaces",
+      "action": {
+        "verb": "Create",
+        "target": "dashboard.types.ts with all widget interfaces"
+      },
+      "purpose": "Define TypeScript types for DashboardData, CourseProgressData, AssessmentScoreData, TasksSummaryData, ActivityItem, and PresentationData to enable type-safe loaders and widgets",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts - Database type reference",
+          "apps/web/app/home/(user)/kanban/_lib/schema/task.schema.ts - Type pattern example"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Types must match database table structures",
+          "Use discriminated unions for ActivityItem",
+          "Include JSDoc comments for clarity",
+          "No runtime validation (Zod) needed - trust RLS"
+        ]
+      },
+      "input_state": "No types directory exists in apps/web/app/home/(user)/_lib/",
+      "output_state": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts exists with exported types: DashboardData, CourseProgressData, AssessmentScoreData, TasksSummaryData, ActivityItem (union), PresentationData",
+      "acceptance_criterion": "File exists at correct path with all 6 type exports and passes typecheck",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && grep -q 'export type DashboardData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && grep -q 'export type CourseProgressData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && grep -q 'export type AssessmentScoreData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && grep -q 'export type TasksSummaryData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && grep -q 'export type ActivityItem' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && grep -q 'export type PresentationData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I2.F1.T2",
+      "type": "task",
+      "name": "Add JSDoc comments to dashboard types",
+      "action": {
+        "verb": "Add",
+        "target": "JSDoc comments to dashboard type interfaces"
+      },
+      "purpose": "Improve developer experience with inline documentation explaining each type's purpose and field meanings",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts - Types to document"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Document each interface and its key fields",
+          "Explain union type discriminators",
+          "Keep comments concise and helpful"
+        ]
+      },
+      "input_state": "dashboard.types.ts exists with type definitions but no JSDoc comments",
+      "output_state": "All exported types have JSDoc comments describing their purpose and key fields",
+      "acceptance_criterion": "Each exported type has a /** */ JSDoc comment above it and passes typecheck",
+      "verification_command": "grep -B 2 'export type DashboardData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts | grep -q '/\\*\\*' && grep -B 2 'export type CourseProgressData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts | grep -q '/\\*\\*' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I2.F1.T1"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Type Definitions",
+        "task_ids": [
+          "S1918.I2.F1.T1",
+          "S1918.I2.F1.T2"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1918.I2.F1.T1",
+        "S1918.I2.F1.T2"
+      ],
+      "total_hours": 3
+    },
+    "duration": {
+      "sequential": 3,
+      "parallel": 3,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

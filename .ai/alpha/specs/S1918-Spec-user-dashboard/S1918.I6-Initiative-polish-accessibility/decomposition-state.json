@@ -1,0 +1,42 @@
+{
+  "initiative_id": "S1918.I6",
+  "initiative_name": "Polish & Accessibility",
+  "spec_id": "S1918",
+  "status": "in_progress",
+  "current_phase": "feature_decomposition",
+  "started_at": "2026-02-03T00:00:00Z",
+  "features": {
+    "S1918.I6.F1": {
+      "name": "Loading Skeletons",
+      "status": "pending",
+      "task_count": 0,
+      "hours_estimate": 0
+    },
+    "S1918.I6.F2": {
+      "name": "Error Boundaries",
+      "status": "pending",
+      "task_count": 0,
+      "hours_estimate": 0
+    },
+    "S1918.I6.F3": {
+      "name": "Accessibility Compliance",
+      "status": "pending",
+      "task_count": 0,
+      "hours_estimate": 0
+    },
+    "S1918.I6.F4": {
+      "name": "E2E Test Suite",
+      "status": "pending",
+      "task_count": 0,
+      "hours_estimate": 0
+    }
+  },
+  "totals": {
+    "features_completed": 0,
+    "features_total": 4,
+    "tasks_total": 0,
+    "hours_sequential": 0,
+    "hours_parallel": 0
+  },
+  "spikes_pending": []
+}

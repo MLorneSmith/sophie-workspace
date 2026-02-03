@@ -1,0 +1,417 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1918.I2.F2",
+    "feature_name": "Dashboard Loader",
+    "feature_slug": "dashboard-loader",
+    "initiative_id": "S1918.I2",
+    "spec_id": "S1918",
+    "created_at": "2026-02-03T10:15:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "signals": {
+        "files_affected": 1,
+        "dependencies": "few",
+        "estimated_loc": 200,
+        "feature_type": "feature"
+      }
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1918.I2.F2.T1",
+      "type": "task",
+      "name": "Create dashboard loader file skeleton with imports and cache wrapper",
+      "action": {
+        "verb": "Create",
+        "target": "dashboard-page.loader.ts with skeleton"
+      },
+      "purpose": "Set up the loader file structure with server-only directive, imports, logger setup, and main function signature with cache wrapper",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/[account]/members/_lib/server/members-page.loader.ts - Pattern reference for logger and Promise.all",
+          "apps/web/app/home/[account]/_lib/server/team-account-workspace.loader.ts - Pattern reference for cache() wrapper and type export",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts - Types from F1"
+        ],
+        "dependencies": [
+          "@kit/shared/logger - createServiceLogger",
+          "@supabase/supabase-js - SupabaseClient",
+          "react - cache",
+          "~/lib/database.types - Database"
+        ],
+        "constraints": [
+          "Must use 'server-only' directive at top",
+          "Must use createServiceLogger with 'DASHBOARD-PAGE-LOADER' name",
+          "Main function must be wrapped with cache()",
+          "Export type DashboardPageData = Awaited<ReturnType<typeof loadDashboardPageData>>"
+        ]
+      },
+      "input_state": "Directory apps/web/app/home/(user)/_lib/server/ exists with load-user-workspace.ts; dashboard-page.loader.ts does not exist",
+      "output_state": "dashboard-page.loader.ts exists with server-only directive, imports, logger, cached main function signature, and type export stub",
+      "acceptance_criterion": "File exists with correct structure, passes typecheck, and exports loadDashboardPageData function wrapped with cache()",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'server-only' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'export const loadDashboardPageData = cache' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'export type DashboardPageData' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1918.I2.F2.T2", "S1918.I2.F2.T3", "S1918.I2.F2.T4", "S1918.I2.F2.T5"]
+      },
+      "cross_feature_dependencies": {
+        "requires_completion_of": ["S1918.I2.F1"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I2.F2.T2",
+      "type": "task",
+      "name": "Implement loadCourseProgress query function",
+      "action": {
+        "verb": "Add",
+        "target": "loadCourseProgress function to loader"
+      },
+      "purpose": "Query course_progress and lesson_progress tables to calculate overall completion percentage and completed lesson count",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts - File to modify",
+          "apps/web/lib/database.types.ts - course_progress and lesson_progress table types",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts - CourseProgressData type"
+        ],
+        "dependencies": [
+          "Supabase RLS ensures user sees only their own course_progress"
+        ],
+        "constraints": [
+          "Must query both course_progress and lesson_progress tables",
+          "Must throw error if query fails (don't return null)",
+          "Must use logger.error for error logging with operation context",
+          "Return empty/default data structure if no progress exists (user hasn't started course)"
+        ]
+      },
+      "input_state": "dashboard-page.loader.ts exists with skeleton; loadCourseProgress function not implemented",
+      "output_state": "loadCourseProgress function queries course_progress and lesson_progress, returns CourseProgressData with completion percentage and lesson counts",
+      "acceptance_criterion": "Function exists, queries correct tables, handles errors with logger, and passes typecheck",
+      "verification_command": "grep -q 'async function loadCourseProgress' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'course_progress' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'lesson_progress' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'logger.error' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1918.I2.F2.T1"],
+        "blocks": ["S1918.I2.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I2.F2.T3",
+      "type": "task",
+      "name": "Implement loadSurveyScores query function",
+      "action": {
+        "verb": "Add",
+        "target": "loadSurveyScores function to loader"
+      },
+      "purpose": "Query survey_responses table to fetch category_scores JSONB from the user's latest assessment",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts - File to modify",
+          "apps/web/lib/database.types.ts - survey_responses table type",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts - AssessmentScoreData type"
+        ],
+        "dependencies": [
+          "Supabase RLS ensures user sees only their own survey_responses"
+        ],
+        "constraints": [
+          "Must query survey_responses table ordered by created_at DESC, limit 1",
+          "Must extract category_scores JSONB field",
+          "Must use logger.error for error logging",
+          "Return null or empty structure if user hasn't completed assessment"
+        ]
+      },
+      "input_state": "dashboard-page.loader.ts exists with skeleton; loadSurveyScores function not implemented",
+      "output_state": "loadSurveyScores function queries latest survey_responses, returns AssessmentScoreData with category scores",
+      "acceptance_criterion": "Function exists, queries survey_responses correctly with ordering, handles errors, and passes typecheck",
+      "verification_command": "grep -q 'async function loadSurveyScores' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'survey_responses' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'category_scores' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1918.I2.F2.T1"],
+        "blocks": ["S1918.I2.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I2.F2.T4",
+      "type": "task",
+      "name": "Implement loadTasksSummary query function",
+      "action": {
+        "verb": "Add",
+        "target": "loadTasksSummary function to loader"
+      },
+      "purpose": "Query tasks table to count tasks by status and identify the next task in 'do' status",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts - File to modify",
+          "apps/web/lib/database.types.ts - tasks table type",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts - TasksSummaryData type",
+          "apps/web/app/home/(user)/kanban/_lib/api/tasks.ts - Task query pattern reference"
+        ],
+        "dependencies": [
+          "Supabase RLS ensures user sees only their own tasks"
+        ],
+        "constraints": [
+          "Must aggregate task counts by status (do, doing, done)",
+          "Must select next task with status='do' ordered by created_at ASC, limit 1",
+          "Must use logger.error for error logging",
+          "Return counts with zeros if no tasks exist"
+        ]
+      },
+      "input_state": "dashboard-page.loader.ts exists with skeleton; loadTasksSummary function not implemented",
+      "output_state": "loadTasksSummary function queries tasks, returns TasksSummaryData with status counts and next task",
+      "acceptance_criterion": "Function exists, queries tasks table, aggregates counts, finds next task, handles errors, and passes typecheck",
+      "verification_command": "grep -q 'async function loadTasksSummary' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'from.*tasks' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1918.I2.F2.T1"],
+        "blocks": ["S1918.I2.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I2.F2.T5",
+      "type": "task",
+      "name": "Implement loadPresentations query function",
+      "action": {
+        "verb": "Add",
+        "target": "loadPresentations function to loader"
+      },
+      "purpose": "Query building_blocks_submissions table to fetch user's presentations ordered by last modified",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts - File to modify",
+          "apps/web/lib/database.types.ts - building_blocks_submissions table type",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts - PresentationData type"
+        ],
+        "dependencies": [
+          "Supabase RLS ensures user sees only their own presentations"
+        ],
+        "constraints": [
+          "Must query building_blocks_submissions with select for id, title, submission_type, updated_at",
+          "Must order by updated_at DESC",
+          "Must use logger.error for error logging",
+          "Return empty array if no presentations exist"
+        ]
+      },
+      "input_state": "dashboard-page.loader.ts exists with skeleton; loadPresentations function not implemented",
+      "output_state": "loadPresentations function queries building_blocks_submissions, returns PresentationData array ordered by updated_at DESC",
+      "acceptance_criterion": "Function exists, queries building_blocks_submissions, orders correctly, handles errors, and passes typecheck",
+      "verification_command": "grep -q 'async function loadPresentations' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'building_blocks_submissions' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'updated_at' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1918.I2.F2.T1"],
+        "blocks": ["S1918.I2.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I2.F2.T6",
+      "type": "task",
+      "name": "Wire all loader functions into main loadDashboardPageData using Promise.all",
+      "action": {
+        "verb": "Wire",
+        "target": "all loader functions into main function with Promise.all"
+      },
+      "purpose": "Combine all individual query functions into the main cached loader using parallel fetching for optimal performance",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts - File to modify",
+          "apps/web/app/home/[account]/members/_lib/server/members-page.loader.ts - Promise.all pattern reference"
+        ],
+        "dependencies": [
+          "T2: loadCourseProgress",
+          "T3: loadSurveyScores",
+          "T4: loadTasksSummary",
+          "T5: loadPresentations"
+        ],
+        "constraints": [
+          "Must use Promise.all() for parallel execution",
+          "Must return destructured array as object matching DashboardPageData type",
+          "Main function accepts SupabaseClient<Database> as parameter",
+          "Cache wrapper must be on the outer function"
+        ]
+      },
+      "input_state": "dashboard-page.loader.ts has all individual loader functions implemented; main function is stub",
+      "output_state": "loadDashboardPageData function calls all loaders in Promise.all and returns typed DashboardPageData object",
+      "acceptance_criterion": "Main function uses Promise.all, calls all 4 loader functions, returns correct structure, and passes typecheck",
+      "verification_command": "grep -q 'Promise.all' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'loadCourseProgress' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'loadSurveyScores' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'loadTasksSummary' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'loadPresentations' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1918.I2.F2.T2", "S1918.I2.F2.T3", "S1918.I2.F2.T4", "S1918.I2.F2.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Loader Skeleton",
+        "task_ids": ["S1918.I2.F2.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Individual Query Functions",
+        "task_ids": ["S1918.I2.F2.T2", "S1918.I2.F2.T3", "S1918.I2.F2.T4", "S1918.I2.F2.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 10,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Integration",
+        "task_ids": ["S1918.I2.F2.T6"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1918.I2.F2.T1", "S1918.I2.F2.T2", "S1918.I2.F2.T6"],
+      "total_hours": 7
+    },
+    "duration": {
+      "sequential": 14,
+      "parallel": 7,
+      "time_saved_percent": 50
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
