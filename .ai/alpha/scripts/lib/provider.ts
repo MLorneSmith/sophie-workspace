@@ -25,8 +25,8 @@ export function buildImplementationPrompt(
 		return (
 			`Implement ALL tasks for feature ${featureId} using the Alpha workflow. ` +
 			`Read and follow the instructions in ${WORKSPACE_DIR}/.claude/commands/alpha/implement.md exactly. ` +
-			`Ensure you update .initiative-progress.json, update tasks.json statuses, run verification commands, ` +
-			`commit after each group, and exit cleanly at 60% context usage.`
+			"Ensure you update .initiative-progress.json, update tasks.json statuses, run verification commands, " +
+			"commit after each group, and exit cleanly at 60% context usage."
 		);
 	}
 

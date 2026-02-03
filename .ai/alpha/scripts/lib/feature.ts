@@ -232,19 +232,19 @@ export async function runFeatureImplementation(
 	try {
 		await instance.sandbox.commands.run(
 			`cd ${WORKSPACE_DIR} && python3 - <<'PY'\n` +
-				`import json\n` +
-				`from datetime import datetime, timezone\n` +
-				`progress = {\n` +
+				"import json\n" +
+				"from datetime import datetime, timezone\n" +
+				"progress = {\n" +
 				`  "status": "in_progress",\n` +
 				`  "phase": "starting",\n` +
 				`  "completed_tasks": [],\n` +
 				`  "failed_tasks": [],\n` +
 				`  "context_usage_percent": 0,\n` +
 				`  "last_heartbeat": datetime.now(timezone.utc).isoformat().replace("+00:00","Z")\n` +
-				`}\n` +
+				"}\n" +
 				`with open("${PROGRESS_FILE}", "w", encoding="utf-8") as f:\n` +
-				`  json.dump(progress, f, indent=2)\n` +
-				`PY`,
+				"  json.dump(progress, f, indent=2)\n" +
+				"PY",
 			{ timeoutMs: 5000 },
 		);
 	} catch {
