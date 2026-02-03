@@ -48,7 +48,9 @@
 			"!**/.ai/alpha/progress/*.json",
 			"!**/.initiative-progress.json",
 			"!**/.ai/alpha/specs",
-			"!**/.ai/alpha/archive/**/*.json"
+			"!**/.ai/alpha/archive/**/*.json",
+			"!**/.claude/skills/email-style",
+			"!**/.github/skills"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
