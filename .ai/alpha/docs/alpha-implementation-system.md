@@ -1,6 +1,6 @@
 # Alpha Implementation System
 
-The Alpha Implementation System orchestrates autonomous code implementation across E2B sandboxes using Claude Code sessions.
+The Alpha Implementation System orchestrates autonomous code implementation across E2B sandboxes using Claude Code sessions (default) or GPT via Codex when configured.
 
 ## Overview
 
@@ -107,6 +107,7 @@ tsx .ai/alpha/scripts/spec-orchestrator.ts <spec-id> [options]
 Options:
   --sandboxes <n>, -s   Number of sandboxes (default: 3, max: 3)
   --timeout <s>         Sandbox timeout in seconds (default: 3600)
+  --provider <name>     Agent provider: claude | gpt (default: claude)
   --dry-run             Show execution plan without running
 ```
 
@@ -123,6 +124,9 @@ tsx spec-orchestrator.ts 1362 -s 1
 
 # Two sandbox mode
 tsx spec-orchestrator.ts 1362 -s 2
+
+# Run with GPT/Codex
+tsx spec-orchestrator.ts 1362 --provider gpt
 
 # Re-run to continue (automatic resume)
 tsx spec-orchestrator.ts 1362
@@ -407,6 +411,9 @@ E2B sandbox has configurable timeout (default 1 hour):
 **Required**:
 - `E2B_API_KEY` - E2B platform access
 - `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` - Claude access
+- `OPENAI_API_KEY` (or Codex OAuth cached credentials) - GPT/Codex access
+
+Provider setup checklist: see `.ai/alpha/docs/provider-setup.md`.
 
 **Optional**:
 - `GITHUB_TOKEN` - For git push

@@ -210,7 +210,7 @@ After user approves the decomposition, create GitHub issues for tracking.
 ```bash
 # Create master feature-set issue with overview and dependency graph
 gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "Feature Set: <initiativeTitle>" \
   --body "<master-plan-content-from-overview.md>" \
   --label "type:feature-set" \
@@ -219,7 +219,7 @@ gh issue create \
   --label "area:<primary-domain>"
 
 # Capture the master issue number from output
-# The gh CLI will output the URL in format: https://github.com/MLorneSmith/2025slideheroes/issues/<number>
+# The gh CLI will output the URL in format: https://github.com/slideheroes/2025slideheroes/issues/<number>
 MASTER_ISSUE_NUMBER=<captured-from-output>
 
 # Rename the overview file to include issue number
@@ -237,7 +237,7 @@ For each identified feature in the decomposition:
 # Create feature stub issue linked to master
 # Note: These are stubs - full plans created via /feature:feature command
 gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "Feature: <featureName>" \
   --body "## Feature Stub
 
@@ -268,7 +268,7 @@ FEATURE_<N>_ISSUE=<captured-from-output>
 ```bash
 # Comment on master issue with all feature issue links and dependency graph
 gh issue comment ${MASTER_ISSUE_NUMBER} \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --body "## Feature Issues Created
 
 ### Phase 1: Foundation

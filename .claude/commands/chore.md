@@ -152,7 +152,7 @@ Use the GitHub CLI (`gh`) to create the issue:
 # Map severity to priority: critical→priority:critical, high→priority:high, etc.
 # Map choreType to area: tooling→area:infra, documentation→type:docs, etc.
 gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "Chore: <choreTitle>" \
   --body "<issue-content>" \
   --label "type:chore" \
@@ -161,7 +161,7 @@ gh issue create \
   --label "area:<affected-area>"
 
 # Capture the issue URL and number from the output
-# The gh CLI will output the URL in format: https://github.com/MLorneSmith/2025slideheroes/issues/<number>
+# The gh CLI will output the URL in format: https://github.com/slideheroes/2025slideheroes/issues/<number>
 
 # After creating the issue, rename the report file to include the issue number
 # OLD: .ai/reports/chore-reports/YYYY-MM-DD/pending-chore-plan-<slug>.md

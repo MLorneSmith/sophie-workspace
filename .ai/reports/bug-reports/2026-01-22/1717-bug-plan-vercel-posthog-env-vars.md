@@ -140,7 +140,7 @@ Navigate to the Vercel dashboard:
 
 #### Step 4: Re-run the failed workflow
 
-1. Go to GitHub Actions: [https://github.com/MLorneSmith/2025slideheroes/actions](https://github.com/MLorneSmith/2025slideheroes/actions)
+1. Go to GitHub Actions: [https://github.com/slideheroes/2025slideheroes/actions](https://github.com/slideheroes/2025slideheroes/actions)
 2. Find the "Deploy to Dev" workflow
 3. Look for the failed run (#21252558567 from diagnosis)
 4. Click "Re-run all jobs" button
@@ -219,7 +219,7 @@ No performance implications - this only affects environment configuration during
 ### Before Fix (Bug Should Reproduce)
 
 The failed workflow run is documented here:
-- [Run #21252558567](https://github.com/MLorneSmith/2025slideheroes/actions/runs/21252558567)
+- [Run #21252558567](https://github.com/slideheroes/2025slideheroes/actions/runs/21252558567)
 
 Expected error: Build exits with code 1 due to missing PostHog env vars.
 
@@ -227,7 +227,7 @@ Expected error: Build exits with code 1 due to missing PostHog env vars.
 
 ```bash
 # Trigger workflow re-run via GitHub Actions UI
-# Navigate to: https://github.com/MLorneSmith/2025slideheroes/actions/workflows/deploy-dev.yml
+# Navigate to: https://github.com/slideheroes/2025slideheroes/actions/workflows/deploy-dev.yml
 # Click on the failed run and select "Re-run all jobs"
 
 # Expected Result: Workflow succeeds, web app deploys successfully
@@ -239,7 +239,7 @@ Expected error: Build exits with code 1 due to missing PostHog env vars.
 
 ```bash
 # After fix, verify no future deployments fail with same error
-# Monitor: https://github.com/MLorneSmith/2025slideheroes/actions
+# Monitor: https://github.com/slideheroes/2025slideheroes/actions
 # Check: Vercel deployment logs for "missing environment variable" errors
 ```
 

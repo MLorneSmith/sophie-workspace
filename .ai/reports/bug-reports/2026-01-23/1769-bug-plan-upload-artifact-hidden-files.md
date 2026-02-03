@@ -314,14 +314,14 @@ gh run view <workflow-run-id> --log | grep "With the provided path"
 
 ```bash
 # Run full workflow suite to ensure no regressions
-gh run list --repo MLorneSmith/2025slideheroes \
+gh run list --repo slideheroes/2025slideheroes \
   --workflow "Deploy to Staging" \
   --limit 3 --json conclusion
 
 # Expected: All recent runs should conclude with "success"
 
 # Also test PR validation workflow (uses similar patterns)
-gh run list --repo MLorneSmith/2025slideheroes \
+gh run list --repo slideheroes/2025slideheroes \
   --workflow "PR Validation" \
   --limit 3 --json conclusion
 

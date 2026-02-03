@@ -10,6 +10,7 @@ export type {
 	FeatureImplementationResult,
 	HealthCheckResult,
 	InitiativeEntry,
+	AgentProvider,
 	OrchestratorLock,
 	OrchestratorOptions,
 	RequiredEnvVar,

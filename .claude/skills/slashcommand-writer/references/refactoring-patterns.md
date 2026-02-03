@@ -252,7 +252,7 @@ Summarize what was processed and the outcome.
 2. **Create GitHub issue**:
    ```bash
    gh issue create \
-     --repo MLorneSmith/2025slideheroes \
+     --repo slideheroes/2025slideheroes \
      --title "Feature: <title>" \
      --body "<plan-content>" \
      --label "type:feature"

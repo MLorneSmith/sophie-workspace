@@ -200,14 +200,14 @@ Before starting diagnosis:
    # Search for related issues using GitHub CLI
    # Search by error message or keywords
    gh issue list \
-     --repo MLorneSmith/2025slideheroes \
+     --repo slideheroes/2025slideheroes \
      --search "<error-keywords>" \
      --state all \
      --limit 20
 
    # Search by affected files or components
    gh issue list \
-     --repo MLorneSmith/2025slideheroes \
+     --repo slideheroes/2025slideheroes \
      --search "<component-name>" \
      --state all \
      --limit 20
@@ -404,7 +404,7 @@ Use the GitHub CLI (`gh`) to create the diagnosis issue:
 # Map severity to priority: critical→priority:critical, high→priority:high, etc.
 # Map issueType to type: bug→type:bug, performance→type:performance, etc.
 gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "Bug Diagnosis: <issueTitle>" \
   --body "<issue-content>" \
   --label "type:bug" \
@@ -413,7 +413,7 @@ gh issue create \
   --label "area:<affected-area>"
 
 # Capture the issue URL and number from the output
-# The gh CLI will output the URL in format: https://github.com/MLorneSmith/2025slideheroes/issues/<number>
+# The gh CLI will output the URL in format: https://github.com/slideheroes/2025slideheroes/issues/<number>
 
 # After creating the issue, rename the report file to include the issue number
 # OLD: .ai/reports/bug-reports/YYYY-MM-DD/pending-diagnosis-<slug>.md

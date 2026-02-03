@@ -22,7 +22,7 @@ You're creating comprehensive, well-structured documentation that helps future d
 ```bash
 # Extract issue number from $ARGUMENTS and fetch the issue
 gh issue view <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json body,title,labels,number,url,comments \
   --jq '{body: .body, title: .title, labels: [.labels[].name], number: .number, url: .url, comments: [.comments[] | {author: .author.login, body: .body, createdAt: .createdAt}]}'
 ```
@@ -691,7 +691,7 @@ fi
 
 # Verify GitHub issue was updated
 gh issue view <issueNumber> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json labels \
   --jq '.labels[].name' 2>/dev/null | grep -q 'documented' || echo "WARNING: 'documented' label not added to issue"
 ```
@@ -709,10 +709,10 @@ how_to_use=$(grep -A 5 "^### Basic Usage" "${documentationPath}" | tail -n +2 | 
 
 # Post documentation link as comment
 gh issue comment <issueNumber> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --body "## 📚 Documentation Created
 
-**Documentation**: [\`.ai/ai_docs/context-docs/features/${featureSlug}.md\`](https://github.com/MLorneSmith/2025slideheroes/blob/main/.ai/ai_docs/context-docs/features/${featureSlug}.md)
+**Documentation**: [\`.ai/ai_docs/context-docs/features/${featureSlug}.md\`](https://github.com/slideheroes/2025slideheroes/blob/main/.ai/ai_docs/context-docs/features/${featureSlug}.md)
 
 ### Overview
 ${feature_summary}
@@ -733,25 +733,25 @@ The documentation has been added to the context docs system and will be automati
 
 # Add "documented" label
 gh issue edit <issueNumber> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --add-label "documented"
 
 # Close issue if it's still open and all work is complete
 issue_state=$(gh issue view <issueNumber> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json state \
   --jq '.state')
 
 if [ "$issue_state" = "OPEN" ]; then
   # Check if issue also has "review-passed" or "implemented" label
   has_completion_label=$(gh issue view <issueNumber> \
-    --repo MLorneSmith/2025slideheroes \
+    --repo slideheroes/2025slideheroes \
     --json labels \
     --jq '.labels[].name' | grep -E '(review-passed|implemented)' || echo "")
 
   if [ -n "$has_completion_label" ]; then
     gh issue close <issueNumber> \
-      --repo MLorneSmith/2025slideheroes \
+      --repo slideheroes/2025slideheroes \
       --comment "✅ Implementation complete, reviewed, and documented. Closing issue."
   fi
 fi
@@ -775,7 +775,7 @@ Provide a comprehensive summary:
 
 ### Documentation Created
 - **File**: `.ai/ai_docs/context-docs/features/<feature-slug>.md`
-- **GitHub**: [View Documentation](https://github.com/MLorneSmith/2025slideheroes/blob/main/.ai/ai_docs/context-docs/features/<feature-slug>.md)
+- **GitHub**: [View Documentation](https://github.com/slideheroes/2025slideheroes/blob/main/.ai/ai_docs/context-docs/features/<feature-slug>.md)
 
 ### Implementation Details
 - **Issue**: #<issue-number>

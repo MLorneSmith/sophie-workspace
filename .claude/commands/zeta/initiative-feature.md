@@ -100,7 +100,7 @@ Load the feature stub issue created by `/initiative`:
 
 ```bash
 gh issue view <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json body,title,labels,number,url
 ```
 
@@ -139,7 +139,7 @@ if (manifestPath && manifestPath.startsWith('github:issue:')) {
 ```bash
 # Fetch manifest content from GitHub issue
 gh issue view <manifest-issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json body \
   -q .body
 ```
@@ -296,7 +296,7 @@ The sandbox clones from GitHub and won't have access to local files. The plan mu
 ```bash
 # Update issue with FULL plan content (not a file reference)
 gh issue edit <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --body "$(cat << 'PLAN_EOF'
 <FULL PLAN CONTENT HERE - NOT A FILE PATH REFERENCE>
 PLAN_EOF
@@ -304,7 +304,7 @@ PLAN_EOF
 
 # Add labels
 gh issue edit <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --add-label "status:planned" \
   --remove-label "status:ready"
 ```
@@ -333,7 +333,7 @@ gh issue edit <issue-number> \
     "issue_number": 1235,
     "title": "Dashboard Layout Grid and Data Loader",
     "slug": "dashboard-layout",
-    "url": "https://github.com/MLorneSmith/2025slideheroes/issues/1235"
+    "url": "https://github.com/slideheroes/2025slideheroes/issues/1235"
   },
   "initiative": {
     "master_issue": 1234,

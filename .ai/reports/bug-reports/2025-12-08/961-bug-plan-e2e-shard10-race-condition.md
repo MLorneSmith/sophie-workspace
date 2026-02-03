@@ -287,7 +287,7 @@ If you trigger the e2e-sharded.yml workflow from a PR or run staging-deploy.yml:
 
 ```bash
 # Monitor the GitHub Actions run for Shard 10
-gh run view <run-id> --repo MLorneSmith/2025slideheroes --json jobs --jq '.jobs[] | select(.name | contains("Shard 10"))'
+gh run view <run-id> --repo slideheroes/2025slideheroes --json jobs --jq '.jobs[] | select(.name | contains("Shard 10"))'
 
 # Expected (before fix):
 # - Status: "queued" for extended period (18+ hours)
@@ -308,11 +308,11 @@ pnpm lint
 
 # Run manual workflow test (create a PR and trigger e2e-sharded.yml)
 gh workflow run e2e-sharded.yml \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --ref <your-branch>
 
 # Monitor job timing
-gh run view <run-id> --repo MLorneSmith/2025slideheroes --json jobs
+gh run view <run-id> --repo slideheroes/2025slideheroes --json jobs
 
 # Expected (after fix):
 # - All 10 shards should progress through queued → in_progress → completed
@@ -324,7 +324,7 @@ gh run view <run-id> --repo MLorneSmith/2025slideheroes --json jobs
 git push origin staging
 
 # Monitor staging workflow
-gh run list --repo MLorneSmith/2025slideheroes \
+gh run list --repo slideheroes/2025slideheroes \
   --workflow staging-deploy.yml \
   --limit 1 \
   --json status,conclusion
@@ -338,12 +338,12 @@ gh run list --repo MLorneSmith/2025slideheroes \
 # Run e2e-sharded.yml multiple times to ensure stable behavior
 for i in {1..3}; do
   echo "Run #$i"
-  gh workflow run e2e-sharded.yml --repo MLorneSmith/2025slideheroes --ref dev
+  gh workflow run e2e-sharded.yml --repo slideheroes/2025slideheroes --ref dev
   sleep 300  # Wait 5 minutes between runs
 done
 
 # Monitor all runs for any Shard 10 issues
-gh run list --repo MLorneSmith/2025slideheroes \
+gh run list --repo slideheroes/2025slideheroes \
   --workflow e2e-sharded.yml \
   --limit 3 \
   --json createdAt,status,conclusion

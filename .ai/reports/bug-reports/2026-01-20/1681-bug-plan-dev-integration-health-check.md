@@ -229,7 +229,7 @@ The bug is already manifesting in the current state:
 
 Check the latest failed run:
 ```bash
-gh run view <latest-failure-id> --repo MLorneSmith/2025slideheroes --log-failed
+gh run view <latest-failure-id> --repo slideheroes/2025slideheroes --log-failed
 ```
 
 ### After Fix (Bug Should Be Resolved)

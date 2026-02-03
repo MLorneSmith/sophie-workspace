@@ -312,11 +312,11 @@ gh workflow run e2e-sharded.yml --ref dev -f max_parallel=3
 RUN_ID=$(gh run list --workflow e2e-sharded.yml --limit 1 --json databaseId --jq '.[0].databaseId')
 
 # Count total jobs created (should be 2)
-gh api repos/MLorneSmith/2025slideheroes/actions/runs/$RUN_ID/jobs --jq '.total_count'
+gh api repos/slideheroes/2025slideheroes/actions/runs/$RUN_ID/jobs --jq '.total_count'
 # Expected: 2 (only setup-server and e2e-report)
 
 # List job names (should be missing shards 1-12)
-gh api repos/MLorneSmith/2025slideheroes/actions/runs/$RUN_ID/jobs --jq '.jobs[].name'
+gh api repos/slideheroes/2025slideheroes/actions/runs/$RUN_ID/jobs --jq '.jobs[].name'
 # Expected: ["Setup Test Server", "E2E Test Report"]
 ```
 
@@ -338,11 +338,11 @@ gh workflow run e2e-sharded.yml --ref dev -f max_parallel=3
 RUN_ID=$(gh run list --workflow e2e-sharded.yml --limit 1 --json databaseId --jq '.[0].databaseId')
 
 # Count total jobs created (should be 14)
-gh api repos/MLorneSmith/2025slideheroes/actions/runs/$RUN_ID/jobs --jq '.total_count'
+gh api repos/slideheroes/2025slideheroes/actions/runs/$RUN_ID/jobs --jq '.total_count'
 # Expected: 14 (setup + 12 shards + report)
 
 # List job names (should include all shards)
-gh api repos/MLorneSmith/2025slideheroes/actions/runs/$RUN_ID/jobs --jq '.jobs[].name'
+gh api repos/slideheroes/2025slideheroes/actions/runs/$RUN_ID/jobs --jq '.jobs[].name'
 # Expected: ["Setup Test Server", "E2E Shard 1", "E2E Shard 2", ..., "E2E Shard 12", "E2E Test Report"]
 
 # Wait for workflow to complete

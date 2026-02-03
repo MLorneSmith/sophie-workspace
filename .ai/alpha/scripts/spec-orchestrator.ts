@@ -4,7 +4,7 @@
 
 * Alpha Spec Orchestrator
 *
-* Manages E2B sandboxes and Claude Code sessions to implement all features
+* Manages E2B sandboxes and agent sessions (Claude by default, GPT via Codex optional) to implement all features
 * across all initiatives in a spec.
 *
 * Key features:

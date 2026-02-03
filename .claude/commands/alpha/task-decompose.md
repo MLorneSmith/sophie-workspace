@@ -102,7 +102,7 @@ if (input.match(/^S\d+\.I\d+\.F\d+$/)) {
 
 **For legacy issue numbers**, fetch from GitHub to determine type:
 ```bash
-gh issue view $ARGUMENTS --repo MLorneSmith/2025slideheroes --json labels,title
+gh issue view $ARGUMENTS --repo slideheroes/2025slideheroes --json labels,title
 ```
 
 - `alpha:initiative` or `type:initiative` → Execute **Mode B** (loop through all features)
@@ -170,7 +170,7 @@ Glob tool:
 
 **For legacy IDs:**
 ```bash
-gh issue view $ARGUMENTS --repo MLorneSmith/2025slideheroes
+gh issue view $ARGUMENTS --repo slideheroes/2025slideheroes
 INIT_DIR=$(find .ai/alpha/specs -type d -name "$ARGUMENTS-*" -o -name "S*.I*-*" | head -1)
 ```
 

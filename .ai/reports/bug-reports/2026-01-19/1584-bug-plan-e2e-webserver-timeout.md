@@ -308,10 +308,10 @@ The production server:
 
 ```bash
 # Check current failing workflow
-gh run view 21141407892 --repo MLorneSmith/2025slideheroes --json jobs --jq '.jobs[] | "\(.name): \(.conclusion // .status)"'
+gh run view 21141407892 --repo slideheroes/2025slideheroes --json jobs --jq '.jobs[] | "\(.name): \(.conclusion // .status)"'
 
 # Should show multiple shard failures with timeout errors
-gh run view 21141407892 --repo MLorneSmith/2025slideheroes --log | grep "Timed out waiting"
+gh run view 21141407892 --repo slideheroes/2025slideheroes --log | grep "Timed out waiting"
 ```
 
 **Expected Result**: Logs show "Timed out waiting 120000ms from config.webServer" - bug reproduces.

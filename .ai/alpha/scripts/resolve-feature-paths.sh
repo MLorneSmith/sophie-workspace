@@ -32,7 +32,7 @@
 
 set -euo pipefail
 
-REPO="MLorneSmith/2025slideheroes"
+REPO="slideheroes/2025slideheroes"
 SPECS_ROOT=".ai/alpha/specs"
 
 # Colors for messages

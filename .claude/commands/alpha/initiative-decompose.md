@@ -72,7 +72,7 @@ const specId = `S${specNum}`; // Semantic ID (e.g., S1362)
 
 ```bash
 # Verify GitHub issue exists and has alpha:spec label
-gh issue view <spec-num> --repo MLorneSmith/2025slideheroes --json labels,title
+gh issue view <spec-num> --repo slideheroes/2025slideheroes --json labels,title
 ```
 
 If the issue doesn't exist or lacks `alpha:spec` label, stop and inform the user.
@@ -503,7 +503,7 @@ Use the Write tool to create `${SPEC_DIR}/README.md` with:
 Post a decomposition summary to the Spec's GitHub issue:
 
 ```bash
-gh issue comment <spec-num> --repo MLorneSmith/2025slideheroes --body "$(cat <<'EOF'
+gh issue comment <spec-num> --repo slideheroes/2025slideheroes --body "$(cat <<'EOF'
 ## [Decomposition Update] Initiatives Created
 
 This spec has been decomposed into the following initiatives:
@@ -671,7 +671,7 @@ Run `/alpha:feature-decompose S<spec-num>.I1` for Priority 1 / Group 0 initiativ
 - Create directories one at a time to isolate the issue
 
 **If GitHub comment fails**:
-- Verify repo access: `gh repo view MLorneSmith/2025slideheroes`
+- Verify repo access: `gh repo view slideheroes/2025slideheroes`
 - Check issue exists and is open
 - Try posting a simpler comment first to test permissions
 

@@ -508,7 +508,7 @@ Use the Write tool to create each spec file with the appropriate token values.
 ```bash
 # Variation 1
 gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "Spec: Design System V1 - Modern Vibrant" \
   --body "$(cat .ai/alpha/specs/pending-Spec-design-system-v1-modern-vibrant/spec.md)" \
   --label "type:spec" \
@@ -769,7 +769,7 @@ for v in v1 v2 v3 v4; do
 done
 
 # Verify GitHub issues created
-gh issue list --repo MLorneSmith/2025slideheroes --label "alpha:design-variation" --limit 10
+gh issue list --repo slideheroes/2025slideheroes --label "alpha:design-variation" --limit 10
 ```
 
 ---

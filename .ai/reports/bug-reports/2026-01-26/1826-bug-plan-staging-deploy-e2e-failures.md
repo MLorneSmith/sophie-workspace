@@ -179,7 +179,7 @@ Execute these tests before considering the fix complete:
 ```bash
 # Manually trigger staging deploy or push to staging branch
 # Observe: test-shards job fails with missing environment errors
-gh run view <run-id> --repo MLorneSmith/2025slideheroes
+gh run view <run-id> --repo slideheroes/2025slideheroes
 
 # Check for specific errors in logs:
 # - "relation payload.users does not exist"
@@ -196,13 +196,13 @@ gh run view <run-id> --repo MLorneSmith/2025slideheroes
 git push origin dev:staging
 
 # Monitor the workflow run
-gh run watch <run-id> --repo MLorneSmith/2025slideheroes
+gh run watch <run-id> --repo slideheroes/2025slideheroes
 
 # Verify test-shards job completes
-gh run view <run-id> --repo MLorneSmith/2025slideheroes --json jobs --jq '.jobs[] | select(.name | contains("E2E Shard"))'
+gh run view <run-id> --repo slideheroes/2025slideheroes --json jobs --jq '.jobs[] | select(.name | contains("E2E Shard"))'
 
 # Check logs for successful setup
-gh run view <run-id> --repo MLorneSmith/2025slideheroes --log-status
+gh run view <run-id> --repo slideheroes/2025slideheroes --log-status
 ```
 
 **Expected Result**: All validation commands succeed, test-shards completes with E2E tests running
@@ -267,7 +267,7 @@ The configuration changes do not affect performance. The Payload CMS migration s
 
 ```bash
 # Monitor the current failing workflow
-gh run view https://github.com/MLorneSmith/2025slideheroes/actions/runs/21368444612
+gh run view https://github.com/slideheroes/2025slideheroes/actions/runs/21368444612
 
 # Expected: test-shards matrix jobs fail with one of these:
 # - "relation payload.users does not exist"
@@ -287,10 +287,10 @@ git commit --allow-empty -m "test: trigger staging deploy workflow"
 git push origin staging
 
 # Wait for workflow to complete
-gh run watch --repo MLorneSmith/2025slideheroes
+gh run watch --repo slideheroes/2025slideheroes
 
 # Verify test-shards jobs complete successfully
-gh run view <run-id> --repo MLorneSmith/2025slideheroes --json jobs \
+gh run view <run-id> --repo slideheroes/2025slideheroes --json jobs \
   --jq '.jobs[] | select(.name | contains("E2E Shard")) | {name: .name, conclusion: .conclusion}'
 
 # Expected output shows: conclusion: "success" for all shards

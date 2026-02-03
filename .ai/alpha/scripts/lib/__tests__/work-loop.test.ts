@@ -167,6 +167,7 @@ describe("WorkLoop", () => {
 				manifest,
 				uiEnabled: false,
 				timeoutSeconds: 7200,
+				provider: "claude",
 			};
 
 			const workLoop = new WorkLoop(options);
@@ -183,6 +184,7 @@ describe("WorkLoop", () => {
 				uiEnabled: false,
 				timeoutSeconds: 7200,
 				runId: "test-run-123",
+				provider: "claude",
 			};
 
 			const workLoop = new WorkLoop(options);
@@ -199,6 +201,7 @@ describe("WorkLoop", () => {
 				manifest,
 				uiEnabled: false,
 				timeoutSeconds: 7200,
+				provider: "claude",
 			};
 
 			const workLoop = new WorkLoop(options, customLogger);
@@ -218,6 +221,7 @@ describe("WorkLoop", () => {
 				manifest,
 				uiEnabled: false,
 				timeoutSeconds: 7200,
+				provider: "claude",
 			};
 
 			const workLoop = new WorkLoop(options);
@@ -257,6 +261,7 @@ describe("WorkLoop", () => {
 				manifest,
 				uiEnabled: false,
 				timeoutSeconds: 7200,
+				provider: "claude",
 			};
 
 			const workLoop = new WorkLoop(options);
@@ -292,6 +297,7 @@ describe("WorkLoop", () => {
 				manifest,
 				uiEnabled: false,
 				timeoutSeconds: 7200,
+				provider: "claude",
 			};
 
 			// Mock detectAndHandleDeadlock to return shouldExit: true to exit the loop
@@ -338,6 +344,7 @@ describe("WorkLoop", () => {
 				manifest,
 				uiEnabled: false,
 				timeoutSeconds: 7200,
+				provider: "claude",
 			};
 
 			const workLoop = new WorkLoop(options);
@@ -378,7 +385,14 @@ describe("runWorkLoop (backward compatibility function)", () => {
 		const manifest = createTestManifest();
 		const instances = [createTestInstance("sbx-a")];
 
-		const runPromise = runWorkLoop(instances, manifest, false, 7200);
+		const runPromise = runWorkLoop(
+			instances,
+			manifest,
+			false,
+			7200,
+			undefined,
+			"claude",
+		);
 		await vi.runAllTimersAsync();
 		await runPromise;
 
@@ -396,6 +410,7 @@ describe("runWorkLoop (backward compatibility function)", () => {
 			false,
 			7200,
 			"test-run-456",
+			"claude",
 		);
 		await vi.runAllTimersAsync();
 		await runPromise;

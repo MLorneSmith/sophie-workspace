@@ -30,7 +30,7 @@
 
 set -euo pipefail
 
-REPO="MLorneSmith/2025slideheroes"
+REPO="slideheroes/2025slideheroes"
 
 # Colors
 RED='\033[0;31m'

@@ -11,7 +11,7 @@
 
 set -e
 
-REPO="MLorneSmith/2025slideheroes"
+REPO="slideheroes/2025slideheroes"
 DRY_RUN=false
 CREATE_ONLY=false
 DELETE_OLD=false

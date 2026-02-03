@@ -144,7 +144,7 @@ async function main(): Promise<void> {
 	}
 
 	// Check environment
-	checkEnvironment();
+	checkEnvironment("claude");
 
 	// Find spec directory
 	const projectRoot = getProjectRoot();

@@ -29,7 +29,7 @@ IMPORTANT: The chore has already been scoped - your job is to design the detaile
 ```bash
 # Extract issue number from $ARGUMENTS and fetch chore with comments
 gh issue view <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json body,title,labels,number,comments \
   --jq '{body: .body, title: .title, labels: [.labels[].name], number: .number, comments: [.comments[] | {author: .author.login, body: .body, createdAt: .createdAt}]}'
 ```
@@ -514,7 +514,7 @@ Update the original chore issue with the detailed plan:
 ```bash
 # First, validate the chore issue exists
 gh issue view <choreIssueNumber> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json labels,title \
   --jq '{labels: [.labels[].name], title: .title}'
 
@@ -526,7 +526,7 @@ COMPLEXITY="<simple|moderate|complex>"  # From your complexity analysis
 
 # Add detailed plan as a comment to the original chore issue
 gh issue comment <choreIssueNumber> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --body "## 📋 Detailed Implementation Plan
 
 **Complexity**: ${COMPLEXITY}
@@ -549,7 +549,7 @@ Ready for implementation via \`/implement ${choreIssueNumber}\`"
 
 # Update labels to indicate detailed planning is complete
 gh issue edit <choreIssueNumber> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --add-label "complexity:${COMPLEXITY}" \
   --add-label "status:ready"
 

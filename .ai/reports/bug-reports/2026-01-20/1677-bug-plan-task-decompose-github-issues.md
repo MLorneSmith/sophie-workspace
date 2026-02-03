@@ -139,7 +139,7 @@ This new Step 7.3 should:
 
 **Format to follow**:
 ```bash
-gh issue comment [SPEC_NUM] --repo "MLorneSmith/2025slideheroes" --body "## [Decomposition Update] Tasks for S[SPEC_NUM].I[INIT_NUM].F[FEAT_NUM]
+gh issue comment [SPEC_NUM] --repo "slideheroes/2025slideheroes" --body "## [Decomposition Update] Tasks for S[SPEC_NUM].I[INIT_NUM].F[FEAT_NUM]
 
 Tasks have been decomposed as follows:
 
@@ -303,7 +303,7 @@ This change has zero performance implications:
 
 ```bash
 # Count the GitHub issues that were incorrectly created
-gh issue list --repo MLorneSmith/2025slideheroes \
+gh issue list --repo slideheroes/2025slideheroes \
   --search "Feature Tasks" --label type:feature-tasks
 
 # Expected Result: Shows issues #1660-#1673 (14 issues that shouldn't exist)

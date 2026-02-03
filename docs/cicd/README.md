@@ -334,7 +334,7 @@ git
 
 ```bash
 # Clone repository
-git clone https://github.com/MLorneSmith/2025slideheroes.git
+git clone https://github.com/slideheroes/2025slideheroes.git
 cd 2025slideheroes
 
 # Install dependencies

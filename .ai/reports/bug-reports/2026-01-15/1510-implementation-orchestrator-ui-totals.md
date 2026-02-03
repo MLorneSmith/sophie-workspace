@@ -2,7 +2,7 @@
 
 **Status:** ✅ COMPLETE
 **Issue:** Bug Fix: Orchestrator UI shows wrong progress totals (0/1 instead of manifest values)
-**GitHub:** [#1510](https://github.com/MLorneSmith/2025slideheroes/issues/1510)
+**GitHub:** [#1510](https://github.com/slideheroes/2025slideheroes/issues/1510)
 
 ## Summary
 

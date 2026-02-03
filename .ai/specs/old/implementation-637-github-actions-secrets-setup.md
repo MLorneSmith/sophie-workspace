@@ -41,7 +41,7 @@ These secrets are referenced in the workflow but are currently not configured, c
 
 **Via GitHub Web UI** (Recommended for most users):
 
-1. Go to your GitHub repository: https://github.com/MLorneSmith/2025slideheroes
+1. Go to your GitHub repository: https://github.com/slideheroes/2025slideheroes
 2. Click **Settings** tab
 3. In the left sidebar, click **Secrets and variables** → **Actions**
 4. Click the **New repository secret** button
@@ -63,10 +63,10 @@ export SUPABASE_ANON_KEY="eyJ0eXAiOiJKV1QiLCJhbGc..."
 
 # Create secrets using gh CLI
 gh secret set NEXT_PUBLIC_SUPABASE_URL --body "$SUPABASE_URL" \
-  --repo MLorneSmith/2025slideheroes
+  --repo slideheroes/2025slideheroes
 
 gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --body "$SUPABASE_ANON_KEY" \
-  --repo MLorneSmith/2025slideheroes
+  --repo slideheroes/2025slideheroes
 ```
 
 **Verification**:
@@ -88,7 +88,7 @@ The workflow is already correctly configured. The `.github/workflows/dev-integra
 
 **Option A: Manually Trigger the Workflow**
 
-1. Go to GitHub repository: https://github.com/MLorneSmith/2025slideheroes
+1. Go to GitHub repository: https://github.com/slideheroes/2025slideheroes
 2. Click **Actions** tab
 3. Select **Dev Integration Tests** workflow from the left sidebar
 4. Click **Run workflow** button
@@ -166,7 +166,7 @@ const supabaseAnonKey = process.env.E2E_SUPABASE_ANON_KEY || "eyJ...";
 **Solution**:
 1. Verify secrets are created in Settings → Secrets and variables → Actions
 2. Check spelling: exactly `NEXT_PUBLIC_SUPABASE_URL` (not `SUPABASE_URL`)
-3. Verify you're in the correct repository (MLorneSmith/2025slideheroes)
+3. Verify you're in the correct repository (slideheroes/2025slideheroes)
 
 ### Tests Fail with "Invalid supabaseUrl: Must be a valid HTTP or HTTPS URL"
 

@@ -337,10 +337,10 @@ This change only affects E2E test environment, not production authentication.
 git push origin dev
 
 # Wait for workflow to complete, then check logs
-gh run list --repo MLorneSmith/2025slideheroes --workflow="dev-integration-tests.yml" --limit 1
+gh run list --repo slideheroes/2025slideheroes --workflow="dev-integration-tests.yml" --limit 1
 
 # View failed test logs
-gh run view <run-id> --repo MLorneSmith/2025slideheroes --log-failed | grep "team-accounts"
+gh run view <run-id> --repo slideheroes/2025slideheroes --log-failed | grep "team-accounts"
 ```
 
 **Expected Result**: Team-accounts tests fail with "Error: page.waitForSelector: Timeout 20000ms exceeded"
@@ -365,10 +365,10 @@ pnpm --filter web-e2e test
 
 # Push to dev and verify CI
 git push origin dev
-gh run watch --repo MLorneSmith/2025slideheroes
+gh run watch --repo slideheroes/2025slideheroes
 
 # After CI completes, check results
-gh run view --repo MLorneSmith/2025slideheroes --log | grep -E "(passed|failed)"
+gh run view --repo slideheroes/2025slideheroes --log | grep -E "(passed|failed)"
 ```
 
 **Expected Result**:
@@ -384,10 +384,10 @@ gh run view --repo MLorneSmith/2025slideheroes --log | grep -E "(passed|failed)"
 pnpm --filter web-e2e test
 
 # Check for auth-related errors in logs
-gh run view --repo MLorneSmith/2025slideheroes --log | grep -E "(auth|redirect|sign-in)"
+gh run view --repo slideheroes/2025slideheroes --log | grep -E "(auth|redirect|sign-in)"
 
 # Verify cookie configuration in logs
-gh run view --repo MLorneSmith/2025slideheroes --log | grep "Cookie domain config"
+gh run view --repo slideheroes/2025slideheroes --log | grep "Cookie domain config"
 ```
 
 **Expected Result**: No new failures, all auth flows work correctly, cookies use explicit domain

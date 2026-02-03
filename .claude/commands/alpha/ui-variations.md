@@ -374,7 +374,7 @@ For EACH variation, create a GitHub issue:
 ```bash
 # Create issue for Variation 1
 gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "Spec: [Feature Name] - V1 [Variation Name]" \
   --body "$(cat .ai/alpha/specs/pending-Spec-<feature-slug>-v1/spec.md)" \
   --label "type:spec" \

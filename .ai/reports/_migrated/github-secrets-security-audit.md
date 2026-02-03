@@ -1,7 +1,7 @@
 # GitHub Secrets Security Audit: E2E Test Credentials
 
 **Date**: 2025-09-29
-**Repository**: MLorneSmith/2025slideheroes (Private)
+**Repository**: slideheroes/2025slideheroes (Private)
 **Workflow**: dev-integration-tests.yml
 **Audit Type**: Security Configuration Review & Access Pattern Analysis
 
@@ -881,21 +881,21 @@ jobs:
 ### Check Current Secrets
 
 ```bash
-gh secret list --repo MLorneSmith/2025slideheroes
+gh secret list --repo slideheroes/2025slideheroes
 ```
 
 ### Add Missing Email Secrets (Option A)
 
 ```bash
-gh secret set E2E_TEST_USER_EMAIL --body "test1@slideheroes.com" --repo MLorneSmith/2025slideheroes
-gh secret set E2E_OWNER_EMAIL --body "owner@slideheroes.com" --repo MLorneSmith/2025slideheroes
-gh secret set E2E_ADMIN_EMAIL --body "admin@slideheroes.com" --repo MLorneSmith/2025slideheroes
+gh secret set E2E_TEST_USER_EMAIL --body "test1@slideheroes.com" --repo slideheroes/2025slideheroes
+gh secret set E2E_OWNER_EMAIL --body "owner@slideheroes.com" --repo slideheroes/2025slideheroes
+gh secret set E2E_ADMIN_EMAIL --body "admin@slideheroes.com" --repo slideheroes/2025slideheroes
 ```
 
 ### Verify Workflow Configuration
 
 ```bash
-gh workflow view dev-integration-tests.yml --repo MLorneSmith/2025slideheroes
+gh workflow view dev-integration-tests.yml --repo slideheroes/2025slideheroes
 ```
 
 ### Test Credential Validation Locally

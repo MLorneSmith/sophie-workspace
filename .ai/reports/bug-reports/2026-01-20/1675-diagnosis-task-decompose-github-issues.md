@@ -82,7 +82,7 @@ This JSON structure in `.ai/alpha/specs/S1656-Spec-user-dashboard/S1656.I1-Initi
 ### GitHub CLI Query
 
 ```bash
-gh issue list --repo MLorneSmith/2025slideheroes --search "Feature Tasks" --limit 20
+gh issue list --repo slideheroes/2025slideheroes --search "Feature Tasks" --limit 20
 ```
 
 Returns 14 issues (#1660-#1673) all created by the task-decompose workflow.

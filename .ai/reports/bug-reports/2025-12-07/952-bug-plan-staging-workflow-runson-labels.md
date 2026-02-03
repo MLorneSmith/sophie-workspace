@@ -261,7 +261,7 @@ If the fix doesn't work or causes new issues:
 
 The bug has already been reproduced in workflow run #19997869115:
 - E2E Shard 10 remained in "queued" state for 17+ hours
-- Can be verified at: https://github.com/MLorneSmith/2025slideheroes/actions/runs/19997869115
+- Can be verified at: https://github.com/slideheroes/2025slideheroes/actions/runs/19997869115
 
 ### After Fix (Bug Should Be Resolved)
 

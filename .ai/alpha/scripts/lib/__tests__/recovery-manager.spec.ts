@@ -140,7 +140,10 @@ describe("recovery-manager", () => {
 		it("should kill all Claude processes", async () => {
 			const sandbox = createMockSandbox();
 
-			const result = await recoveryManager.killAllClaudeProcesses(sandbox);
+			const result = await recoveryManager.killAllAgentProcesses(
+				sandbox,
+				"claude",
+			);
 
 			expect(result.success).toBe(true);
 			expect(sandbox.commands.run).toHaveBeenCalledWith(
@@ -152,7 +155,10 @@ describe("recovery-manager", () => {
 		it("should handle kill failure gracefully", async () => {
 			const sandbox = createMockSandbox({ killSuccess: false });
 
-			const result = await recoveryManager.killAllClaudeProcesses(sandbox);
+			const result = await recoveryManager.killAllAgentProcesses(
+				sandbox,
+				"claude",
+			);
 
 			expect(result.success).toBe(false);
 			expect(result.error).toBeDefined();
@@ -162,7 +168,7 @@ describe("recovery-manager", () => {
 			const sandbox = createMockSandbox({ processCount: 0 });
 
 			const terminated =
-				await recoveryManager.waitForProcessTermination(sandbox);
+				await recoveryManager.waitForProcessTermination(sandbox, "claude");
 
 			expect(terminated).toBe(true);
 		});
@@ -200,6 +206,7 @@ describe("recovery-manager", () => {
 				sandboxInstance,
 				feature,
 				manifest,
+				"claude",
 			);
 
 			expect(result.success).toBe(true);
@@ -222,6 +229,7 @@ describe("recovery-manager", () => {
 				sandboxInstance,
 				feature,
 				manifest,
+				"claude",
 			);
 
 			expect(result.success).toBe(true);
@@ -246,6 +254,7 @@ describe("recovery-manager", () => {
 				sandboxInstance,
 				feature,
 				manifest,
+				"claude",
 			);
 
 			expect(sandboxInstance.outputLineCount).toBe(0);
@@ -266,6 +275,7 @@ describe("recovery-manager", () => {
 				sandboxInstance,
 				feature,
 				manifest,
+				"claude",
 			);
 
 			const telemetry = recoveryManager.getTelemetry();
@@ -285,6 +295,7 @@ describe("recovery-manager", () => {
 				sandboxInstance,
 				feature,
 				manifest,
+				"claude",
 			);
 
 			const telemetry = recoveryManager.getTelemetry();
@@ -329,6 +340,7 @@ describe("recovery-manager", () => {
 				sandboxInstance,
 				feature,
 				manifest,
+				"claude",
 			);
 
 			expect(recoveryManager.getTelemetry().totalRecoveries).toBe(1);

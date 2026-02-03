@@ -20,6 +20,7 @@ import {
 	WORKSPACE_DIR,
 } from "../config/index.js";
 import type {
+	AgentProvider,
 	FeatureEntry,
 	FeatureImplementationResult,
 	SandboxInstance,
@@ -27,10 +28,19 @@ import type {
 	StartupAttemptRecord,
 } from "../types/index.js";
 import { syncFeatureMigrations } from "./database.js";
-import { getAllEnvVars, getAuthMethod } from "./environment.js";
+import {
+	getAllEnvVars,
+	getAuthMethod,
+	getOpenAIAuthMethod,
+} from "./environment.js";
 import { killClaudeProcess } from "./health.js";
 import { getProjectRoot } from "./lock.js";
 import { saveManifest } from "./manifest.js";
+import {
+	buildImplementationPrompt,
+	buildProviderCommand,
+	getProviderDisplayName,
+} from "./provider.js";
 import {
 	checkForStall,
 	type OutputTracker,
@@ -152,6 +162,7 @@ export async function runFeatureImplementation(
 	manifest: SpecManifest,
 	feature: FeatureEntry,
 	uiEnabled: boolean = false,
+	provider: AgentProvider = "claude",
 ): Promise<FeatureImplementationResult> {
 	// Create conditional logger
 	const { log } = createLogger(uiEnabled);
@@ -218,11 +229,16 @@ export async function runFeatureImplementation(
 		// Ignore - file may not exist
 	}
 
-	const prompt = `/alpha:implement ${feature.id}`;
-	const authMethod = getAuthMethod();
-	log(`│   Running: ${prompt}`);
+	const prompt = buildImplementationPrompt(provider, feature.id);
+	const authMethod =
+		provider === "gpt" ? getOpenAIAuthMethod() : getAuthMethod();
+	const providerLabel = getProviderDisplayName(provider);
+
 	log(
-		`│   Auth: ${authMethod === "api_key" ? "API key (preferred)" : authMethod === "oauth" ? "OAuth" : "none"}`,
+		`│   Running (${providerLabel}): ${provider === "gpt" ? "codex exec" : prompt}`,
+	);
+	log(
+		`│   Auth: ${authMethod === "api_key" ? "API key" : authMethod === "oauth" ? "OAuth" : "none"}`,
 	);
 
 	let capturedStdout = "";
@@ -283,10 +299,10 @@ export async function runFeatureImplementation(
 			stallDetected = true;
 			stallRecoveryInProgress = true;
 			log(`│   ⚠️ STALL DETECTED: ${stallCheck.reason}`);
-			log("│   🔪 Killing Claude process for recovery...");
+			log(`│   🔪 Killing ${providerLabel} process for recovery...`);
 
-			// Kill the Claude process to trigger early exit
-			await killClaudeProcess(instance, uiEnabled);
+			// Kill the agent process to trigger early exit
+			await killClaudeProcess(instance, uiEnabled, provider);
 		}
 	}, 60000);
 
@@ -347,15 +363,15 @@ export async function runFeatureImplementation(
 				);
 			}
 
-			// Kill the Claude process to trigger retry
-			await killClaudeProcess(instance, uiEnabled);
+			// Kill the agent process to trigger retry
+			await killClaudeProcess(instance, uiEnabled, provider);
 		}
 	}, 10000); // Check every 10 seconds during startup
 
 	// ============================================================================
 	// Retry Loop for Startup Hang Recovery
 	// ============================================================================
-	// When Claude CLI hangs during startup (no output within 60s), the startup
+	// When the agent CLI hangs during startup (no output within 60s), the startup
 	// check interval detects it, sets startupHangDetected=true, and kills the process.
 	// This retry loop catches that error and retries with exponential backoff.
 	// CommandResult type from E2B SDK - compatible with both commands.run() and pty.wait()
@@ -390,7 +406,7 @@ export async function runFeatureImplementation(
 			instance.outputLineCount = 0;
 			instance.hasReceivedOutput = false;
 			log(
-				`   │   🔄 [STARTUP_ATTEMPT_${attemptNumber}] ${instance.label}: Retrying Claude CLI (attempt ${attemptNumber}/${MAX_STARTUP_RETRIES})`,
+				`   │   🔄 [STARTUP_ATTEMPT_${attemptNumber}] ${instance.label}: Retrying agent CLI (attempt ${attemptNumber}/${MAX_STARTUP_RETRIES})`,
 			);
 			logStream.write(
 				`\n=== RETRY ATTEMPT ${attemptNumber}/${MAX_STARTUP_RETRIES} ===\n`,
@@ -487,7 +503,7 @@ export async function runFeatureImplementation(
 			// Send the command to the PTY shell
 			// PTY creates an interactive shell, so we send the command followed by exit
 			// to ensure the shell exits when the command completes (preserving exit code)
-			const command = `run-claude "${prompt.replace(/"/g, '\\"')}"\nexit $?\n`;
+			const command = buildProviderCommand(provider, prompt);
 
 			log(`   │   📤 [PTY_INPUT] ${instance.label}: Sending command to PTY`);
 			logStream.write(`[PTY] Sending command: ${command.split("\n")[0]}\n`);
@@ -580,20 +596,20 @@ export async function runFeatureImplementation(
 			startupAttemptRecord.succeededOnAttempt = attemptNumber;
 			if (attemptNumber > 1) {
 				log(
-					`   │   ✅ [STARTUP_SUCCESS] ${instance.label}: Claude CLI started successfully on attempt ${attemptNumber}`,
+					`   │   ✅ [STARTUP_SUCCESS] ${instance.label}: Agent CLI started successfully on attempt ${attemptNumber}`,
 				);
 			}
 			break; // Exit retry loop on success
 		} catch (retryError) {
 			// Check if this was a startup hang that we should retry
 			if (startupHangDetected && attemptNumber < MAX_STARTUP_RETRIES) {
-				// Bug fix #1786: CRITICAL - Kill ALL Claude processes before retry
+				// Bug fix #1786: CRITICAL - Kill ALL agent processes before retry
 				// This prevents zombie processes from accumulating when retrying
 				log(
-					`   │   🔪 [RETRY_CLEANUP] ${instance.label}: Killing Claude processes before retry...`,
+					`   │   🔪 [RETRY_CLEANUP] ${instance.label}: Killing agent processes before retry...`,
 				);
 				logStream.write("\n=== CLEANUP BEFORE RETRY ===\n");
-				await killClaudeProcess(instance, uiEnabled);
+				await killClaudeProcess(instance, uiEnabled, provider);
 				log(`   │   ✓ [RETRY_CLEANUP] ${instance.label}: Cleanup complete`);
 				logStream.write(
 					"[CLEANUP] Processes killed and progress file cleared\n",

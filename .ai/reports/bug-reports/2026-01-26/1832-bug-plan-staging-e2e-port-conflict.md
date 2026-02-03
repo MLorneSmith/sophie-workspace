@@ -263,7 +263,7 @@ gh workflow run staging-deploy.yml --ref staging
 
 ```bash
 # Verify workflow syntax
-gh workflow view staging-deploy --repo MLorneSmith/2025slideheroes
+gh workflow view staging-deploy --repo slideheroes/2025slideheroes
 
 # Compare with working e2e-sharded.yml pattern
 diff <(grep -A 5 "webServer" .github/workflows/e2e-sharded.yml) \

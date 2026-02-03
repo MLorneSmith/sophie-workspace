@@ -56,6 +56,10 @@ export {
 	getAllEnvVars,
 	getCachedOAuthToken,
 	getClaudeOAuthToken,
+	getOpenAIAccessToken,
+	getOpenAIApiKey,
+	getOpenAIAuthMethod,
+	OPENAI_API_KEY,
 } from "./environment.js";
 // Event server management
 export {
@@ -198,6 +202,18 @@ export {
 export { isTTSAvailable, speak, speakCompletion } from "./tts.js";
 // Utilities
 export { sleep } from "./utils.js";
+// Provider utilities
+export {
+	buildDocumentationPrompt,
+	buildDocumentationCommand,
+	buildImplementationPrompt,
+	buildProviderCommand,
+	getForceKillCommand,
+	getGracefulShutdownCommand,
+	getProcessCountCommand,
+	getProviderDisplayName,
+	getTemplateAlias,
+} from "./provider.js";
 // Work queue
 export {
 	cleanupStaleState,

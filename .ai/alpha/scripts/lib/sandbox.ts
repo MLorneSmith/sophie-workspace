@@ -12,17 +12,24 @@ import {
 	DEV_SERVER_PORT,
 	PROGRESS_FILE,
 	SANDBOX_MAX_AGE_MS,
-	TEMPLATE_ALIAS,
 	VSCODE_PORT,
 	WORKSPACE_DIR,
 } from "../config/index.js";
-import type { SandboxInstance, SpecManifest } from "../types/index.js";
+import type {
+	AgentProvider,
+	SandboxInstance,
+	SpecManifest,
+} from "../types/index.js";
 import {
 	E2B_API_KEY,
 	GITHUB_TOKEN,
 	getAllEnvVars,
 	validateSupabaseTokensRequired,
 } from "./environment.js";
+import {
+	getProviderDisplayName,
+	getTemplateAlias,
+} from "./provider.js";
 
 // ============================================================================
 // Timeout Configuration
@@ -432,6 +439,85 @@ export async function setupGitCredentials(sandbox: Sandbox): Promise<void> {
 }
 
 // ============================================================================
+// Provider CLI Setup
+// ============================================================================
+
+async function ensureCodexInstalled(
+	sandbox: Sandbox,
+	log: (...args: unknown[]) => void,
+): Promise<void> {
+	try {
+		const check = await sandbox.commands.run("command -v codex", {
+			timeoutMs: 10000,
+		});
+		if (check.exitCode === 0) {
+			log("   ✅ Codex CLI available");
+		} else {
+			log("   📦 Installing Codex CLI (missing)...");
+			await sandbox.commands.run("npm install -g @openai/codex", {
+				timeoutMs: 300000,
+			});
+			log("   ✅ Codex CLI installed");
+		}
+	} catch {
+		log("   📦 Installing Codex CLI (missing)...");
+		await sandbox.commands.run("npm install -g @openai/codex", {
+			timeoutMs: 300000,
+		});
+		log("   ✅ Codex CLI installed");
+	}
+
+	// Setup Codex authentication
+	await setupCodexAuth(sandbox, log);
+}
+
+/**
+ * Setup Codex (OpenAI) authentication in the sandbox.
+ * Copies the local ~/.codex/auth.json to the sandbox.
+ */
+async function setupCodexAuth(
+	sandbox: Sandbox,
+	log: (...args: unknown[]) => void,
+): Promise<void> {
+	const fs = await import("node:fs");
+	const path = await import("node:path");
+
+	const homeDir = process.env.HOME || process.env.USERPROFILE;
+	if (!homeDir) {
+		log("   ⚠️ Cannot find home directory for Codex auth");
+		return;
+	}
+
+	const localAuthPath = path.join(homeDir, ".codex", "auth.json");
+
+	// Check if local auth.json exists
+	if (!fs.existsSync(localAuthPath)) {
+		log("   ⚠️ No local ~/.codex/auth.json found - run 'codex auth' locally first");
+		return;
+	}
+
+	// Read and copy the auth file to sandbox
+	try {
+		const authContent = fs.readFileSync(localAuthPath, "utf-8");
+
+		// Create ~/.codex directory in sandbox
+		await sandbox.commands.run("mkdir -p ~/.codex", { timeoutMs: 5000 });
+
+		// Write auth.json to sandbox using base64 to avoid escaping issues
+		const authBase64 = Buffer.from(authContent).toString("base64");
+		await sandbox.commands.run(
+			`echo '${authBase64}' | base64 -d > ~/.codex/auth.json`,
+			{ timeoutMs: 5000 },
+		);
+		await sandbox.commands.run("chmod 600 ~/.codex/auth.json", { timeoutMs: 5000 });
+
+		log("   ✅ Codex authentication copied to sandbox");
+	} catch (err) {
+		log(`   ⚠️ Failed to copy Codex auth: ${err instanceof Error ? err.message : String(err)}`);
+	}
+}
+
+// ============================================================================
 // Sandbox Creation
 // ============================================================================
 
@@ -451,6 +537,7 @@ export async function createSandbox(
 	timeout: number,
 	uiEnabled: boolean = false,
 	runId?: string,
+	provider: AgentProvider = "claude",
 ): Promise<SandboxInstance> {
 	// Create conditional logger
 	const { log } = createLogger(uiEnabled);
@@ -465,9 +552,9 @@ export async function createSandbox(
 		);
 	}
 
-	log(`\n📦 Creating sandbox ${label}...`);
+	log(`\n📦 Creating sandbox ${label} (${getProviderDisplayName(provider)})...`);
 
-	const sandbox = await Sandbox.create(TEMPLATE_ALIAS, {
+	const sandbox = await Sandbox.create(getTemplateAlias(provider), {
 		timeoutMs: timeout * 1000,
 		apiKey: E2B_API_KEY,
 		envs: getAllEnvVars(),
@@ -486,8 +573,28 @@ export async function createSandbox(
 		await setupGitCredentials(sandbox);
 	}
 
+	// Ensure Codex CLI is available when using GPT provider
+	if (provider === "gpt") {
+		await ensureCodexInstalled(sandbox, log);
+	}
+
 	// Fetch and setup branch
 	const branchName = `alpha/spec-${manifest.metadata.spec_id}`;
+
+	// Check if origin remote exists (GPT templates may have empty git repos)
+	const remoteCheck = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && git remote get-url origin 2>/dev/null || echo "NO_REMOTE"`,
+		{ timeoutMs: 10000 },
+	);
+	const hasRemote = !remoteCheck.stdout.trim().includes("NO_REMOTE");
+
+	if (!hasRemote) {
+		log("   Adding git remote origin...");
+		await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && git remote add origin https://github.com/slideheroes/2025slideheroes.git`,
+			{ timeoutMs: 10000 },
+		);
+	}
 
 	await sandbox.commands.run(`cd ${WORKSPACE_DIR} && git fetch origin`, {
 		timeoutMs: 120000,
@@ -550,10 +657,19 @@ export async function createSandbox(
 
 	if (checkResult.stdout.trim() === "missing") {
 		log("   Installing dependencies (node_modules missing)...");
-		await sandbox.commands.run(
-			`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
-			{ timeoutMs: 1200000 },
-		);
+		// Use pnpm install without --frozen-lockfile for fresh clones (GPT templates)
+		// because patchedDependencies in lockfile may not match when starting from empty repo
+		try {
+			await sandbox.commands.run(
+				`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
+				{ timeoutMs: 1200000 },
+			);
+		} catch {
+			log("   ⚠ Frozen lockfile failed, retrying with pnpm install...");
+			await sandbox.commands.run(`cd ${WORKSPACE_DIR} && pnpm install`, {
+				timeoutMs: 1200000,
+			});
+		}
 	} else if (hasLockfileChanges) {
 		// Lockfile changed - sync dependencies with branch lockfile
 		// Bug fix #1803: Use `pnpm install` without --frozen-lockfile because the branch
@@ -943,12 +1059,13 @@ export async function createReviewSandbox(
 	branchName: string,
 	timeout: number,
 	uiEnabled: boolean = false,
+	provider: AgentProvider = "claude",
 ): Promise<Sandbox> {
 	const { log } = createLogger(uiEnabled);
 
 	log("\n📦 Creating fresh review sandbox...");
 
-	const sandbox = await Sandbox.create(TEMPLATE_ALIAS, {
+	const sandbox = await Sandbox.create(getTemplateAlias(provider), {
 		timeoutMs: timeout * 1000,
 		apiKey: E2B_API_KEY,
 		envs: getAllEnvVars(),

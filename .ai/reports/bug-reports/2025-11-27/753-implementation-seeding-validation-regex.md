@@ -53,4 +53,4 @@ None - the fix is complete and all validation commands pass.
 
 ---
 *Implementation completed by Claude*
-*Issue: https://github.com/MLorneSmith/2025slideheroes/issues/753*
+*Issue: https://github.com/slideheroes/2025slideheroes/issues/753*

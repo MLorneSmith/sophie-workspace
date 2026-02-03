@@ -6,7 +6,12 @@
 
 import process from "node:process";
 
-import type { OrchestratorOptions, RefineOptions } from "../types/index.js";
+import { DEFAULT_PROVIDER } from "../config/index.js";
+import type {
+	AgentProvider,
+	OrchestratorOptions,
+	RefineOptions,
+} from "../types/index.js";
 
 // ============================================================================
 // Argument Parsing
@@ -20,6 +25,11 @@ import type { OrchestratorOptions, RefineOptions } from "../types/index.js";
  */
 export function parseArgs(): OrchestratorOptions {
 	const args = process.argv.slice(2);
+	const envProvider = process.env.ALPHA_PROVIDER?.toLowerCase();
+	const defaultProvider: AgentProvider =
+		envProvider === "gpt" || envProvider === "claude"
+			? envProvider
+			: DEFAULT_PROVIDER;
 	const options: OrchestratorOptions = {
 		specId: -1, // -1 means "not provided" - allows spec ID 0 (debug spec)
 		sandboxCount: 3,
@@ -30,6 +40,7 @@ export function parseArgs(): OrchestratorOptions {
 		skipDbSeed: false,
 		ui: true,
 		minimalUi: false,
+		provider: defaultProvider,
 		reset: false,
 		skipToCompletion: false,
 		skipPreFlight: false,
@@ -47,6 +58,12 @@ export function parseArgs(): OrchestratorOptions {
 		} else if (arg === "--timeout" && nextArg) {
 			// E2B enforces 1 hour (3600s) maximum
 			options.timeout = Math.min(parseInt(nextArg, 10), 3600);
+			i++;
+		} else if (arg === "--provider" && nextArg) {
+			const normalized = nextArg.toLowerCase();
+			if (normalized === "gpt" || normalized === "claude") {
+				options.provider = normalized;
+			}
 			i++;
 		} else if (arg === "--dry-run") {
 			options.dryRun = true;
@@ -101,6 +118,7 @@ Usage:
 Options:
   --sandboxes <n>, -s   Number of sandboxes (default: 3, max: 3)
   --timeout <s>         Sandbox timeout in seconds (default: 3600, max: 3600)
+  --provider <name>     Agent provider: claude | gpt (default: claude)
   --dry-run             Show execution plan without running
   --force-unlock        Force release any existing orchestrator lock
   --reset               Reset manifest state (delete and regenerate)
@@ -144,6 +162,12 @@ Environment Variables (for sandbox database):
   SUPABASE_SANDBOX_DB_URL        Sandbox database connection URL
   SUPABASE_ACCESS_TOKEN          CLI access token for linking
 
+Environment Variables (auth):
+  ANTHROPIC_API_KEY              Claude API key (preferred)
+  CLAUDE_CODE_OAUTH_TOKEN        Claude OAuth access token
+  OPENAI_API_KEY                 OpenAI API key (for GPT/Codex)
+  OPENAI_ACCESS_TOKEN            OpenAI OAuth access token (optional)
+
 Environment Variables (for Payload CMS seeding):
   PAYLOAD_SECRET                 Payload CMS secret key
   SEED_USER_PASSWORD             Password for seeded test users
@@ -158,6 +182,8 @@ Prerequisites:
   1. Complete task decomposition for all features
   2. Generate spec manifest:
      tsx generate-spec-manifest.ts <spec-id>
+  3. Optional provider override:
+     ALPHA_PROVIDER=claude|gpt
 `);
 }
 

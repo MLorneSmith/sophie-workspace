@@ -27,7 +27,7 @@ IMPORTANT: ALL validation commands MUST pass before marking complete.
 1. **Fetch the plan** (if from GitHub issue):
    ```bash
    gh issue view <issue-number> \
-     --repo MLorneSmith/2025slideheroes \
+     --repo slideheroes/2025slideheroes \
      --json body,title,labels,url \
      --jq '{body: .body, title: .title, labels: [.labels[].name], url: .url}'
    ```
@@ -42,7 +42,7 @@ IMPORTANT: ALL validation commands MUST pass before marking complete.
 3. **Mark issue as in-progress** (if from GitHub):
    ```bash
    gh issue edit <issue-number> \
-     --repo MLorneSmith/2025slideheroes \
+     --repo slideheroes/2025slideheroes \
      --add-label "status:in-progress" \
      --remove-label "status:ready"
    ```
@@ -77,15 +77,15 @@ IMPORTANT: ALL validation commands MUST pass before marking complete.
 10. **Update GitHub issue**:
     ```bash
     gh issue comment <issue-number> \
-      --repo MLorneSmith/2025slideheroes \
+      --repo slideheroes/2025slideheroes \
       --body "Implementation complete. See completion report."
 
     gh issue edit <issue-number> \
-      --repo MLorneSmith/2025slideheroes \
+      --repo slideheroes/2025slideheroes \
       --add-label "status:review" \
       --remove-label "status:in-progress"
 
-    gh issue close <issue-number> --repo MLorneSmith/2025slideheroes
+    gh issue close <issue-number> --repo slideheroes/2025slideheroes
     ```
 
 ## Pre-Execution Checklist

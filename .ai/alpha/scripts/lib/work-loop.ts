@@ -17,6 +17,7 @@ import {
 } from "../config/index.js";
 import type {
 	FeatureEntry,
+	AgentProvider,
 	SandboxInstance,
 	SpecManifest,
 } from "../types/index.js";
@@ -26,6 +27,7 @@ import {
 } from "./deadlock-handler.js";
 import { emitOrchestratorEvent } from "./event-emitter.js";
 import { runFeatureImplementation } from "./feature.js";
+import { getGracefulShutdownCommand } from "./provider.js";
 import {
 	type PromiseAgeTracker,
 	createPromiseAgeTracker,
@@ -61,6 +63,7 @@ export interface WorkLoopOptions {
 	uiEnabled: boolean;
 	timeoutSeconds: number;
 	runId?: string;
+	provider: AgentProvider;
 }
 
 export interface WorkLoopResult {
@@ -100,6 +103,7 @@ export class WorkLoop {
 	private uiEnabled: boolean;
 	private timeoutSeconds: number;
 	private runId?: string;
+	private provider: AgentProvider;
 
 	private activeWork: Map<string, Promise<void>>;
 	private healthCheckInterval: ReturnType<typeof setInterval> | null = null;
@@ -114,6 +118,7 @@ export class WorkLoop {
 		this.uiEnabled = options.uiEnabled;
 		this.timeoutSeconds = options.timeoutSeconds;
 		this.runId = options.runId;
+		this.provider = options.provider;
 		this.activeWork = new Map();
 		this.log = log ?? ((..._args: unknown[]) => {});
 		this.promiseTracker = createPromiseAgeTracker(
@@ -179,6 +184,7 @@ export class WorkLoop {
 					this.instances,
 					this.manifest,
 					this.uiEnabled,
+					this.provider,
 				);
 
 				for (const instance of needsRestart) {
@@ -234,6 +240,7 @@ export class WorkLoop {
 				this.timeoutSeconds,
 				this.uiEnabled,
 				this.runId,
+				this.provider,
 			);
 
 			// Replace the old sandbox with the new one
@@ -367,15 +374,15 @@ export class WorkLoop {
 	}
 
 	/**
-	 * Attempt graceful shutdown of Claude Code before restart.
+	 * Attempt graceful shutdown of agent before restart.
 	 */
 	private async gracefulShutdownClaude(
 		instance: SandboxInstance,
 	): Promise<void> {
 		try {
-			this.log("   🔄 Attempting graceful shutdown of Claude Code...");
+			this.log("   🔄 Attempting graceful shutdown of agent...");
 			await instance.sandbox.commands.run(
-				"pkill -TERM run-claude 2>/dev/null || true",
+				getGracefulShutdownCommand(this.provider),
 				{ timeoutMs: 5000 },
 			);
 			await sleep(2000);
@@ -406,6 +413,7 @@ export class WorkLoop {
 				this.timeoutSeconds,
 				this.uiEnabled,
 				this.runId,
+				this.provider,
 			);
 
 			// Replace the old sandbox with the new one
@@ -615,6 +623,7 @@ export class WorkLoop {
 				this.manifest,
 				feature,
 				this.uiEnabled,
+				this.provider,
 			);
 		} catch (error) {
 			const errorMessage =
@@ -1095,6 +1104,7 @@ export async function runWorkLoop(
 	uiEnabled: boolean = false,
 	timeoutSeconds: number = 7200,
 	runId?: string,
+	provider: AgentProvider = "claude",
 ): Promise<void> {
 	// Create conditional logger
 	const log = uiEnabled
@@ -1108,6 +1118,7 @@ export async function runWorkLoop(
 			uiEnabled,
 			timeoutSeconds,
 			runId,
+			provider,
 		},
 		log,
 	);

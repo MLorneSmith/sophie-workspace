@@ -254,7 +254,7 @@ The fix is complete when:
 - The replacement logic is proven to work for 28 other lessons
 
 **Related Documentation**:
-- [Architecture Overview - UI Components](https://github.com/MLorneSmith/2025slideheroes/blob/dev/.ai/ai_docs/context-docs/development/shadcn-ui-components.md) - For understanding component patterns
+- [Architecture Overview - UI Components](https://github.com/slideheroes/2025slideheroes/blob/dev/.ai/ai_docs/context-docs/development/shadcn-ui-components.md) - For understanding component patterns
 - Diagnosis: #1072
 
 ---

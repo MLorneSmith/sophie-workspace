@@ -294,8 +294,8 @@ The template definition in `packages/e2b/e2b-template/template.ts` uses conditio
 
 ```typescript
 const REPO_URL = GITHUB_TOKEN
-  ? `https://${GITHUB_TOKEN}@github.com/MLorneSmith/2025slideheroes.git`  // ← Authenticated
-  : "https://github.com/MLorneSmith/2025slideheroes.git";  // ← Fails for private repos
+  ? `https://${GITHUB_TOKEN}@github.com/slideheroes/2025slideheroes.git`  // ← Authenticated
+  : "https://github.com/slideheroes/2025slideheroes.git";  // ← Fails for private repos
 ```
 
 If `GITHUB_TOKEN` is not set during build, the unauthenticated URL is baked into the template, causing "fatal: not a git repository" errors when sandboxes are created.
@@ -305,7 +305,7 @@ If `GITHUB_TOKEN` is not set during build, the unauthenticated URL is baked into
 1. **E2B API Key**: Get from https://e2b.dev/dashboard
 2. **GitHub Token**: Create at https://github.com/settings/tokens
    - Needs `repo` scope for private repository access
-   - Can use a fine-grained token scoped to MLorneSmith/2025slideheroes
+   - Can use a fine-grained token scoped to slideheroes/2025slideheroes
 
 ### Rebuild Steps
 

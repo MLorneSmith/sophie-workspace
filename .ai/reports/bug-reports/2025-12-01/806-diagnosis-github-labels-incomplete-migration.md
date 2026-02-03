@@ -16,11 +16,11 @@ The GitHub label migration from 93 unorganized labels to 35 hierarchical labels 
 - **Application Version**: 2.13.1
 - **Environment**: development/production (GitHub)
 - **GitHub CLI**: gh version
-- **Repository**: MLorneSmith/2025slideheroes
+- **Repository**: slideheroes/2025slideheroes
 
 ## Reproduction Steps
 
-1. Run `gh label list --repo MLorneSmith/2025slideheroes --limit 200`
+1. Run `gh label list --repo slideheroes/2025slideheroes --limit 200`
 2. Observe both old (`bug`, `high`, `tooling`) and new (`type:bug`, `priority:high`, `area:infra`) labels exist
 3. Check issue #801 - has mix of old (`tooling`, `technical-debt`, `low`) and new (`status:planning`) labels
 4. Run `/diagnose` command and observe labels applied

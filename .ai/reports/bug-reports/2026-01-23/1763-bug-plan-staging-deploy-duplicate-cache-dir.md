@@ -226,7 +226,7 @@ This is a pure configuration fix that removes a duplicate argument. No security 
 ```bash
 # The bug exists in CI, not locally
 # To reproduce: push to staging branch and observe workflow failure
-gh run list --repo MLorneSmith/2025slideheroes --workflow "Deploy to Staging" --limit 5
+gh run list --repo slideheroes/2025slideheroes --workflow "Deploy to Staging" --limit 5
 gh run view <failing-run-id> --log-failed | grep "cache-dir"
 ```
 
@@ -247,7 +247,7 @@ pnpm build
 ls -la .turbo/
 
 # Push to staging and monitor workflow
-gh workflow view "Deploy to Staging" --repo MLorneSmith/2025slideheroes
+gh workflow view "Deploy to Staging" --repo slideheroes/2025slideheroes
 gh run watch <run-id>
 ```
 

@@ -109,7 +109,7 @@ Examples: `supabase_kong_2025slideheroes-db`, `supabase_db_2025slideheroes-db`, 
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/MLorneSmith/2025slideheroes.git
+git clone https://github.com/slideheroes/2025slideheroes.git
 cd 2025slideheroes
 
 # 2. Install dependencies on host

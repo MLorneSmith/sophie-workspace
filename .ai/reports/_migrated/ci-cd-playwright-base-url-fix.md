@@ -10,7 +10,7 @@ The dev-integration-tests.yml workflow was failing because Playwright tests were
 
 ## Pipeline Information
 
-- **Repository**: MLorneSmith/2025slideheroes
+- **Repository**: slideheroes/2025slideheroes
 - **Workflow**: dev-integration-tests.yml
 - **Failed Run ID**: 18105995571
 - **Branch**: dev

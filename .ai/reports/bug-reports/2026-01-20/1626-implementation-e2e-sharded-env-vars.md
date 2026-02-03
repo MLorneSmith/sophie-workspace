@@ -32,7 +32,7 @@ apps/e2e/global-setup.ts          | 10 +++++++++-
 To verify the fix, push to dev branch and monitor the E2E Sharded workflow:
 ```bash
 git push origin dev
-gh run watch -R MLorneSmith/2025slideheroes
+gh run watch -R slideheroes/2025slideheroes
 ```
 
 Expected: All shards pass without JWT or localhost validation errors.

@@ -277,7 +277,7 @@ If create_issues mode:
 
 ```bash
 gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "Feature Set: <Initiative Name>" \
   --body-file .ai/specs/feature-sets/<slug>/pending-overview.md \
   --label "type:feature-set" \
@@ -299,7 +299,7 @@ For each feature:
 
 ```bash
 gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "Feature: <Feature Name>" \
   --body "## Feature Stub
 

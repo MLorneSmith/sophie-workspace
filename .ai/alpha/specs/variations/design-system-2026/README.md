@@ -68,10 +68,10 @@ Each variation will be on its own branch (`alpha/S1879`, `alpha/S1880`, etc.). C
 
 | Variation | Issue | URL |
 |-----------|-------|-----|
-| V1: Modern Vibrant | #1879 | https://github.com/MLorneSmith/2025slideheroes/issues/1879 |
-| V2: Clean Professional | #1880 | https://github.com/MLorneSmith/2025slideheroes/issues/1880 |
-| V3: Soft Approachable | #1881 | https://github.com/MLorneSmith/2025slideheroes/issues/1881 |
-| V4: Bold Geometric | #1882 | https://github.com/MLorneSmith/2025slideheroes/issues/1882 |
+| V1: Modern Vibrant | #1879 | https://github.com/slideheroes/2025slideheroes/issues/1879 |
+| V2: Clean Professional | #1880 | https://github.com/slideheroes/2025slideheroes/issues/1880 |
+| V3: Soft Approachable | #1881 | https://github.com/slideheroes/2025slideheroes/issues/1881 |
+| V4: Bold Geometric | #1882 | https://github.com/slideheroes/2025slideheroes/issues/1882 |
 
 ## Files
 

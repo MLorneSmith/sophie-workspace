@@ -39,7 +39,7 @@ The `actions/checkout@v6` step should successfully clone the repository and the 
 The checkout step fails with:
 ```
 remote: Internal Server Error
-fatal: unable to access 'https://github.com/MLorneSmith/2025slideheroes/': The requested URL returned error: 500
+fatal: unable to access 'https://github.com/slideheroes/2025slideheroes/': The requested URL returned error: 500
 ```
 
 The action retried 3 times with 10-11 second delays between attempts, all failing with the same error.
@@ -49,17 +49,17 @@ The action retried 3 times with 10-11 second delays between attempts, all failin
 ### Console Output
 ```
 2026-01-22T14:32:13.0373060Z remote: Internal Server Error
-2026-01-22T14:32:13.0401203Z ##[error]fatal: unable to access 'https://github.com/MLorneSmith/2025slideheroes/': The requested URL returned error: 500
+2026-01-22T14:32:13.0401203Z ##[error]fatal: unable to access 'https://github.com/slideheroes/2025slideheroes/': The requested URL returned error: 500
 2026-01-22T14:32:13.0406417Z The process '/usr/bin/git' failed with exit code 128
 2026-01-22T14:32:13.0406821Z Waiting 10 seconds before trying again
 2026-01-22T14:32:23.0393287Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +537fa33e0f704c21aa40dddce4f638a5b2c8d36c:refs/remotes/origin/dev
 2026-01-22T14:32:45.9300508Z remote: Internal Server Error
-2026-01-22T14:32:45.9309540Z ##[error]fatal: unable to access 'https://github.com/MLorneSmith/2025slideheroes/': The requested URL returned error: 500
+2026-01-22T14:32:45.9309540Z ##[error]fatal: unable to access 'https://github.com/slideheroes/2025slideheroes/': The requested URL returned error: 500
 2026-01-22T14:32:45.9312153Z The process '/usr/bin/git' failed with exit code 128
 2026-01-22T14:32:45.9312471Z Waiting 11 seconds before trying again
 2026-01-22T14:32:56.9331367Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +537fa33e0f704c21aa40dddce4f638a5b2c8d36c:refs/remotes/origin/dev
 2026-01-22T14:33:12.3709323Z remote: Internal Server Error
-2026-01-22T14:33:12.3710640Z ##[error]fatal: unable to access 'https://github.com/MLorneSmith/2025slideheroes/': The requested URL returned error: 500
+2026-01-22T14:33:12.3710640Z ##[error]fatal: unable to access 'https://github.com/slideheroes/2025slideheroes/': The requested URL returned error: 500
 2026-01-22T14:33:12.3746260Z ##[error]The process '/usr/bin/git' failed with exit code 128
 ```
 
@@ -80,7 +80,7 @@ N/A
 ## Error Stack Traces
 ```
 remote: Internal Server Error
-fatal: unable to access 'https://github.com/MLorneSmith/2025slideheroes/': The requested URL returned error: 500
+fatal: unable to access 'https://github.com/slideheroes/2025slideheroes/': The requested URL returned error: 500
 The process '/usr/bin/git' failed with exit code 128
 ```
 

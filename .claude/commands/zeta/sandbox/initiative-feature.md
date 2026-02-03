@@ -47,7 +47,7 @@ Load the feature stub issue created by `/initiative-feature-set`:
 
 ```bash
 gh issue view <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json body,title,labels,number,url
 ```
 
@@ -219,12 +219,12 @@ Update the stub issue with the detailed plan:
 
 ```bash
 gh issue edit <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --body "<full-plan-content>"
 
 # Add label indicating plan is ready
 gh issue edit <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --add-label "status:planned"
 ```
 
@@ -238,7 +238,7 @@ gh issue edit <issue-number> \
   "feature": {
     "issue_number": 124,
     "title": "Database Schema Layer",
-    "url": "https://github.com/MLorneSmith/2025slideheroes/issues/124"
+    "url": "https://github.com/slideheroes/2025slideheroes/issues/124"
   },
   "plan": {
     "file_path": ".ai/specs/features/local-first-rxdb/124-feature-plan.md",

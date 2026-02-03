@@ -132,7 +132,7 @@ jobs:
             # Use comprehensive health check endpoint instead of simple HTTP check
             # This verifies database, auth, and application readiness
             # Using /healthcheck which is guaranteed to exist in web app deployment
-            # See: https://github.com/MLorneSmith/2025slideheroes/issues/591
+            # See: https://github.com/slideheroes/2025slideheroes/issues/591
             HEALTH_URL="${{ needs.check-should-run.outputs.web_deployment_url }}/healthcheck"
 
             # Fetch health check response

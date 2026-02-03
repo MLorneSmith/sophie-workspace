@@ -168,7 +168,7 @@ Test the actual use case that was failing:
 
 ```bash
 # In a sandbox instance, test creating an issue with gh
-gh issue create --repo MLorneSmith/2025slideheroes --title "Test Issue" --body "Test body" 2>&1
+gh issue create --repo slideheroes/2025slideheroes --title "Test Issue" --body "Test body" 2>&1
 ```
 
 With proper `GH_TOKEN` environment variable set, this should succeed.
@@ -324,7 +324,7 @@ gh auth status
 # Expected: "Logged in to github.com as <username>"
 
 # Create a test issue (requires valid GITHUB_TOKEN):
-GH_TOKEN=<your_token> gh issue create --repo MLorneSmith/2025slideheroes --title "Test" --body "Fix test"
+GH_TOKEN=<your_token> gh issue create --repo slideheroes/2025slideheroes --title "Test" --body "Fix test"
 # Expected: Issue created successfully
 ```
 

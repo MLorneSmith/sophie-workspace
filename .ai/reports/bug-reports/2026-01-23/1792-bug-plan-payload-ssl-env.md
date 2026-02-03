@@ -137,7 +137,7 @@ Add a comment explaining the fix:
  * - This breaks test/development configurations where SSL should be disabled
  * - Custom environment variables like PAYLOAD_ENV are not overridden by Next.js
  *
- * See diagnosis: https://github.com/MLorneSmith/2025slideheroes/issues/1791
+ * See diagnosis: https://github.com/slideheroes/2025slideheroes/issues/1791
  */
 private shouldEnableSSL(connectionString?: string): boolean {
   // ... existing logic unchanged ...
@@ -175,7 +175,7 @@ Run E2E Shard 7 and confirm all tests pass:
 
 ```bash
 # Trigger E2E workflow
-gh workflow run e2e-sharded.yml --repo MLorneSmith/2025slideheroes
+gh workflow run e2e-sharded.yml --repo slideheroes/2025slideheroes
 
 # Or run locally to validate quickly
 pnpm --filter web-e2e test:shard7
@@ -265,10 +265,10 @@ This is a pure configuration change that doesn't affect runtime performance, que
 
 ```bash
 # Trigger E2E workflow on current dev branch
-gh run create -r MLorneSmith/2025slideheroes e2e-sharded.yml
+gh run create -r slideheroes/2025slideheroes e2e-sharded.yml
 
 # Or check recent run
-gh run list --repo MLorneSmith/2025slideheroes --workflow e2e-sharded.yml --limit 1 --json number,conclusion
+gh run list --repo slideheroes/2025slideheroes --workflow e2e-sharded.yml --limit 1 --json number,conclusion
 
 # Expected: Shard 7 fails with "relation payload.users does not exist"
 ```
@@ -289,7 +289,7 @@ pnpm format
 pnpm --filter web-e2e test:shard7
 
 # Or trigger full E2E workflow
-gh workflow run e2e-sharded.yml --repo MLorneSmith/2025slideheroes
+gh workflow run e2e-sharded.yml --repo slideheroes/2025slideheroes
 ```
 
 **Expected Result**:

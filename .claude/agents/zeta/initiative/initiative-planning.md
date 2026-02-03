@@ -74,7 +74,7 @@ Fetch the manifest from GitHub - this is shared context for ALL features:
 
 ```bash
 gh issue view ${manifest_issue} \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json body -q '.body'
 ```
 
@@ -297,14 +297,14 @@ pnpm build
 
 ```bash
 gh issue edit ${featureIssue} \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --body "$(cat << 'EOF'
 <FULL PLAN CONTENT>
 EOF
 )"
 
 gh issue edit ${featureIssue} \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --add-label "status:planned" \
   --remove-label "status:blocked" \
   --remove-label "status:ready"

@@ -245,7 +245,7 @@ gh issue create \
 **After**:
 ```bash
 # Ensure required labels exist
-REPO="MLorneSmith/2025slideheroes"
+REPO="slideheroes/2025slideheroes"
 INIT_NUM="<initiative-#>"
 
 gh label list --repo "${REPO}" | grep -q "alpha:feature" || \
