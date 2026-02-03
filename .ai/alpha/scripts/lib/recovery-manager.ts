@@ -7,7 +7,7 @@
  * Bug fix #1786: Event-driven architecture refactor
  *
  * Recovery Sequence (MUST be followed in order):
- * 1. Kill ALL Claude processes FIRST
+ * 1. Kill ALL agent processes FIRST
  * 2. Wait for processes to fully terminate
  * 3. Clear stale progress file
  * 4. Reset feature state atomically
@@ -22,11 +22,13 @@ import type { Sandbox } from "@e2b/code-interpreter";
 
 import { PROGRESS_FILE, WORKSPACE_DIR } from "../config/index.js";
 import type {
+	AgentProvider,
 	FeatureEntry,
 	SandboxInstance,
 	SpecManifest,
 } from "../types/index.js";
 import { saveManifest } from "./manifest.js";
+import { getForceKillCommand, getProcessCountCommand } from "./provider.js";
 import { sleep } from "./utils.js";
 
 // ============================================================================
@@ -159,20 +161,21 @@ export class RecoveryManager {
 		sandboxInstance: SandboxInstance,
 		feature: FeatureEntry,
 		manifest: SpecManifest,
+		provider: AgentProvider = "claude",
 	): Promise<RecoveryResult> {
 		this.telemetry.totalRecoveries++;
 
 		const currentRetryCount = feature.retry_count ?? 0;
 
 		// STEP 1: Always kill existing processes FIRST
-		const killResult = await this.killAllClaudeProcesses(sandbox);
+		const killResult = await this.killAllAgentProcesses(sandbox, provider);
 		if (!killResult.success) {
 			this.telemetry.killFailures++;
 			// Continue anyway - process might already be dead
 		}
 
 		// STEP 2: Wait for processes to fully terminate
-		await this.waitForProcessTermination(sandbox);
+		await this.waitForProcessTermination(sandbox, provider);
 
 		// STEP 3: Clear stale progress file
 		const clearResult = await this.clearProgressFile(sandbox);
@@ -242,26 +245,20 @@ export class RecoveryManager {
 	}
 
 	/**
-	 * Kill ALL Claude processes in a sandbox.
+	 * Kill ALL agent processes in a sandbox.
 	 *
 	 * This kills by name (not PID) to catch all instances including
 	 * any zombie processes from previous failed runs.
 	 */
-	async killAllClaudeProcesses(
+	async killAllAgentProcesses(
 		sandbox: Sandbox,
+		provider: AgentProvider,
 	): Promise<{ success: boolean; error?: string }> {
 		try {
 			// Kill by name, not PID (catches all instances)
-			await sandbox.commands.run(
-				"pkill -9 -f 'claude|run-claude' 2>/dev/null || true",
-				{ timeoutMs: this.config.killTimeoutMs },
-			);
-
-			// Also kill any stuck node processes related to Claude
-			await sandbox.commands.run(
-				"pkill -9 -f 'node.*claude' 2>/dev/null || true",
-				{ timeoutMs: this.config.killTimeoutMs },
-			);
+			await sandbox.commands.run(getForceKillCommand(provider), {
+				timeoutMs: this.config.killTimeoutMs,
+			});
 
 			// Small delay to allow signals to be processed
 			await sleep(500);
@@ -276,12 +273,15 @@ export class RecoveryManager {
 	}
 
 	/**
-	 * Wait for all Claude processes to terminate.
+	 * Wait for all agent processes to terminate.
 	 *
-	 * Polls the process list until no Claude processes remain,
+	 * Polls the process list until no agent processes remain,
 	 * up to the configured timeout.
 	 */
-	async waitForProcessTermination(sandbox: Sandbox): Promise<boolean> {
+	async waitForProcessTermination(
+		sandbox: Sandbox,
+		provider: AgentProvider,
+	): Promise<boolean> {
 		const startTime = Date.now();
 		const maxWait = this.config.terminationWaitMs;
 		const checkInterval = this.config.terminationCheckIntervalMs;
@@ -289,7 +289,7 @@ export class RecoveryManager {
 		while (Date.now() - startTime < maxWait) {
 			try {
 				const result = await sandbox.commands.run(
-					"pgrep -f 'claude|run-claude' | wc -l",
+					getProcessCountCommand(provider),
 					{ timeoutMs: 5000 },
 				);
 
@@ -307,10 +307,9 @@ export class RecoveryManager {
 
 		// Timeout - force kill any remaining processes
 		try {
-			await sandbox.commands.run(
-				"pkill -9 -f 'claude|run-claude' 2>/dev/null || true",
-				{ timeoutMs: 5000 },
-			);
+			await sandbox.commands.run(getForceKillCommand(provider), {
+				timeoutMs: 5000,
+			});
 		} catch {
 			// Ignore
 		}
@@ -403,10 +402,13 @@ export function formatRecoveryResult(
  * Quick recovery helper - kills processes and clears progress file.
  * Use this for simple cleanup without full state management.
  */
-export async function quickCleanup(sandbox: Sandbox): Promise<boolean> {
+export async function quickCleanup(
+	sandbox: Sandbox,
+	provider: AgentProvider = "claude",
+): Promise<boolean> {
 	const manager = new RecoveryManager();
-	const killResult = await manager.killAllClaudeProcesses(sandbox);
-	await manager.waitForProcessTermination(sandbox);
+	const killResult = await manager.killAllAgentProcesses(sandbox, provider);
+	await manager.waitForProcessTermination(sandbox, provider);
 	const clearResult = await manager.clearProgressFile(sandbox);
 	return killResult.success && clearResult;
 }

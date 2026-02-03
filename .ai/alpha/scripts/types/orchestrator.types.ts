@@ -132,6 +132,8 @@ export interface OrchestratorOptions {
 	skipDbSeed: boolean;
 	ui: boolean;
 	minimalUi: boolean;
+	/** Which coding agent to run inside sandboxes */
+	provider: AgentProvider;
 	/** Reset manifest state (delete and regenerate) before running */
 	reset: boolean;
 	/** Skip work loop and jump to completion sequence (for debugging) */
@@ -141,6 +143,8 @@ export interface OrchestratorOptions {
 	/** Generate spec-level documentation after completion using /alpha:document */
 	document: boolean;
 }
+
+export type AgentProvider = "claude" | "gpt";
 
 export interface OrchestratorLock {
 	spec_id: number;

@@ -308,7 +308,7 @@ Execute tasks in this order (dependencies noted):
 ls -la .ai/reports/feature-reports/2025-12-16/
 
 # Verify no issues created during dry-run
-gh issue list --repo MLorneSmith/2025slideheroes --label "type:feature-set" --limit 5
+gh issue list --repo slideheroes/2025slideheroes --label "type:feature-set" --limit 5
 
 # Check sandbox status
 /sandbox list

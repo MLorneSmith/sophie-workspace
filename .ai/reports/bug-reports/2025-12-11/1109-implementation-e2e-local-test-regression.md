@@ -1,7 +1,7 @@
 # Implementation Report: Issue #1109 - E2E Local Test Regression
 
 **Date**: 2025-12-11
-**Issue**: [#1109](https://github.com/MLorneSmith/2025slideheroes/issues/1109)
+**Issue**: [#1109](https://github.com/slideheroes/2025slideheroes/issues/1109)
 **Type**: Bug Investigation
 **Status**: Defensive changes applied, root cause requires further investigation
 
@@ -95,7 +95,7 @@ The commits suspected of causing the regression (9cdafcdc8, 83f5dd813) only affe
 
 - Investigation: `.ai/reports/bug-reports/2025-12-11/1107-diagnosis-e2e-local-test-regression.md`
 - Research: `.ai/reports/research-reports/2025-12-11/perplexity-nextjs-middleware-changes.md`
-- GitHub: [Issue #1109](https://github.com/MLorneSmith/2025slideheroes/issues/1109)
+- GitHub: [Issue #1109](https://github.com/slideheroes/2025slideheroes/issues/1109)
 
 ---
 *Implementation by Claude Code*

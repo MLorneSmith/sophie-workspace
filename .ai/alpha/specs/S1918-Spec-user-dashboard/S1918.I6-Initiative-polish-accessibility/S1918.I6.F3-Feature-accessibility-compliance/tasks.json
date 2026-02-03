@@ -1,0 +1,1390 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1918.I6.F3",
+    "feature_name": "Accessibility Compliance",
+    "feature_slug": "accessibility-compliance",
+    "initiative_id": "S1918.I6",
+    "spec_id": "S1918",
+    "created_at": "2026-02-03T10:30:00Z",
+    "complexity": {
+      "score": 62.5,
+      "level": "HIGH",
+      "target_steps": {
+        "min": 12,
+        "max": 20
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S1918.I6.F3.T3",
+      "S1918.I6.F3.T4",
+      "S1918.I6.F3.T5",
+      "S1918.I6.F3.T6",
+      "S1918.I6.F3.T7",
+      "S1918.I6.F3.T8",
+      "S1918.I6.F3.T9",
+      "S1918.I6.F3.T10",
+      "S1918.I6.F3.T11",
+      "S1918.I6.F3.T12",
+      "S1918.I6.F3.T13",
+      "S1918.I6.F3.T14",
+      "S1918.I6.F3.T17"
+    ],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1918.I6.F3.T1",
+      "type": "task",
+      "name": "Run Lighthouse accessibility audit",
+      "action": {
+        "verb": "Run",
+        "target": "Lighthouse accessibility audit"
+      },
+      "purpose": "Establish baseline accessibility score and document violations",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 0,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Must run against local dev server",
+          "Target score: 90+"
+        ]
+      },
+      "input_state": "Dashboard page exists with all widgets",
+      "output_state": "Baseline accessibility score documented with list of violations",
+      "acceptance_criterion": "Lighthouse audit report created showing accessibility score and specific violations",
+      "verification_command": "echo 'Manual verification: Lighthouse report saved' && test -f .ai/reports/accessibility-reports/lighthouse-baseline.json",
+      "outputs": [
+        {
+          "type": "new",
+          "path": ".ai/reports/accessibility-reports/lighthouse-baseline.json"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1918.I6.F3.T18"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T2",
+      "type": "task",
+      "name": "Create useReducedMotion hook",
+      "action": {
+        "verb": "Create",
+        "target": "useReducedMotion hook"
+      },
+      "purpose": "Detect prefers-reduced-motion media query for accessible animations",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "React.useEffect",
+          "window.matchMedia"
+        ],
+        "constraints": [
+          "Must work in SSR",
+          "Must update on preference change"
+        ]
+      },
+      "input_state": "No reduced motion detection exists",
+      "output_state": "Hook detects and returns boolean for prefers-reduced-motion",
+      "acceptance_criterion": "Hook returns true when OS prefers-reduced-motion is enabled",
+      "verification_command": "grep -q 'export function useReducedMotion' apps/web/app/home/\\(user\\)/_lib/hooks/use-reduced-motion.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/hooks/use-reduced-motion.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1918.I6.F3.T15",
+          "S1918.I6.F3.T16"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T3",
+      "type": "task",
+      "name": "Create skip link component",
+      "action": {
+        "verb": "Create",
+        "target": "skip link component"
+      },
+      "purpose": "Allow keyboard users to skip navigation and jump to main content",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Skip to main content"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [],
+        "dependencies": [
+          "@kit/ui/cn"
+        ],
+        "constraints": [
+          "Must be visually hidden until focused",
+          "Must be first focusable element",
+          "Must link to main content area"
+        ]
+      },
+      "input_state": "No skip link exists",
+      "output_state": "Skip link component renders and navigates to main content on activation",
+      "acceptance_criterion": "Skip link appears on Tab focus and scrolls to main content on Enter",
+      "verification_command": "grep -q 'SkipLink' apps/web/app/home/\\(user\\)/_components/skip-link.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/skip-link.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1918.I6.F3.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T4",
+      "type": "task",
+      "name": "Wire skip link to dashboard page",
+      "action": {
+        "verb": "Wire",
+        "target": "skip link to dashboard page"
+      },
+      "purpose": "Integrate skip link as first element on dashboard",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Skip to main content"
+          }
+        ],
+        "screenshot": true
+      },
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "link_navigation",
+            "target": "Skip to main content",
+            "expected_action": "navigate to main content area",
+            "file_path": "apps/web/app/home/(user)/page.tsx"
+          }
+        ],
+        "validation_command": "grep -Pzo 'SkipLink[^>]*href=\\\"#main-content\\\"' apps/web/app/home/\\(user\\)/page.tsx"
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "SkipLink component from T3"
+        ],
+        "constraints": [
+          "Must be first child in page component",
+          "Main content must have id='main-content'"
+        ]
+      },
+      "input_state": "Dashboard page exists without skip link",
+      "output_state": "Skip link is first element on dashboard page",
+      "acceptance_criterion": "Skip link renders and main content has id='main-content'",
+      "verification_command": "grep -q 'SkipLink' apps/web/app/home/\\(user\\)/page.tsx && grep -q 'id=\"main-content\"' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I6.F3.T3"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T5",
+      "type": "task",
+      "name": "Add ARIA landmarks to dashboard page",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA landmarks to dashboard page"
+      },
+      "purpose": "Define semantic regions for screen reader navigation",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "main"
+          },
+          {
+            "command": "find role",
+            "target": "navigation"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Use semantic HTML where possible",
+          "Add role attributes only when needed",
+          "Main content area must have role='main'"
+        ]
+      },
+      "input_state": "Dashboard page lacks semantic landmarks",
+      "output_state": "Dashboard page has role='main' on content area and proper ARIA landmarks",
+      "acceptance_criterion": "Main content has role='main' or <main> tag",
+      "verification_command": "grep -E '(role=\"main\"|<main)' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T6",
+      "type": "task",
+      "name": "Add ARIA labels to Course Progress widget",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA labels to Course Progress widget"
+      },
+      "purpose": "Announce progress percentage to screen readers",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Course Progress"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Widget card must have aria-labelledby",
+          "Progress value must be announced",
+          "Use aria-valuenow for numeric progress"
+        ]
+      },
+      "input_state": "Course Progress widget lacks ARIA labels",
+      "output_state": "Course Progress widget has aria-labelledby and progress announcements",
+      "acceptance_criterion": "Widget has aria-labelledby and progress is accessible",
+      "verification_command": "grep -q 'aria-labelledby' apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1918.I6.F3.T19"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T7",
+      "type": "task",
+      "name": "Add ARIA labels to Skills Spider widget",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA labels to Skills Spider widget"
+      },
+      "purpose": "Announce skill scores to screen readers",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Skills Assessment"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/skills-spider-widget.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Widget card must have aria-labelledby",
+          "Chart should have aria-label describing data",
+          "Consider adding text alternative for chart"
+        ]
+      },
+      "input_state": "Skills Spider widget lacks ARIA labels",
+      "output_state": "Skills Spider widget has aria-labelledby and chart description",
+      "acceptance_criterion": "Widget has aria-labelledby and chart has aria-label",
+      "verification_command": "grep -q 'aria-labelledby' apps/web/app/home/\\(user\\)/_components/skills-spider-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/skills-spider-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1918.I6.F3.T19"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T8",
+      "type": "task",
+      "name": "Add ARIA labels to Kanban Summary widget",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA labels to Kanban Summary widget"
+      },
+      "purpose": "Announce task counts and status to screen readers",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Kanban Summary"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Widget card must have aria-labelledby",
+          "Task counts must be announced",
+          "Link to full Kanban must have descriptive aria-label"
+        ]
+      },
+      "input_state": "Kanban Summary widget lacks ARIA labels",
+      "output_state": "Kanban Summary widget has aria-labelledby and task count announcements",
+      "acceptance_criterion": "Widget has aria-labelledby and task counts are accessible",
+      "verification_command": "grep -q 'aria-labelledby' apps/web/app/home/\\(user\\)/_components/kanban-summary-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1918.I6.F3.T19"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T9",
+      "type": "task",
+      "name": "Add ARIA labels to Activity Feed widget",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA labels to Activity Feed widget"
+      },
+      "purpose": "Announce activities with timestamps to screen readers",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 9,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Recent Activity"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Widget card must have aria-labelledby",
+          "Activity list should use role='list'",
+          "Each activity should have accessible timestamp"
+        ]
+      },
+      "input_state": "Activity Feed widget lacks ARIA labels",
+      "output_state": "Activity Feed widget has aria-labelledby and list semantics",
+      "acceptance_criterion": "Widget has aria-labelledby and activities use role='list'",
+      "verification_command": "grep -q 'aria-labelledby' apps/web/app/home/\\(user\\)/_components/activity-feed-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1918.I6.F3.T19"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T10",
+      "type": "task",
+      "name": "Add ARIA labels to Coaching Sessions widget",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA labels to Coaching Sessions widget"
+      },
+      "purpose": "Announce session details and actions to screen readers",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 10,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Coaching Sessions"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Widget card must have aria-labelledby",
+          "Session date/time must be accessible",
+          "Join and Reschedule buttons must have descriptive labels"
+        ]
+      },
+      "input_state": "Coaching Sessions widget lacks ARIA labels",
+      "output_state": "Coaching Sessions widget has aria-labelledby and button labels",
+      "acceptance_criterion": "Widget has aria-labelledby and buttons have aria-label",
+      "verification_command": "grep -q 'aria-labelledby' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1918.I6.F3.T19"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T11",
+      "type": "task",
+      "name": "Add ARIA labels to Presentations Table widget",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA labels to Presentations Table widget"
+      },
+      "purpose": "Announce table structure and actions to screen readers",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 11,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "My Presentations"
+          },
+          {
+            "command": "find role",
+            "target": "table"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/presentations-table-widget.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Table must have aria-label or caption",
+          "Column headers must have proper scope",
+          "Action buttons must have descriptive aria-label"
+        ]
+      },
+      "input_state": "Presentations Table widget lacks ARIA labels",
+      "output_state": "Presentations Table widget has aria-label and column headers",
+      "acceptance_criterion": "Table has aria-label and action buttons have aria-label",
+      "verification_command": "grep -q 'aria-label' apps/web/app/home/\\(user\\)/_components/presentations-table-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/presentations-table-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1918.I6.F3.T19"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T12",
+      "type": "task",
+      "name": "Add keyboard navigation to Quick Actions panel",
+      "action": {
+        "verb": "Wire",
+        "target": "keyboard navigation to Quick Actions panel"
+      },
+      "purpose": "Enable Enter/Space to trigger action buttons",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 12,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Quick Actions"
+          }
+        ],
+        "screenshot": true
+      },
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Continue Course",
+            "expected_action": "navigate to course page",
+            "file_path": "apps/web/app/home/(user)/_components/quick-actions-widget.tsx"
+          },
+          {
+            "type": "button_handler",
+            "target": "New Presentation",
+            "expected_action": "navigate to new presentation page",
+            "file_path": "apps/web/app/home/(user)/_components/quick-actions-widget.tsx"
+          }
+        ],
+        "validation_command": "grep -Pzo 'onKeyDown=\\{[^}]+\\}' apps/web/app/home/\\(user\\)/_components/quick-actions-widget.tsx"
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/quick-actions-widget.tsx"
+        ],
+        "dependencies": [
+          "Pattern from task-card.tsx"
+        ],
+        "constraints": [
+          "Use onKeyDown handler for Enter and Space",
+          "Add tabIndex={0} to make focusable",
+          "Add aria-label for context"
+        ]
+      },
+      "input_state": "Quick Actions buttons lack keyboard handlers",
+      "output_state": "Quick Actions buttons respond to Enter/Space keys",
+      "acceptance_criterion": "All action buttons trigger on Enter/Space press",
+      "verification_command": "grep -q 'onKeyDown' apps/web/app/home/\\(user\\)/_components/quick-actions-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T13",
+      "type": "task",
+      "name": "Wire Join button to meeting URL navigation",
+      "action": {
+        "verb": "Wire",
+        "target": "Join button to meeting URL"
+      },
+      "purpose": "Enable Join button click in Coaching Sessions widget",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 13,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Join"
+          }
+        ],
+        "screenshot": true
+      },
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Join",
+            "expected_action": "navigate to meeting URL",
+            "file_path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+          }
+        ],
+        "validation_command": "grep -Pzo 'Join[^<]*onClick=\\{[^}]+\\}' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx"
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Join button must open meeting URL",
+          "Must have aria-label with session context",
+          "Opens in new tab with rel='noopener noreferrer'"
+        ]
+      },
+      "input_state": "Join button renders but has no click handler",
+      "output_state": "Join button opens meeting URL in new tab",
+      "acceptance_criterion": "Join button has onClick handler that opens meeting URL",
+      "verification_command": "grep -Pzo 'Join[^<]*onClick=\\{[^}]+\\}' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T14",
+      "type": "task",
+      "name": "Wire Reschedule button to reschedule page",
+      "action": {
+        "verb": "Wire",
+        "target": "Reschedule button to reschedule page"
+      },
+      "purpose": "Enable Reschedule button navigation",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 14,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Reschedule"
+          }
+        ],
+        "screenshot": true
+      },
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Reschedule",
+            "expected_action": "navigate to reschedule page",
+            "file_path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+          }
+        ],
+        "validation_command": "grep -Pzo 'Reschedule[^<]*onClick=\\{[^}]+\\}' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx"
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Reschedule button must navigate to reschedule page",
+          "Must have aria-label with session context",
+          "Use next/navigation for client-side navigation"
+        ]
+      },
+      "input_state": "Reschedule button renders but has no click handler",
+      "output_state": "Reschedule button navigates to reschedule page",
+      "acceptance_criterion": "Reschedule button has onClick handler that navigates",
+      "verification_command": "grep -Pzo 'Reschedule[^<]*onClick=\\{[^}]+\\}' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T15",
+      "type": "task",
+      "name": "Apply reduced motion to Course Progress chart",
+      "action": {
+        "verb": "Update",
+        "target": "Course Progress chart animation"
+      },
+      "purpose": "Disable animations when prefers-reduced-motion is enabled",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 15,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Course Progress"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        ],
+        "dependencies": [
+          "useReducedMotion hook from T2"
+        ],
+        "constraints": [
+          "Use isAnimationActive prop from Recharts",
+          "Set animationDuration to 0 when reduced motion preferred",
+          "Chart must still render correctly without animation"
+        ]
+      },
+      "input_state": "Course Progress chart always animates",
+      "output_state": "Course Progress chart respects prefers-reduced-motion",
+      "acceptance_criterion": "Chart disables animation when reduced motion is preferred",
+      "verification_command": "grep -q 'useReducedMotion' apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx && grep -q 'isAnimationActive' apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I6.F3.T2"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T16",
+      "type": "task",
+      "name": "Apply reduced motion to Skills Spider chart",
+      "action": {
+        "verb": "Update",
+        "target": "Skills Spider chart animation"
+      },
+      "purpose": "Disable animations when prefers-reduced-motion is enabled",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 16,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Skills Assessment"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/skills-spider-widget.tsx"
+        ],
+        "dependencies": [
+          "useReducedMotion hook from T2"
+        ],
+        "constraints": [
+          "Use isAnimationActive prop from Recharts",
+          "Set animationDuration to 0 when reduced motion preferred",
+          "Chart must still render correctly without animation"
+        ]
+      },
+      "input_state": "Skills Spider chart always animates",
+      "output_state": "Skills Spider chart respects prefers-reduced-motion",
+      "acceptance_criterion": "Chart disables animation when reduced motion is preferred",
+      "verification_command": "grep -q 'useReducedMotion' apps/web/app/home/\\(user\\)/_components/skills-spider-widget.tsx && grep -q 'isAnimationActive' apps/web/app/home/\\(user\\)/_components/skills-spider-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/skills-spider-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I6.F3.T2"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T17",
+      "type": "task",
+      "name": "Add focus visible styles to dashboard",
+      "action": {
+        "verb": "Add",
+        "target": "focus visible styles to dashboard"
+      },
+      "purpose": "Ensure focus indicators visible on all interactive elements",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 17,
+      "group": 6,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "snapshot"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/*-widget.tsx",
+          "apps/web/globals.css"
+        ],
+        "dependencies": [
+          "Tailwind focus-visible classes"
+        ],
+        "constraints": [
+          "Use focus-visible: not focus:",
+          "Minimum 2px outline with sufficient contrast",
+          "Focus indicator must be visible in both light and dark mode"
+        ]
+      },
+      "input_state": "Dashboard elements lack visible focus indicators",
+      "output_state": "All interactive elements show focus indicator on keyboard focus",
+      "acceptance_criterion": "Tab through dashboard reveals focus on all interactive elements",
+      "verification_command": "grep -r 'focus-visible:' apps/web/app/home/\\(user\\)/_components/*.tsx | wc -l | awk '{exit !($1 > 0)}' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T18",
+      "type": "task",
+      "name": "Verify color contrast compliance",
+      "action": {
+        "verb": "Test",
+        "target": "color contrast compliance"
+      },
+      "purpose": "Check and fix WCAG AA contrast violations",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 18,
+      "group": 7,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/*-widget.tsx"
+        ],
+        "dependencies": [
+          "Lighthouse audit from T1"
+        ],
+        "constraints": [
+          "WCAG AA: 4.5:1 for normal text",
+          "WCAG AA: 3:1 for large text and UI components",
+          "Fix violations by adjusting colors or font weight"
+        ]
+      },
+      "input_state": "Dashboard may have color contrast violations",
+      "output_state": "All text and UI elements meet WCAG AA contrast ratios",
+      "acceptance_criterion": "Lighthouse contrast audit shows no violations",
+      "verification_command": "echo 'Manual verification: Lighthouse contrast audit passes' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I6.F3.T1"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S1918.I6.F3.T19",
+      "type": "task",
+      "name": "Test with screen reader",
+      "action": {
+        "verb": "Test",
+        "target": "dashboard with screen reader"
+      },
+      "purpose": "Manual VoiceOver/NVDA testing to verify accessibility",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 19,
+      "group": 7,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/*-widget.tsx"
+        ],
+        "dependencies": [
+          "All widget ARIA labels from T6-T11"
+        ],
+        "constraints": [
+          "Test with VoiceOver (macOS) or NVDA (Windows)",
+          "Verify all widgets announce correctly",
+          "Test keyboard navigation flow",
+          "Document any issues found"
+        ]
+      },
+      "input_state": "Dashboard has ARIA labels but not verified with screen reader",
+      "output_state": "Screen reader test completed with documented results",
+      "acceptance_criterion": "Screen reader announces all widgets and content correctly",
+      "verification_command": "echo 'Manual verification: Screen reader test report created' && test -f .ai/reports/accessibility-reports/screen-reader-test.md",
+      "outputs": [
+        {
+          "type": "new",
+          "path": ".ai/reports/accessibility-reports/screen-reader-test.md"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I6.F3.T6",
+          "S1918.I6.F3.T7",
+          "S1918.I6.F3.T8",
+          "S1918.I6.F3.T9",
+          "S1918.I6.F3.T10",
+          "S1918.I6.F3.T11"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Audit Baseline",
+        "task_ids": [
+          "S1918.I6.F3.T1"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 1,
+        "name": "Foundation Utilities",
+        "task_ids": [
+          "S1918.I6.F3.T2",
+          "S1918.I6.F3.T3"
+        ],
+        "depends_on_groups": [
+          0
+        ],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Page Integration",
+        "task_ids": [
+          "S1918.I6.F3.T4",
+          "S1918.I6.F3.T5"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 1
+      },
+      {
+        "id": 3,
+        "name": "Widget ARIA Labels",
+        "task_ids": [
+          "S1918.I6.F3.T6",
+          "S1918.I6.F3.T7",
+          "S1918.I6.F3.T8",
+          "S1918.I6.F3.T9",
+          "S1918.I6.F3.T10",
+          "S1918.I6.F3.T11"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 6,
+        "parallel_hours": 1
+      },
+      {
+        "id": 4,
+        "name": "Interactive Elements",
+        "task_ids": [
+          "S1918.I6.F3.T12",
+          "S1918.I6.F3.T13",
+          "S1918.I6.F3.T14"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 5,
+        "name": "Reduced Motion Support",
+        "task_ids": [
+          "S1918.I6.F3.T15",
+          "S1918.I6.F3.T16"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 1
+      },
+      {
+        "id": 6,
+        "name": "Focus Styles",
+        "task_ids": [
+          "S1918.I6.F3.T17"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 7,
+        "name": "Validation",
+        "task_ids": [
+          "S1918.I6.F3.T18",
+          "S1918.I6.F3.T19"
+        ],
+        "depends_on_groups": [
+          3,
+          4,
+          6
+        ],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1918.I6.F3.T1",
+        "S1918.I6.F3.T3",
+        "S1918.I6.F3.T4",
+        "S1918.I6.F3.T6",
+        "S1918.I6.F3.T19"
+      ],
+      "total_hours": 7
+    },
+    "duration": {
+      "sequential": 25,
+      "parallel": 12,
+      "time_saved_percent": 52
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

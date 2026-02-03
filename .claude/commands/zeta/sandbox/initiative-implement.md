@@ -47,7 +47,7 @@ Load the detailed plan from GitHub:
 
 ```bash
 gh issue view <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json body,title,labels,url,comments \
   --jq '{body: .body, title: .title, labels: [.labels[].name], url: .url}'
 ```
@@ -76,7 +76,7 @@ if (manifestPath && manifestPath.startsWith('github:issue:')) {
 ```bash
 # Fetch manifest content from GitHub issue (works in E2B sandbox)
 gh issue view <manifest-issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json body \
   -q .body
 ```
@@ -97,13 +97,13 @@ Use manifest for:
 ```bash
 # Update issue status
 gh issue edit <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --add-label "status:in-progress" \
   --remove-label "status:planned"
 
 # Add start comment
 gh issue comment <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --body "🔄 Implementation started in E2B sandbox..."
 ```
 
@@ -344,7 +344,7 @@ ${SANDBOX_CLI} url ${sandboxId} 3000
 ```bash
 # Post completion comment
 gh issue comment <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --body "$(cat <<'EOF'
 ## ✅ Implementation Complete
 
@@ -369,7 +369,7 @@ EOF
 
 # Update labels
 gh issue edit <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --add-label "status:implemented" \
   --remove-label "status:in-progress"
 ```
@@ -384,7 +384,7 @@ gh issue edit <issue-number> \
   "feature": {
     "issue_number": 124,
     "title": "Database Schema Layer",
-    "url": "https://github.com/MLorneSmith/2025slideheroes/issues/124"
+    "url": "https://github.com/slideheroes/2025slideheroes/issues/124"
   },
   "implementation": {
     "tasks_completed": 8,

@@ -4,7 +4,7 @@
  * Tests the CLI flag that controls which environment file is loaded.
  * This is critical for the fix to bug #1002 (hardcoded .env.test).
  *
- * @see https://github.com/MLorneSmith/2025slideheroes/issues/1002
+ * @see https://github.com/slideheroes/2025slideheroes/issues/1002
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';

@@ -291,7 +291,7 @@ pnpm test:e2e
 
 # Verify dev-integration-tests workflow passes
 gh workflow run dev-integration-tests.yml --ref dev
-gh workflow view dev-integration-tests.yml --repo MLorneSmith/2025slideheroes
+gh workflow view dev-integration-tests.yml --repo slideheroes/2025slideheroes
 ```
 
 ## Dependencies

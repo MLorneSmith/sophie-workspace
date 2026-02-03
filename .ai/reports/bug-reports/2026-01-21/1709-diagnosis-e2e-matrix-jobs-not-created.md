@@ -34,7 +34,7 @@ When triggering the E2E sharded workflow via `workflow_dispatch`, GitHub Actions
 ```bash
 gh workflow run e2e-sharded.yml --ref dev -f max_parallel=3
 # Wait for completion
-gh api repos/MLorneSmith/2025slideheroes/actions/runs/<run_id>/jobs --jq '.total_count'
+gh api repos/slideheroes/2025slideheroes/actions/runs/<run_id>/jobs --jq '.total_count'
 # Returns: 2 (should be 14)
 ```
 

@@ -10,6 +10,7 @@ import * as readline from "node:readline";
 
 import type { SpecManifest } from "../types/index.js";
 
+import { validateDependencyGraph } from "./cycle-detector.js";
 import { validateRequiredEnvVars } from "./env-requirements.js";
 
 // ============================================================================
@@ -296,4 +297,51 @@ export function formatPreFlightForDryRun(manifest: SpecManifest): string {
 	}
 
 	return lines.join("\n") + "\n";
+}
+
+// ============================================================================
+// Circular Dependency Pre-Flight Check
+// ============================================================================
+
+/**
+ * Result of the dependency cycle pre-flight check.
+ */
+export interface DependencyCycleCheckResult {
+	/** Whether to proceed with orchestration */
+	proceed: boolean;
+	/** Number of cycles detected */
+	cycleCount: number;
+}
+
+/**
+ * Run pre-flight check for circular dependencies in the manifest.
+ *
+ * This is a critical validation that catches circular dependencies before
+ * orchestration begins, preventing the orchestrator from hanging indefinitely.
+ *
+ * Bug fix #1916: Alpha Orchestrator Circular Dependency Hang
+ *
+ * @param manifest - The spec manifest to validate
+ * @param log - Logger function for output
+ * @returns DependencyCycleCheckResult indicating whether to proceed
+ */
+export function checkDependencyCycles(
+	manifest: SpecManifest,
+	log: (...args: unknown[]) => void,
+): DependencyCycleCheckResult {
+	log("   Validating dependency graph for circular dependencies...");
+
+	const result = validateDependencyGraph(manifest.feature_queue, log);
+
+	if (result.hasCycles) {
+		log("");
+		log("❌ DEPENDENCY VALIDATION FAILED");
+		log("   Fix your feature.md files and regenerate the manifest.");
+		log("   See above for details on which dependencies to fix.");
+		log("");
+		return { proceed: false, cycleCount: result.cycles.length };
+	}
+
+	log("   ✅ No circular dependencies detected");
+	return { proceed: true, cycleCount: 0 };
 }

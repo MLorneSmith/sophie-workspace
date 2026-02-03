@@ -103,7 +103,7 @@ If you discover a security vulnerability, please report it responsibly:
 
 1. **GitHub Security Advisories** (Preferred):
 
-   - Go to [Security Advisories](https://github.com/MLorneSmith/2025slideheroes/security/advisories)
+   - Go to [Security Advisories](https://github.com/slideheroes/2025slideheroes/security/advisories)
    - Click "Report a vulnerability"
    - Provide detailed information about the vulnerability
 

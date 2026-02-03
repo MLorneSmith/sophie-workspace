@@ -66,7 +66,7 @@ The Payload migrations step creates empty database tables but doesn't seed any d
 ## Validation
 
 ### Workflow Triggered
-- **Run URL:** https://github.com/MLorneSmith/2025slideheroes/actions/runs/21408975553
+- **Run URL:** https://github.com/slideheroes/2025slideheroes/actions/runs/21408975553
 - **Expected:** Shards 7, 8, 9 complete successfully without timeout
 
 ### Local Verification

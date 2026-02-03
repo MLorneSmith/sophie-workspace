@@ -311,7 +311,7 @@ The fix has already been applied to `.claude/skills/e2b-sandbox/scripts/build-te
 1. After decomposition (step 2.2: user approval), create master issue first:
    ```bash
    gh issue create \
-     --repo MLorneSmith/2025slideheroes \
+     --repo slideheroes/2025slideheroes \
      --title "Initiative: <name>" \
      --body "Master issue for $NUM features..." \
      --label "type:feature-set" \
@@ -320,7 +320,7 @@ The fix has already been applied to `.claude/skills/e2b-sandbox/scripts/build-te
 
 2. Extract issue number from output:
    ```
-   https://github.com/MLorneSmith/2025slideheroes/issues/1234
+   https://github.com/slideheroes/2025slideheroes/issues/1234
    # Extract: 1234
    ```
 
@@ -672,7 +672,7 @@ pnpm lint ".claude/commands/" 2>&1 | grep -i "error" && echo "Lint errors found!
 
 # 5. Confirm all issues are closed/updated on GitHub
 gh issue list \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --state closed \
   --label "type:feature-set" \
   | wc -l

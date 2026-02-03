@@ -173,7 +173,7 @@ jobs:
     name: Smart Test Status
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [detect-changes, quick-test]
-    if: always()
+    if: ${{ always() && !cancelled() }}
     steps:
       - name: Comment on PR with results
         uses: actions/github-script@v8

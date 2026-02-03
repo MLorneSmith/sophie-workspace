@@ -250,8 +250,8 @@ Open a PR with TypeScript changes (e.g., any PR from Dependabot that touches `.t
 
 ```bash
 # View the failing workflow run
-gh run view <run-id> -R MLorneSmith/2025slideheroes
-gh run view <run-id> --log -R MLorneSmith/2025slideheroes | grep -i "PAYLOAD_SECRET"
+gh run view <run-id> -R slideheroes/2025slideheroes
+gh run view <run-id> --log -R slideheroes/2025slideheroes | grep -i "PAYLOAD_SECRET"
 ```
 
 **Expected Result**: Error message appears: `Error: PAYLOAD_SECRET environment variable is required`
@@ -261,13 +261,13 @@ gh run view <run-id> --log -R MLorneSmith/2025slideheroes | grep -i "PAYLOAD_SEC
 ```bash
 # Create a test PR or wait for next Dependabot PR
 # Then check the workflow
-gh workflow run pr-validation.yml -R MLorneSmith/2025slideheroes
+gh workflow run pr-validation.yml -R slideheroes/2025slideheroes
 
 # Monitor the jobs
-gh run list -R MLorneSmith/2025slideheroes --workflow=pr-validation.yml --limit 1
+gh run list -R slideheroes/2025slideheroes --workflow=pr-validation.yml --limit 1
 
 # Check specific jobs pass
-gh run view <run-id> --log -R MLorneSmith/2025slideheroes | grep -E "bundle-size|accessibility-test"
+gh run view <run-id> --log -R slideheroes/2025slideheroes | grep -E "bundle-size|accessibility-test"
 ```
 
 **Expected Result**:

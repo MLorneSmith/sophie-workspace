@@ -32,8 +32,8 @@ export const WORKSPACE_DIR = "/home/user/project";
 // Repository URL - uses GITHUB_TOKEN if available for private repo access
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const REPO_URL = GITHUB_TOKEN
-	? `https://${GITHUB_TOKEN}@github.com/MLorneSmith/2025slideheroes.git`
-	: "https://github.com/MLorneSmith/2025slideheroes.git";
+	? `https://${GITHUB_TOKEN}@github.com/slideheroes/2025slideheroes.git`
+	: "https://github.com/slideheroes/2025slideheroes.git";
 
 // ============================================================================
 // Helper Scripts

@@ -2,7 +2,7 @@
 
 **Date:** 2025-11-11
 **Workflow:** Dev Integration Tests
-**Repository:** MLorneSmith/2025slideheroes
+**Repository:** slideheroes/2025slideheroes
 **Failed Run IDs:** 19276334138, 19275199578, 19272347641
 
 ## Executive Summary

@@ -33,7 +33,7 @@ if [[ -z "$INITIATIVE_ID" ]]; then
     exit 1
 fi
 
-REPO="MLorneSmith/2025slideheroes"
+REPO="slideheroes/2025slideheroes"
 
 # Fetch features with parent label
 FEATURES=$(gh issue list \

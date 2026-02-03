@@ -107,7 +107,7 @@ Change manifest storage from local file to GitHub issue for sandbox accessibilit
   ```bash
   # Create manifest issue FIRST (before master issue)
   MANIFEST_ISSUE=$(gh issue create \
-    --repo MLorneSmith/2025slideheroes \
+    --repo slideheroes/2025slideheroes \
     --title "Research Manifest: ${initiative}" \
     --body "${manifestContent}" \
     --label "type:research" \

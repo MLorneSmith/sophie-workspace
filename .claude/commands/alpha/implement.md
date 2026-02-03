@@ -69,6 +69,25 @@ You are running inside an E2B sandbox as part of the Alpha Initiative Orchestrat
 
 ### Phase 1: Load Context
 
+0. **Initialize progress file immediately**:
+   - Write a minimal `.initiative-progress.json` at repo root before any heavy work.
+   - This prevents PTY timeout recovery from failing when the file doesn't exist yet.
+   - Use the helper script (preferred):
+   ```bash
+   python3 .claude/hooks/init_progress.py
+   ```
+   - Example (fill feature id/title after parsing `tasks.json`):
+   ```json
+   {
+     "status": "in_progress",
+     "phase": "starting",
+     "completed_tasks": [],
+     "failed_tasks": [],
+     "context_usage_percent": 0,
+     "last_heartbeat": "2024-01-01T12:00:00Z"
+   }
+   ```
+
 1. **Parse input and find feature directory**:
 
    **For semantic IDs (S#.I#.F#):**

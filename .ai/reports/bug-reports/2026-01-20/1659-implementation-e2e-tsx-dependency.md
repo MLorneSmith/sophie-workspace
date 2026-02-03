@@ -1,6 +1,6 @@
 # Implementation Report: E2E Sharded Workflow tsx Dependency Fix
 
-**Issue**: [#1659](https://github.com/MLorneSmith/2025slideheroes/issues/1659)
+**Issue**: [#1659](https://github.com/slideheroes/2025slideheroes/issues/1659)
 **Status**: Complete
 **Date**: 2026-01-20
 

@@ -217,10 +217,10 @@ The bug is only visible in the CI workflow. To see it:
 
 ```bash
 # View the latest staging-deploy.yml workflow run
-gh run list --workflow=staging-deploy.yml --repo MLorneSmith/2025slideheroes --limit 1
+gh run list --workflow=staging-deploy.yml --repo slideheroes/2025slideheroes --limit 1
 
 # Check the test-shards job logs for connection refused errors
-gh run view <run-id> --repo MLorneSmith/2025slideheroes --log
+gh run view <run-id> --repo slideheroes/2025slideheroes --log
 ```
 
 **Expected Result**: Logs show `Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3001/`
@@ -231,10 +231,10 @@ gh run view <run-id> --repo MLorneSmith/2025slideheroes --log
 # After pushing the fix to staging and workflow runs
 # Check that test-shards jobs complete without connection errors
 
-gh run list --workflow=staging-deploy.yml --repo MLorneSmith/2025slideheroes --limit 1
+gh run list --workflow=staging-deploy.yml --repo slideheroes/2025slideheroes --limit 1
 
 # View test results (should see actual test failures or passes, not connection errors)
-gh run view <run-id> --repo MLorneSmith/2025slideheroes --log
+gh run view <run-id> --repo slideheroes/2025slideheroes --log
 ```
 
 **Expected Result**:

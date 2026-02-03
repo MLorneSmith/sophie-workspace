@@ -261,7 +261,7 @@ Create manifest issue FIRST (for sandbox accessibility), then master issue, then
 # Step 1: Create MANIFEST ISSUE FIRST (P1 Fix - Critical for sandbox accessibility)
 # This issue contains the full research manifest content so it's accessible from E2B sandbox
 MANIFEST_ISSUE=$(gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "Research Manifest: ${initiative}" \
   --body "${manifestContent}" \
   --label "type:research" \
@@ -273,7 +273,7 @@ manifestIssueNumber=${MANIFEST_ISSUE}
 
 # Step 2: Create master issue with reference to manifest
 MASTER_ISSUE=$(gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "Feature Set: ${initiative}" \
   --body "$(cat << BODY_EOF
 $(cat .ai/specs/feature-sets/${slug}/pending-overview.md)
@@ -314,7 +314,7 @@ for feature in features; do
   fi
 
   FEATURE_ISSUE=$(gh issue create \
-    --repo MLorneSmith/2025slideheroes \
+    --repo slideheroes/2025slideheroes \
     --title "Feature: <name>" \
     --body "<stub-body with parent ref #${MASTER_ISSUE} and manifest ref #${MANIFEST_ISSUE}>" \
     --label "type:feature" \
@@ -496,7 +496,7 @@ const verifyPlanning = async (sampleSize: number = 3) => {
 
   for (const issueNum of samplesToCheck) {
     const bodyLength = await Bash(
-      `gh issue view ${issueNum} --repo MLorneSmith/2025slideheroes --json body -q '.body | length'`
+      `gh issue view ${issueNum} --repo slideheroes/2025slideheroes --json body -q '.body | length'`
     );
     const length = parseInt(bodyLength.stdout) || 0;
     const hasFullPlan = length > 1000; // Full plans are >1000 chars
@@ -901,7 +901,7 @@ for dependent_issue in ${dependents_of_completed_feature}; do
 
   if [ "$all_deps_complete" = true ]; then
     gh issue edit ${dependent_issue} \
-      --repo MLorneSmith/2025slideheroes \
+      --repo slideheroes/2025slideheroes \
       --add-label "status:ready" \
       --remove-label "status:blocked"
   fi
@@ -934,7 +934,7 @@ Execute directly in orchestrator (not in sandbox):
 
 ```bash
 gh pr create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "feat: ${initiative}" \
   --body "## Initiative: ${initiative}
 
@@ -957,7 +957,7 @@ Capture `prNumber` from output.
 
 ```bash
 gh issue comment ${masterIssueNumber} \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --body "## Implementation Complete
 
 PR created: #${prNumber}

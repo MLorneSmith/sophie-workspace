@@ -225,7 +225,7 @@ Use the GitHub CLI (`gh`) to create the feature issue:
 # Map priority: critical→priority:critical, high→priority:high, etc.
 # Map featureType to area: user-facing→area:ui, api→area:database, admin→area:auth, etc.
 gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "Feature: <featureTitle>" \
   --body "<issue-content>" \
   --label "type:feature" \
@@ -234,7 +234,7 @@ gh issue create \
   --label "area:<affected-area>"
 
 # Capture the issue URL and number from the output
-# The gh CLI will output the URL in format: https://github.com/MLorneSmith/2025slideheroes/issues/<number>
+# The gh CLI will output the URL in format: https://github.com/slideheroes/2025slideheroes/issues/<number>
 
 # After creating the issue, rename the report file to include the issue number
 # OLD: .ai/reports/feature-reports/YYYY-MM-DD/pending-feature-plan-<slug>.md

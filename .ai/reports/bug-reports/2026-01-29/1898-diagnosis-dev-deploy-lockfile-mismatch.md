@@ -66,7 +66,7 @@ Not applicable
 ```
 
 ### Screenshots
-- GitHub Actions Run: https://github.com/MLorneSmith/2025slideheroes/actions/runs/21490390294
+- GitHub Actions Run: https://github.com/slideheroes/2025slideheroes/actions/runs/21490390294
 - Vercel Build: https://vercel.com/slideheroes/2025slideheroes-web/21EFb4UE7k5C4Q8yD4bHhfh3vzLs
 
 ## Error Stack Traces

@@ -9,6 +9,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import process from "node:process";
+import type { AgentProvider } from "../types/index.js";
 
 // ============================================================================
 // Environment Variables
@@ -17,6 +18,7 @@ import process from "node:process";
 export const E2B_API_KEY = process.env.E2B_API_KEY;
 export const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 export const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+export const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 // Dynamic runtime environment (set by orchestrator)
 let _orchestratorUrl: string | undefined;
@@ -41,6 +43,8 @@ export function getOrchestratorUrl(): string | undefined {
 // ============================================================================
 
 let _cachedOAuthToken: string | undefined;
+let _cachedOpenAIApiKey: string | undefined;
+let _cachedOpenAIAccessToken: string | undefined;
 
 /**
 
@@ -72,6 +76,66 @@ export function getClaudeOAuthToken(): string | undefined {
 }
 
 /**
+ * Get Codex (OpenAI) auth file contents if available.
+ * Stored by the Codex CLI at ~/.codex/auth.json.
+ */
+function getCodexAuthFile():
+	| {
+			OPENAI_API_KEY?: string;
+			tokens?: {
+				access_token?: string;
+			};
+	  }
+	| undefined {
+	const homeDir = process.env.HOME || process.env.USERPROFILE;
+	if (!homeDir) return undefined;
+
+	const credentialsPath = path.join(homeDir, ".codex", "auth.json");
+
+	try {
+		if (fs.existsSync(credentialsPath)) {
+			const content = fs.readFileSync(credentialsPath, "utf-8");
+			return JSON.parse(content);
+		}
+	} catch {
+		// Silently fail
+	}
+
+	return undefined;
+}
+
+/**
+ * Get OpenAI API key from environment or Codex auth file.
+ */
+export function getOpenAIApiKey(): string | undefined {
+	if (process.env.OPENAI_API_KEY) {
+		return process.env.OPENAI_API_KEY;
+	}
+
+	if (_cachedOpenAIApiKey === undefined) {
+		_cachedOpenAIApiKey = getCodexAuthFile()?.OPENAI_API_KEY || "";
+	}
+
+	return _cachedOpenAIApiKey || undefined;
+}
+
+/**
+ * Get OpenAI OAuth access token from environment or Codex auth file.
+ * This is optional and only used when available.
+ */
+export function getOpenAIAccessToken(): string | undefined {
+	if (process.env.OPENAI_ACCESS_TOKEN) {
+		return process.env.OPENAI_ACCESS_TOKEN;
+	}
+
+	if (_cachedOpenAIAccessToken === undefined) {
+		_cachedOpenAIAccessToken = getCodexAuthFile()?.tokens?.access_token || "";
+	}
+
+	return _cachedOpenAIAccessToken || undefined;
+}
+
+/**
 
 * Get cached OAuth token (avoids repeated file reads).
  */
@@ -88,6 +152,8 @@ export function getCachedOAuthToken(): string | undefined {
  */
 export function clearOAuthTokenCache(): void {
 	_cachedOAuthToken = undefined;
+	_cachedOpenAIApiKey = undefined;
+	_cachedOpenAIAccessToken = undefined;
 }
 
 // ============================================================================
@@ -272,16 +338,25 @@ export async function validatePythonDependencies(
 * Check that required environment variables are set.
 * Exits process with error if not.
  */
-export function checkEnvironment(): void {
+export function checkEnvironment(provider: AgentProvider): void {
 	if (!E2B_API_KEY) {
 		console.error("ERROR: E2B_API_KEY environment variable not set");
 		process.exit(1);
 	}
 
-	const oauthToken = getCachedOAuthToken();
-	if (!ANTHROPIC_API_KEY && !oauthToken) {
-		console.error("ERROR: No Claude authentication found");
-		process.exit(1);
+	if (provider === "claude") {
+		const oauthToken = getCachedOAuthToken();
+		if (!ANTHROPIC_API_KEY && !oauthToken) {
+			console.error("ERROR: No Claude authentication found");
+			process.exit(1);
+		}
+	} else if (provider === "gpt") {
+		const openaiKey = getOpenAIApiKey();
+		const openaiAccessToken = getOpenAIAccessToken();
+		if (!openaiKey && !openaiAccessToken) {
+			console.error("ERROR: No OpenAI authentication found");
+			process.exit(1);
+		}
 	}
 
 	// Check Supabase config (non-fatal - just informational)
@@ -316,6 +391,24 @@ export function getAuthMethod(): "api_key" | "oauth" | "none" {
 	return "none";
 }
 
+/**
+ * Get the authentication method being used for OpenAI/Codex.
+ */
+export function getOpenAIAuthMethod(): "api_key" | "oauth" | "none" {
+	if (process.env.OPENAI_API_KEY) {
+		return "api_key";
+	}
+	const accessToken = getOpenAIAccessToken();
+	if (accessToken) {
+		return "oauth";
+	}
+	const openaiKey = getOpenAIApiKey();
+	if (openaiKey) {
+		return "oauth";
+	}
+	return "none";
+}
+
 export function getAllEnvVars(): Record<string, string> {
 	const envs: Record<string, string> = {};
 
@@ -329,6 +422,16 @@ export function getAllEnvVars(): Record<string, string> {
 	const oauthToken = getCachedOAuthToken();
 	if (oauthToken) {
 		envs.CLAUDE_CODE_OAUTH_TOKEN = oauthToken;
+	}
+
+	// OpenAI/Codex authentication (API key or OAuth access token)
+	const openaiApiKey = getOpenAIApiKey();
+	if (openaiApiKey) {
+		envs.OPENAI_API_KEY = openaiApiKey;
+	}
+	const openaiAccessToken = getOpenAIAccessToken();
+	if (openaiAccessToken) {
+		envs.OPENAI_ACCESS_TOKEN = openaiAccessToken;
 	}
 
 	// GitHub

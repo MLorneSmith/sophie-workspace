@@ -46,7 +46,7 @@
 
 ```bash
 # Check deployment status
-gh api repos/MLorneSmith/2025slideheroes/deployments
+gh api repos/slideheroes/2025slideheroes/deployments
 
 # Emergency rollback (via Vercel)
 vercel rollback slideheroes.com
@@ -67,7 +67,7 @@ gh run view <run-id> --log
 - **Staging**: <https://staging.slideheroes.com>  
 - **Development**: <https://dev.slideheroes.com>
 - **Vercel Dashboard**: <https://vercel.com/slideheroes/dashboard>
-- **GitHub Actions**: <https://github.com/MLorneSmith/2025slideheroes/actions>
+- **GitHub Actions**: <https://github.com/slideheroes/2025slideheroes/actions>
 - **New Relic Dashboard**: <https://one.newrelic.com/slideheroes>
 
 ### Status Pages
@@ -239,7 +239,7 @@ pnpm test:e2e --reporter=verbose
    curl -I https://slideheroes.com
    
    # Check deployment status
-   gh api repos/MLorneSmith/2025slideheroes/deployments | jq '.[0]'
+   gh api repos/slideheroes/2025slideheroes/deployments | jq '.[0]'
    ```
 
 2. **Notify Team**
@@ -635,7 +635,7 @@ graph TB
 
 ```bash
 # Clone repository
-git clone https://github.com/MLorneSmith/2025slideheroes.git
+git clone https://github.com/slideheroes/2025slideheroes.git
 cd 2025slideheroes
 
 # Install dependencies

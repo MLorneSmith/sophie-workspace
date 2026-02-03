@@ -382,7 +382,7 @@ ${next_steps_based_on_status}
 
 ```bash
 gh issue comment ${specId} \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --body "## 🔍 Alpha Review Complete
 
 **Status:** $([ \"${success}\" = \"true\" ] && echo \"✅ PASSED\" || echo \"❌ FAILED\")
@@ -412,12 +412,12 @@ ${screenshot_count} screenshots captured in \`.ai/alpha/validation/S${specId}/re
 ```bash
 if [ "${success}" = "true" ]; then
   gh issue edit ${specId} \
-    --repo MLorneSmith/2025slideheroes \
+    --repo slideheroes/2025slideheroes \
     --add-label "alpha:reviewed" \
     --add-label "alpha:review-passed"
 else
   gh issue edit ${specId} \
-    --repo MLorneSmith/2025slideheroes \
+    --repo slideheroes/2025slideheroes \
     --add-label "alpha:reviewed" \
     --add-label "alpha:review-failed"
 fi
@@ -428,7 +428,7 @@ fi
 ```bash
 if [ "${blocker_count}" -gt 0 ]; then
   REVIEW_ISSUE=$(gh issue create \
-    --repo MLorneSmith/2025slideheroes \
+    --repo slideheroes/2025slideheroes \
     --title "Review Issues: S${specId} - ${spec_title}" \
     --body "## Blocking Issues from Alpha Review
 
@@ -455,7 +455,7 @@ ${formatted_blocker_list}
 
   # Link back to spec issue
   gh issue comment ${specId} \
-    --repo MLorneSmith/2025slideheroes \
+    --repo slideheroes/2025slideheroes \
     --body "⚠️ **Blocking issues found:** See ${REVIEW_ISSUE} for required fixes."
 fi
 ```

@@ -357,7 +357,7 @@ The fix is complete when:
 - This also works but is slightly more complex
 
 **Related Files & Documentation**:
-- Diagnosis: https://github.com/MLorneSmith/2025slideheroes/issues/717
+- Diagnosis: https://github.com/slideheroes/2025slideheroes/issues/717
 - Test File: `apps/e2e/tests/account/account-simple.spec.ts`
 - Component: `packages/features/accounts/src/components/personal-account-dropdown.tsx`
 - Config: `packages/ui/src/makerkit/navigation-config.schema.ts`

@@ -303,7 +303,7 @@ If the spec has a GitHub issue:
 ```bash
 # Post documentation summary to spec issue
 gh issue comment ${specNum} \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --body "## 📚 Spec Documentation Created
 
 **Documentation**: [\`.ai/ai_docs/context-docs/specs/S${specNum}-${slug}.md\`](link)
@@ -323,7 +323,7 @@ ${components}
 
 # Add documentation label if it exists
 gh issue edit ${specNum} \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --add-label "documented"
 ```
 

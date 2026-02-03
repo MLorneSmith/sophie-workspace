@@ -188,7 +188,7 @@ class DatabaseAdapterManager {
 	 * - This breaks test/development configurations where SSL should be disabled
 	 * - Custom environment variables like PAYLOAD_ENV are not overridden by Next.js
 	 *
-	 * See diagnosis: https://github.com/MLorneSmith/2025slideheroes/issues/1791
+	 * See diagnosis: https://github.com/slideheroes/2025slideheroes/issues/1791
 	 */
 	private shouldEnableSSL(connectionString?: string): boolean {
 		// Check for explicit SSL configuration first

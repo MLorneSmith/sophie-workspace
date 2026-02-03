@@ -1,0 +1,153 @@
+# Email Export - [LEM] Business.com (screw open rates!)
+# Exported from Gmail on 2026-01-24T18:15:27.030Z
+# Fill in the annotations section to capture writing style patterns
+---
+metadata:
+  id: "16c9af17ba3a15fd"
+  exportedAt: "2026-01-24T18:15:27.030Z"
+  source: "gmail"
+  labels:
+    - "andre"
+    - "IMPORTANT"
+    - "Experts/Email marketing examples/Andre Chaperon"
+    - "CATEGORY_UPDATES"
+headers:
+  from: "\"Andre Chaperon\" <hello@tinylittlebusinesses.com>"
+  to: "msmith@slideheroes.com"
+  subject: "[LEM] Business.com (screw open rates!)"
+  date: "Fri, 16 Aug 2019 15:00:00 +0000 (UTC)"
+  messageId: "<LLaAesJOTAao2EAi1Ah3jQ@ismtpd0049p1mdw1.sendgrid.net>"
+thread:
+  threadId: "16c9af17ba3a15fd"
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: "Hey Mike,
+
+
+    So not long ago I was approached by someone (Garrett) who was
+
+    putting together an article for Business.com...
+
+
+    \"The Comprehensive Guide to Email Analytics\"
+
+
+    Garrett asked me...
+
+
+    What's the single most important email metric that you look at to
+
+    judge the success of a campaign?
+
+
+    He also asked a 6 other (email) experts.
+
+
+    My response was different to everyone else...
+
+
+    Here's the article:
+
+
+    http://t.dripemail2.com/c/eyJhY2NvdW50X2lkIjoiNzAyNjQ1NiIsImRlbGl2ZXJ5X2lkIjoiNzY2MjE0NTYzMyIsInVybCI6Imh0dHA6Ly93d3cuYnVzaW5lc3MuY29tL2VtYWlsLW1hcmtldGluZy9hbmFseXplLXRoaXMtdGhlLWNvbXByZWhlbnNpdmUtZ3VpZGUtdG8tZW1haWwtYW5hbHl0aWNzLz9fX3M9eXp5bWlhcXR5aXRzaTJzaWFlbWkifQ
+
+    ( http://t.dripemail2.com/c/eyJhY2NvdW50X2lkIjoiNzAyNjQ1NiIsImRlbGl2ZXJ5X2lkIjoiNzY2MjE0NTYzMyIsInVybCI6Imh0dHA6Ly93d3cuYnVzaW5lc3MuY29tL2VtYWlsLW1hcmtldGluZy9hbmFseXplLXRoaXMtdGhlLWNvbXByZWhlbnNpdmUtZ3VpZGUtdG8tZW1haWwtYW5hbHl0aWNzLz9fX3M9eXp5bWlhcXR5aXRzaTJzaWFlbWkifQ )
+
+
+    It's a good read.
+
+
+    Enjoy!
+
+
+    Andre \"screw open rates\" Chaperon
+
+
+    ---------------------
+
+    To make sure you keep getting these emails, please add
+
+    hello@tinylittlebusinesses.com to your address book or whitelist us. Want out of
+
+    the loop? <a href=\"https://t.dripemail2.com/c/eyJhY2NvdW50X2lkIjoiNzAyNjQ1NiIsImRlbGl2ZXJ5X2lkIjoiNzY2MjE0NTYzMyIsInVybCI6Imh0dHBzOi8vd3d3LmdldGRyaXAuY29tL3N1YnNjcmliZXJzL3l6eW1pYXF0eWl0c2kyc2lhZW1pL3N1YnNjcmlwdGlvbnM_ZD0wNDBocG41MGdjZmVsbzlnamlibVx1MDAyNmV4Y2x1ZGVfY2xpY2s9MVx1MDAyNmludGVudD11bnN1YnNjcmliZVx1MDAyNl9fcz15enltaWFxdHlpdHNpMnNpYWVtaSJ9\">Unsubscribe</a>.
+
+
+    Our corp. address: Suite 23, Portland House, Glacis Road, GX11 1AA, GIBRALTAR
+
+
+    This email has been lovingly handcrafted by yours truly and sent with the awesome DRIP [ trydrip.co ] email software."
+  hasHtml: true
+annotations:
+  # === CAMPAIGN CONTEXT ===
+  campaign: "LEM"
+  campaign_full: "Lucrative Email Marketing"
+  position: 8
+  sequence_length: ~21
+  email_type: "nurture"
+
+  # === PURPOSE & AUDIENCE ===
+  purpose: |
+    Short "breather" email that shares a Business.com article feature.
+    Positions Andre as contrarian expert (different answer than others)
+    and reinforces brand with "screw open rates" philosophy.
+
+  audience: "Email marketers with existing lists (500+ subscribers)"
+
+  # === TECHNIQUES USED ===
+  techniques_used:
+    - technique: "Personal Greeting"
+      location: "opening"
+      example: "Hey Mike,"
+      notes: "Consistent personalization"
+    - technique: "Campaign Abbreviation"
+      location: "subject_line"
+      example: "[LEM] Business.com (screw open rates!)"
+      notes: "Provocative stance in subject"
+    - technique: "Story Opening"
+      location: "opening"
+      example: "So not long ago I was approached by someone (Garrett) who was putting together an article for Business.com..."
+      notes: "Names real person for authenticity"
+    - technique: "Short Line Rhythm"
+      location: "throughout"
+      example: "He also asked a 6 other (email) experts.\n\nMy response was different to everyone else..."
+      notes: "Brief, scannable email"
+    - technique: "Contrarian Positioning"
+      location: "body"
+      example: "My response was different to everyone else..."
+      notes: "Sets up curiosity without revealing answer"
+    - technique: "Minimal Sell"
+      location: "closing"
+      example: "It's a good read.\n\nEnjoy!"
+      notes: "Lightest possible call to action"
+    - technique: "Clever Signature"
+      location: "sign-off"
+      example: "Andre \"screw open rates\" Chaperon"
+      notes: "Provocative brand statement"
+
+  # === HOOK ANALYSIS ===
+  hook:
+    type: "credibility"
+    text: "So not long ago I was approached by someone (Garrett) who was putting together an article for Business.com..."
+    effectiveness: "Third-party validation through media feature"
+
+  # === STRUCTURAL NOTES ===
+  structure:
+    opening: "Business.com approach story"
+    body: "Question asked -> contrarian tease -> link"
+    closing: "Simple enjoyment wish"
+
+  # === WHAT MAKES THIS EMAIL EFFECTIVE ===
+  effectiveness_notes: |
+    - Extremely short - palate cleanser after multi-part series
+    - Third-party credibility (Business.com) without boasting
+    - "Screw open rates" is memorable contrarian position
+    - No P.S. or CTA - builds goodwill through pure value
+    - Curiosity gap: what was his different answer?
+
+  # === QUOTABLE LINES ===
+  quotable:
+    - "My response was different to everyone else..."
+    - "screw open rates"

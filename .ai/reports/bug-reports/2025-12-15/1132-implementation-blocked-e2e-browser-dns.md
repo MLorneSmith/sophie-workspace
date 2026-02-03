@@ -92,4 +92,4 @@ All changes have been reverted. No files were modified permanently.
 ---
 *Implementation blocked pending correct diagnosis*
 *Report generated: 2025-12-15*
-*GitHub Issue: https://github.com/MLorneSmith/2025slideheroes/issues/1132*
+*GitHub Issue: https://github.com/slideheroes/2025slideheroes/issues/1132*

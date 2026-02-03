@@ -102,7 +102,7 @@ This removes all 135+ old labels from the GitHub repository.
 
 **Validation command**:
 ```bash
-gh label list --repo MLorneSmith/2025slideheroes --limit 200 | grep -E "^[a-z]+:" | wc -l
+gh label list --repo slideheroes/2025slideheroes --limit 200 | grep -E "^[a-z]+:" | wc -l
 # Should output: 35
 ```
 
@@ -131,7 +131,7 @@ Migrate any remaining issues that haven't been updated to hierarchical labels.
 
 Verify the entire migration is complete and consistent.
 
-- Check total label count: `gh label list --repo MLorneSmith/2025slideheroes --limit 200 | wc -l`
+- Check total label count: `gh label list --repo slideheroes/2025slideheroes --limit 200 | wc -l`
   - Should be exactly 35 (the new hierarchical labels)
 - Check a sample of issues (e.g., #800, #801, #802) to verify labels are hierarchical
 - Verify `/review` command output uses only hierarchical labels
@@ -151,7 +151,7 @@ No integration tests needed - label verification is manual.
 
 Execute these manual tests before considering the fix complete:
 
-- [ ] Run `gh label list --repo MLorneSmith/2025slideheroes --limit 200` and verify only 35 hierarchical labels exist
+- [ ] Run `gh label list --repo slideheroes/2025slideheroes --limit 200` and verify only 35 hierarchical labels exist
 - [ ] Check that no flat labels like `bug`, `feature`, `high`, `low`, `tooling` etc. remain
 - [ ] Open issue #801 (from diagnosis) and verify it has hierarchical labels
 - [ ] Open 3-4 random recent issues and verify they all have hierarchical labels
@@ -206,11 +206,11 @@ No security implications. Labels are metadata used for organization and routing.
 
 ```bash
 # Check that old labels still exist
-gh label list --repo MLorneSmith/2025slideheroes --limit 200 | grep -E "^(bug|feature|high|low|tooling|technical-debt)" | wc -l
+gh label list --repo slideheroes/2025slideheroes --limit 200 | grep -E "^(bug|feature|high|low|tooling|technical-debt)" | wc -l
 # Should output a number > 0 (old labels exist)
 
 # Check total label count
-gh label list --repo MLorneSmith/2025slideheroes --limit 200 | wc -l
+gh label list --repo slideheroes/2025slideheroes --limit 200 | wc -l
 # Should output a number > 35 (more than just the new hierarchical labels)
 
 # Check /review command uses old labels
@@ -230,11 +230,11 @@ pnpm typecheck
 pnpm lint
 
 # Verify old labels are gone
-gh label list --repo MLorneSmith/2025slideheroes --limit 200 | grep -E "^(bug|feature|high|low|tooling|technical-debt)" | wc -l
+gh label list --repo slideheroes/2025slideheroes --limit 200 | grep -E "^(bug|feature|high|low|tooling|technical-debt)" | wc -l
 # Should output: 0
 
 # Verify only hierarchical labels remain
-gh label list --repo MLorneSmith/2025slideheroes --limit 200 | wc -l
+gh label list --repo slideheroes/2025slideheroes --limit 200 | wc -l
 # Should output: 35
 
 # Verify /review command uses hierarchical labels
@@ -242,7 +242,7 @@ grep -n "priority:\|status:\|type:\|area:" /home/msmith/projects/2025slideheroes
 # Should find matches showing hierarchical labels being used
 
 # Sample check - verify an issue has correct labels
-gh issue view 801 --repo MLorneSmith/2025slideheroes --json labels --jq '.labels[].name' | head -5
+gh issue view 801 --repo slideheroes/2025slideheroes --json labels --jq '.labels[].name' | head -5
 # Should show only hierarchical labels like "status:planning", "priority:medium", etc.
 ```
 

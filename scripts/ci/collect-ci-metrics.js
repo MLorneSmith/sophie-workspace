@@ -12,7 +12,7 @@ import https from "node:https";
 const NEW_RELIC_ACCOUNT_ID = process.env.NEW_RELIC_ACCOUNT_ID;
 const NEW_RELIC_INSERT_KEY = process.env.NEW_RELIC_INSERT_KEY;
 const GITHUB_REPOSITORY =
-	process.env.GITHUB_REPOSITORY || "MLorneSmith/2025slideheroes";
+	process.env.GITHUB_REPOSITORY || "slideheroes/2025slideheroes";
 const GITHUB_SHA = process.env.GITHUB_SHA || "unknown";
 const GITHUB_REF_NAME = process.env.GITHUB_REF_NAME || "unknown";
 const GITHUB_ACTOR = process.env.GITHUB_ACTOR || "unknown";

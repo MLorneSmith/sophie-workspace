@@ -15,12 +15,14 @@ import {
 	WORKSPACE_DIR,
 } from "../config/index.js";
 import type {
+	AgentProvider,
 	HealthCheckResult,
 	SandboxInstance,
 	SandboxProgress,
 	SpecManifest,
 } from "../types/index.js";
 import { saveManifest } from "./manifest.js";
+import { getForceKillCommand, getProviderDisplayName } from "./provider.js";
 import { sleep } from "./utils.js";
 
 // ============================================================================
@@ -198,19 +200,21 @@ export async function checkSandboxHealth(
 export async function killClaudeProcess(
 	instance: SandboxInstance,
 	uiEnabled: boolean = false,
+	provider: AgentProvider = "claude",
 ): Promise<boolean> {
 	const { log } = createLogger(uiEnabled);
-	log(`│   🔪 Killing Claude Code process on ${instance.label}...`);
+	log(
+		`│   🔪 Killing ${getProviderDisplayName(provider)} process on ${instance.label}...`,
+	);
 
 	let killSucceeded = false;
 	let clearSucceeded = false;
 
 	try {
-		// Kill any running claude processes
-		await instance.sandbox.commands.run(
-			"pkill -f 'claude' || pkill -f 'run-claude' || true",
-			{ timeoutMs: 10000 },
-		);
+		// Kill any running agent processes
+		await instance.sandbox.commands.run(getForceKillCommand(provider), {
+			timeoutMs: 10000,
+		});
 		killSucceeded = true;
 	} catch (error) {
 		log(
@@ -265,6 +269,7 @@ export async function runHealthChecks(
 	instances: SandboxInstance[],
 	manifest: SpecManifest,
 	uiEnabled: boolean = false,
+	provider: AgentProvider = "claude",
 ): Promise<SandboxInstance[]> {
 	const { log } = createLogger(uiEnabled);
 	const needsReassignment: SandboxInstance[] = [];
@@ -285,7 +290,7 @@ export async function runHealthChecks(
 					`   │   Attempting recovery (retry ${instance.retryCount + 1}/${MAX_SANDBOX_RETRIES})...`,
 				);
 
-				const killed = await killClaudeProcess(instance, uiEnabled);
+				const killed = await killClaudeProcess(instance, uiEnabled, provider);
 				if (killed) {
 					instance.retryCount++;
 					instance.featureStartedAt = undefined;

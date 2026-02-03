@@ -29,7 +29,7 @@ IMPORTANT: The diagnosis has already identified the root cause - your job is to 
 ```bash
 # Extract issue number from $ARGUMENTS and fetch diagnosis with comments
 gh issue view <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json body,title,labels,number,comments \
   --jq '{body: .body, title: .title, labels: [.labels[].name], number: .number, comments: [.comments[] | {author: .author.login, body: .body, createdAt: .createdAt}]}'
 ```
@@ -479,7 +479,7 @@ Use the GitHub CLI (`gh`) to create the bug fix issue:
 ```bash
 # First, validate the diagnosis issue exists and is a diagnosis
 gh issue view <diagnosisIssueNumber> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json labels,title \
   --jq '{labels: [.labels[].name], title: .title}'
 
@@ -487,7 +487,7 @@ gh issue view <diagnosisIssueNumber> \
 # If not, warn user and ask them to run /diagnose first
 
 # Extract priority from diagnosis labels (format: priority:critical, priority:high, etc.)
-PRIORITY=$(gh issue view <diagnosisIssueNumber> --repo MLorneSmith/2025slideheroes --json labels --jq '.labels[].name' | grep -E '^priority:' | head -1)
+PRIORITY=$(gh issue view <diagnosisIssueNumber> --repo slideheroes/2025slideheroes --json labels --jq '.labels[].name' | grep -E '^priority:' | head -1)
 
 # Determine complexity from your analysis
 COMPLEXITY="<simple|moderate|complex>"  # From your complexity analysis
@@ -495,7 +495,7 @@ COMPLEXITY="<simple|moderate|complex>"  # From your complexity analysis
 # Create bug fix issue with hierarchical labels
 # Labels: type:bug, status:ready, priority:*, complexity:*, area:*
 gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "Bug Fix: <bugTitle>" \
   --body "<full-plan-content>" \
   --label "type:bug" \
@@ -514,7 +514,7 @@ mv .ai/reports/bug-reports/<date>/pending-bug-plan-<slug>.md \
 
 # Link back to diagnosis issue with detailed summary
 gh issue comment <diagnosisIssueNumber> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --body "✅ **Fix Plan Created**: #${FIX_ISSUE_NUMBER}
 
 **Solution Approach**: <one-sentence summary of chosen solution>
@@ -525,13 +525,13 @@ The fix plan is ready for implementation. See #${FIX_ISSUE_NUMBER} for full deta
 
 # Update diagnosis issue status to planning complete
 gh issue edit <diagnosisIssueNumber> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --add-label "status:planning" \
   --remove-label "status:triage"
 
 # Close the diagnosis issue
 gh issue close <diagnosisIssueNumber> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --comment "🔍 Diagnosis complete. Proceeding with fix plan: #${FIX_ISSUE_NUMBER}"
 ```
 

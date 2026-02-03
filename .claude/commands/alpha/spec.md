@@ -315,7 +315,7 @@ Create a GitHub issue for tracking:
 
 ```bash
 gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "Spec: <project-name>" \
   --body "$(cat .ai/alpha/specs/pending-Spec-<project-slug>/spec.md)" \
   --label "type:spec" \
@@ -405,7 +405,7 @@ test -s .ai/alpha/specs/S<issue-#>-Spec-<project-slug>/spec.md && echo "✓ Spec
 test -d .ai/alpha/specs/S<issue-#>-Spec-<project-slug>/research-library && echo "✓ Research library created"
 
 # Verify GitHub issue was created
-gh issue view <issue-#> --repo MLorneSmith/2025slideheroes
+gh issue view <issue-#> --repo slideheroes/2025slideheroes
 
 # Verify all required sections are present in spec
 grep -E "^## [0-9]+\." .ai/alpha/specs/S<issue-#>-Spec-<project-slug>/spec.md | wc -l

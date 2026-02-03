@@ -199,6 +199,47 @@ describe("pty-wrapper", () => {
 			expect(ptyTelemetry.recoveredViaProgressFile).toBe(1);
 		});
 
+		it("should retry progress file reads before failing when file is initially unavailable", async () => {
+			vi.useFakeTimers();
+
+			const ptyHandle = createMockPtyHandle({});
+			vi.mocked(ptyHandle.wait).mockImplementation(() => new Promise(() => {}));
+
+			const sandbox = createMockSandbox();
+			const completedProgress = createMockProgressData({ status: "completed" });
+
+			vi.mocked(readProgressFile)
+				.mockResolvedValueOnce({
+					success: false,
+					data: null,
+					error: "File not found",
+				})
+				.mockResolvedValueOnce({
+					success: false,
+					data: null,
+					error: "File not found",
+				})
+				.mockResolvedValueOnce({
+					success: true,
+					data: completedProgress,
+				});
+			vi.mocked(isProgressFileStale).mockReturnValue(false);
+			vi.mocked(isFeatureFailed).mockReturnValue(false);
+			vi.mocked(isFeatureCompleted).mockReturnValue(true);
+
+			const waitPromise = waitWithTimeout(ptyHandle, sandbox, 100);
+
+			await vi.advanceTimersByTimeAsync(100);
+			await vi.advanceTimersByTimeAsync(2000);
+
+			const result = await waitPromise;
+
+			expect(readProgressFile).toHaveBeenCalledTimes(3);
+			expect(result.recoveredViaProgressFile).toBe(true);
+			expect(result.progressData).toEqual(completedProgress);
+			expect(ptyTelemetry.recoveryFailed).toBe(0);
+		});
+
 		it("should return stillRunning=true when progress file shows in_progress with recent heartbeat", async () => {
 			// Bug fix #1786: When heartbeat is recent, feature is actively working - don't throw
 			vi.useFakeTimers();

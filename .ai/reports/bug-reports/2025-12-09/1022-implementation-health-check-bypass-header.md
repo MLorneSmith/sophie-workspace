@@ -1,6 +1,6 @@
 # Implementation Report: Bug Fix #1022 - Health Check Bypass Header
 
-**Issue**: https://github.com/MLorneSmith/2025slideheroes/issues/1022
+**Issue**: https://github.com/slideheroes/2025slideheroes/issues/1022
 **Plan**: `.ai/reports/bug-reports/2025-12-09/1022-bug-plan-health-check-bypass-header.md`
 **Date**: 2025-12-09
 

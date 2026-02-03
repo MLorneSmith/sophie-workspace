@@ -33,7 +33,7 @@ The bug was caused by GitHub Actions' internal matrix job scheduling logic treat
 | Matrix shards created | ✅ **12 shards** (was 0) |
 
 ### Verification Run
-- **Workflow Run**: https://github.com/MLorneSmith/2025slideheroes/actions/runs/21223209237
+- **Workflow Run**: https://github.com/slideheroes/2025slideheroes/actions/runs/21223209237
 - **Jobs Created**: 13 (Setup Test Server + 12 shards)
 - **Previous Behavior**: Only 2 jobs (Setup Test Server + E2E Test Report, no matrix shards)
 

@@ -54,6 +54,7 @@ import {
 	saveManifest,
 } from "./manifest.js";
 import {
+	checkDependencyCycles,
 	checkPreFlightSilent,
 	formatPreFlightForDryRun,
 	runPreFlightCheck,
@@ -269,7 +270,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	const runId = generateRunId();
 
 	if (!options.dryRun) {
-		checkEnvironment();
+		checkEnvironment(options.provider);
 	}
 
 	const projectRoot = getProjectRoot();
@@ -336,6 +337,21 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		} else {
 			// Non-interactive mode: just check and warn
 			checkPreFlightSilent(manifest, log);
+		}
+	}
+
+	// =========================================================================
+	// Validate Dependency Graph for Circular Dependencies
+	// Bug fix #1916: Catch circular dependencies before wasting resources
+	// =========================================================================
+	if (!options.dryRun) {
+		log("\n🔍 Running dependency cycle validation...");
+		const cycleCheckResult = checkDependencyCycles(manifest, log);
+		if (!cycleCheckResult.proceed) {
+			console.error(
+				"❌ Circular dependencies detected. Fix and regenerate manifest.",
+			);
+			process.exit(1);
 		}
 	}
 
@@ -657,6 +673,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 							options.timeout,
 							options.ui,
 							runId,
+							options.provider,
 						),
 					]);
 
@@ -675,6 +692,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 							options.timeout,
 							options.ui,
 							runId,
+							options.provider,
 						);
 						instances.push(instance);
 					}
@@ -697,6 +715,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 							options.timeout,
 							options.ui,
 							runId,
+							options.provider,
 						);
 						instances.push(instance);
 					}
@@ -817,6 +836,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 					options.ui,
 					options.timeout,
 					runId,
+					options.provider,
 				);
 			}
 
@@ -838,7 +858,12 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			// Documentation Generation (opt-in via --document flag)
 			// Uses extracted generateDocumentation function from completion-phase.ts
 			if (options.document && pushInstance) {
-				await generateDocumentation(pushInstance.sandbox, manifest, log);
+				await generateDocumentation(
+					pushInstance.sandbox,
+					manifest,
+					log,
+					options.provider,
+				);
 			}
 		} // End of else block for !allFeaturesAlreadyComplete (Bug fix #1799)
 
@@ -854,6 +879,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 				timeout: options.timeout,
 				uiEnabled: options.ui,
 				runId,
+				provider: options.provider,
 			},
 			log,
 		);

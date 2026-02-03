@@ -48,7 +48,7 @@ RESEARCH_DIR: [Path to research library]
 ### Step 1.1: Fetch Feature Issue
 
 ```bash
-gh issue view <FEATURE_ID> --repo MLorneSmith/2025slideheroes
+gh issue view <FEATURE_ID> --repo slideheroes/2025slideheroes
 ```
 
 ### Step 1.2: Read Feature Document
@@ -1103,7 +1103,7 @@ SEQ_HOURS=$(jq '.execution.duration.sequential' ${FEAT_DIR}/tasks.json)
 PAR_HOURS=$(jq '.execution.duration.parallel' ${FEAT_DIR}/tasks.json)
 TIME_SAVED=$(jq '.execution.duration.time_saved_percent' ${FEAT_DIR}/tasks.json)
 
-gh issue comment ${SPEC_ID} --repo "MLorneSmith/2025slideheroes" --body "## [Decomposition Update] Tasks for S${SPEC_ID}.I${INIT_NUM}.F${FEAT_NUM}
+gh issue comment ${SPEC_ID} --repo "slideheroes/2025slideheroes" --body "## [Decomposition Update] Tasks for S${SPEC_ID}.I${INIT_NUM}.F${FEAT_NUM}
 
 This feature has been decomposed into atomic tasks:
 

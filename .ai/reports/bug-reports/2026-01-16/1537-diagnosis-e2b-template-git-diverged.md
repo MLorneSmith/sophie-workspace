@@ -69,7 +69,7 @@ result: {
     'and have 1 and 2923 different commits each, respectively.\n' +
     '  (use "git pull" if you want to integrate the remote branch with yours)\n',
   stderr: "Already on 'dev'\n" +
-    'From https://github.com/MLorneSmith/2025slideheroes\n' +
+    'From https://github.com/slideheroes/2025slideheroes\n' +
     ' * branch                dev        -> FETCH_HEAD\n' +
     'hint: You have divergent branches and need to specify how to reconcile them.\n' +
     'hint: You can do so by running one of the following commands sometime before\n' +

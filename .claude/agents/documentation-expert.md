@@ -35,7 +35,7 @@ You receive a GitHub issue number as `$ARGUMENTS`:
 1. **Fetch Implementation Issue**
    ```bash
    gh issue view <issue-number> \
-     --repo MLorneSmith/2025slideheroes \
+     --repo slideheroes/2025slideheroes \
      --json body,title,labels,number,url,comments
    ```
 

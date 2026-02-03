@@ -13,6 +13,7 @@
 import type { Sandbox } from "@e2b/code-interpreter";
 
 import type {
+	AgentProvider,
 	ReviewUrl,
 	SandboxInstance,
 	SpecManifest,
@@ -24,6 +25,10 @@ import {
 	getVSCodeUrl,
 	startDevServer,
 } from "./sandbox.js";
+import {
+	buildDocumentationPrompt,
+	buildDocumentationCommand,
+} from "./provider.js";
 import { speakCompletion } from "./tts.js";
 import { withTimeout } from "./utils.js";
 
@@ -38,6 +43,7 @@ export interface CompletionPhaseOptions {
 	uiEnabled: boolean;
 	runId: string;
 	document?: boolean;
+	provider: AgentProvider;
 }
 
 export interface CompletionPhaseResult {
@@ -122,6 +128,7 @@ export async function setupReviewSandbox(
 	timeout: number,
 	uiEnabled: boolean,
 	log: (...args: unknown[]) => void,
+	provider: AgentProvider,
 ): Promise<Sandbox | null> {
 	try {
 		log("\n   Creating dedicated review sandbox for dev server...");
@@ -138,7 +145,7 @@ export async function setupReviewSandbox(
 		// Worst case: 10-12 minutes (full install + build)
 		// See: #1739, #1742, #1760 for timeout history
 		const reviewSandbox = await withTimeout(
-			createReviewSandbox(branchName, timeout, uiEnabled),
+			createReviewSandbox(branchName, timeout, uiEnabled, provider),
 			900000,
 			"Review sandbox creation",
 		);
@@ -283,6 +290,7 @@ export async function generateDocumentation(
 	sandbox: Sandbox,
 	manifest: SpecManifest,
 	log: (...args: unknown[]) => void,
+	provider: AgentProvider,
 ): Promise<boolean> {
 	const allFeaturesCompleted =
 		manifest.progress.features_completed === manifest.progress.features_total;
@@ -302,11 +310,12 @@ export async function generateDocumentation(
 	);
 
 	try {
-		// Run the /alpha:document command via Claude Code in the sandbox
 		const specIdArg = manifest.metadata.spec_id.replace(/^S/, "");
+		const docPrompt = buildDocumentationPrompt(provider, specIdArg);
+		const command = buildDocumentationCommand(provider, docPrompt);
 		const docResult = await withTimeout(
 			sandbox.commands.run(
-				`cd /home/user/project && claude --dangerously-skip-permissions -p "/alpha:document ${specIdArg}"`,
+				`cd /home/user/project && ${command}`,
 				{ timeoutMs: 600000 }, // 10 minute timeout for documentation generation
 			),
 			660000, // 11 minute outer timeout
@@ -412,7 +421,7 @@ export async function executeCompletionPhase(
 	options: CompletionPhaseOptions,
 	log: (...args: unknown[]) => void,
 ): Promise<CompletionPhaseResult> {
-	const { manifest, instances, timeout, uiEnabled, runId } = options;
+	const { manifest, instances, timeout, uiEnabled, runId, provider } = options;
 
 	// Count failed features for status determination
 	const failedFeatureCount = manifest.feature_queue.filter(
@@ -446,6 +455,7 @@ export async function executeCompletionPhase(
 			timeout,
 			uiEnabled,
 			log,
+			provider,
 		);
 
 		// Track review sandbox ID in manifest

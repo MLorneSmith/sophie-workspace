@@ -233,7 +233,7 @@ No performance changes - this is purely a configuration and validation logic fix
 git push origin dev
 
 # Monitor workflow execution
-gh run watch -R MLorneSmith/2025slideheroes
+gh run watch -R slideheroes/2025slideheroes
 ```
 
 **Expected Result**: Shards fail with JWT and/or localhost errors
@@ -254,7 +254,7 @@ pnpm format
 git push origin dev
 
 # Monitor workflow execution
-gh run watch -R MLorneSmith/2025slideheroes
+gh run watch -R slideheroes/2025slideheroes
 ```
 
 **Expected Result**: All shards pass without JWT or localhost validation errors
@@ -263,10 +263,10 @@ gh run watch -R MLorneSmith/2025slideheroes
 
 ```bash
 # Run all CI workflows to ensure no regressions
-gh run list -R MLorneSmith/2025slideheroes --workflow e2e-sharded.yml --limit 1
+gh run list -R slideheroes/2025slideheroes --workflow e2e-sharded.yml --limit 1
 
 # Check other test workflows still work
-gh run list -R MLorneSmith/2025slideheroes --workflow e2e.yml --limit 1
+gh run list -R slideheroes/2025slideheroes --workflow e2e.yml --limit 1
 ```
 
 ## Dependencies

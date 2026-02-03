@@ -1,7 +1,7 @@
 # Bug Diagnosis: Integration Tests Auth Session Lost in Vercel Preview Deployments
 
 **ID**: ISSUE-1092
-**GitHub**: https://github.com/MLorneSmith/2025slideheroes/issues/1092
+**GitHub**: https://github.com/slideheroes/2025slideheroes/issues/1092
 **Created**: 2025-12-11T15:30:00Z
 **Reporter**: CI workflow failure
 **Severity**: high

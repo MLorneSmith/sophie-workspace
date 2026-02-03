@@ -19,7 +19,7 @@ You're implementing a plan that has already been designed and reviewed. Execute 
    ```bash
    # Extract issue number and fetch the implementation plan with comments
    gh issue view <issue-number> \
-     --repo MLorneSmith/2025slideheroes \
+     --repo slideheroes/2025slideheroes \
      --json body,title,labels,url,comments \
      --jq '{body: .body, title: .title, labels: [.labels[].name], url: .url, comments: [.comments[] | {author: .author.login, body: .body, createdAt: .createdAt}]}'
    ```
@@ -46,13 +46,13 @@ You're implementing a plan that has already been designed and reviewed. Execute 
    # Update issue to show implementation has started
    # Labels use hierarchical naming: status:in-progress replaces status:ready
    gh issue edit <issue-number> \
-     --repo MLorneSmith/2025slideheroes \
+     --repo slideheroes/2025slideheroes \
      --add-label "status:in-progress" \
      --remove-label "status:ready"
 
    # Add initial comment
    gh issue comment <issue-number> \
-     --repo MLorneSmith/2025slideheroes \
+     --repo slideheroes/2025slideheroes \
      --body "🔄 Implementation started..."
    ```
 
@@ -196,7 +196,7 @@ After completing the implementation:
 
    # Post report as comment
    gh issue comment <issue-number> \
-     --repo MLorneSmith/2025slideheroes \
+     --repo slideheroes/2025slideheroes \
      --body-file /tmp/completion-report.md
 
    # Save local copy for reference based on plan type
@@ -213,12 +213,12 @@ After completing the implementation:
    # Update labels and close the issue
    # Move from status:in-progress to status:review before closing
    gh issue edit <issue-number> \
-     --repo MLorneSmith/2025slideheroes \
+     --repo slideheroes/2025slideheroes \
      --add-label "status:review" \
      --remove-label "status:in-progress"
 
    gh issue close <issue-number> \
-     --repo MLorneSmith/2025slideheroes \
+     --repo slideheroes/2025slideheroes \
      --comment "Implementation complete. See completion report above."
    ```
 

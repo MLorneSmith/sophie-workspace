@@ -260,7 +260,7 @@ pnpm format
 pnpm test:unit feature
 
 # Verify workflow syntax
-gh workflow list --repo MLorneSmith/2025slideheroes
+gh workflow list --repo slideheroes/2025slideheroes
 
 # Integration tests (if created)
 pnpm test:integration orchestration
@@ -278,7 +278,7 @@ pnpm build
 pnpm test
 
 # Verify GitHub Actions workflow
-gh workflow view alpha-validation.yml --repo MLorneSmith/2025slideheroes
+gh workflow view alpha-validation.yml --repo slideheroes/2025slideheroes
 
 # Check no unintended job cancellations
 # (Monitor GitHub Actions UI during next orchestration run)

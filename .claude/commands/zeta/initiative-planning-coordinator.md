@@ -85,7 +85,7 @@ TodoWrite([
 
 ```bash
 gh issue view ${manifestIssue} \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json body -q '.body' > /tmp/manifest-${manifestIssue}.md
 ```
 
@@ -99,7 +99,7 @@ Fetch all feature stubs to determine which skills to load:
 
 ```bash
 for issue in ${featureIssues}; do
-  gh issue view ${issue} --repo MLorneSmith/2025slideheroes --json title -q '.title'
+  gh issue view ${issue} --repo slideheroes/2025slideheroes --json title -q '.title'
 done
 ```
 
@@ -157,7 +157,7 @@ For each feature issue:
 
 ```bash
 gh issue view ${featureIssue} \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json title,body,labels \
   -q '{title: .title, body: .body, labels: [.labels[].name]}'
 ```
@@ -212,7 +212,7 @@ EOF
 
 ```bash
 gh issue edit ${featureIssue} \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --body "$(cat << 'PLAN_EOF'
 <FULL PLAN CONTENT HERE>
 PLAN_EOF
@@ -223,7 +223,7 @@ PLAN_EOF
 
 ```bash
 gh issue edit ${featureIssue} \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --add-label "status:planned" \
   --remove-label "status:blocked" \
   --remove-label "status:ready"

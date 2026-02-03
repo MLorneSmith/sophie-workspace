@@ -529,7 +529,7 @@ For commands that create GitHub issues:
 
 ```bash
 gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "<Type>: <title>" \
   --body "<issue-content>" \
   --label "type:<type>" \

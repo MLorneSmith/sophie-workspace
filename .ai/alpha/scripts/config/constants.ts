@@ -12,6 +12,12 @@
 /** E2B sandbox template alias for SlideHeroes Claude agent */
 export const TEMPLATE_ALIAS = "slideheroes-claude-agent-dev";
 
+/** Optional E2B sandbox template alias for GPT/Codex agent */
+export const GPT_TEMPLATE_ALIAS =
+	process.env.ALPHA_GPT_TEMPLATE_ALIAS || "slideheroes-gpt-agent-dev";
+
+export const DEFAULT_PROVIDER = "claude";
+
 /** Workspace directory inside the E2B sandbox */
 export const WORKSPACE_DIR = "/home/user/project";
 

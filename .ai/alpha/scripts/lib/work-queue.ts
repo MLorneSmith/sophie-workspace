@@ -7,6 +7,7 @@
  */
 
 import type { FeatureEntry, SpecManifest } from "../types/index.js";
+import { hasSelfReference } from "./cycle-detector.js";
 import { saveManifest } from "./manifest.js";
 
 // ============================================================================
@@ -143,6 +144,19 @@ export function getNextAvailableFeature(
 		// Serialize database features: skip DB features if one is already running
 		// This prevents migration conflicts when multiple sandboxes try to modify the schema
 		if (feature.requires_database && dbFeatureRunning) {
+			continue;
+		}
+
+		// Runtime guard: Skip features with self-references (Bug fix #1916)
+		// This is a defense-in-depth check - circular dependencies should be caught earlier
+		// in manifest generation or orchestrator pre-flight, but this prevents hangs if
+		// somehow a self-referential feature makes it through
+		if (hasSelfReference(feature)) {
+			log(
+				`⚠️ RUNTIME GUARD: Skipping ${feature.id} - self-referential dependency detected`,
+			);
+			log("   This feature depends on itself and can never complete.");
+			log("   Fix the feature.md file and regenerate the manifest to resolve.");
 			continue;
 		}
 

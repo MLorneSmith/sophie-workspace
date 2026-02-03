@@ -119,7 +119,7 @@ Ensure the YAML file is syntactically correct.
 Push to an `alpha/spec-*` branch and verify the workflow runs.
 
 - Create a test commit or push existing code to `alpha/spec-S1815` branch
-- Monitor the workflow run at https://github.com/MLorneSmith/2025slideheroes/actions
+- Monitor the workflow run at https://github.com/slideheroes/2025slideheroes/actions
 - Confirm "Setup pnpm" step succeeds (no more version mismatch error)
 - Confirm "Type check", "Build" steps complete successfully
 
@@ -214,7 +214,7 @@ This is a configuration alignment fix with no security implications. It does not
 ### Before Fix (Bug Should Reproduce)
 
 To verify the bug exists before applying the fix, examine the failed workflow run:
-- Failed run: https://github.com/MLorneSmith/2025slideheroes/actions/runs/21366370100
+- Failed run: https://github.com/slideheroes/2025slideheroes/actions/runs/21366370100
 - View "Setup pnpm" step logs
 - Should show: "Error: Multiple versions of pnpm specified"
 

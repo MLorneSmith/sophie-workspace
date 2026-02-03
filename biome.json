@@ -48,7 +48,9 @@
 			"!**/.ai/alpha/progress/*.json",
 			"!**/.initiative-progress.json",
 			"!**/.ai/alpha/specs",
-			"!**/.ai/alpha/archive/**/*.json"
+			"!**/.ai/alpha/archive/**/*.json",
+			"!**/.claude/skills/email-style",
+			"!**/.github/skills"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
@@ -154,6 +156,8 @@
 				"**/.ai/tools/**/*.js",
 				"**/.claude/scripts/**/*.js",
 				"**/.claude/scripts/**/*.cjs",
+				"**/.claude/skills/**/tools/**/*.ts",
+				"**/.claude/skills/**/tools/**/*.js",
 				"**/scripts/**/*.js",
 				"**/scripts/**/*.cjs",
 				"**/scripts/**/*.ts"

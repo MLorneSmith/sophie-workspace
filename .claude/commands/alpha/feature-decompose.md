@@ -214,7 +214,7 @@ if (input.includes('.')) {
 
 For legacy format, verify the initiative issue exists:
 ```bash
-gh issue view $ARGUMENTS --repo MLorneSmith/2025slideheroes --json number,title,state,labels
+gh issue view $ARGUMENTS --repo slideheroes/2025slideheroes --json number,title,state,labels
 ```
 
 For semantic format, the local directory is the source of truth.
@@ -253,7 +253,7 @@ Document these constants for use throughout the workflow (copy exact paths, don'
 ```markdown
 ## Path Constants (for this session)
 
-- **REPO**: MLorneSmith/2025slideheroes
+- **REPO**: slideheroes/2025slideheroes
 - **SPEC_NUM**: [number from spec directory, e.g., 1362]
 - **INIT_ID**: [semantic ID, e.g., S1362.I1]
 - **INIT_PRIORITY**: [priority number, e.g., 1]
@@ -296,7 +296,7 @@ Keep these in context for Phase 4.
 
 Fetch the full GitHub issue content:
 ```bash
-gh issue view [INIT_NUM] --repo MLorneSmith/2025slideheroes
+gh issue view [INIT_NUM] --repo slideheroes/2025slideheroes
 ```
 
 Read the local initiative file using the path from Phase 0:
@@ -776,7 +776,7 @@ Use the template loaded in Phase 0 (`.ai/alpha/templates/feature-overview.md`) a
 **No GitHub issues are created for features.** Instead, post a decomposition summary to the Spec's GitHub issue:
 
 ```bash
-gh issue comment [SPEC_NUM] --repo "MLorneSmith/2025slideheroes" --body "## [Decomposition Update] Features for [INIT_ID]
+gh issue comment [SPEC_NUM] --repo "slideheroes/2025slideheroes" --body "## [Decomposition Update] Features for [INIT_ID]
 
 This initiative has been decomposed into the following features:
 

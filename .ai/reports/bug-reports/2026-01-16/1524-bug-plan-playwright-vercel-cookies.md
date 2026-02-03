@@ -279,7 +279,7 @@ pnpm build
 pnpm test
 
 # Verify CI workflow passes
-gh run view -R MLorneSmith/2025slideheroes <run-id> --log
+gh run view -R slideheroes/2025slideheroes <run-id> --log
 ```
 
 ## Dependencies
