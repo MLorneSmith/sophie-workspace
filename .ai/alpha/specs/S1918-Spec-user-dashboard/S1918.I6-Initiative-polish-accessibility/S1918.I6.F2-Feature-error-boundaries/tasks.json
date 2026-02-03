@@ -1,0 +1,615 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1918.I6.F2",
+    "feature_name": "Error Boundaries",
+    "feature_slug": "error-boundaries",
+    "initiative_id": "S1918.I6",
+    "spec_id": 1918,
+    "created_at": "2026-02-03T10:00:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1918.I6.F2.T1",
+      "type": "task",
+      "name": "Create WidgetErrorBoundary class component",
+      "action": {
+        "verb": "Create",
+        "target": "WidgetErrorBoundary class component"
+      },
+      "purpose": "Provide reusable error boundary that catches errors in widget children",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/ai/canvas/_components/error-boundary.tsx"
+        ],
+        "dependencies": [
+          "React Component class",
+          "getDerivedStateFromError",
+          "componentDidCatch"
+        ],
+        "constraints": [
+          "Must be class component (React requirement for error boundaries)",
+          "Accept fallback ReactNode prop",
+          "Accept optional onRetry callback prop",
+          "Log errors in development mode only"
+        ]
+      },
+      "input_state": "No error boundary component exists for widgets",
+      "output_state": "WidgetErrorBoundary class component exists with state management and error handling",
+      "acceptance_criterion": "WidgetErrorBoundary catches errors, logs them in dev, and renders fallback UI",
+      "verification_command": "grep -q 'export class WidgetErrorBoundary' apps/web/app/home/(user)/_components/widget-error-boundary.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widget-error-boundary.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1918.I6.F2.T2",
+          "S1918.I6.F2.T3",
+          "S1918.I6.F2.T4",
+          "S1918.I6.F2.T5",
+          "S1918.I6.F2.T6",
+          "S1918.I6.F2.T7",
+          "S1918.I6.F2.T8",
+          "S1918.I6.F2.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F2.T2",
+      "type": "task",
+      "name": "Create WidgetErrorFallback UI component",
+      "action": {
+        "verb": "Create",
+        "target": "WidgetErrorFallback UI component"
+      },
+      "purpose": "Provide friendly error UI with icon, message, and retry button",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/alert.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Alert component with destructive variant",
+          "AlertTriangle icon from lucide-react",
+          "Button component"
+        ],
+        "constraints": [
+          "Use Alert with variant='destructive'",
+          "Accept widgetName prop for custom messages",
+          "Accept optional onRetry callback",
+          "Match dashboard design system patterns"
+        ]
+      },
+      "input_state": "No error fallback UI component exists",
+      "output_state": "WidgetErrorFallback component renders Card with Alert, icon, message, and retry button",
+      "acceptance_criterion": "WidgetErrorFallback renders friendly error UI with retry button when onRetry is provided",
+      "verification_command": "grep -q 'export function WidgetErrorFallback' apps/web/app/home/(user)/_components/widget-error-fallback.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widget-error-fallback.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I6.F2.T1"
+        ],
+        "blocks": [
+          "S1918.I6.F2.T3",
+          "S1918.I6.F2.T4",
+          "S1918.I6.F2.T5",
+          "S1918.I6.F2.T6",
+          "S1918.I6.F2.T7",
+          "S1918.I6.F2.T8",
+          "S1918.I6.F2.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F2.T3",
+      "type": "task",
+      "name": "Wrap Course Progress widget with error boundary",
+      "action": {
+        "verb": "Wire",
+        "target": "Course Progress widget to error boundary"
+      },
+      "purpose": "Isolate Course Progress widget errors from crashing dashboard",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "WidgetErrorBoundary",
+          "WidgetErrorFallback",
+          "Course Progress widget component"
+        ],
+        "constraints": [
+          "Import WidgetErrorBoundary and WidgetErrorFallback",
+          "Wrap existing Course Progress widget",
+          "Pass widgetName='Course Progress' to fallback",
+          "Include onRetry callback if widget supports refetch"
+        ]
+      },
+      "input_state": "Course Progress widget rendered without error boundary",
+      "output_state": "Course Progress widget wrapped in WidgetErrorBoundary with fallback",
+      "acceptance_criterion": "Course Progress widget is wrapped with error boundary and renders WidgetErrorFallback on error",
+      "verification_command": "grep -Pzo 'WidgetErrorBoundary[\\s\\S]*?Course.*?Progress' apps/web/app/home/(user)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I6.F2.T1",
+          "S1918.I6.F2.T2"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F2.T4",
+      "type": "task",
+      "name": "Wrap Skills Spider widget with error boundary",
+      "action": {
+        "verb": "Wire",
+        "target": "Skills Spider widget to error boundary"
+      },
+      "purpose": "Isolate Skills Spider widget errors from crashing dashboard",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "WidgetErrorBoundary",
+          "WidgetErrorFallback",
+          "Skills Spider widget component"
+        ],
+        "constraints": [
+          "Wrap existing Skills Spider widget",
+          "Pass widgetName='Skills Assessment' to fallback",
+          "Include onRetry callback if widget supports refetch"
+        ]
+      },
+      "input_state": "Skills Spider widget rendered without error boundary",
+      "output_state": "Skills Spider widget wrapped in WidgetErrorBoundary with fallback",
+      "acceptance_criterion": "Skills Spider widget is wrapped with error boundary and renders WidgetErrorFallback on error",
+      "verification_command": "grep -Pzo 'WidgetErrorBoundary[\\s\\S]*?Skills' apps/web/app/home/(user)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I6.F2.T1",
+          "S1918.I6.F2.T2"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F2.T5",
+      "type": "task",
+      "name": "Wrap Kanban Summary widget with error boundary",
+      "action": {
+        "verb": "Wire",
+        "target": "Kanban Summary widget to error boundary"
+      },
+      "purpose": "Isolate Kanban Summary widget errors from crashing dashboard",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "WidgetErrorBoundary",
+          "WidgetErrorFallback",
+          "Kanban Summary widget component"
+        ],
+        "constraints": [
+          "Wrap existing Kanban Summary widget",
+          "Pass widgetName='Kanban Summary' to fallback",
+          "Include onRetry callback if widget supports refetch"
+        ]
+      },
+      "input_state": "Kanban Summary widget rendered without error boundary",
+      "output_state": "Kanban Summary widget wrapped in WidgetErrorBoundary with fallback",
+      "acceptance_criterion": "Kanban Summary widget is wrapped with error boundary and renders WidgetErrorFallback on error",
+      "verification_command": "grep -Pzo 'WidgetErrorBoundary[\\s\\S]*?Kanban' apps/web/app/home/(user)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I6.F2.T1",
+          "S1918.I6.F2.T2"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F2.T6",
+      "type": "task",
+      "name": "Wrap Activity Feed widget with error boundary",
+      "action": {
+        "verb": "Wire",
+        "target": "Activity Feed widget to error boundary"
+      },
+      "purpose": "Isolate Activity Feed widget errors from crashing dashboard",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "WidgetErrorBoundary",
+          "WidgetErrorFallback",
+          "Activity Feed widget component"
+        ],
+        "constraints": [
+          "Wrap existing Activity Feed widget",
+          "Pass widgetName='Recent Activity' to fallback",
+          "Include onRetry callback if widget supports refetch"
+        ]
+      },
+      "input_state": "Activity Feed widget rendered without error boundary",
+      "output_state": "Activity Feed widget wrapped in WidgetErrorBoundary with fallback",
+      "acceptance_criterion": "Activity Feed widget is wrapped with error boundary and renders WidgetErrorFallback on error",
+      "verification_command": "grep -Pzo 'WidgetErrorBoundary[\\s\\S]*?Activity' apps/web/app/home/(user)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I6.F2.T1",
+          "S1918.I6.F2.T2"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F2.T7",
+      "type": "task",
+      "name": "Wrap Quick Actions widget with error boundary",
+      "action": {
+        "verb": "Wire",
+        "target": "Quick Actions widget to error boundary"
+      },
+      "purpose": "Isolate Quick Actions widget errors from crashing dashboard",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "WidgetErrorBoundary",
+          "WidgetErrorFallback",
+          "Quick Actions widget component"
+        ],
+        "constraints": [
+          "Wrap existing Quick Actions widget",
+          "Pass widgetName='Quick Actions' to fallback",
+          "Include onRetry callback if widget supports refetch"
+        ]
+      },
+      "input_state": "Quick Actions widget rendered without error boundary",
+      "output_state": "Quick Actions widget wrapped in WidgetErrorBoundary with fallback",
+      "acceptance_criterion": "Quick Actions widget is wrapped with error boundary and renders WidgetErrorFallback on error",
+      "verification_command": "grep -Pzo 'WidgetErrorBoundary[\\s\\S]*?Quick' apps/web/app/home/(user)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I6.F2.T1",
+          "S1918.I6.F2.T2"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F2.T8",
+      "type": "task",
+      "name": "Wrap Coaching Sessions widget with error boundary",
+      "action": {
+        "verb": "Wire",
+        "target": "Coaching Sessions widget to error boundary"
+      },
+      "purpose": "Isolate Coaching Sessions widget errors from crashing dashboard",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "WidgetErrorBoundary",
+          "WidgetErrorFallback",
+          "Coaching Sessions widget component"
+        ],
+        "constraints": [
+          "Wrap existing Coaching Sessions widget",
+          "Pass widgetName='Coaching Sessions' to fallback",
+          "Include onRetry callback if widget supports refetch"
+        ]
+      },
+      "input_state": "Coaching Sessions widget rendered without error boundary",
+      "output_state": "Coaching Sessions widget wrapped in WidgetErrorBoundary with fallback",
+      "acceptance_criterion": "Coaching Sessions widget is wrapped with error boundary and renders WidgetErrorFallback on error",
+      "verification_command": "grep -Pzo 'WidgetErrorBoundary[\\s\\S]*?Coaching' apps/web/app/home/(user)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I6.F2.T1",
+          "S1918.I6.F2.T2"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I6.F2.T9",
+      "type": "task",
+      "name": "Wrap Presentations Table widget with error boundary",
+      "action": {
+        "verb": "Wire",
+        "target": "Presentations Table widget to error boundary"
+      },
+      "purpose": "Isolate Presentations Table widget errors from crashing dashboard",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 9,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "WidgetErrorBoundary",
+          "WidgetErrorFallback",
+          "Presentations Table widget component"
+        ],
+        "constraints": [
+          "Wrap existing Presentations Table widget",
+          "Pass widgetName='Presentations' to fallback",
+          "Include onRetry callback if widget supports refetch"
+        ]
+      },
+      "input_state": "Presentations Table widget rendered without error boundary",
+      "output_state": "Presentations Table widget wrapped in WidgetErrorBoundary with fallback",
+      "acceptance_criterion": "Presentations Table widget is wrapped with error boundary and renders WidgetErrorFallback on error",
+      "verification_command": "grep -Pzo 'WidgetErrorBoundary[\\s\\S]*?Presentations' apps/web/app/home/(user)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I6.F2.T1",
+          "S1918.I6.F2.T2"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Error Boundary Components",
+        "task_ids": [
+          "S1918.I6.F2.T1",
+          "S1918.I6.F2.T2"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Widget Integration",
+        "task_ids": [
+          "S1918.I6.F2.T3",
+          "S1918.I6.F2.T4",
+          "S1918.I6.F2.T5",
+          "S1918.I6.F2.T6",
+          "S1918.I6.F2.T7",
+          "S1918.I6.F2.T8",
+          "S1918.I6.F2.T9"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 7,
+        "parallel_hours": 7
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1918.I6.F2.T1",
+        "S1918.I6.F2.T2",
+        "S1918.I6.F2.T3"
+      ],
+      "total_hours": 5
+    },
+    "duration": {
+      "sequential": 11,
+      "parallel": 9,
+      "time_saved_percent": 18
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
