@@ -176,8 +176,8 @@ describe("detectDirectCycles", () => {
 		expect(cycle).toMatchObject({
 			type: "direct-cycle",
 		});
-		expect(cycle!.path).toContain("S1890.I1.F1");
-		expect(cycle!.path).toContain("S1890.I1.F2");
+		expect(cycle?.path).toContain("S1890.I1.F1");
+		expect(cycle?.path).toContain("S1890.I1.F2");
 	});
 
 	it("should detect multiple direct cycles", () => {

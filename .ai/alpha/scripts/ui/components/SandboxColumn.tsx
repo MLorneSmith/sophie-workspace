@@ -260,7 +260,7 @@ const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 						<Text color="yellow">{state.currentTask.id || "Working..."}</Text>
 					</Box>
 					<Text>{truncate(state.currentTask.name, 24)}</Text>
-					{state.currentTask.verificationAttempts > 1 && (
+					{state.currentTask.verificationAttempts && state.currentTask.verificationAttempts > 1 && (
 						<Text color="yellow">
 							Retry {state.currentTask.verificationAttempts}
 						</Text>

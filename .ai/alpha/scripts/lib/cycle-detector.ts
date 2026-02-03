@@ -433,7 +433,7 @@ export function validateInitiativeDependencies(
 			if (depId === initA.id) continue;
 
 			const initB = initiatives.find((i) => i.id === depId);
-			if (initB && initB.dependencies.includes(initA.id)) {
+			if (initB?.dependencies.includes(initA.id)) {
 				cycles.push({
 					type: "direct-cycle",
 					path: [initA.id, depId, initA.id],
