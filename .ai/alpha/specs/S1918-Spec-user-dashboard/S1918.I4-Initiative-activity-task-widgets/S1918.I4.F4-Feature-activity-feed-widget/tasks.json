@@ -1,0 +1,393 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1918.I4.F4",
+    "feature_name": "Activity Feed Widget",
+    "feature_slug": "activity-feed-widget",
+    "initiative_id": "S1918.I4",
+    "spec_id": "S1918",
+    "created_at": "2026-02-03T10:45:00Z",
+    "complexity": {
+      "score": 37.5,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "signals": {
+        "files_affected": 2,
+        "dependencies": "few",
+        "estimated_loc": 180,
+        "feature_type": "feature"
+      },
+      "pattern_matched": "Layer Decomposition (New Component)"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S1918.I4.F4.T2",
+      "S1918.I4.F4.T3"
+    ],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1918.I4.F4.T1",
+      "type": "task",
+      "name": "Create activity type icon map helper",
+      "action": {
+        "verb": "Create",
+        "target": "activity icon map helper"
+      },
+      "purpose": "Map activity types to appropriate Lucide icons for visual differentiation in timeline",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts - ActivityItem type with discriminated union"
+        ],
+        "dependencies": [
+          "lucide-react icons: BookOpen (lesson), Award (quiz), Presentation (presentation), ClipboardCheck (assessment)"
+        ],
+        "constraints": [
+          "Map each ActivityItem type to specific icon component",
+          "Export as const object for type safety",
+          "Add JSDoc explaining icon choices",
+          "Keep icon sizes consistent (h-5 w-5 by default)"
+        ]
+      },
+      "input_state": "ActivityItem type exists from S1918.I2.F1.T1 with discriminated union (type: 'lesson' | 'quiz' | 'presentation' | 'assessment')",
+      "output_state": "Activity icon map exported as const with type-to-icon mapping for all 4 activity types",
+      "acceptance_criterion": "Const object maps lesson→BookOpen, quiz→Award, presentation→Presentation, assessment→ClipboardCheck",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/helpers/activity-icons.ts && grep -q 'BookOpen' apps/web/app/home/\\(user\\)/_lib/helpers/activity-icons.ts && grep -q 'Award' apps/web/app/home/\\(user\\)/_lib/helpers/activity-icons.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/helpers/activity-icons.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1918.I4.F4.T2"
+        ]
+      },
+      "cross_feature_dependencies": {
+        "blocked_by": [
+          "S1918.I2.F1.T1"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I4.F4.T2",
+      "type": "task",
+      "name": "Create activity-feed-widget component with timeline layout",
+      "action": {
+        "verb": "Create",
+        "target": "activity-feed-widget component"
+      },
+      "purpose": "Build timeline widget displaying last 5-8 activities with icons, descriptions, and relative timestamps",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Recent Activity"
+          },
+          {
+            "command": "find role",
+            "target": "link"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts",
+          "apps/web/app/home/(user)/_lib/helpers/activity-icons.ts"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+          "formatDistanceToNow from date-fns",
+          "Link from next/link",
+          "Activity icon map from T1"
+        ],
+        "constraints": [
+          "Server component (no 'use client' directive)",
+          "Receives ActivityItem[] as props (from S1918.I2.F3 loader)",
+          "Display max 8 activities (slice if needed)",
+          "Each activity row: icon, title/description, timestamp",
+          "Use formatDistanceToNow for relative timestamps with addSuffix",
+          "Activities are clickable links to relevant pages",
+          "Vertical timeline layout with subtle dividers",
+          "Icons use color variants per type (e.g., text-blue-500 for lessons)"
+        ]
+      },
+      "input_state": "Activity icon map exists from T1; ActivityItem type from S1918.I2.F1.T1",
+      "output_state": "ActivityFeedWidget component exists with timeline rendering of activities",
+      "acceptance_criterion": "Component displays activities with icons, descriptions, formatDistanceToNow timestamps, and links",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/activity-feed-widget.tsx && grep -q 'formatDistanceToNow' apps/web/app/home/\\(user\\)/_components/activity-feed-widget.tsx && grep -q 'ActivityItem' apps/web/app/home/\\(user\\)/_components/activity-feed-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I4.F4.T1"
+        ],
+        "blocks": [
+          "S1918.I4.F4.T4"
+        ]
+      },
+      "cross_feature_dependencies": {
+        "blocked_by": [
+          "S1918.I2.F1.T1"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I4.F4.T3",
+      "type": "task",
+      "name": "Add empty state to activity-feed-widget",
+      "action": {
+        "verb": "Add",
+        "target": "empty state to widget"
+      },
+      "purpose": "Handle case when user has no activities with helpful guidance and CTA",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Your activity will appear here"
+          },
+          {
+            "command": "find role",
+            "target": "link"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/activity-feed-widget.tsx",
+          "packages/ui/src/shadcn/button.tsx"
+        ],
+        "dependencies": [
+          "Button component from @kit/ui/button",
+          "Link from next/link"
+        ],
+        "constraints": [
+          "Show when activities array is empty (length === 0)",
+          "Display 'Your activity will appear here as you progress' message",
+          "Include 'Start Course' CTA as Button with link to /home/course",
+          "Use muted text for secondary message",
+          "Center empty state content in card",
+          "Maintain consistent spacing with populated state"
+        ]
+      },
+      "input_state": "Widget component exists from T2 without empty state handling",
+      "output_state": "Widget has conditional rendering for empty state with message and Start Course CTA",
+      "acceptance_criterion": "Widget shows 'Your activity will appear here' message when activities.length === 0 with Button link to /home/course",
+      "verification_command": "grep -q 'Your activity will appear here' apps/web/app/home/\\(user\\)/_components/activity-feed-widget.tsx && grep -q 'Start Course' apps/web/app/home/\\(user\\)/_components/activity-feed-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I4.F4.T2"
+        ],
+        "blocks": [
+          "S1918.I4.F4.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I4.F4.T4",
+      "type": "task",
+      "name": "Wire activity-feed-widget to dashboard page",
+      "action": {
+        "verb": "Wire",
+        "target": "widget to dashboard grid"
+      },
+      "purpose": "Integrate widget into dashboard page layout at correct grid position (left column, row 2)",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "component_render",
+            "target": "ActivityFeedWidget",
+            "expected_action": "renders in dashboard grid with activities from loader",
+            "file_path": "apps/web/app/home/(user)/page.tsx"
+          }
+        ],
+        "validation_command": "grep -q 'ActivityFeedWidget' apps/web/app/home/\\(user\\)/page.tsx"
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        ],
+        "dependencies": [
+          "ActivityFeedWidget component from T2/T3",
+          "loadRecentActivity from S1918.I2.F3.T9"
+        ],
+        "constraints": [
+          "Import ActivityFeedWidget from _components",
+          "Place in left column, row 2 of grid",
+          "Pass recentActivity data from loader as activities prop",
+          "Grid slot should match layout from S1918.I1.F2"
+        ]
+      },
+      "input_state": "Dashboard page has grid layout; widget component exists from T2/T3; loadRecentActivity function exists from S1918.I2.F3.T9",
+      "output_state": "Widget renders in dashboard page at left column, row 2 with loader-provided activity data",
+      "acceptance_criterion": "ActivityFeedWidget imported and rendered in dashboard page.tsx at left column, row 2 with activities prop",
+      "verification_command": "grep -q 'import.*ActivityFeedWidget' apps/web/app/home/\\(user\\)/page.tsx && grep -q '<ActivityFeedWidget' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I4.F4.T2",
+          "S1918.I4.F4.T3"
+        ],
+        "blocks": []
+      },
+      "cross_feature_dependencies": {
+        "blocked_by": [
+          "S1918.I2.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Helper Utilities",
+        "task_ids": [
+          "S1918.I4.F4.T1"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2,
+        "description": "Create activity icon mapping helper"
+      },
+      {
+        "id": 2,
+        "name": "Component Implementation",
+        "task_ids": [
+          "S1918.I4.F4.T2",
+          "S1918.I4.F4.T3",
+          "S1918.I4.F4.T4"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 8,
+        "parallel_hours": 8,
+        "description": "Build timeline widget, add empty state, wire to page"
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1918.I4.F4.T1",
+        "S1918.I4.F4.T2",
+        "S1918.I4.F4.T4"
+      ],
+      "total_hours": 8,
+      "description": "Icon map -> timeline component -> page integration"
+    },
+    "duration": {
+      "sequential": 10,
+      "parallel": 10,
+      "time_saved_percent": 0,
+      "notes": "T2, T3, T4 cannot run in parallel due to sequential dependencies (T3 modifies T2 output, T4 depends on both)"
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100,
+    "notes": "All tasks are atomic (m=1), use single verbs, have clear outputs, and testable verification commands. Widget receives pre-aggregated data from S1918.I2.F3, so no database work required. Empty state and integration follow established patterns from Kanban Summary Widget."
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
