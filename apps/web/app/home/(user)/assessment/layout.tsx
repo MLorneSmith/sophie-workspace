@@ -1,19 +1,22 @@
 import { redirect } from "next/navigation";
 
-import featureFlagsConfig from "~/config/feature-flags.config";
 import pathsConfig from "~/config/paths.config";
+import { getEnableCourses } from "~/lib/server/feature-flags.server";
 
 /**
  * Assessment layout with feature flag protection.
- * When the enableCourses flag is disabled, redirects to /home dashboard.
+ * Fetches the live database value for the enableCourses flag.
+ * When the flag is disabled, redirects to /home dashboard.
  * This provides a friendly UX for users who may have bookmarked assessment pages.
  */
-export default function AssessmentLayout({
+export default async function AssessmentLayout({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
-	if (!featureFlagsConfig.enableCourses) {
+	const enableCourses = await getEnableCourses();
+
+	if (!enableCourses) {
 		redirect(pathsConfig.app.home);
 	}
 

@@ -3,21 +3,27 @@ import {
 	BorderedNavigationMenuItem,
 } from "@kit/ui/bordered-navigation-menu";
 import { If } from "@kit/ui/if";
+import type { SidebarConfig } from "@kit/ui/sidebar";
 
 import { AppLogo } from "~/components/app-logo";
 import { ProfileAccountDropdownContainer } from "~/components/personal-account-dropdown-container";
 import featuresFlagConfig from "~/config/feature-flags.config";
-import { personalAccountNavigationConfig } from "~/config/personal-account-navigation.config";
 
 // home imports
 import { HomeAccountSelector } from "../_components/home-account-selector";
 import { UserNotifications } from "../_components/user-notifications";
 import type { UserWorkspace } from "../_lib/server/load-user-workspace";
 
-export function HomeMenuNavigation(props: { workspace: UserWorkspace }) {
-	const { workspace, user, accounts } = props.workspace;
+interface HomeMenuNavigationProps {
+	workspace: UserWorkspace;
+	navigationConfig: SidebarConfig;
+}
 
-	const routes = personalAccountNavigationConfig.routes.reduce<
+export function HomeMenuNavigation(props: HomeMenuNavigationProps) {
+	const { workspace, user, accounts } = props.workspace;
+	const { navigationConfig } = props;
+
+	const routes = navigationConfig.routes.reduce<
 		Array<{
 			path: string;
 			label: string;

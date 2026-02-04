@@ -11,22 +11,28 @@ import {
 	DropdownMenuTrigger,
 } from "@kit/ui/dropdown-menu";
 import { If } from "@kit/ui/if";
+import type { SidebarConfig } from "@kit/ui/sidebar";
 import { Trans } from "@kit/ui/trans";
 import { LogOut, Menu } from "lucide-react";
 import Link from "next/link";
 
 import featuresFlagConfig from "~/config/feature-flags.config";
-import { personalAccountNavigationConfig } from "~/config/personal-account-navigation.config";
 
 // home imports
 import { HomeAccountSelector } from "../_components/home-account-selector";
 import type { UserWorkspace } from "../_lib/server/load-user-workspace";
 
-export function HomeMobileNavigation(props: { workspace: UserWorkspace }) {
+interface HomeMobileNavigationProps {
+	workspace: UserWorkspace;
+	navigationConfig: SidebarConfig;
+}
+
+export function HomeMobileNavigation(props: HomeMobileNavigationProps) {
 	const signOut = useSignOut();
+	const { navigationConfig } = props;
 
 	let dividerCount = 0;
-	const Links = personalAccountNavigationConfig.routes.map((item, _index) => {
+	const Links = navigationConfig.routes.map((item, _index) => {
 		if ("children" in item) {
 			return item.children.map((child) => {
 				return (

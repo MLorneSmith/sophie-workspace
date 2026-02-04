@@ -113,6 +113,7 @@ import { HomeLayoutPageHeader } from "../home/(user)/_components/home-page-heade
 // Home Components
 import { HomeSidebar } from "../home/(user)/_components/home-sidebar";
 import type { UserWorkspace } from "../home/(user)/_lib/server/load-user-workspace";
+import { personalAccountNavigationConfig } from "~/config/personal-account-navigation.config";
 
 /**
  * Type definitions for navigation items to ensure type safety
@@ -809,7 +810,10 @@ export default function UIShowcasePage() {
 									</h3>
 									<div className="h-64 overflow-auto rounded-lg border p-4">
 										{/* Mocking the required workspace prop */}
-										<HomeMenuNavigation workspace={mockUserWorkspace} />
+										<HomeMenuNavigation
+											workspace={mockUserWorkspace}
+											navigationConfig={personalAccountNavigationConfig}
+										/>
 									</div>
 								</div>
 
@@ -828,7 +832,10 @@ export default function UIShowcasePage() {
 										{isHomeSidebarVisible && (
 											<div className="relative h-96 w-64 overflow-hidden">
 												<SidebarProvider defaultOpen={true}>
-													<HomeSidebar workspace={mockUserWorkspace} />
+													<HomeSidebar
+														workspace={mockUserWorkspace}
+														navigationConfig={personalAccountNavigationConfig}
+													/>
 												</SidebarProvider>
 											</div>
 										)}
