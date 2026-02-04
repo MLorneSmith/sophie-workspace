@@ -11,6 +11,68 @@ import type { Sandbox } from "@e2b/code-interpreter";
 import type { RefinementEntry } from "./refine.types.js";
 
 // ============================================================================
+// Provider-Specific Install Configuration (Bug fix #1924)
+// ============================================================================
+
+/**
+ * Configuration for provider-specific pnpm install behavior.
+ *
+ * Different E2B templates may have different cached states, requiring
+ * different install strategies. GPT templates may timeout with --frozen-lockfile
+ * due to missing dependency cache.
+ */
+export interface ProviderInstallConfig {
+	/** pnpm install flags for this provider */
+	installFlags: string[];
+	/** Timeout for install command in milliseconds */
+	timeoutMs: number;
+	/** Maximum retry attempts for install */
+	maxRetries: number;
+	/** Base delay for exponential backoff in milliseconds */
+	retryBaseDelayMs: number;
+	/** Whether to skip --frozen-lockfile validation */
+	skipFrozenLockfile: boolean;
+}
+
+/**
+ * Result of sandbox environment validation.
+ */
+export interface SandboxValidationResult {
+	/** Whether the environment is valid for install */
+	valid: boolean;
+	/** List of validation errors encountered */
+	errors: string[];
+	/** Node.js version found (if available) */
+	nodeVersion?: string;
+	/** Whether package.json was found */
+	hasPackageJson: boolean;
+	/** Whether pnpm-lock.yaml was found */
+	hasLockfile: boolean;
+}
+
+/**
+ * Result of an install attempt with retry logic.
+ */
+export interface InstallAttemptResult {
+	/** Whether the install succeeded */
+	success: boolean;
+	/** Number of attempts made */
+	attemptsMade: number;
+	/** Total duration in milliseconds */
+	durationMs: number;
+	/** Error message if failed */
+	error?: string;
+	/** Detailed error for diagnostics */
+	diagnosticInfo?: {
+		provider: AgentProvider;
+		flags: string[];
+		timeoutMs: number;
+		lastExitCode?: number;
+		lastStderr?: string;
+	};
+}
+
+// ============================================================================
 // Feature & Initiative Types
 // ============================================================================
 

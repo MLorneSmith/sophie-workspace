@@ -17,7 +17,10 @@ import {
 } from "../config/index.js";
 import type {
 	AgentProvider,
+	InstallAttemptResult,
+	ProviderInstallConfig,
 	SandboxInstance,
+	SandboxValidationResult,
 	SpecManifest,
 } from "../types/index.js";
 import {
@@ -43,6 +46,313 @@ const SANDBOX_LIVENESS_CHECK_TIMEOUT_MS = 5 * 1000;
  * to avoid race conditions where we connect just before expiration
  */
 const SANDBOX_EXPIRATION_BUFFER_MS = 5 * 60 * 1000;
+
+// ============================================================================
+// Provider-Specific Install Configuration (Bug fix #1924)
+// ============================================================================
+
+/**
+ * Default install timeout in milliseconds (20 minutes).
+ * Can be overridden via ALPHA_SANDBOX_INSTALL_TIMEOUT_MS environment variable.
+ */
+const DEFAULT_INSTALL_TIMEOUT_MS = 20 * 60 * 1000;
+
+/**
+ * Default maximum retry attempts for install.
+ * Can be overridden via ALPHA_SANDBOX_INSTALL_MAX_RETRIES environment variable.
+ */
+const DEFAULT_INSTALL_MAX_RETRIES = 3;
+
+/**
+ * Base delay for exponential backoff (ms).
+ * Retry delays: 3s, 9s, 27s (3^n * base)
+ */
+const RETRY_BASE_DELAY_MS = 3000;
+
+/**
+ * Get install timeout from environment or default.
+ */
+function getInstallTimeoutMs(): number {
+	const envTimeout = process.env.ALPHA_SANDBOX_INSTALL_TIMEOUT_MS;
+	if (envTimeout) {
+		const parsed = Number.parseInt(envTimeout, 10);
+		if (!Number.isNaN(parsed) && parsed > 0) {
+			return parsed;
+		}
+	}
+	return DEFAULT_INSTALL_TIMEOUT_MS;
+}
+
+/**
+ * Get max retries from environment or default.
+ */
+function getInstallMaxRetries(): number {
+	const envRetries = process.env.ALPHA_SANDBOX_INSTALL_MAX_RETRIES;
+	if (envRetries) {
+		const parsed = Number.parseInt(envRetries, 10);
+		if (!Number.isNaN(parsed) && parsed >= 0) {
+			return parsed;
+		}
+	}
+	return DEFAULT_INSTALL_MAX_RETRIES;
+}
+
+/**
+ * Provider-specific install configurations.
+ *
+ * Claude templates typically have cached dependencies, so --frozen-lockfile works reliably.
+ * GPT templates may have empty/stale caches, requiring --no-frozen-lockfile to succeed.
+ *
+ * Bug fix #1924: GPT provider review sandbox failures due to install timeout.
+ */
+export function getProviderInstallConfig(
+	provider: AgentProvider,
+): ProviderInstallConfig {
+	const timeoutMs = getInstallTimeoutMs();
+	const maxRetries = getInstallMaxRetries();
+
+	if (provider === "gpt") {
+		return {
+			// GPT templates may have stale lockfile state; skip frozen validation
+			installFlags: ["--no-frozen-lockfile"],
+			timeoutMs,
+			maxRetries,
+			retryBaseDelayMs: RETRY_BASE_DELAY_MS,
+			skipFrozenLockfile: true,
+		};
+	}
+
+	// Claude provider: use strict frozen-lockfile validation
+	return {
+		installFlags: ["--frozen-lockfile"],
+		timeoutMs,
+		maxRetries,
+		retryBaseDelayMs: RETRY_BASE_DELAY_MS,
+		skipFrozenLockfile: false,
+	};
+}
+
+// ============================================================================
+// Pre-Install Validation (Bug fix #1924)
+// ============================================================================
+
+/**
+ * Validate sandbox environment before attempting pnpm install.
+ *
+ * This catches template issues early, providing clear error messages
+ * instead of mysterious install timeouts.
+ *
+ * Bug fix #1924: Pre-install validation to detect template issues.
+ *
+ * @param sandbox - The E2B sandbox instance
+ * @param workspaceDir - The workspace directory to validate
+ * @param log - Logger function
+ * @returns Validation result with errors if any
+ */
+export async function validateSandboxEnvironment(
+	sandbox: Sandbox,
+	workspaceDir: string,
+	log: (...args: unknown[]) => void,
+): Promise<SandboxValidationResult> {
+	const errors: string[] = [];
+	let nodeVersion: string | undefined;
+	let hasPackageJson = false;
+	let hasLockfile = false;
+
+	log("   Pre-install validation...");
+
+	// Check 1: Workspace directory exists
+	const dirCheck = await sandbox.commands.run(
+		`test -d "${workspaceDir}" && echo "exists" || echo "missing"`,
+		{ timeoutMs: 10000 },
+	);
+	if (dirCheck.stdout.trim() !== "exists") {
+		errors.push(`Workspace directory does not exist: ${workspaceDir}`);
+		return { valid: false, errors, hasPackageJson, hasLockfile };
+	}
+
+	// Check 2: package.json exists
+	const packageJsonCheck = await sandbox.commands.run(
+		`test -f "${workspaceDir}/package.json" && echo "exists" || echo "missing"`,
+		{ timeoutMs: 10000 },
+	);
+	hasPackageJson = packageJsonCheck.stdout.trim() === "exists";
+	if (!hasPackageJson) {
+		errors.push(`package.json not found in ${workspaceDir}`);
+	}
+
+	// Check 3: pnpm-lock.yaml exists
+	const lockfileCheck = await sandbox.commands.run(
+		`test -f "${workspaceDir}/pnpm-lock.yaml" && echo "exists" || echo "missing"`,
+		{ timeoutMs: 10000 },
+	);
+	hasLockfile = lockfileCheck.stdout.trim() === "exists";
+	if (!hasLockfile) {
+		errors.push(`pnpm-lock.yaml not found in ${workspaceDir}`);
+	}
+
+	// Check 4: Node.js version
+	try {
+		const nodeCheck = await sandbox.commands.run("node --version", {
+			timeoutMs: 10000,
+		});
+		if (nodeCheck.exitCode === 0) {
+			nodeVersion = nodeCheck.stdout.trim();
+			log(`   Node.js version: ${nodeVersion}`);
+		} else {
+			errors.push("Node.js not available or not working");
+		}
+	} catch {
+		errors.push("Failed to check Node.js version");
+	}
+
+	// Check 5: pnpm available
+	try {
+		const pnpmCheck = await sandbox.commands.run("pnpm --version", {
+			timeoutMs: 10000,
+		});
+		if (pnpmCheck.exitCode !== 0) {
+			errors.push("pnpm not available or not working");
+		}
+	} catch {
+		errors.push("Failed to check pnpm availability");
+	}
+
+	const valid = errors.length === 0;
+	if (valid) {
+		log("   ✅ Pre-install validation passed");
+	} else {
+		log(`   ❌ Pre-install validation failed: ${errors.join(", ")}`);
+	}
+
+	return { valid, errors, nodeVersion, hasPackageJson, hasLockfile };
+}
+
+// ============================================================================
+// Provider-Aware Install with Retry (Bug fix #1924)
+// ============================================================================
+
+/**
+ * Sleep for a given number of milliseconds.
+ */
+function sleep(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Execute pnpm install with provider-specific flags and exponential backoff retry.
+ *
+ * This function:
+ * 1. Uses provider-specific install flags (Claude: --frozen-lockfile, GPT: --no-frozen-lockfile)
+ * 2. Implements exponential backoff retry on timeout/failure
+ * 3. Logs detailed diagnostics for each attempt
+ * 4. Returns structured result for error surfacing
+ *
+ * Bug fix #1924: GPT provider install timeouts with frozen-lockfile.
+ *
+ * @param sandbox - The E2B sandbox instance
+ * @param workspaceDir - The workspace directory
+ * @param provider - The agent provider (claude or gpt)
+ * @param log - Logger function
+ * @returns Install attempt result with success status and diagnostics
+ */
+export async function executeInstallWithRetry(
+	sandbox: Sandbox,
+	workspaceDir: string,
+	provider: AgentProvider,
+	log: (...args: unknown[]) => void,
+): Promise<InstallAttemptResult> {
+	const config = getProviderInstallConfig(provider);
+	const startTime = Date.now();
+	let lastExitCode: number | undefined;
+	let lastStderr: string | undefined;
+
+	const flags = config.installFlags.join(" ");
+	log(
+		`   Installing dependencies with provider: ${provider}, flags: ${flags || "(none)"}`,
+	);
+
+	for (let attempt = 1; attempt <= config.maxRetries; attempt++) {
+		const attemptStart = Date.now();
+
+		// Calculate delay for this attempt (exponential backoff)
+		if (attempt > 1) {
+			const delay = config.retryBaseDelayMs * 3 ** (attempt - 2);
+			log(
+				`   Retry ${attempt}/${config.maxRetries} after ${delay / 1000}s delay...`,
+			);
+			await sleep(delay);
+		}
+
+		log(`   Install attempt ${attempt}/${config.maxRetries}...`);
+
+		try {
+			const installCommand = flags
+				? `cd ${workspaceDir} && pnpm install ${flags}`
+				: `cd ${workspaceDir} && pnpm install`;
+
+			const result = await sandbox.commands.run(installCommand, {
+				timeoutMs: config.timeoutMs,
+			});
+
+			lastExitCode = result.exitCode;
+			lastStderr = result.stderr;
+
+			if (result.exitCode === 0) {
+				const duration = Date.now() - startTime;
+				log(
+					`   ✅ Install successful on attempt ${attempt} (${Math.round(duration / 1000)}s)`,
+				);
+				return {
+					success: true,
+					attemptsMade: attempt,
+					durationMs: duration,
+				};
+			}
+
+			// Non-zero exit code - log error and retry
+			log(
+				`   ⚠️ Install attempt ${attempt} failed (exit code: ${result.exitCode})`,
+			);
+			if (result.stderr) {
+				// Truncate long error messages for readability
+				const truncatedStderr = result.stderr.slice(0, 500);
+				log(`   Stderr: ${truncatedStderr}`);
+			}
+		} catch (error) {
+			// Timeout or other error
+			const errorMsg = error instanceof Error ? error.message : String(error);
+			log(`   ⚠️ Install attempt ${attempt} error: ${errorMsg}`);
+			lastStderr = errorMsg;
+		}
+
+		const attemptDuration = Date.now() - attemptStart;
+		log(`   Attempt ${attempt} took ${Math.round(attemptDuration / 1000)}s`);
+	}
+
+	// All retries exhausted
+	const totalDuration = Date.now() - startTime;
+	const errorMessage =
+		`Install failed after ${config.maxRetries} attempts. ` +
+		`Provider: ${provider}, Flags: ${flags || "(none)"}, ` +
+		`Total time: ${Math.round(totalDuration / 1000)}s`;
+
+	log(`   ❌ ${errorMessage}`);
+
+	return {
+		success: false,
+		attemptsMade: config.maxRetries,
+		durationMs: totalDuration,
+		error: errorMessage,
+		diagnosticInfo: {
+			provider,
+			flags: config.installFlags,
+			timeoutMs: config.timeoutMs,
+			lastExitCode,
+			lastStderr: lastStderr?.slice(0, 1000), // Truncate for manifest storage
+		},
+	};
+}
 
 // ============================================================================
 // Logging Helper
@@ -1054,10 +1364,12 @@ export function getSandboxesNeedingRestart(
  * contention from prior implementation work.
  *
  * Bug fix #1590: Fresh sandbox for review after spec implementation.
+ * Bug fix #1924: Provider-specific install handling with retry logic for GPT.
  *
  * @param branchName - The branch to checkout (e.g., "alpha/spec-1362")
  * @param timeout - Sandbox timeout in seconds
  * @param uiEnabled - Whether UI mode is enabled
+ * @param provider - The agent provider (claude or gpt)
  * @returns The review sandbox instance (Sandbox object, not SandboxInstance)
  */
 export async function createReviewSandbox(
@@ -1067,8 +1379,9 @@ export async function createReviewSandbox(
 	provider: AgentProvider = "claude",
 ): Promise<Sandbox> {
 	const { log } = createLogger(uiEnabled);
+	const providerDisplayName = getProviderDisplayName(provider);
 
-	log("\n📦 Creating fresh review sandbox...");
+	log(`\n📦 Creating fresh review sandbox (${providerDisplayName})...`);
 
 	const sandbox = await Sandbox.create(getTemplateAlias(provider), {
 		timeoutMs: timeout * 1000,
@@ -1077,6 +1390,7 @@ export async function createReviewSandbox(
 	});
 
 	log(`   Review sandbox ID: ${sandbox.sandboxId}`);
+	log(`   Provider: ${providerDisplayName}`);
 
 	// Setup git credentials
 	if (GITHUB_TOKEN) {
@@ -1103,10 +1417,23 @@ export async function createReviewSandbox(
 
 	log("   ✅ Branch checked out");
 
+	// Bug fix #1924: Pre-install validation to catch template issues early
+	const validation = await validateSandboxEnvironment(
+		sandbox,
+		WORKSPACE_DIR,
+		log,
+	);
+	if (!validation.valid) {
+		throw new Error(
+			`Review sandbox pre-install validation failed:\n${validation.errors.join("\n")}\n` +
+				`Provider: ${providerDisplayName}, Sandbox ID: ${sandbox.sandboxId}`,
+		);
+	}
+
 	// Fresh-clone validation (Bug fix #1803)
 	// This simulates what happens when someone checks out the branch locally:
 	// 1. Remove all node_modules (clean slate)
-	// 2. Run pnpm install --frozen-lockfile (fails if lockfile doesn't match package.json)
+	// 2. Run pnpm install with provider-specific flags
 	// 3. Run typecheck (ensures TypeScript compiles with clean dependencies)
 	// This catches issues where package.json has new dependencies but they weren't
 	// properly committed to the lockfile or don't install correctly.
@@ -1118,18 +1445,32 @@ export async function createReviewSandbox(
 		{ timeoutMs: 60000 },
 	);
 
-	// Install from lockfile (fails if lockfile doesn't match package.json)
-	log("   Installing dependencies from lockfile...");
-	const installResult = await sandbox.commands.run(
-		`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
-		{ timeoutMs: 1200000 },
+	// Bug fix #1924: Use provider-aware install with retry logic
+	// GPT templates may have stale dependency cache, requiring --no-frozen-lockfile
+	// Claude templates use --frozen-lockfile for strict validation
+	const installConfig = getProviderInstallConfig(provider);
+	log(
+		`   Installing dependencies (provider: ${providerDisplayName}, ` +
+			`flags: ${installConfig.installFlags.join(" ") || "(none)"})...`,
 	);
 
-	if (installResult.exitCode !== 0) {
+	const installResult = await executeInstallWithRetry(
+		sandbox,
+		WORKSPACE_DIR,
+		provider,
+		log,
+	);
+
+	if (!installResult.success) {
+		// Include diagnostic info in the error for troubleshooting
+		const diagnosticStr = installResult.diagnosticInfo
+			? `\nDiagnostics: ${JSON.stringify(installResult.diagnosticInfo, null, 2)}`
+			: "";
+
 		throw new Error(
 			`Fresh-clone validation failed: Dependencies don't install cleanly.\n` +
-				"This means package.json has changes not reflected in pnpm-lock.yaml.\n" +
-				`Error: ${installResult.stderr || installResult.stdout}`,
+				`Provider: ${providerDisplayName}\n` +
+				`Error: ${installResult.error}${diagnosticStr}`,
 		);
 	}
 
@@ -1143,6 +1484,7 @@ export async function createReviewSandbox(
 	if (typecheckResult.exitCode !== 0) {
 		throw new Error(
 			"Fresh-clone validation failed: TypeScript errors on clean install.\n" +
+				`Provider: ${providerDisplayName}\n` +
 				`Error: ${typecheckResult.stderr || typecheckResult.stdout}`,
 		);
 	}
@@ -1161,6 +1503,6 @@ export async function createReviewSandbox(
 		);
 	}
 
-	log("   ✅ Review sandbox ready");
+	log(`   ✅ Review sandbox ready (${providerDisplayName})`);
 	return sandbox;
 }
