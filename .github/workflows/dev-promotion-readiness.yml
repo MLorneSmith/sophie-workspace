@@ -6,6 +6,11 @@ on:
       integration_test_run_id:
         description: 'Integration test workflow run ID'
         required: false
+      force_promotion:
+        description: 'Force promotion even if some checks fail'
+        required: false
+        default: 'false'
+        type: boolean
   workflow_run:
     workflows: ["Dev Integration Tests"]
     types: [completed]
@@ -112,7 +117,8 @@ jobs:
             const metrics = JSON.parse('${{ steps.metrics.outputs.metrics }}');
             const pendingCommits = parseInt('${{ steps.changes.outputs.pending_commits }}');
             const changedFiles = parseInt('${{ steps.changes.outputs.changed_files }}');
-            
+            const forcePromotion = '${{ inputs.force_promotion }}' === 'true';
+
             // Define readiness criteria
             const criteria = {
               hasChanges: pendingCommits > 0,
@@ -121,7 +127,7 @@ jobs:
               noRecentFailures: metrics.recentFailures === 0,
               notTooManyChanges: changedFiles < 100  // Prevent huge PRs
             };
-            
+
             // Calculate promotion score
             const weights = {
               successRate: 30,
@@ -129,15 +135,15 @@ jobs:
               noRecentFailures: 25,
               notTooManyChanges: 20
             };
-            
+
             let score = 0;
             if (criteria.successRate) score += weights.successRate;
             if (criteria.codeCoverage) score += weights.codeCoverage;
             if (criteria.noRecentFailures) score += weights.noRecentFailures;
             if (criteria.notTooManyChanges) score += weights.notTooManyChanges;
-            
-            // Determine if ready for promotion
-            const ready = criteria.hasChanges && score >= 75;
+
+            // Determine if ready for promotion (force bypasses score threshold)
+            const ready = criteria.hasChanges && (score >= 75 || forcePromotion);
             
             // Generate assessment report
             const report = {
@@ -147,16 +153,20 @@ jobs:
               metrics,
               pendingCommits,
               changedFiles,
+              forcePromotion,
               timestamp: new Date().toISOString()
             };
-            
+
             core.setOutput('ready', ready);
             core.setOutput('score', score);
             core.setOutput('report', JSON.stringify(report));
-            
+
             // Create summary
             let summary = `## 📊 Promotion Readiness Assessment\n\n`;
-            summary += `### Score: ${score}/100 ${score >= 75 ? '✅' : '❌'}\n\n`;
+            if (forcePromotion) {
+              summary += `⚠️ **Force promotion enabled** - score threshold bypassed\n\n`;
+            }
+            summary += `### Score: ${score}/100 ${score >= 75 || forcePromotion ? '✅' : '❌'}\n\n`;
             
             summary += `| Criteria | Status | Details |\n`;
             summary += `|----------|--------|----------|\n`;
@@ -166,15 +176,19 @@ jobs:
             summary += `| Recent Failures | ${criteria.noRecentFailures ? '✅' : '❌'} | ${metrics.recentFailures} failures in last 6h |\n`;
             summary += `| Change Size | ${criteria.notTooManyChanges ? '✅' : '❌'} | ${changedFiles} files (limit: 100) |\n`;
             
-            summary += `\n### Decision: ${ready ? '🚀 Ready for Staging' : '⏸️ Not Ready'}\n`;
-            
-            if (!ready) {
+            const decision = ready
+              ? (forcePromotion && score < 75 ? '🚀 Force Promoted to Staging' : '🚀 Ready for Staging')
+              : '⏸️ Not Ready';
+            summary += `\n### Decision: ${decision}\n`;
+
+            if (!ready && !forcePromotion) {
               summary += `\n#### Issues to Address:\n`;
               if (!criteria.hasChanges) summary += `- No changes to promote\n`;
               if (!criteria.successRate) summary += `- Success rate below 80%\n`;
               if (!criteria.codeCoverage) summary += `- Code coverage below 80%\n`;
               if (!criteria.noRecentFailures) summary += `- Recent failures detected\n`;
               if (!criteria.notTooManyChanges) summary += `- Too many changes (consider smaller PRs)\n`;
+              summary += `\n💡 **Tip:** Use \`force_promotion: true\` to bypass score threshold\n`;
             }
             
             // Write summary using proper GitHub Actions API
@@ -183,12 +197,20 @@ jobs:
             
             return report;
 
+      - name: Generate GitHub App Token
+        if: steps.assessment.outputs.ready == 'true'
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Create promotion PR if ready
         if: steps.assessment.outputs.ready == 'true'
         id: create-pr
         uses: actions/github-script@v8
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ steps.app-token.outputs.token }}
           script: |
             const { owner, repo } = context.repo;
             

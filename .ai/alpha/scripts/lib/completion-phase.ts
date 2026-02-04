@@ -115,13 +115,31 @@ export async function killImplementationSandboxes(
 // ============================================================================
 
 /**
+ * Result type for review sandbox creation.
+ * Bug fix #1924: Surface error details instead of silently returning null.
+ */
+export interface ReviewSandboxResult {
+	/** The review sandbox if creation succeeded */
+	sandbox: Sandbox | null;
+	/** Error message if creation failed */
+	error?: string;
+	/** Provider used for sandbox creation */
+	provider: AgentProvider;
+}
+
+/**
  * Create and configure the review sandbox.
+ *
+ * Bug fix #1924: Improved error handling with detailed logging and event emission.
+ * Errors are no longer silently swallowed - they're logged at ERROR level and
+ * included in event metadata for diagnostics.
  *
  * @param branchName - Git branch to checkout
  * @param timeout - Sandbox timeout in seconds
  * @param uiEnabled - Whether UI mode is enabled
  * @param log - Logger function
- * @returns The review sandbox or null if creation failed
+ * @param provider - Agent provider (claude or gpt)
+ * @returns The review sandbox result with error details if failed
  */
 export async function setupReviewSandbox(
 	branchName: string,
@@ -130,36 +148,63 @@ export async function setupReviewSandbox(
 	log: (...args: unknown[]) => void,
 	provider: AgentProvider,
 ): Promise<Sandbox | null> {
+	const providerDisplayName = provider === "gpt" ? "GPT (Codex)" : "Claude";
+
 	try {
-		log("\n   Creating dedicated review sandbox for dev server...");
+		log(
+			`\n   Creating dedicated review sandbox for dev server (${providerDisplayName})...`,
+		);
 		emitOrchestratorEvent(
 			"review_sandbox_creating",
-			"Creating fresh review sandbox for dev server",
-			{ branchName },
+			`Creating fresh review sandbox for dev server (${providerDisplayName})`,
+			{ branchName, provider },
 		);
 
 		// Wrap with 15-minute timeout as safety net (Bug fix #1760)
-		// Inner pnpm install has 600s timeout, git operations can take 2-4 minutes
-		// Optimization: createReviewSandbox now skips install when dependencies are unchanged
+		// Inner pnpm install has configurable timeout (default 20 min), git operations can take 2-4 minutes
+		// Bug fix #1924: GPT provider may need retries, so allow extra time
 		// Typical case: 2-3 minutes (git + build only)
-		// Worst case: 10-12 minutes (full install + build)
-		// See: #1739, #1742, #1760 for timeout history
+		// Worst case: 15-20 minutes (full install with retries for GPT)
+		// See: #1739, #1742, #1760, #1924 for timeout history
 		const reviewSandbox = await withTimeout(
 			createReviewSandbox(branchName, timeout, uiEnabled, provider),
-			900000,
+			1200000, // 20 minutes to accommodate GPT retry logic
 			"Review sandbox creation",
 		);
 
-		log("   ✅ Review sandbox created successfully");
+		log(`   ✅ Review sandbox created successfully (${providerDisplayName})`);
+		emitOrchestratorEvent(
+			"review_sandbox_created",
+			`Review sandbox created successfully (${providerDisplayName})`,
+			{ sandboxId: reviewSandbox.sandboxId, provider },
+		);
 		return reviewSandbox;
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
-		log(`   ⚠️ Failed to create review sandbox: ${errorMessage}`);
-		// Bug fix #1883: Emit failure event so UI can display the reason
+		const errorStack = error instanceof Error ? error.stack : undefined;
+
+		// Bug fix #1924: Log at ERROR level with full context for diagnostics
+		log(
+			`   ❌ ERROR: Failed to create review sandbox (${providerDisplayName})`,
+		);
+		log(`   Error message: ${errorMessage}`);
+		if (errorStack) {
+			// Log truncated stack trace for debugging
+			const truncatedStack = errorStack.split("\n").slice(0, 5).join("\n");
+			log(`   Stack trace:\n${truncatedStack}`);
+		}
+
+		// Bug fix #1883, #1924: Emit failure event with full context
 		emitOrchestratorEvent(
 			"review_sandbox_failed",
-			`Failed to create review sandbox: ${errorMessage}`,
-			{ error: errorMessage },
+			`Failed to create review sandbox (${providerDisplayName}): ${errorMessage}`,
+			{
+				error: errorMessage,
+				provider,
+				branchName,
+				// Include stack for diagnostic events (truncated for readability)
+				stack: errorStack?.slice(0, 500),
+			},
 		);
 		return null;
 	}

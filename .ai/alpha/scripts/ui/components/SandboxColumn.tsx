@@ -260,12 +260,14 @@ const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 						<Text color="yellow">{state.currentTask.id || "Working..."}</Text>
 					</Box>
 					<Text>{truncate(state.currentTask.name, 24)}</Text>
-					{state.currentTask.verificationAttempts &&
-						state.currentTask.verificationAttempts > 1 && (
-							<Text color="yellow">
-								Retry {state.currentTask.verificationAttempts}
-							</Text>
-						)}
+					{/* Bug fix #1927: Use single > comparison to prevent rendering raw "0" in Ink.
+					    The original pattern {num && num > 1 && ...} renders 0 when num is 0. */}
+					{state.currentTask.verificationAttempts !== undefined &&
+					state.currentTask.verificationAttempts > 1 ? (
+						<Text color="yellow">
+							Retry {state.currentTask.verificationAttempts}
+						</Text>
+					) : null}
 				</Box>
 			)}
 
@@ -278,14 +280,15 @@ const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 			)}
 
 			{/* Context Usage */}
-			{state.contextUsage > 0 && (
+			{/* Bug fix #1923: Use ternary to prevent rendering raw "0" in Ink */}
+			{state.contextUsage > 0 ? (
 				<Box>
 					<Text dimColor>Context: </Text>
 					<Text color={getContextColor(state.contextUsage)}>
 						{state.contextUsage}%
 					</Text>
 				</Box>
-			)}
+			) : null}
 
 			{/* Heartbeat - dim for idle sandboxes since stale is expected */}
 			{heartbeatAge !== null && (
