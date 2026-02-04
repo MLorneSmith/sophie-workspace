@@ -281,6 +281,23 @@ jobs:
           restore-keys: |
             staging-test-build-${{ github.sha }}-
 
+      - name: Verify production build exists
+        run: |
+          if [ -f "apps/web/.next/BUILD_ID" ]; then
+            echo "✅ Production build verified (.next/BUILD_ID exists)"
+            echo "BUILD_ID: $(cat apps/web/.next/BUILD_ID)"
+          else
+            echo "⚠️ Production build missing - triggering rebuild..."
+            echo "This is a fallback for cache restoration issues."
+            pnpm --filter web build:test
+            if [ -f "apps/web/.next/BUILD_ID" ]; then
+              echo "✅ Rebuild successful - BUILD_ID: $(cat apps/web/.next/BUILD_ID)"
+            else
+              echo "❌ Rebuild failed - BUILD_ID still missing"
+              exit 1
+            fi
+          fi
+
       - name: Cache Playwright browsers
         id: playwright-cache
         uses: actions/cache@v5
