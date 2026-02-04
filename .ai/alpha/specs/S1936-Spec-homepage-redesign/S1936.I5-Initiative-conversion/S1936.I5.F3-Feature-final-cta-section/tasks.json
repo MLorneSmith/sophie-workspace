@@ -1,0 +1,494 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1936.I5.F3",
+    "feature_name": "Final CTA Section",
+    "feature_slug": "final-cta-section",
+    "initiative_id": "S1936.I5",
+    "spec_id": 1936,
+    "created_at": "2026-02-04T16:30:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1936.I5.F3.T6"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1936.I5.F3.T1",
+      "type": "task",
+      "name": "Add Final CTA content configuration to homepage config",
+      "action": { "verb": "Add", "target": "Final CTA content config" },
+      "purpose": "Define TypeScript interface and content for final CTA section including headline, subheadline, and trust badge items",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "Existing homepageContentConfig pattern with typed interfaces"
+        ],
+        "constraints": [
+          "Must follow existing config structure with interface-first approach",
+          "Trust badges must be typed with icon name and text properties"
+        ]
+      },
+      "input_state": "Config file exists with hero, sticky, features, testimonials, essentialReads, pricing sections",
+      "output_state": "Config file has new finalCta section with interface defining headline, subheadline, primaryCta, secondaryCta, trustBadges array",
+      "acceptance_criterion": "Config exports finalCta object matching FinalCtaConfig interface with all required fields populated",
+      "verification_command": "pnpm typecheck && grep -q 'finalCta:' apps/web/config/homepage-content.config.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/config/homepage-content.config.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I5.F3.T2", "S1936.I5.F3.T3", "S1936.I5.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I5.F3.T2",
+      "type": "task",
+      "name": "Create TrustBadges component with icons",
+      "action": { "verb": "Create", "target": "TrustBadges component" },
+      "purpose": "Build reusable trust badges row component displaying 'No credit card', 'Free plan available', 'Cancel anytime' with checkmark icons",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "lucide-react for Check icon",
+          "@kit/ui/utils cn() for className merging"
+        ],
+        "constraints": [
+          "Must accept className prop for customization",
+          "Must be responsive (flex-wrap on mobile, nowrap on desktop)",
+          "Use semantic HTML with ul/li structure"
+        ]
+      },
+      "input_state": "No TrustBadges component exists",
+      "output_state": "TrustBadges component exists rendering array of badge items with check icons in a responsive row",
+      "acceptance_criterion": "Component renders 3 badges in a row on desktop, wraps on mobile, passes typecheck",
+      "verification_command": "pnpm typecheck && grep -q 'export.*TrustBadges' apps/web/app/(marketing)/_components/home-trust-badges.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/home-trust-badges.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I5.F3.T1"],
+        "blocks": ["S1936.I5.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I5.F3.T3",
+      "type": "task",
+      "name": "Create GradientOrb component with CSS radial gradient",
+      "action": { "verb": "Create", "target": "GradientOrb component" },
+      "purpose": "Build animated gradient orb using CSS radial gradients with multiple color stops for visual focal point",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "motion/react for motion.div",
+          "CSS radial-gradient for orb appearance"
+        ],
+        "constraints": [
+          "Use animate prop for breathing effect (scale + opacity oscillation)",
+          "Must respect prefers-reduced-motion (MotionConfig)",
+          "Size must be responsive via className prop"
+        ]
+      },
+      "input_state": "No GradientOrb component exists",
+      "output_state": "GradientOrb component exists with CSS radial gradient background and Framer Motion breathing animation",
+      "acceptance_criterion": "Component renders animated orb with scale 0.95-1.05 and opacity 0.6-0.8 oscillation over 4 seconds",
+      "verification_command": "pnpm typecheck && grep -q 'export.*GradientOrb' apps/web/app/(marketing)/_components/home-gradient-orb.tsx && grep -q 'radial-gradient' apps/web/app/(marketing)/_components/home-gradient-orb.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/home-gradient-orb.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I5.F3.T1"],
+        "blocks": ["S1936.I5.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I5.F3.T4",
+      "type": "task",
+      "name": "Create FinalCtaSection container component layout",
+      "action": { "verb": "Create", "target": "FinalCtaSection container" },
+      "purpose": "Assemble final CTA section with headline, subheadline, placeholder CTA buttons, trust badges, and positioned gradient orb",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "GradientOrb component from T3",
+          "TrustBadges component from T2",
+          "homepageContentConfig.finalCta from T1",
+          "@kit/ui/button for CTA buttons (placeholders)"
+        ],
+        "constraints": [
+          "Must be full-width section with dark background",
+          "Orb positioned absolutely behind content",
+          "CTAs must be placeholder buttons (no handlers yet)",
+          "Mobile: stack CTAs vertically, scale down orb"
+        ]
+      },
+      "input_state": "GradientOrb, TrustBadges, and config exist but no FinalCtaSection component",
+      "output_state": "FinalCtaSection component exists with layout structure, orb background, headline/subheadline, placeholder CTA buttons, and trust badges row",
+      "acceptance_criterion": "Component renders with all child components, passes typecheck, buttons exist but have no onClick handlers",
+      "verification_command": "pnpm typecheck && grep -q 'export.*FinalCtaSection' apps/web/app/(marketing)/_components/home-final-cta-section.tsx && grep -c 'Button' apps/web/app/(marketing)/_components/home-final-cta-section.tsx | grep -q '2'",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/home-final-cta-section.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I5.F3.T1", "S1936.I5.F3.T2", "S1936.I5.F3.T3"],
+        "blocks": ["S1936.I5.F3.T5", "S1936.I5.F3.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I5.F3.T5",
+      "type": "task",
+      "name": "Wire Start Writing Free button to sign-up path",
+      "action": { "verb": "Wire", "target": "Start Writing Free button" },
+      "purpose": "Connect primary CTA button to existing sign-up route using pathsConfig",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-final-cta-section.tsx",
+          "apps/web/config/paths.config.ts"
+        ],
+        "dependencies": [
+          "pathsConfig.auth.signUp for navigation target",
+          "Next.js Link component for navigation"
+        ],
+        "constraints": [
+          "Must wrap Button in Link component",
+          "Button must remain visually primary (variant and styling)",
+          "Must preserve existing layout and styling"
+        ]
+      },
+      "input_state": "FinalCtaSection has placeholder primary CTA button with no navigation",
+      "output_state": "Primary CTA button wrapped in Link navigating to pathsConfig.auth.signUp when clicked",
+      "acceptance_criterion": "Button exists wrapped in Link component with href={pathsConfig.auth.signUp}",
+      "verification_command": "pnpm typecheck && grep -Pzo 'Start Writing Free[^<]*<\\/Button>\\s*<\\/Link>' apps/web/app/(marketing)/_components/home-final-cta-section.tsx || grep -A2 'Start Writing Free' apps/web/app/(marketing)/_components/home-final-cta-section.tsx | grep -q 'Link'",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_navigation",
+            "target": "Start Writing Free",
+            "expected_action": "navigate to sign-up page",
+            "file_path": "apps/web/app/(marketing)/_components/home-final-cta-section.tsx"
+          }
+        ]
+      },
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/_components/home-final-cta-section.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I5.F3.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I5.F3.T6",
+      "type": "task",
+      "name": "Wire Book a Demo button to BookDemoOverlay",
+      "action": { "verb": "Wire", "target": "Book a Demo button" },
+      "purpose": "Connect secondary CTA button to existing BookDemoOverlay modal component",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Ready to transform your presentations?" },
+          { "command": "is visible", "target": "Start Writing Free" },
+          { "command": "is visible", "target": "Book a Demo" },
+          { "command": "find role", "target": "button" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-final-cta-section.tsx",
+          "apps/web/app/(marketing)/_components/book-demo-overlay.tsx"
+        ],
+        "dependencies": [
+          "BookDemoOverlay component from existing file",
+          "useState hook for modal state management"
+        ],
+        "constraints": [
+          "Must use client component directive 'use client'",
+          "Must manage isOpen state with useState",
+          "Must pass isOpen and onClose props to BookDemoOverlay",
+          "Button onClick must call setIsOpen(true)"
+        ]
+      },
+      "input_state": "FinalCtaSection has placeholder secondary CTA button, BookDemoOverlay exists as separate component",
+      "output_state": "FinalCtaSection is client component with state managing BookDemoOverlay, secondary button opens modal on click",
+      "acceptance_criterion": "Clicking 'Book a Demo' button sets isOpen to true and renders BookDemoOverlay modal",
+      "verification_command": "pnpm typecheck && grep -q '\"use client\"' apps/web/app/(marketing)/_components/home-final-cta-section.tsx && grep -Pzo 'Book a Demo[^<]*onClick=\\{[^}]+\\}' apps/web/app/(marketing)/_components/home-final-cta-section.tsx",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Book a Demo",
+            "expected_action": "open BookDemoOverlay modal",
+            "file_path": "apps/web/app/(marketing)/_components/home-final-cta-section.tsx"
+          }
+        ]
+      },
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/_components/home-final-cta-section.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I5.F3.T4"],
+        "blocks": ["S1936.I5.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I5.F3.T7",
+      "type": "task",
+      "name": "Add FinalCtaSection to homepage after blog section",
+      "action": { "verb": "Add", "target": "FinalCtaSection to homepage" },
+      "purpose": "Integrate FinalCtaSection component into homepage page.tsx after blog posts section and before footer",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-final-cta-section.tsx"
+        ],
+        "dependencies": [
+          "FinalCtaSection component from T6",
+          "Existing section spacing and container patterns"
+        ],
+        "constraints": [
+          "Must import FinalCtaSection at top of file",
+          "Must add section after blog posts section (line ~283)",
+          "Must use consistent spacing and containerBase classes",
+          "Must wrap in Suspense with SectionLoader fallback"
+        ]
+      },
+      "input_state": "Homepage has blog posts section as final section before closing div",
+      "output_state": "Homepage has FinalCtaSection imported and rendered after blog section with Suspense wrapper",
+      "acceptance_criterion": "FinalCtaSection renders on homepage after blog section, homepage passes typecheck",
+      "verification_command": "pnpm typecheck && grep -q 'import.*FinalCtaSection' apps/web/app/(marketing)/page.tsx && grep -A5 'Blog Posts Section' apps/web/app/(marketing)/page.tsx | grep -q 'FinalCtaSection'",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I5.F3.T6"],
+        "blocks": ["S1936.I5.F3.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I5.F3.T8",
+      "type": "task",
+      "name": "Add scroll-triggered fade-in animation to FinalCtaSection",
+      "action": { "verb": "Add", "target": "scroll fade-in animation" },
+      "purpose": "Enhance user experience with whileInView animation triggering opacity and y-axis translation on scroll",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-final-cta-section.tsx"
+        ],
+        "dependencies": [
+          "motion.div from motion/react",
+          "whileInView prop for scroll trigger",
+          "viewport prop with once: true option"
+        ],
+        "constraints": [
+          "Must wrap main content in motion.div",
+          "Initial state: opacity 0, y: 50",
+          "Animate to: opacity 1, y: 0",
+          "Transition: duration 0.6s, ease easeOut",
+          "viewport: { once: true, amount: 0.3 }"
+        ]
+      },
+      "input_state": "FinalCtaSection renders without scroll animation",
+      "output_state": "FinalCtaSection content wrapped in motion.div with whileInView animation fading in from bottom on scroll",
+      "acceptance_criterion": "Content has initial opacity 0 and animates to opacity 1 on viewport entry, animation triggers once at 30% visibility",
+      "verification_command": "pnpm typecheck && grep -q 'whileInView' apps/web/app/(marketing)/_components/home-final-cta-section.tsx && grep -q 'viewport.*once.*true' apps/web/app/(marketing)/_components/home-final-cta-section.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/_components/home-final-cta-section.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I5.F3.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation - Config and Simple Components",
+        "task_ids": ["S1936.I5.F3.T1", "S1936.I5.F3.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Core Components - Orb and Container",
+        "task_ids": ["S1936.I5.F3.T3", "S1936.I5.F3.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 7,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Wiring - CTA Handlers",
+        "task_ids": ["S1936.I5.F3.T5", "S1936.I5.F3.T6"],
+        "depends_on_groups": [2],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Integration and Polish",
+        "task_ids": ["S1936.I5.F3.T7", "S1936.I5.F3.T8"],
+        "depends_on_groups": [3],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1936.I5.F3.T1", "S1936.I5.F3.T3", "S1936.I5.F3.T4", "S1936.I5.F3.T6", "S1936.I5.F3.T7", "S1936.I5.F3.T8"],
+      "total_hours": 15
+    },
+    "duration": {
+      "sequential": 18,
+      "parallel": 15,
+      "time_saved_percent": 16.7
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
