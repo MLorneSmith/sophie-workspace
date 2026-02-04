@@ -133,18 +133,27 @@ export interface ReviewSandboxResult {
 }
 
 /**
+ * Result from setupReviewSandbox including error details.
+ * Bug fix #1931: Return error details so they can be stored in manifest.
+ */
+export interface SetupReviewSandboxResult {
+	sandbox: Sandbox | null;
+	error?: string;
+}
+
+/**
  * Create and configure the review sandbox.
  *
  * Bug fix #1924: Improved error handling with detailed logging and event emission.
- * Errors are no longer silently swallowed - they're logged at ERROR level and
- * included in event metadata for diagnostics.
+ * Bug fix #1931: Use console.error for critical failures (visible even in UI mode),
+ * and return error details so they can be stored in the manifest.
  *
  * @param branchName - Git branch to checkout
  * @param timeout - Sandbox timeout in seconds
  * @param uiEnabled - Whether UI mode is enabled
- * @param log - Logger function
+ * @param log - Logger function (for debug-level messages)
  * @param provider - Agent provider (claude or gpt)
- * @returns The review sandbox result with error details if failed
+ * @returns Result object with sandbox (or null) and error details
  */
 export async function setupReviewSandbox(
 	branchName: string,
@@ -152,7 +161,7 @@ export async function setupReviewSandbox(
 	uiEnabled: boolean,
 	log: (...args: unknown[]) => void,
 	provider: AgentProvider,
-): Promise<Sandbox | null> {
+): Promise<SetupReviewSandboxResult> {
 	const providerDisplayName = provider === "gpt" ? "GPT (Codex)" : "Claude";
 
 	try {
@@ -183,20 +192,21 @@ export async function setupReviewSandbox(
 			`Review sandbox created successfully (${providerDisplayName})`,
 			{ sandboxId: reviewSandbox.sandboxId, provider },
 		);
-		return reviewSandbox;
+		return { sandbox: reviewSandbox };
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
 		const errorStack = error instanceof Error ? error.stack : undefined;
 
-		// Bug fix #1924: Log at ERROR level with full context for diagnostics
-		log(
-			`   ❌ ERROR: Failed to create review sandbox (${providerDisplayName})`,
+		// Bug fix #1931: Use console.error so message is ALWAYS visible, even in UI mode
+		// The previous `log()` function is suppressed when uiEnabled=true, making errors invisible
+		console.error(
+			`\n❌ ERROR: Failed to create review sandbox (${providerDisplayName})`,
 		);
-		log(`   Error message: ${errorMessage}`);
+		console.error(`   Error message: ${errorMessage}`);
 		if (errorStack) {
 			// Log truncated stack trace for debugging
 			const truncatedStack = errorStack.split("\n").slice(0, 5).join("\n");
-			log(`   Stack trace:\n${truncatedStack}`);
+			console.error(`   Stack trace:\n${truncatedStack}`);
 		}
 
 		// Bug fix #1883, #1924: Emit failure event with full context
@@ -211,7 +221,9 @@ export async function setupReviewSandbox(
 				stack: errorStack?.slice(0, 500),
 			},
 		);
-		return null;
+
+		// Bug fix #1931: Return error so caller can store it in manifest
+		return { sandbox: null, error: errorMessage };
 	}
 }
 
@@ -497,16 +509,24 @@ export async function executeCompletionPhase(
 	// Create review sandbox
 	const branchName = manifest.sandbox.branch_name;
 	let reviewSandbox: Sandbox | null = null;
+	let reviewError: string | undefined;
 	const reviewUrls: ReviewUrl[] = [];
 
 	if (branchName) {
-		reviewSandbox = await setupReviewSandbox(
+		const result = await setupReviewSandbox(
 			branchName,
 			timeout,
 			uiEnabled,
 			log,
 			provider,
 		);
+		reviewSandbox = result.sandbox;
+		reviewError = result.error;
+
+		// Bug fix #1931: Store error in manifest so it persists for diagnostics
+		if (reviewError) {
+			manifest.progress.review_error = reviewError;
+		}
 
 		// Track review sandbox ID in manifest
 		if (
@@ -572,10 +592,18 @@ export async function executeCompletionPhase(
 	log(`   Completion status: ${completionStatus.toUpperCase()}`);
 
 	if (!reviewSandbox) {
-		log("\n⚠️  WARNING: Review sandbox creation FAILED");
-		log("   - Dev server could not be started for visual review");
-		log("   - Check logs above for sandbox creation error details");
-		log("   - Features are implemented but manual review is required");
+		// Bug fix #1931: Use console.error so warning is ALWAYS visible, even in UI mode
+		console.error("\n⚠️  WARNING: Review sandbox creation FAILED");
+		console.error("   - Dev server could not be started for visual review");
+		if (reviewError) {
+			console.error(`   - Error: ${reviewError}`);
+			console.error(
+				"   - See spec-manifest.json progress.review_error for details",
+			);
+		}
+		console.error(
+			"   - Features are implemented but manual review is required",
+		);
 	}
 
 	if (failedFeatureCount > 0) {

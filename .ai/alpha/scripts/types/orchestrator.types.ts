@@ -176,6 +176,11 @@ export interface SpecManifest {
 		started_at: string | null;
 		completed_at: string | null;
 		last_checkpoint: string | null;
+		/**
+		 * Error message if review sandbox creation failed.
+		 * Bug fix #1931: Persist error details so they survive beyond UI session.
+		 */
+		review_error?: string;
 	};
 	sandbox: {
 		sandbox_ids: string[];
