@@ -326,9 +326,9 @@ jobs:
 
             return pr.data;
 
-      - name: Generate GitHub App Token
+      - name: Generate GitHub App Token for Approval
         if: steps.create-pr.outputs.pr_number != ''
-        id: app-token
+        id: app-token-approve
         uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ secrets.APP_ID }}
@@ -338,7 +338,7 @@ jobs:
         if: steps.create-pr.outputs.pr_number != ''
         env:
           PR_URL: ${{ github.server_url }}/${{ github.repository }}/pull/${{ steps.create-pr.outputs.pr_number }}
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_TOKEN: ${{ steps.app-token-approve.outputs.token }}
         run: |
           echo "Auto-approving staging promotion PR #${{ steps.create-pr.outputs.pr_number }}"
           echo "Quality gates already validated by this workflow:"
