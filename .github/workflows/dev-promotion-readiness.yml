@@ -183,12 +183,20 @@ jobs:
             
             return report;
 
+      - name: Generate GitHub App Token
+        if: steps.assessment.outputs.ready == 'true'
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Create promotion PR if ready
         if: steps.assessment.outputs.ready == 'true'
         id: create-pr
         uses: actions/github-script@v8
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ steps.app-token.outputs.token }}
           script: |
             const { owner, repo } = context.repo;
             
@@ -303,14 +311,6 @@ jobs:
             core.setOutput('pr_url', pr.data.html_url);
 
             return pr.data;
-
-      - name: Generate GitHub App Token
-        if: steps.create-pr.outputs.pr_number != ''
-        id: app-token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Auto-approve staging promotion PR
         if: steps.create-pr.outputs.pr_number != ''
