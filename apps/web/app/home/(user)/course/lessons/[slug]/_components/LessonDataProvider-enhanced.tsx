@@ -1,4 +1,5 @@
 import { createServiceLogger } from "@kit/shared/logger";
+import type { CourseLesson } from "@kit/cms-types";
 import type { Database } from "~/lib/database.types";
 // Import the server client using dynamic import to avoid issues with next/headers
 import { updateLessonProgressAction } from "../../../_lib/server/server-actions";
@@ -7,7 +8,7 @@ import { updateLessonProgressAction } from "../../../_lib/server/server-actions"
 const { getLogger } = createServiceLogger("LESSON-DATA-PROVIDER");
 
 // Define proper types for Payload CMS data structures
-type PayloadLesson = Database["payload"]["Tables"]["course_lessons"]["Row"];
+type PayloadLesson = CourseLesson;
 type PayloadQuiz = {
 	id: string;
 	questions: Array<{
@@ -107,9 +108,8 @@ export async function LessonDataProviderEnhanced({
 	let quiz: PayloadQuiz | null = null;
 	let quizAttempts: QuizAttempt[] = [];
 
-	// Check for quiz relationship - Payload API returns quiz_id, database uses quiz_id_id
-	// biome-ignore lint/suspicious/noExplicitAny: Payload API returns dynamic field names
-	const quizId = (lesson as any).quiz_id || lesson.quiz_id_id;
+	// Check for quiz relationship - Payload API returns quiz_id
+	const quizId = lesson.quiz_id;
 
 	if (quizId) {
 		try {
@@ -120,10 +120,11 @@ export async function LessonDataProviderEnhanced({
 			// Extract the actual quiz ID to avoid [object Object] issues in error messages
 			let quizIdStr = "";
 			if (typeof quizId === "object" && quizId !== null) {
-				const quizObj = quizId as unknown as { id?: string; value?: string };
-				quizIdStr = quizObj.id || quizObj.value || JSON.stringify(quizId);
+				// quizId is a CourseQuizz object
+				quizIdStr = quizId.id;
 			} else {
-				quizIdStr = String(quizId || "");
+				// quizId is a string
+				quizIdStr = quizId;
 			}
 
 			// Skip empty or clearly invalid quiz IDs
@@ -140,7 +141,7 @@ export async function LessonDataProviderEnhanced({
 
 					// Use enhanced quiz loader with depth=2 to ensure questions are included
 					// This explicitly requests a higher depth to include questions in the response
-					quiz = await getQuiz(quizId, { depth: 2 });
+					quiz = await getQuiz(quizIdStr, { depth: 2 });
 
 					// Log results for debugging
 					if (quiz) {
@@ -237,9 +238,8 @@ export async function LessonDataProviderEnhanced({
 	let survey: PayloadSurvey | null = null;
 	let surveyResponses: SurveyResponse[] = [];
 
-	// Check for survey relationship - Payload API returns survey_id, database uses survey_id_id
-	// biome-ignore lint/suspicious/noExplicitAny: Payload API returns dynamic field names
-	const surveyId = (lesson as any).survey_id || lesson.survey_id_id;
+	// Check for survey relationship - Payload API returns survey_id
+	const surveyId = lesson.survey_id;
 
 	if (surveyId) {
 		try {

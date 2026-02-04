@@ -4,6 +4,10 @@ import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { Badge } from "@kit/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 
+import type {
+	Course,
+	CourseLesson as PayloadCourseLesson,
+} from "@kit/cms-types";
 import { useQuery } from "@tanstack/react-query";
 import { CheckCircle, XCircle } from "lucide-react";
 import Image from "next/image";
@@ -57,13 +61,11 @@ const LESSON_PLACEHOLDER_MAP: Record<string, string> = {
 const DEFAULT_PLACEHOLDER = "/images/course-lessons/default-lesson.svg";
 
 // Define type aliases for cleaner code
-type Course = Database["payload"]["Tables"]["courses"]["Row"];
 type CourseProgress = Database["public"]["Tables"]["course_progress"]["Row"];
 type LessonProgress = Database["public"]["Tables"]["lesson_progress"]["Row"];
 type QuizAttempt = Database["public"]["Tables"]["quiz_attempts"]["Row"];
-// Extend the database type to include expanded thumbnail from Payload API (depth=2)
-type CourseLessonRow = Database["payload"]["Tables"]["course_lessons"]["Row"];
-type CourseLesson = CourseLessonRow & {
+// Extend Payload type to include expanded thumbnail from API (depth=2)
+type CourseLesson = PayloadCourseLesson & {
 	thumbnail?: { url?: string } | null;
 };
 
