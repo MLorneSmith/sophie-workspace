@@ -326,6 +326,14 @@ jobs:
 
             return pr.data;
 
+      - name: Generate GitHub App Token
+        if: steps.create-pr.outputs.pr_number != ''
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Auto-approve staging promotion PR
         if: steps.create-pr.outputs.pr_number != ''
         env:
