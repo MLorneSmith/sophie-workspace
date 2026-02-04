@@ -278,14 +278,15 @@ const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 			)}
 
 			{/* Context Usage */}
-			{state.contextUsage > 0 && (
+			{/* Bug fix #1923: Use ternary to prevent rendering raw "0" in Ink */}
+			{state.contextUsage > 0 ? (
 				<Box>
 					<Text dimColor>Context: </Text>
 					<Text color={getContextColor(state.contextUsage)}>
 						{state.contextUsage}%
 					</Text>
 				</Box>
-			)}
+			) : null}
 
 			{/* Heartbeat - dim for idle sandboxes since stale is expected */}
 			{heartbeatAge !== null && (

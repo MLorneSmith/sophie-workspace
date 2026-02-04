@@ -65,6 +65,10 @@ export const EventStreamStatus: FC<EventStreamStatusProps> = ({
 
 /**
  * Compact version showing just icon and count
+ *
+ * Bug fix #1923: Use ternary operator instead of && short-circuit to prevent
+ * rendering raw number "0" which causes Ink error:
+ * "Text string '0' must be rendered inside <Text> component"
  */
 export const CompactEventStreamStatus: FC<EventStreamStatusProps> = ({
 	status,
@@ -73,7 +77,7 @@ export const CompactEventStreamStatus: FC<EventStreamStatusProps> = ({
 	return (
 		<Box>
 			<Text>{STATUS_ICONS[status]}</Text>
-			{eventCount > 0 && <Text dimColor>{eventCount}</Text>}
+			{eventCount > 0 ? <Text dimColor>{eventCount}</Text> : null}
 		</Box>
 	);
 };
