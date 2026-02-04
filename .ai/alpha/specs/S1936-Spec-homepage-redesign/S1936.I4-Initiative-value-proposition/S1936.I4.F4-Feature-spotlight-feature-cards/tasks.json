@@ -1,0 +1,389 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1936.I4.F4",
+    "feature_name": "Spotlight Feature Cards",
+    "feature_slug": "spotlight-feature-cards",
+    "initiative_id": "S1936.I4",
+    "spec_id": 1936,
+    "created_at": "2026-02-04T00:00:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1936.I4.F4.T5", "S1936.I4.F4.T6"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1936.I4.F4.T1",
+      "type": "task",
+      "name": "Create useSpotlightEffect hook skeleton",
+      "action": { "verb": "Create", "target": "useSpotlightEffect hook" },
+      "purpose": "Extract mouse-tracking spotlight logic from CardSpotlight into reusable hook",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/card-spotlight.tsx",
+          "packages/ui/src/hooks/use-mobile.tsx"
+        ],
+        "dependencies": [
+          "useMotionValue from framer-motion",
+          "useMotionTemplate from framer-motion",
+          "useState from react"
+        ],
+        "constraints": [
+          "Extract lines 53-70 from CardSpotlight (mouse tracking logic)",
+          "Return object with: { ref, style, onMouseMove, onMouseEnter, onMouseLeave }",
+          "Accept parameters: radius (default 350), color (default '#262626')",
+          "Use TypeScript with proper typing for all parameters and return values"
+        ]
+      },
+      "input_state": "CardSpotlight component exists with embedded spotlight logic",
+      "output_state": "useSpotlightEffect hook exists in packages/ui/src/hooks/ with mouse tracking extracted",
+      "acceptance_criterion": "Hook returns ref, style, and mouse event handlers that can be spread onto any element",
+      "verification_command": "test -f packages/ui/src/hooks/use-spotlight-effect.tsx && grep -q 'export.*useSpotlightEffect' packages/ui/src/hooks/use-spotlight-effect.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "packages/ui/src/hooks/use-spotlight-effect.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I4.F4.T2", "S1936.I4.F4.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I4.F4.T2",
+      "type": "task",
+      "name": "Add spotlight gradient configuration to hook",
+      "action": { "verb": "Add", "target": "gradient configuration to hook" },
+      "purpose": "Configure radial gradient mask with customizable radius and colors",
+      "status": "draft",
+      "estimated_hours": 1.5,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["packages/ui/src/hooks/use-spotlight-effect.tsx"],
+        "dependencies": [
+          "useMotionTemplate for gradient mask calculation",
+          "CardSpotlight gradient pattern (line 70)"
+        ],
+        "constraints": [
+          "Calculate mask: radial-gradient(${radius}px circle at ${mouseX}px ${mouseY}px, white, transparent 80%)",
+          "Return style object with maskImage and WebkitMaskImage",
+          "Support custom color gradients (linear-gradient with 3 colors)",
+          "Default gradient: linear-gradient(90deg, ${color}, #3b82f6, #8b5cf6)"
+        ]
+      },
+      "input_state": "Hook skeleton exists with basic mouse tracking",
+      "output_state": "Hook calculates and returns motion style with radial gradient mask",
+      "acceptance_criterion": "Hook returns style object with maskImage using useMotionTemplate",
+      "verification_command": "grep -q 'useMotionTemplate' packages/ui/src/hooks/use-spotlight-effect.tsx && grep -q 'radial-gradient' packages/ui/src/hooks/use-spotlight-effect.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "packages/ui/src/hooks/use-spotlight-effect.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I4.F4.T1"],
+        "blocks": ["S1936.I4.F4.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I4.F4.T3",
+      "type": "task",
+      "name": "Add mobile touch device detection to hook",
+      "action": { "verb": "Add", "target": "touch device detection" },
+      "purpose": "Disable spotlight effect on touch devices (no hover state)",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["packages/ui/src/hooks/use-spotlight-effect.tsx"],
+        "dependencies": [
+          "window.matchMedia for touch detection",
+          "CSS media query: (hover: none)"
+        ],
+        "constraints": [
+          "Detect touch-only devices using matchMedia('(hover: none)')",
+          "Return null/noop handlers on touch devices",
+          "Ensure no spotlight overlay renders on mobile",
+          "Keep desktop hover behavior intact"
+        ]
+      },
+      "input_state": "Hook works on all devices including touch",
+      "output_state": "Hook detects touch devices and returns inactive handlers/style",
+      "acceptance_criterion": "Hook checks matchMedia and returns null style on touch-only devices",
+      "verification_command": "grep -q \"matchMedia.*hover: none\" packages/ui/src/hooks/use-spotlight-effect.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "packages/ui/src/hooks/use-spotlight-effect.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I4.F4.T2"],
+        "blocks": ["S1936.I4.F4.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I4.F4.T4",
+      "type": "task",
+      "name": "Export useSpotlightEffect from package.json",
+      "action": { "verb": "Add", "target": "hook export to package.json" },
+      "purpose": "Enable import of useSpotlightEffect from @kit/ui",
+      "status": "draft",
+      "estimated_hours": 0.5,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["packages/ui/package.json"],
+        "dependencies": ["packages/ui/src/hooks/use-spotlight-effect.tsx"],
+        "constraints": [
+          "Follow existing hook export pattern",
+          "Add to exports section alphabetically",
+          "Export path: './hooks/use-spotlight-effect': './src/hooks/use-spotlight-effect.tsx'"
+        ]
+      },
+      "input_state": "Hook exists but not exported from package",
+      "output_state": "package.json includes hook export for external imports",
+      "acceptance_criterion": "Export entry exists in package.json exports section",
+      "verification_command": "grep -q '\"./hooks/use-spotlight-effect\".*\"./src/hooks/use-spotlight-effect.tsx\"' packages/ui/package.json && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "packages/ui/package.json" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I4.F4.T1"],
+        "blocks": ["S1936.I4.F4.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I4.F4.T5",
+      "type": "task",
+      "name": "Apply spotlight hook to BentoGridItem component",
+      "action": { "verb": "Update", "target": "BentoGridItem with spotlight hook" },
+      "purpose": "Integrate spotlight effect into bento grid feature cards",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "How we are different" },
+          { "command": "is visible", "target": "Fine-tuned AI" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["packages/ui/src/aceternity/bento-grid.tsx"],
+        "dependencies": [
+          "useSpotlightEffect from @kit/ui/hooks/use-spotlight-effect",
+          "BentoGridItem component from F3",
+          "motion from framer-motion"
+        ],
+        "constraints": [
+          "Import useSpotlightEffect at top of bento-grid.tsx",
+          "Call hook inside BentoGridItem component",
+          "Spread mouse handlers onto card wrapper element",
+          "Add motion.div overlay with spotlight style",
+          "Position overlay absolute with inset -1px"
+        ]
+      },
+      "input_state": "BentoGridItem exists without spotlight effect (from F3)",
+      "output_state": "BentoGridItem renders with mouse-following spotlight on hover",
+      "acceptance_criterion": "BentoGridItem imports and uses useSpotlightEffect with visible spotlight on hover",
+      "verification_command": "grep -q 'useSpotlightEffect' packages/ui/src/aceternity/bento-grid.tsx && grep -q 'motion.div' packages/ui/src/aceternity/bento-grid.tsx && pnpm typecheck",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "hover_effect",
+            "target": "BentoGridItem",
+            "expected_action": "spotlight gradient follows mouse position",
+            "file_path": "packages/ui/src/aceternity/bento-grid.tsx"
+          }
+        ],
+        "validation_command": "pnpm dev && echo 'Visual test: Hover over feature cards on homepage and verify spotlight follows cursor'"
+      },
+      "outputs": [
+        { "type": "modified", "path": "packages/ui/src/aceternity/bento-grid.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I4.F4.T3", "S1936.I4.F4.T4"],
+        "blocks": ["S1936.I4.F4.T6"]
+      },
+      "cross_feature_dependencies": {
+        "depends_on_features": ["S1936.I4.F3"],
+        "note": "Requires BentoGridItem component from F3"
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I4.F4.T6",
+      "type": "task",
+      "name": "Configure spotlight gradient with design system colors",
+      "action": { "verb": "Configure", "target": "spotlight colors from design system" },
+      "purpose": "Match spotlight gradient to SlideHeroes brand color palette",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "How we are different" },
+          { "command": "is visible", "target": "Fine-tuned AI" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["packages/ui/src/aceternity/bento-grid.tsx"],
+        "dependencies": [
+          "Design system colors from shadcn-ui.css",
+          "CardSpotlight gradient pattern (reference)",
+          "Tailwind CSS variable system"
+        ],
+        "constraints": [
+          "Use hsl(var(--primary)) for primary gradient color",
+          "Maintain 3-color gradient pattern: primary → blue → purple",
+          "Test on both light and dark modes",
+          "Ensure gradient is visible on glass card backgrounds"
+        ]
+      },
+      "input_state": "BentoGridItem has spotlight with default colors",
+      "output_state": "Spotlight uses design system primary color in gradient",
+      "acceptance_criterion": "Gradient uses hsl(var(--primary)) or similar design token",
+      "verification_command": "grep -q 'hsl(var(--primary))\\|var(--primary)' packages/ui/src/aceternity/bento-grid.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "packages/ui/src/aceternity/bento-grid.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I4.F4.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Hook Development",
+        "task_ids": ["S1936.I4.F4.T1", "S1936.I4.F4.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 3.5,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Hook Enhancement & Export",
+        "task_ids": ["S1936.I4.F4.T3", "S1936.I4.F4.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 1.5,
+        "parallel_hours": 1
+      },
+      {
+        "id": 3,
+        "name": "Integration & Configuration",
+        "task_ids": ["S1936.I4.F4.T5", "S1936.I4.F4.T6"],
+        "depends_on_groups": [2],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1936.I4.F4.T1", "S1936.I4.F4.T2", "S1936.I4.F4.T3", "S1936.I4.F4.T5", "S1936.I4.F4.T6"],
+      "total_hours": 7.5
+    },
+    "duration": {
+      "sequential": 8,
+      "parallel": 5,
+      "time_saved_percent": 37.5
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true,
+    "spec_issue_comment_url": "https://github.com/slideheroes/2025slideheroes/issues/1936#issuecomment-3849352310"
+  }
+}
