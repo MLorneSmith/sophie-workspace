@@ -1397,8 +1397,24 @@ export async function createReviewSandbox(
 		await setupGitCredentials(sandbox);
 	}
 
-	// Fetch and checkout the branch
+	// Bug fix #1937: Check if origin remote exists (GPT templates may have empty git repos)
+	// This mirrors the same check in createSandbox() to prevent "exit status 128" errors
 	log(`   Checking out branch: ${branchName}`);
+	const remoteCheck = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && git remote get-url origin 2>/dev/null || echo "NO_REMOTE"`,
+		{ timeoutMs: 10000 },
+	);
+	const hasRemote = !remoteCheck.stdout.trim().includes("NO_REMOTE");
+
+	if (!hasRemote) {
+		log("   Adding git remote origin...");
+		await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && git remote add origin https://github.com/slideheroes/2025slideheroes.git`,
+			{ timeoutMs: 10000 },
+		);
+	}
+
+	// Fetch and checkout the branch
 	await sandbox.commands.run(`cd ${WORKSPACE_DIR} && git fetch origin`, {
 		timeoutMs: 120000,
 	});
