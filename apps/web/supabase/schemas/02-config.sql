@@ -10,7 +10,8 @@ create table if not exists
     enable_team_accounts boolean default true not null,
     enable_account_billing boolean default true not null,
     enable_team_account_billing boolean default true not null,
-    billing_provider public.billing_provider default 'stripe' not null
+    billing_provider public.billing_provider default 'stripe' not null,
+    enable_courses boolean default false not null
   );
 
 comment on table public.config is 'Configuration for the Supabase MakerKit.';
@@ -22,6 +23,8 @@ comment on column public.config.enable_account_billing is 'Enable billing for in
 comment on column public.config.enable_team_account_billing is 'Enable billing for team accounts';
 
 comment on column public.config.billing_provider is 'The billing provider to use';
+
+comment on column public.config.enable_courses is 'Enable Course and Assessment features in the UI (default: false for alpha testing)';
 
 -- RLS(config)
 alter table public.config enable row level security;
@@ -44,7 +47,8 @@ from
 
 -- Open up access to config table for authenticated users and service_role
 grant
-select
+select,
+update
   on public.config to authenticated,
   service_role;
 
@@ -54,6 +58,8 @@ select
 create policy "public config can be read by authenticated users" on public.config for
 select
   to authenticated using (true);
+
+-- NOTE: UPDATE policy for config is in 14-super-admin.sql (depends on is_super_admin function)
 
 -- Function to get the config settings
 create

@@ -26,11 +26,13 @@ const routes = [
 				Icon: <Home className={iconClasses} />,
 				end: true,
 			},
-			{
-				label: "common:routes.course",
-				path: pathsConfig.app.course,
-				Icon: <GraduationCap className={iconClasses} />,
-			},
+			featureFlagsConfig.enableCourses
+				? {
+						label: "common:routes.course",
+						path: pathsConfig.app.course,
+						Icon: <GraduationCap className={iconClasses} />,
+					}
+				: undefined,
 			{
 				label: "common:routes.ai",
 				path: pathsConfig.app.ai,
@@ -46,12 +48,14 @@ const routes = [
 				path: pathsConfig.app.coaching,
 				Icon: <MessageCircle className={iconClasses} />,
 			},
-			{
-				label: "common:routes.assessment",
-				path: pathsConfig.app.assessment,
-				Icon: <BookCheck className={iconClasses} />,
-			},
-		],
+			featureFlagsConfig.enableCourses
+				? {
+						label: "common:routes.assessment",
+						path: pathsConfig.app.assessment,
+						Icon: <BookCheck className={iconClasses} />,
+					}
+				: undefined,
+		].filter((route) => !!route),
 	},
 	{
 		label: "common:routes.settings",
