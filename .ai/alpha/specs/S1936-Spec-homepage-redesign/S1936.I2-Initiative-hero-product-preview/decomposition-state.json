@@ -1,0 +1,52 @@
+{
+  "initiative_id": "S1936.I2",
+  "initiative_name": "Hero & Product Preview",
+  "spec_id": "1936",
+  "status": "completed",
+  "current_phase": "finalization",
+  "completed_at": "2026-02-04T14:30:00Z",
+  "started_at": "2026-02-04T14:00:00Z",
+  "features": {
+    "S1936.I2.F1": {
+      "name": "Hero Section Foundation",
+      "status": "completed",
+      "priority": 1,
+      "task_count": 9,
+      "estimated_hours": 20,
+      "parallel_hours": 18
+    },
+    "S1936.I2.F2": {
+      "name": "Animated Headline",
+      "status": "completed",
+      "priority": 2,
+      "task_count": 6,
+      "estimated_hours": 14,
+      "parallel_hours": 7
+    },
+    "S1936.I2.F3": {
+      "name": "Social Proof & CTA",
+      "status": "completed",
+      "priority": 3,
+      "task_count": 8,
+      "estimated_hours": 13,
+      "parallel_hours": 7
+    },
+    "S1936.I2.F4": {
+      "name": "Product Preview Frame",
+      "status": "completed",
+      "priority": 4,
+      "task_count": 11,
+      "estimated_hours": 25,
+      "parallel_hours": 14
+    }
+  },
+  "totals": {
+    "features_completed": 4,
+    "features_total": 4,
+    "total_tasks": 34,
+    "total_spikes": 0,
+    "total_hours_sequential": 72,
+    "total_hours_parallel": 46
+  },
+  "spikes_pending": []
+}

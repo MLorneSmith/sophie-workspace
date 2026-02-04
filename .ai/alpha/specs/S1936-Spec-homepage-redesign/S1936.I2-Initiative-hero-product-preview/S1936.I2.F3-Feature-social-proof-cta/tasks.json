@@ -1,0 +1,533 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1936.I2.F3",
+    "feature_name": "Social Proof Strip & Dual CTA Block",
+    "feature_slug": "social-proof-cta",
+    "initiative_id": "S1936.I2",
+    "spec_id": 1936,
+    "created_at": "2026-02-04T18:30:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1936.I2.F3.T4", "S1936.I2.F3.T5", "S1936.I2.F3.T8"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1936.I2.F3.T1",
+      "type": "task",
+      "name": "Install @magicui/avatar-circles component",
+      "action": {
+        "verb": "Add",
+        "target": "@magicui/avatar-circles from MagicUI registry"
+      },
+      "purpose": "Provide avatar stack component for social proof display",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["packages/ui/package.json", "packages/ui/src/magicui/"],
+        "dependencies": ["shadcn CLI", "@magicui registry"],
+        "constraints": [
+          "Must add from MagicUI registry using shadcn CLI",
+          "Must update package.json exports after installation"
+        ]
+      },
+      "input_state": "@magicui/avatar-circles not installed in packages/ui",
+      "output_state": "@magicui/avatar-circles component installed and exported from @kit/ui/avatar-circles",
+      "acceptance_criterion": "Component imports successfully from @kit/ui/avatar-circles and renders overlapping avatars",
+      "verification_command": "grep -q 'avatar-circles' packages/ui/package.json && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "packages/ui/src/magicui/avatar-circles.tsx" },
+        { "type": "modified", "path": "packages/ui/package.json" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I2.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I2.F3.T2",
+      "type": "task",
+      "name": "Create placeholder avatar images",
+      "action": {
+        "verb": "Create",
+        "target": "5 placeholder avatar images in public/images/avatars/"
+      },
+      "purpose": "Provide visual diversity in avatar stack for social proof",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["apps/web/public/images/avatars/"],
+        "dependencies": ["Image generation or sourcing from UI Avatars, Boring Avatars, or similar"],
+        "constraints": [
+          "5 diverse avatars (gender, ethnicity representation)",
+          "Square format, 200x200px minimum",
+          "Professional appearance",
+          "Optimized file size (<50KB each)"
+        ]
+      },
+      "input_state": "No avatars directory exists",
+      "output_state": "5 avatar images (avatar-1.png through avatar-5.png) in apps/web/public/images/avatars/",
+      "acceptance_criterion": "Directory contains 5 avatar images accessible via /images/avatars/avatar-N.png URLs",
+      "verification_command": "ls -la apps/web/public/images/avatars/ | grep -c 'avatar-' | grep 5",
+      "outputs": [
+        { "type": "new", "path": "apps/web/public/images/avatars/avatar-1.png" },
+        { "type": "new", "path": "apps/web/public/images/avatars/avatar-2.png" },
+        { "type": "new", "path": "apps/web/public/images/avatars/avatar-3.png" },
+        { "type": "new", "path": "apps/web/public/images/avatars/avatar-4.png" },
+        { "type": "new", "path": "apps/web/public/images/avatars/avatar-5.png" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I2.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S1936.I2.F3.T3",
+      "type": "task",
+      "name": "Create animated counter hook with useSpring",
+      "action": {
+        "verb": "Create",
+        "target": "useCountUp hook in _lib/use-count-up.ts"
+      },
+      "purpose": "Provide reusable count-up animation logic for social proof numbers",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_lib/use-count-up.ts",
+          ".ai/alpha/specs/S1936-Spec-homepage-redesign/research-library/context7-framer-motion-scroll.md"
+        ],
+        "dependencies": ["motion/react (useInView, useMotionValue, useSpring, useTransform)"],
+        "constraints": [
+          "Use useInView with once:true to trigger on first viewport entry",
+          "Use useSpring for smooth animation (stiffness: 100, damping: 30)",
+          "Use useTransform to format number with toLocaleString()",
+          "Return formatted display value and ref for element attachment"
+        ]
+      },
+      "input_state": "No count-up animation logic exists",
+      "output_state": "useCountUp hook accepts target number, returns { ref, displayValue }",
+      "acceptance_criterion": "Hook animates from 0 to target when element enters viewport, formats with commas",
+      "verification_command": "grep -q 'useCountUp' apps/web/app/(marketing)/_lib/use-count-up.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_lib/use-count-up.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I2.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I2.F3.T4",
+      "type": "task",
+      "name": "Create SocialProofStrip component layout",
+      "action": {
+        "verb": "Create",
+        "target": "SocialProofStrip component structure"
+      },
+      "purpose": "Render avatar stack with animated user count for social validation",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Join 2,000+ professionals" },
+          { "command": "find role", "target": "img" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-social-proof-strip.tsx",
+          "packages/ui/src/magicui/avatar-circles.tsx",
+          "apps/web/app/(marketing)/_lib/use-count-up.ts"
+        ],
+        "dependencies": [
+          "@kit/ui/avatar-circles",
+          "useCountUp hook",
+          "motion/react"
+        ],
+        "constraints": [
+          "Client component (uses hooks)",
+          "Flex layout: avatars on left, count text on right",
+          "Responsive: stack vertically on mobile (<640px)",
+          "Count animates to 2000",
+          "Avatars array: /images/avatars/avatar-1.png through avatar-5.png"
+        ]
+      },
+      "input_state": "Avatar component and hook available but not integrated",
+      "output_state": "SocialProofStrip component renders avatar stack with animated count",
+      "acceptance_criterion": "Component displays 5 overlapping avatars and animates count from 0 to 2,000+",
+      "verification_command": "grep -q 'SocialProofStrip' apps/web/app/(marketing)/_components/home-social-proof-strip.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/home-social-proof-strip.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I2.F3.T1", "S1936.I2.F3.T2", "S1936.I2.F3.T3"],
+        "blocks": ["S1936.I2.F3.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I2.F3.T5",
+      "type": "task",
+      "name": "Create HeroCtaBlock component layout",
+      "action": {
+        "verb": "Create",
+        "target": "HeroCtaBlock component with two button placeholders"
+      },
+      "purpose": "Render dual CTA buttons with appropriate styling and layout",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Start Writing Free" },
+          { "command": "is visible", "target": "Watch Demo" },
+          { "command": "find role", "target": "button" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-hero-cta-block.tsx",
+          "packages/ui/src/makerkit/marketing/cta-button.tsx"
+        ],
+        "dependencies": ["@kit/ui/marketing (CtaButton)"],
+        "constraints": [
+          "Use CtaButton for both buttons",
+          "Primary CTA: variant='default', text='Start Writing Free'",
+          "Secondary CTA: variant='outline', text='Watch Demo'",
+          "Flex layout with gap-4 (horizontal on desktop, vertical on mobile)",
+          "Both buttons full-width on mobile"
+        ]
+      },
+      "input_state": "No CTA block component exists",
+      "output_state": "HeroCtaBlock renders two styled buttons in responsive flex layout",
+      "acceptance_criterion": "Component displays primary and secondary CTAs with correct variants and responsive layout",
+      "verification_command": "grep -q 'HeroCtaBlock' apps/web/app/(marketing)/_components/home-hero-cta-block.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/home-hero-cta-block.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I2.F3.T6", "S1936.I2.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I2.F3.T6",
+      "type": "task",
+      "name": "Wire Start Writing Free button to signup page",
+      "action": {
+        "verb": "Wire",
+        "target": "primary CTA to auth.signUp route"
+      },
+      "purpose": "Enable user navigation to signup flow from primary CTA",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Start Writing Free",
+            "expected_action": "navigate to signup page",
+            "file_path": "apps/web/app/(marketing)/_components/home-hero-cta-block.tsx"
+          }
+        ],
+        "validation_command": "grep -Pzo 'Start Writing Free[\\s\\S]{0,100}href=[\"\\']' apps/web/app/(marketing)/_components/home-hero-cta-block.tsx"
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-hero-cta-block.tsx",
+          "apps/web/config/paths.config.ts"
+        ],
+        "dependencies": ["next/link", "pathsConfig"],
+        "constraints": [
+          "Use Next.js Link component wrapped by CtaButton's asChild prop",
+          "Route: pathsConfig.auth.signUp",
+          "Include aria-label for accessibility"
+        ]
+      },
+      "input_state": "Primary CTA button exists without navigation",
+      "output_state": "Primary CTA navigates to signup page when clicked",
+      "acceptance_criterion": "Clicking 'Start Writing Free' button navigates to signup route",
+      "verification_command": "grep -q 'pathsConfig.auth.signUp' apps/web/app/(marketing)/_components/home-hero-cta-block.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/_components/home-hero-cta-block.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I2.F3.T5"],
+        "blocks": ["S1936.I2.F3.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I2.F3.T7",
+      "type": "task",
+      "name": "Wire Watch Demo button to demo page route",
+      "action": {
+        "verb": "Wire",
+        "target": "secondary CTA to demo page"
+      },
+      "purpose": "Enable user navigation to demo/contact from secondary CTA",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Watch Demo",
+            "expected_action": "navigate to demo/contact page",
+            "file_path": "apps/web/app/(marketing)/_components/home-hero-cta-block.tsx"
+          }
+        ],
+        "validation_command": "grep -Pzo 'Watch Demo[\\s\\S]{0,100}href=[\"\\']' apps/web/app/(marketing)/_components/home-hero-cta-block.tsx"
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-hero-cta-block.tsx",
+          "apps/web/config/paths.config.ts"
+        ],
+        "dependencies": ["next/link", "pathsConfig"],
+        "constraints": [
+          "Use Next.js Link component wrapped by CtaButton's asChild prop",
+          "Route: pathsConfig.contact (or create /demo route if preferred)",
+          "Include aria-label for accessibility"
+        ]
+      },
+      "input_state": "Secondary CTA button exists without navigation",
+      "output_state": "Secondary CTA navigates to demo/contact page when clicked",
+      "acceptance_criterion": "Clicking 'Watch Demo' button navigates to demo/contact route",
+      "verification_command": "grep -q 'pathsConfig.contact' apps/web/app/(marketing)/_components/home-hero-cta-block.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/_components/home-hero-cta-block.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I2.F3.T5"],
+        "blocks": ["S1936.I2.F3.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I2.F3.T8",
+      "type": "task",
+      "name": "Integrate SocialProofStrip and HeroCtaBlock into homepage hero",
+      "action": {
+        "verb": "Add",
+        "target": "social proof and CTA components to hero section"
+      },
+      "purpose": "Display social validation and conversion paths in hero above the fold",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Join 2,000+ professionals" },
+          { "command": "is visible", "target": "Start Writing Free" },
+          { "command": "is visible", "target": "Watch Demo" },
+          { "command": "find role", "target": "img" },
+          { "command": "find role", "target": "button" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-social-proof-strip.tsx",
+          "apps/web/app/(marketing)/_components/home-hero-cta-block.tsx"
+        ],
+        "dependencies": [
+          "SocialProofStrip",
+          "HeroCtaBlock"
+        ],
+        "constraints": [
+          "Insert after Hero title/subtitle, before ContainerScroll",
+          "Wrap in Suspense with appropriate fallback",
+          "Use existing spacing system (componentSpacing.stack)",
+          "Center-align components using flex layout"
+        ]
+      },
+      "input_state": "Homepage has hero but no social proof or CTAs",
+      "output_state": "Homepage displays social proof strip and dual CTAs between hero text and product preview",
+      "acceptance_criterion": "Homepage renders avatars, animated count, and both CTA buttons in hero section",
+      "verification_command": "grep -q 'SocialProofStrip' apps/web/app/(marketing)/page.tsx && grep -q 'HeroCtaBlock' apps/web/app/(marketing)/page.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I2.F3.T4", "S1936.I2.F3.T6", "S1936.I2.F3.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation Setup",
+        "task_ids": ["S1936.I2.F3.T1", "S1936.I2.F3.T2", "S1936.I2.F3.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Component Creation",
+        "task_ids": ["S1936.I2.F3.T4", "S1936.I2.F3.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Button Wiring",
+        "task_ids": ["S1936.I2.F3.T6", "S1936.I2.F3.T7"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 1
+      },
+      {
+        "id": 4,
+        "name": "Homepage Integration",
+        "task_ids": ["S1936.I2.F3.T8"],
+        "depends_on_groups": [3],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1936.I2.F3.T1", "S1936.I2.F3.T4", "S1936.I2.F3.T6", "S1936.I2.F3.T8"],
+      "total_hours": 7
+    },
+    "duration": {
+      "sequential": 13,
+      "parallel": 8,
+      "time_saved_percent": 38
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
