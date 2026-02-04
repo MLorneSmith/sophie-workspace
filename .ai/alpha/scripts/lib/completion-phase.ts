@@ -50,6 +50,11 @@ export interface CompletionPhaseResult {
 	reviewUrls: ReviewUrl[];
 	reviewSandbox: Sandbox | null;
 	failedFeatureCount: number;
+	/**
+	 * Completion status indicating the final state of the orchestration.
+	 * Bug fix #1930: Track review sandbox creation success/failure separately.
+	 */
+	completionStatus: "completed" | "partial_completion" | "failed";
 }
 
 // ============================================================================
@@ -534,9 +539,52 @@ export async function executeCompletionPhase(
 	}
 	cleanupOrphanedSandboxIds(manifest, runningSandboxIds, log);
 
+	// Bug fix #1930: Determine completion status based on features AND review sandbox
+	// - "completed": All features completed AND review sandbox created
+	// - "partial_completion": All features completed but review sandbox failed
+	// - "failed": Features failed during implementation
+	let completionStatus: "completed" | "partial_completion" | "failed";
+	if (failedFeatureCount > 0) {
+		completionStatus = "failed";
+	} else if (!reviewSandbox) {
+		completionStatus = "partial_completion";
+	} else {
+		completionStatus = "completed";
+	}
+
 	// Phase 2: Set final status
 	manifest.progress.status = failedFeatureCount === 0 ? "completed" : "partial";
+	manifest.progress.completion_status = completionStatus;
 	saveManifest(manifest, reviewUrls, runId);
+
+	// Bug fix #1930: Add prominent completion summary with clear status reporting
+	log("\n" + "═".repeat(60));
+	log("📊 COMPLETION SUMMARY");
+	log("═".repeat(60));
+	log(
+		`   Features: ${manifest.progress.features_completed}/${manifest.progress.features_total} completed`,
+	);
+	log(
+		`   Tasks: ${manifest.progress.tasks_completed}/${manifest.progress.tasks_total} completed`,
+	);
+	log(`   Failed features: ${failedFeatureCount}`);
+	log(`   Review sandbox: ${reviewSandbox ? "✅ Created" : "❌ FAILED"}`);
+	log(`   Completion status: ${completionStatus.toUpperCase()}`);
+
+	if (!reviewSandbox) {
+		log("\n⚠️  WARNING: Review sandbox creation FAILED");
+		log("   - Dev server could not be started for visual review");
+		log("   - Check logs above for sandbox creation error details");
+		log("   - Features are implemented but manual review is required");
+	}
+
+	if (failedFeatureCount > 0) {
+		log(`\n⚠️  WARNING: ${failedFeatureCount} feature(s) FAILED`);
+		log("   - Check feature error fields in spec-manifest.json");
+		log("   - Review failure reasons before retry");
+	}
+
+	log("═".repeat(60) + "\n");
 
 	// TTS notification
 	notifyCompletion(
@@ -549,5 +597,6 @@ export async function executeCompletionPhase(
 		reviewUrls,
 		reviewSandbox,
 		failedFeatureCount,
+		completionStatus,
 	};
 }

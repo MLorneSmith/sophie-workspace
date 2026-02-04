@@ -157,6 +157,14 @@ export interface SpecManifest {
 			| "completed"
 			| "failed"
 			| "partial";
+		/**
+		 * Completion status indicating the final state of the orchestration.
+		 * Bug fix #1930: Track review sandbox creation success/failure separately.
+		 * - "completed": All features completed AND review sandbox created
+		 * - "partial_completion": All features completed but review sandbox failed
+		 * - "failed": Features failed during implementation
+		 */
+		completion_status?: "completed" | "partial_completion" | "failed";
 		initiatives_completed: number;
 		initiatives_total: number;
 		features_completed: number;
