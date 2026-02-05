@@ -310,6 +310,87 @@ export function detectAndHandleDeadlock(
 		};
 	}
 
+	// Bug fix #1948: Check for orphaned in_progress features
+	// These are features stuck in in_progress with assigned_sandbox set
+	// but the sandbox is idle/not actually running them
+	const orphanedFeatures = manifest.feature_queue.filter((f) => {
+		if (f.status !== "in_progress" || !f.assigned_sandbox) return false;
+
+		const assignedSandbox = instances.find(
+			(i) => i.label === f.assigned_sandbox,
+		);
+		if (!assignedSandbox) return true; // Sandbox doesn't exist at all
+
+		// Feature is orphaned if sandbox is not busy or running a different feature
+		return (
+			assignedSandbox.status !== "busy" ||
+			assignedSandbox.currentFeature !== f.id
+		);
+	});
+
+	if (orphanedFeatures.length > 0) {
+		log(
+			`\n🔮 [ORPHANED_FEATURE] Detected ${orphanedFeatures.length} orphaned in_progress feature(s):`,
+		);
+
+		let resetCount = 0;
+
+		for (const feature of orphanedFeatures) {
+			log(
+				`   #${feature.id}: assigned to ${feature.assigned_sandbox} but not running`,
+			);
+
+			if (shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)) {
+				feature.retry_count = (feature.retry_count ?? 0) + 1;
+				feature.status = "pending";
+				feature.assigned_sandbox = undefined;
+				feature.assigned_at = undefined;
+				feature.error = `Orphaned in_progress feature reset (attempt ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`;
+				resetCount++;
+
+				log(
+					`   ✅ Reset to pending for reassignment (retry ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`,
+				);
+
+				emitOrchestratorEvent(
+					"orphaned_feature_reset",
+					`Feature #${feature.id} orphaned in_progress reset to pending`,
+					{
+						featureId: feature.id,
+						retryCount: feature.retry_count,
+						maxRetries: DEFAULT_MAX_RETRIES,
+						previousSandbox: feature.assigned_sandbox,
+					},
+				);
+			} else {
+				feature.status = "failed";
+				feature.assigned_sandbox = undefined;
+				feature.assigned_at = undefined;
+				feature.error = `Orphaned in_progress feature - max retries (${DEFAULT_MAX_RETRIES}) exceeded`;
+
+				log("   ❌ Max retries exceeded - marked as failed");
+
+				emitOrchestratorEvent(
+					"orphaned_feature_failed",
+					`Feature #${feature.id} orphaned - max retries exceeded`,
+					{
+						featureId: feature.id,
+						retryCount: feature.retry_count ?? 0,
+						maxRetries: DEFAULT_MAX_RETRIES,
+					},
+				);
+			}
+		}
+
+		saveManifest(manifest);
+
+		return {
+			shouldExit: false,
+			retriedCount: resetCount,
+			failedInitiatives: [],
+		};
+	}
+
 	// Check condition 3: Failed features exist
 	const failedFeatures = manifest.feature_queue.filter(
 		(f) => f.status === "failed",

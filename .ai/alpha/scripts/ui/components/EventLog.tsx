@@ -45,6 +45,9 @@ const EVENT_ICONS: Record<OrchestratorEventType, string> = {
 	dev_server_starting: "🚀",
 	dev_server_ready: "✅",
 	dev_server_failed: "❌",
+	// Orphaned feature detection icons (Bug fix #1948)
+	orphaned_feature_reset: "🔮",
+	orphaned_feature_failed: "❌",
 	// Documentation generation icons
 	documentation_start: "📚",
 	documentation_complete: "✅",
@@ -89,6 +92,9 @@ const EVENT_COLORS: Record<OrchestratorEventType, string> = {
 	dev_server_starting: "yellow",
 	dev_server_ready: "green",
 	dev_server_failed: "red",
+	// Orphaned feature detection colors (Bug fix #1948)
+	orphaned_feature_reset: "yellow",
+	orphaned_feature_failed: "red",
 	// Documentation generation colors
 	documentation_start: "blue",
 	documentation_complete: "green",

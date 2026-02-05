@@ -2,7 +2,7 @@
 	"metadata": {
 		"spec_id": "S1918",
 		"spec_name": "user dashboard",
-		"generated_at": "2026-02-04T17:15:42.719Z",
+		"generated_at": "2026-02-05T16:23:23.878Z",
 		"spec_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard",
 		"research_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard/research-library",
 		"required_env_vars": [
@@ -82,10 +82,10 @@
 			"name": "activity task widgets",
 			"slug": "activity-task-widgets",
 			"priority": 4,
-			"status": "completed",
+			"status": "in_progress",
 			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard/S1918.I4-Initiative-activity-task-widgets",
 			"feature_count": 4,
-			"features_completed": 4,
+			"features_completed": 3,
 			"dependencies": [
 				"S1918.I1",
 				"S1918.I2"
@@ -109,10 +109,10 @@
 			"name": "polish accessibility",
 			"slug": "polish-accessibility",
 			"priority": 6,
-			"status": "completed",
+			"status": "pending",
 			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard/S1918.I6-Initiative-polish-accessibility",
 			"feature_count": 4,
-			"features_completed": 4,
+			"features_completed": 0,
 			"dependencies": [
 				"S1918.I1",
 				"S1918.I2",
@@ -174,7 +174,7 @@
 			"tasks_file": "S1918.I1-Initiative-dashboard-foundation/S1918.I1.F3-Feature-widget-placeholder-slots/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard/S1918.I1-Initiative-dashboard-foundation/S1918.I1.F3-Feature-widget-placeholder-slots",
 			"task_count": 16,
-			"tasks_completed": 16,
+			"tasks_completed": 2,
 			"sequential_hours": 21,
 			"parallel_hours": 12,
 			"dependencies": [
@@ -203,7 +203,8 @@
 			],
 			"github_issue": null,
 			"requires_database": false,
-			"database_task_count": 0
+			"database_task_count": 0,
+			"retry_count": 3
 		},
 		{
 			"id": "S1918.I2.F2",
@@ -216,7 +217,7 @@
 			"tasks_file": "S1918.I2-Initiative-data-layer/S1918.I2.F2-Feature-dashboard-loader/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard/S1918.I2-Initiative-data-layer/S1918.I2.F2-Feature-dashboard-loader",
 			"task_count": 6,
-			"tasks_completed": 5,
+			"tasks_completed": 6,
 			"sequential_hours": 14,
 			"parallel_hours": 7,
 			"dependencies": [
@@ -234,11 +235,11 @@
 			"slug": "activity-aggregation",
 			"priority": 3,
 			"global_priority": 6,
-			"status": "completed",
+			"status": "in_progress",
 			"tasks_file": "S1918.I2-Initiative-data-layer/S1918.I2.F3-Feature-activity-aggregation/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard/S1918.I2-Initiative-data-layer/S1918.I2.F3-Feature-activity-aggregation",
 			"task_count": 10,
-			"tasks_completed": 10,
+			"tasks_completed": 2,
 			"sequential_hours": 20,
 			"parallel_hours": 7,
 			"dependencies": [
@@ -247,7 +248,10 @@
 			],
 			"github_issue": null,
 			"requires_database": false,
-			"database_task_count": 0
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-a",
+			"assigned_at": 1770314371965,
+			"retry_count": 2
 		},
 		{
 			"id": "S1918.I3.F1",
@@ -283,7 +287,7 @@
 			"tasks_file": "S1918.I3-Initiative-progress-widgets/S1918.I3.F2-Feature-skills-spider-diagram-widget/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard/S1918.I3-Initiative-progress-widgets/S1918.I3.F2-Feature-skills-spider-diagram-widget",
 			"task_count": 6,
-			"tasks_completed": 6,
+			"tasks_completed": 4,
 			"sequential_hours": 8,
 			"parallel_hours": 5,
 			"dependencies": [
@@ -353,7 +357,7 @@
 			"tasks_file": "S1918.I4-Initiative-activity-task-widgets/S1918.I4.F3-Feature-presentations-table-widget/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard/S1918.I4-Initiative-activity-task-widgets/S1918.I4.F3-Feature-presentations-table-widget",
 			"task_count": 5,
-			"tasks_completed": 5,
+			"tasks_completed": 6,
 			"sequential_hours": 12,
 			"parallel_hours": 12,
 			"dependencies": [
@@ -372,11 +376,11 @@
 			"slug": "activity-feed-widget",
 			"priority": 4,
 			"global_priority": 12,
-			"status": "completed",
+			"status": "pending",
 			"tasks_file": "S1918.I4-Initiative-activity-task-widgets/S1918.I4.F4-Feature-activity-feed-widget/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard/S1918.I4-Initiative-activity-task-widgets/S1918.I4.F4-Feature-activity-feed-widget",
 			"task_count": 4,
-			"tasks_completed": 4,
+			"tasks_completed": 9,
 			"sequential_hours": 10,
 			"parallel_hours": 10,
 			"dependencies": [
@@ -400,7 +404,7 @@
 			"tasks_file": "S1918.I5-Initiative-coaching-integration/S1918.I5.F1-Feature-calcom-api-client/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard/S1918.I5-Initiative-coaching-integration/S1918.I5.F1-Feature-calcom-api-client",
 			"task_count": 6,
-			"tasks_completed": 4,
+			"tasks_completed": 6,
 			"sequential_hours": 12,
 			"parallel_hours": 7,
 			"dependencies": [
@@ -430,7 +434,8 @@
 			],
 			"github_issue": null,
 			"requires_database": false,
-			"database_task_count": 0
+			"database_task_count": 0,
+			"retry_count": 3
 		},
 		{
 			"id": "S1918.I6.F1",
@@ -439,11 +444,11 @@
 			"slug": "loading-skeletons",
 			"priority": 1,
 			"global_priority": 15,
-			"status": "completed",
+			"status": "pending",
 			"tasks_file": "S1918.I6-Initiative-polish-accessibility/S1918.I6.F1-Feature-loading-skeletons/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard/S1918.I6-Initiative-polish-accessibility/S1918.I6.F1-Feature-loading-skeletons",
 			"task_count": 10,
-			"tasks_completed": 10,
+			"tasks_completed": 0,
 			"sequential_hours": 16.25,
 			"parallel_hours": 4.25,
 			"dependencies": [
@@ -466,19 +471,18 @@
 			"slug": "error-boundaries",
 			"priority": 2,
 			"global_priority": 16,
-			"status": "completed",
+			"status": "pending",
 			"tasks_file": "S1918.I6-Initiative-polish-accessibility/S1918.I6.F2-Feature-error-boundaries/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard/S1918.I6-Initiative-polish-accessibility/S1918.I6.F2-Feature-error-boundaries",
 			"task_count": 9,
-			"tasks_completed": 9,
+			"tasks_completed": 0,
 			"sequential_hours": 11,
 			"parallel_hours": 9,
 			"dependencies": [
 				"S1918.I3.F1",
 				"S1918.I3.F2",
 				"S1918.I4.F1",
-				"S1918.I5.F2",
-				"S1918.I6.F4"
+				"S1918.I5.F2"
 			],
 			"github_issue": null,
 			"requires_database": false,
@@ -491,11 +495,11 @@
 			"slug": "accessibility-compliance",
 			"priority": 3,
 			"global_priority": 17,
-			"status": "completed",
+			"status": "pending",
 			"tasks_file": "S1918.I6-Initiative-polish-accessibility/S1918.I6.F3-Feature-accessibility-compliance/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard/S1918.I6-Initiative-polish-accessibility/S1918.I6.F3-Feature-accessibility-compliance",
 			"task_count": 19,
-			"tasks_completed": 5,
+			"tasks_completed": 0,
 			"sequential_hours": 25,
 			"parallel_hours": 12,
 			"dependencies": [
@@ -503,8 +507,7 @@
 				"S1918.I3.F1",
 				"S1918.I3.F2",
 				"S1918.I4.F1",
-				"S1918.I5.F2",
-				"S1918.I6.F4"
+				"S1918.I5.F2"
 			],
 			"github_issue": null,
 			"requires_database": false,
@@ -517,11 +520,11 @@
 			"slug": "e2e-test-suite",
 			"priority": 4,
 			"global_priority": 18,
-			"status": "completed",
+			"status": "pending",
 			"tasks_file": "S1918.I6-Initiative-polish-accessibility/S1918.I6.F4-Feature-e2e-test-suite/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1918-Spec-user-dashboard/S1918.I6-Initiative-polish-accessibility/S1918.I6.F4-Feature-e2e-test-suite",
 			"task_count": 14,
-			"tasks_completed": 14,
+			"tasks_completed": 0,
 			"sequential_hours": 45,
 			"parallel_hours": 16,
 			"dependencies": [
@@ -537,23 +540,27 @@
 		}
 	],
 	"progress": {
-		"status": "completed",
-		"initiatives_completed": 6,
+		"status": "in_progress",
+		"initiatives_completed": 4,
 		"initiatives_total": 6,
-		"features_completed": 18,
+		"features_completed": 11,
 		"features_total": 18,
-		"tasks_completed": 119,
+		"tasks_completed": 66,
 		"tasks_total": 136,
 		"next_feature_id": null,
-		"last_completed_feature_id": "S1918.I6.F2",
-		"started_at": "2026-02-04T17:20:20.255Z",
-		"completed_at": "2026-02-04T18:13:18.970Z",
-		"last_checkpoint": "2026-02-04T18:13:21.951Z",
-		"completion_status": "partial_completion"
+		"last_completed_feature_id": "S1918.I4.F3",
+		"started_at": "2026-02-05T16:28:09.043Z",
+		"completed_at": null,
+		"last_checkpoint": "2026-02-05T18:06:10.062Z"
 	},
 	"sandbox": {
-		"sandbox_ids": [],
+		"sandbox_ids": [
+			"im8ihwy2wv2bfmrsqt4d1",
+			"intsens2q6n9nxzmokwp6",
+			"i7ui7zs7e6dkilv0l73mf"
+		],
 		"branch_name": "alpha/spec-S1918",
-		"created_at": "2026-02-04T17:16:35.423Z"
+		"created_at": "2026-02-05T17:34:26.136Z",
+		"restart_count": 3
 	}
 }
