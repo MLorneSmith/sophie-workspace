@@ -24,6 +24,7 @@ import {
 } from "@kit/ui/form";
 import { If } from "@kit/ui/if";
 import { Input } from "@kit/ui/input";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 
@@ -56,6 +57,7 @@ export function AdminBanUserDialog(
 }
 
 function BanUserForm(props: { userId: string }) {
+	const router = useRouter();
 	const [pending, startTransition] = useTransition();
 	const [error, setError] = useState<boolean>(false);
 
@@ -76,6 +78,7 @@ function BanUserForm(props: { userId: string }) {
 					startTransition(async () => {
 						try {
 							await banUserAction(data);
+							router.refresh();
 						} catch {
 							setError(true);
 						}
