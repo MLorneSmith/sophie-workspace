@@ -259,15 +259,15 @@ jobs:
             - [x] Integration tests passed
             - [x] Quality gates verified
             - [x] PR Validation running
-            - [x] Auto-merge enabled
-            
-            ### 🔄 Automation Flow
+            - [ ] Manual approval required
+
+            ### 🔄 Promotion Flow
             1. ✅ PR Validation runs automatically
-            2. ✅ Auto-merge enabled (squash)
-            3. ⏳ Merges automatically when checks pass
+            2. ⏳ Manual approval required
+            3. 🔀 Merge using squash strategy
             4. 🚀 Staging deployment triggers on merge
 
-            **Manual intervention only needed if checks fail.**
+            **Requires manual approval before merge.**
 
             ### ℹ️ Merge Strategy
             This PR uses **squash merge** to keep staging history clean and avoid
@@ -326,30 +326,30 @@ jobs:
 
             return pr.data;
 
-      # Use GITHUB_TOKEN for approval - this is a different identity (github-actions[bot])
-      # from the GitHub App that created the PR, allowing self-approval
-      - name: Auto-approve staging promotion PR
+      # Post quality gate validation as PR comment (approval requires manual review)
+      - name: Post quality validation comment
         if: steps.create-pr.outputs.pr_number != ''
         env:
           PR_URL: ${{ github.server_url }}/${{ github.repository }}/pull/${{ steps.create-pr.outputs.pr_number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Auto-approving staging promotion PR #${{ steps.create-pr.outputs.pr_number }}"
-          echo "Quality gates already validated by this workflow:"
-          echo "  - Success Rate: >= 80%"
-          echo "  - Code Coverage: >= 80%"
-          echo "  - No Recent Failures"
-          echo "  - Change Size: < 100 files"
-          gh pr review --approve "$PR_URL" --body "✅ Auto-approved by Dev Promotion Readiness workflow.
+          echo "Posting quality validation comment to PR #${{ steps.create-pr.outputs.pr_number }}"
+          gh pr comment "$PR_URL" --body "## ✅ Quality Gates Validated
 
-          **Quality Gates Validated:**
-          - Integration tests passed
-          - Success rate >= 80%
-          - Code coverage >= 80%
-          - No recent failures in last 6h
-          - Change size within limits
+          This PR has passed automated quality checks:
 
-          This PR is safe to merge to staging."
+          | Check | Status |
+          |-------|--------|
+          | Integration tests | ✅ Passed |
+          | Success rate | ✅ >= 80% |
+          | Code coverage | ✅ >= 80% |
+          | Recent failures | ✅ None in last 6h |
+          | Change size | ✅ Within limits |
+
+          **Next step:** Manual approval required before merge.
+
+          ---
+          *Posted by Dev Promotion Readiness workflow*"
 
       - name: Send notifications
         if: always()
@@ -364,8 +364,8 @@ jobs:
             const message = ready
               ? `## 🎉 Dev is Ready for Staging Promotion!\n\n` +
                 `Promotion Score: ${score}/100\n\n` +
-                `A pull request has been created and auto-approved:\n${prUrl}\n\n` +
-                `PR will auto-merge once status checks complete.`
+                `A pull request has been created:\n${prUrl}\n\n` +
+                `Quality gates validated. Awaiting manual approval.`
               : `## ⏸️ Dev Not Ready for Promotion\n\n` +
                 `Promotion Score: ${score}/100\n\n` +
                 `Check the [workflow run](${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`;
