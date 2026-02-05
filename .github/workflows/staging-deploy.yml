@@ -5,6 +5,16 @@ on:
   push:
     branches:
       - staging
+    paths-ignore:
+      - '**.md'
+      - '**.mdx'
+      - 'docs/**'
+      - '.github/**.md'
+      - '.claude/**'
+      - '.vscode/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.env.example'
   schedule:
     # Run weekly load tests every Sunday at 2 AM UTC
     - cron: '0 2 * * 0'
@@ -21,18 +31,20 @@ permissions:
   issues: write
   checks: write
   security-events: write
+  actions: read  # Required for workflow job introspection
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
   TURBO_REMOTE_CACHE_ENABLED: true
+  TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY || '' }}
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
 jobs:
   # Check if validation is needed
   check-validation:
     name: Check if validation needed
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     outputs:
       should-validate: ${{ steps.check.outputs.should-validate }}
     steps:
@@ -64,7 +76,7 @@ jobs:
   # Run validation checks inline (without reusable workflow)
   validate:
     name: Pre-deployment Validation
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: check-validation
     if: needs.check-validation.outputs.should-validate == 'true'
     steps:
@@ -118,7 +130,7 @@ jobs:
   # Test setup job - prepares build artifacts and Supabase for sharded tests
   test-setup:
     name: Test Setup
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [check-validation, validate]
     # Only run tests when validation is needed (direct pushes, not PR merges)
     # PR merges already ran comprehensive e2e-sharded tests before merging
@@ -134,7 +146,7 @@ jobs:
       NEXT_PUBLIC_CI: true
       EMAIL_SENDER: noreply@slideheroes.com
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
-      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_SECRET_KEY: 'sk_test_dummy'
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
       DO_NOT_TRACK: 1
       # Authentication method configuration - required at build time for NEXT_PUBLIC_* vars
@@ -193,7 +205,7 @@ jobs:
     # with test-setup job. Dynamic labels caused scheduling failures in the past.
     # See: Issue #1544 - Cache isolation between runner types caused build not found errors
     # See: Issue #1896, #1897 - Dynamic job-index labels caused shards to get stuck
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [check-validation, test-setup]
     if: |
       always() && !failure() && !cancelled() &&
@@ -223,7 +235,7 @@ jobs:
       NEXT_PUBLIC_CI: true
       EMAIL_SENDER: noreply@slideheroes.com
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
-      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_SECRET_KEY: 'sk_test_dummy'
       STRIPE_WEBHOOK_SECRET: 'whsec_test_dummy'
       ENABLE_BILLING_TESTS: true
       DO_NOT_TRACK: 1
@@ -409,7 +421,7 @@ jobs:
   # Aggregate results from all shards
   test-aggregate:
     name: Test Results
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [check-validation, test-shards]
     if: |
       always() &&
@@ -482,7 +494,7 @@ jobs:
   # Deploy Web App to Vercel Staging environment
   deploy-web:
     name: Deploy Web App to Staging
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [build, test-aggregate]
     environment:
       name: staging
@@ -555,7 +567,7 @@ jobs:
   # Deploy Payload CMS to Vercel Staging environment
   deploy-payload:
     name: Deploy Payload CMS to Staging
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: build
     environment:
       name: staging-payload
@@ -618,7 +630,7 @@ jobs:
   # Run smoke tests against staging
   smoke-tests:
     name: Staging Smoke Tests
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: deploy-web
     environment: staging
     steps:
@@ -699,7 +711,7 @@ jobs:
   # Dynamic Application Security Testing with Nuclei
   dast-security-scan:
     name: DAST Security Scan (Nuclei)
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [deploy-web, deploy-payload]
     continue-on-error: true  # Don't block deployment on security findings initially
     permissions:
@@ -760,7 +772,7 @@ jobs:
   # Notify New Relic of staging deployment
   notify-monitoring:
     name: Notify Monitoring
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [deploy-web, deploy-payload]
     continue-on-error: true
     steps:
@@ -796,7 +808,7 @@ jobs:
   # See: Issue #1848 - PR conflicts due to squash merge history divergence
   sync-dev-with-staging:
     name: Sync Dev with Staging
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [deploy-web, deploy-payload]
     if: success()
     permissions:
