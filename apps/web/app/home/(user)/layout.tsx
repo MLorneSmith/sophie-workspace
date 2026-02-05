@@ -6,7 +6,11 @@ import { use } from "react";
 import { z } from "zod";
 
 import { AppLogo } from "~/components/app-logo";
-import { personalAccountNavigationConfig } from "~/config/personal-account-navigation.config";
+import {
+	getPersonalAccountNavigationConfig,
+	personalAccountNavigationConfig,
+} from "~/config/personal-account-navigation.config";
+import { getEnableCourses } from "~/lib/server/feature-flags.server";
 import { withI18n } from "~/lib/i18n/with-i18n";
 
 // home imports
@@ -30,17 +34,25 @@ export default withI18n(UserHomeLayout);
 function SidebarLayout({ children }: React.PropsWithChildren) {
 	const workspace = use(loadUserWorkspace());
 	const state = use(getLayoutState());
+	const enableCourses = use(getEnableCourses());
+	const navigationConfig = getPersonalAccountNavigationConfig(enableCourses);
 
 	return (
 		<UserWorkspaceContextProvider value={workspace}>
 			<SidebarProvider defaultOpen={state.open}>
 				<Page style={"sidebar"}>
 					<PageNavigation>
-						<HomeSidebar workspace={workspace} />
+						<HomeSidebar
+							workspace={workspace}
+							navigationConfig={navigationConfig}
+						/>
 					</PageNavigation>
 
 					<PageMobileNavigation className={"flex items-center justify-between"}>
-						<MobileNavigation workspace={workspace} />
+						<MobileNavigation
+							workspace={workspace}
+							navigationConfig={navigationConfig}
+						/>
 					</PageMobileNavigation>
 
 					{children}
@@ -52,16 +64,24 @@ function SidebarLayout({ children }: React.PropsWithChildren) {
 
 function HeaderLayout({ children }: React.PropsWithChildren) {
 	const workspace = use(loadUserWorkspace());
+	const enableCourses = use(getEnableCourses());
+	const navigationConfig = getPersonalAccountNavigationConfig(enableCourses);
 
 	return (
 		<UserWorkspaceContextProvider value={workspace}>
 			<Page style={"header"}>
 				<PageNavigation>
-					<HomeMenuNavigation workspace={workspace} />
+					<HomeMenuNavigation
+						workspace={workspace}
+						navigationConfig={navigationConfig}
+					/>
 				</PageNavigation>
 
 				<PageMobileNavigation className={"flex items-center justify-between"}>
-					<MobileNavigation workspace={workspace} />
+					<MobileNavigation
+						workspace={workspace}
+						navigationConfig={navigationConfig}
+					/>
 				</PageMobileNavigation>
 
 				{children}
@@ -72,14 +92,19 @@ function HeaderLayout({ children }: React.PropsWithChildren) {
 
 function MobileNavigation({
 	workspace,
+	navigationConfig,
 }: {
 	workspace: Awaited<ReturnType<typeof loadUserWorkspace>>;
+	navigationConfig: ReturnType<typeof getPersonalAccountNavigationConfig>;
 }) {
 	return (
 		<>
 			<AppLogo />
 
-			<HomeMobileNavigation workspace={workspace} />
+			<HomeMobileNavigation
+				workspace={workspace}
+				navigationConfig={navigationConfig}
+			/>
 		</>
 	);
 }

@@ -684,21 +684,31 @@ export async function runFeatureImplementation(
 		);
 
 		let tasksCompleted = 0;
-		let status: FeatureEntry["status"] = "completed";
+		// Bug fix #1938: Don't default to "completed" - require evidence
+		let status: FeatureEntry["status"] = "pending";
+		let progressFileStatus: string | undefined;
 
 		try {
 			const parsed = JSON.parse(progressResult.stdout || "{}");
 			tasksCompleted = parsed.completed_tasks?.length || 0;
+			progressFileStatus = parsed.status;
 
-			if (parsed.status === "completed" || result.exitCode === 0) {
+			// Bug fix #1938: Only trust explicit "completed" status from progress file
+			// Exit code 0 alone is NOT sufficient evidence of completion
+			if (parsed.status === "completed") {
 				status = "completed";
 			} else if (parsed.status === "blocked") {
 				status = "blocked";
-			} else {
+			} else if (parsed.status === "failed" || result.exitCode !== 0) {
 				status = "failed";
+			} else {
+				// Progress file exists but status is not "completed"
+				// Keep as pending for retry
+				status = "pending";
 			}
 		} catch {
-			status = result.exitCode === 0 ? "completed" : "failed";
+			// No valid progress file - check exit code but be conservative
+			status = result.exitCode === 0 ? "pending" : "failed";
 		}
 
 		// Fallback: Use last polled progress if available
@@ -706,21 +716,45 @@ export async function runFeatureImplementation(
 			tasksCompleted = lastPolledProgress.completed_tasks.length;
 		}
 
-		// Fallback: If completed, try to extract from output or assume all tasks done
-		if (
-			status === "completed" &&
-			result.exitCode === 0 &&
-			tasksCompleted === 0
-		) {
+		// Bug fix #1938: Try to extract task count from output, but NEVER assume all tasks done
+		// The previous code would set tasksCompleted = feature.task_count which caused
+		// features to be marked "completed" with inflated task counts
+		if (tasksCompleted === 0) {
 			const taskMatch = capturedStdout.match(
 				/Tasks?:?\s*(\d+)\s*\/\s*(\d+)\s*(?:completed|complete|\(100%\))/i,
 			);
 			const taskCountStr = taskMatch?.[1];
 			if (taskCountStr) {
 				tasksCompleted = parseInt(taskCountStr, 10);
-			} else {
-				tasksCompleted = feature.task_count;
 			}
+			// DO NOT fallback to feature.task_count - that's the bug we're fixing
+		}
+
+		// Bug fix #1938: Require meaningful evidence before marking completed
+		// A feature is only "completed" if:
+		// 1. Progress file explicitly says status: "completed", OR
+		// 2. At least 50% of tasks were completed (indicates real progress)
+		const completionThreshold = Math.ceil(feature.task_count * 0.5);
+		if (status === "completed" && tasksCompleted < completionThreshold) {
+			// Progress file said completed but we have no evidence of task completion
+			// This likely means the agent exited without doing the work
+			log(
+				`   │   ⚠️ [COMPLETION_VALIDATION] Progress file claimed completed but only ${tasksCompleted}/${feature.task_count} tasks verified`,
+			);
+			if (progressFileStatus === "completed" && tasksCompleted === 0) {
+				// Explicit completion claim with zero tasks - suspicious, mark for retry
+				status = "pending";
+				log(
+					"   │   ⚠️ [COMPLETION_VALIDATION] Marking as pending for retry (zero tasks completed)",
+				);
+			}
+		}
+
+		// If we're marking as pending (for retry), add a note about why
+		if (status === "pending" && result.exitCode === 0) {
+			log(
+				"   │   ℹ️ [COMPLETION_VALIDATION] Exit code 0 but insufficient completion evidence - will retry",
+			);
 		}
 
 		// Update feature
@@ -812,8 +846,15 @@ export async function runFeatureImplementation(
 			);
 		}
 
+		// Bug fix #1938: Add icon for pending status (retry)
 		const icon =
-			status === "completed" ? "✅" : status === "blocked" ? "🚫" : "❌";
+			status === "completed"
+				? "✅"
+				: status === "blocked"
+					? "🚫"
+					: status === "pending"
+						? "🔄"
+						: "❌";
 		log(
 			`   └── ${icon} ${status} (${tasksCompleted}/${feature.task_count} tasks)`,
 		);

@@ -71,3 +71,12 @@ create policy super_admins_access_role_permissions
     for select
     to authenticated
     using (public.is_super_admin());
+
+-- Allow Super Admins to update the config table (for feature flags)
+create policy super_admins_update_config
+    on public.config
+    as permissive
+    for update
+    to authenticated
+    using (public.is_super_admin())
+    with check (public.is_super_admin());

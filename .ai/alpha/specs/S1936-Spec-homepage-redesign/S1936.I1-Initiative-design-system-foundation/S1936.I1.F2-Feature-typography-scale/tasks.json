@@ -1,0 +1,446 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1936.I1.F2",
+    "feature_name": "Typography Scale",
+    "feature_slug": "typography-scale",
+    "initiative_id": "S1936.I1",
+    "spec_id": "S1936",
+    "created_at": "2026-02-04T19:30:00Z",
+    "complexity": {
+      "score": 37.5,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "signals": {
+        "files_affected": {
+          "value": 2,
+          "weight": 0.25
+        },
+        "dependencies": {
+          "value": "few",
+          "weight": 0.5
+        },
+        "estimated_loc": {
+          "value": 150,
+          "weight": 0.5
+        },
+        "feature_type": {
+          "value": "enhancement",
+          "weight": 0.25
+        }
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": [],
+    "external_dependencies": [
+      {
+        "feature_id": "S1936.I1.F1",
+        "reason": "Gradient text utility (T5) uses accent color tokens defined in F1"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1936.I1.F2.T1",
+      "type": "task",
+      "name": "Add display headline tokens with fluid sizing",
+      "action": {
+        "verb": "Add",
+        "target": "display headline tokens"
+      },
+      "purpose": "Define 3 fluid display sizes (xl, lg, md) using clamp() for responsive scaling without media queries, including letter-spacing and line-height properties",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/styles/theme.css"
+        ],
+        "dependencies": [
+          "--accent-primary from F1 (for reference in later tasks)"
+        ],
+        "constraints": [
+          "Use --homepage-text-display-* prefix",
+          "Include --{token}--line-height and --{token}--letter-spacing suffixes",
+          "Use clamp() for fluid sizing"
+        ]
+      },
+      "input_state": "theme.css has existing --text-display and --text-display-2 tokens; no homepage-specific display tokens exist",
+      "output_state": "theme.css contains --homepage-text-display-xl, --homepage-text-display-lg, --homepage-text-display-md with associated line-height and letter-spacing properties",
+      "acceptance_criterion": "Three display headline tokens defined with clamp() sizing and associated typographic properties",
+      "verification_command": "grep -c 'homepage-text-display' apps/web/styles/theme.css && test $(grep -c 'homepage-text-display' apps/web/styles/theme.css) -eq 9 && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/theme.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1936.I1.F2.T2"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I1.F2.T2",
+      "type": "task",
+      "name": "Add heading tokens (h1-h4)",
+      "action": {
+        "verb": "Add",
+        "target": "heading tokens"
+      },
+      "purpose": "Define 4 heading sizes (h1-h4) with appropriate letter-spacing and line-height for homepage sections",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/styles/theme.css"
+        ],
+        "dependencies": [
+          "Display tokens from T1"
+        ],
+        "constraints": [
+          "Use --homepage-text-h1 through --homepage-text-h4 naming",
+          "Include line-height and letter-spacing for each",
+          "Sizes: 2rem, 1.5rem, 1.25rem, 1.125rem"
+        ]
+      },
+      "input_state": "theme.css has display tokens from T1; existing --text-h2 and --text-h3 tokens for reference",
+      "output_state": "theme.css contains --homepage-text-h1, --homepage-text-h2, --homepage-text-h3, --homepage-text-h4 with associated typographic properties",
+      "acceptance_criterion": "Four heading tokens defined with fixed rem sizing and associated typographic properties",
+      "verification_command": "grep -c 'homepage-text-h' apps/web/styles/theme.css && test $(grep -c 'homepage-text-h' apps/web/styles/theme.css) -eq 12 && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/theme.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1936.I1.F2.T1"
+        ],
+        "blocks": [
+          "S1936.I1.F2.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I1.F2.T3",
+      "type": "task",
+      "name": "Add body text tokens (body-lg, body, body-sm)",
+      "action": {
+        "verb": "Add",
+        "target": "body text tokens"
+      },
+      "purpose": "Define 3 body text sizes optimized for readability with appropriate line-height",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/styles/theme.css"
+        ],
+        "dependencies": [
+          "Heading tokens from T2",
+          "Existing --text-body and --text-body-lg for reference"
+        ],
+        "constraints": [
+          "Use --homepage-text-body-lg, --homepage-text-body, --homepage-text-body-sm naming",
+          "Include line-height for each (1.6 per spec)",
+          "Sizes: 1.125rem, 1rem, 0.875rem"
+        ]
+      },
+      "input_state": "theme.css has display and heading tokens from T1-T2; existing body tokens for reference",
+      "output_state": "theme.css contains --homepage-text-body-lg, --homepage-text-body, --homepage-text-body-sm with line-height properties",
+      "acceptance_criterion": "Three body text tokens defined with fixed rem sizing and line-height of 1.6",
+      "verification_command": "grep -c 'homepage-text-body' apps/web/styles/theme.css && test $(grep -c 'homepage-text-body' apps/web/styles/theme.css) -eq 6 && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/theme.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1936.I1.F2.T2"
+        ],
+        "blocks": [
+          "S1936.I1.F2.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I1.F2.T4",
+      "type": "task",
+      "name": "Add utility text tokens (caption, overline)",
+      "action": {
+        "verb": "Add",
+        "target": "utility text tokens"
+      },
+      "purpose": "Define caption and overline tokens for labels, metadata, and section markers with appropriate text-transform and letter-spacing",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/styles/theme.css"
+        ],
+        "dependencies": [
+          "Body text tokens from T3"
+        ],
+        "constraints": [
+          "Use --homepage-text-caption and --homepage-text-overline naming",
+          "Caption: 0.75rem",
+          "Overline: 0.75rem with 0.1em letter-spacing and uppercase transform"
+        ]
+      },
+      "input_state": "theme.css has display, heading, and body tokens from T1-T3",
+      "output_state": "theme.css contains --homepage-text-caption and --homepage-text-overline with associated typographic properties including text-transform for overline",
+      "acceptance_criterion": "Two utility text tokens defined with caption for labels and overline for uppercase section markers",
+      "verification_command": "grep -c 'homepage-text-caption\\|homepage-text-overline' apps/web/styles/theme.css && test $(grep -c 'homepage-text-caption\\|homepage-text-overline' apps/web/styles/theme.css) -ge 4 && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/theme.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1936.I1.F2.T3"
+        ],
+        "blocks": [
+          "S1936.I1.F2.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I1.F2.T5",
+      "type": "task",
+      "name": "Create text gradient utility class",
+      "action": {
+        "verb": "Create",
+        "target": "text gradient utility class"
+      },
+      "purpose": "Add .text-gradient-homepage utility class for gradient text effects on highlighted keywords using accent colors from F1",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/styles/globals.css"
+        ],
+        "dependencies": [
+          "--accent-primary (#24a9e0) and --accent-gradient-end (#0ea5e9) from F1"
+        ],
+        "constraints": [
+          "Use .text-gradient-homepage class name",
+          "Apply linear-gradient(90deg, #24a9e0, #0ea5e9)",
+          "Use background-clip: text and -webkit-background-clip: text",
+          "Set color: transparent"
+        ]
+      },
+      "input_state": "globals.css has @layer base styles; no text gradient utility exists yet",
+      "output_state": "globals.css contains .text-gradient-homepage class with gradient text effect using accent colors",
+      "acceptance_criterion": "Text gradient utility class exists and uses background-clip technique with accent gradient colors",
+      "verification_command": "grep -c 'text-gradient-homepage' apps/web/styles/globals.css && grep -q 'background-clip: text' apps/web/styles/globals.css && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/globals.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1936.I1.F2.T4"
+        ],
+        "blocks": [
+          "S1936.I1.F2.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I1.F2.T6",
+      "type": "task",
+      "name": "Create text highlight utility class",
+      "action": {
+        "verb": "Create",
+        "target": "text highlight utility class"
+      },
+      "purpose": "Add .text-highlight-homepage utility class for animated underline effect on keywords using ::after pseudo-element",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/styles/globals.css"
+        ],
+        "dependencies": [
+          "Text gradient utility from T5",
+          "Accent color from F1 (rgba(36, 169, 224, 0.4))"
+        ],
+        "constraints": [
+          "Use .text-highlight-homepage class name",
+          "Position: relative on element",
+          "Use ::after pseudo-element for underline",
+          "Underline: 6px height, accent color with 40% opacity, slight rotation (-1deg)",
+          "Apply mask-image for fade effect on edges"
+        ]
+      },
+      "input_state": "globals.css has text gradient utility from T5; no text highlight utility exists yet",
+      "output_state": "globals.css contains .text-highlight-homepage class with animated underline effect via ::after pseudo-element",
+      "acceptance_criterion": "Text highlight utility class exists with ::after pseudo-element creating accent-colored underline with rotation and mask-image fade",
+      "verification_command": "grep -c 'text-highlight-homepage' apps/web/styles/globals.css && grep -q '::after' apps/web/styles/globals.css && grep -q 'mask-image' apps/web/styles/globals.css && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/globals.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1936.I1.F2.T5"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Typography Tokens",
+        "task_ids": [
+          "S1936.I1.F2.T1",
+          "S1936.I1.F2.T2",
+          "S1936.I1.F2.T3",
+          "S1936.I1.F2.T4"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 4,
+        "description": "Add all typography tokens to theme.css (sequential due to same file)"
+      },
+      {
+        "id": 2,
+        "name": "Text Effect Utilities",
+        "task_ids": [
+          "S1936.I1.F2.T5",
+          "S1936.I1.F2.T6"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2,
+        "description": "Add text effect utility classes to globals.css (sequential due to same file)"
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1936.I1.F2.T1",
+        "S1936.I1.F2.T2",
+        "S1936.I1.F2.T3",
+        "S1936.I1.F2.T4",
+        "S1936.I1.F2.T5",
+        "S1936.I1.F2.T6"
+      ],
+      "total_hours": 6
+    },
+    "duration": {
+      "sequential": 6,
+      "parallel": 6,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true,
+    "spec_issue_comment_url": "https://github.com/slideheroes/2025slideheroes/issues/1936#issuecomment-3849308092"
+  }
+}

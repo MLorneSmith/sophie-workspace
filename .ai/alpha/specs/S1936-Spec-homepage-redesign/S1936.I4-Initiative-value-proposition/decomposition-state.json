@@ -1,0 +1,58 @@
+{
+  "initiative_id": "S1936.I4",
+  "initiative_name": "Value Proposition",
+  "spec_id": "1936",
+  "status": "completed",
+  "current_phase": "finalization",
+  "started_at": "2026-02-04T19:00:00Z",
+  "completed_at": "2026-02-04T19:16:00Z",
+  "features": {
+    "S1936.I4.F1": {
+      "name": "Sticky Scroll Enhancement",
+      "status": "completed",
+      "task_count": 6,
+      "hours_sequential": 10,
+      "hours_parallel": 7,
+      "started_at": "2026-02-04T19:01:00Z",
+      "completed_at": "2026-02-04T19:04:00Z"
+    },
+    "S1936.I4.F2": {
+      "name": "How It Works Stepper",
+      "status": "completed",
+      "task_count": 12,
+      "hours_sequential": 27,
+      "hours_parallel": 13,
+      "started_at": "2026-02-04T19:05:00Z",
+      "completed_at": "2026-02-04T19:09:00Z"
+    },
+    "S1936.I4.F3": {
+      "name": "Bento Grid Layout",
+      "status": "completed",
+      "task_count": 7,
+      "hours_sequential": 10.5,
+      "hours_parallel": 10.5,
+      "started_at": "2026-02-04T19:10:00Z",
+      "completed_at": "2026-02-04T19:13:00Z"
+    },
+    "S1936.I4.F4": {
+      "name": "Spotlight Feature Cards",
+      "status": "completed",
+      "task_count": 6,
+      "hours_sequential": 8,
+      "hours_parallel": 7.5,
+      "started_at": "2026-02-04T19:13:00Z",
+      "completed_at": "2026-02-04T19:16:00Z"
+    }
+  },
+  "spikes_pending": [],
+  "total_spikes": 0,
+  "total_features": 4,
+  "completed_features": 4,
+  "failed_features": 0,
+  "summary": {
+    "total_tasks": 31,
+    "total_hours_sequential": 55.5,
+    "total_hours_parallel": 38,
+    "time_saved_percent": 31.5
+  }
+}

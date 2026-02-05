@@ -22,7 +22,13 @@ export function buildImplementationPrompt(
 	featureId: string,
 ): string {
 	if (provider === "gpt") {
+		// Bug fix #1937: Add explicit autonomous execution instructions to prevent GPT from
+		// asking clarifying questions (which causes stale heartbeats and workflow interruption).
+		// GPT tends to read SKILL.md files that instruct it to ask questions before implementation.
 		return (
+			"CRITICAL: This is an AUTONOMOUS execution with NO user interaction available. " +
+			`You MUST NOT ask clarifying questions, wait for user input, or use any "brainstorming" skills. ` +
+			"Make reasonable assumptions and proceed with implementation immediately.\n\n" +
 			`Implement ALL tasks for feature ${featureId} using the Alpha workflow. ` +
 			`Read and follow the instructions in ${WORKSPACE_DIR}/.claude/commands/alpha/implement.md exactly. ` +
 			"Ensure you update .initiative-progress.json, update tasks.json statuses, run verification commands, " +
@@ -38,7 +44,10 @@ export function buildDocumentationPrompt(
 	specId: string,
 ): string {
 	if (provider === "gpt") {
+		// Bug fix #1937: Add explicit autonomous execution instructions
 		return (
+			"CRITICAL: This is an AUTONOMOUS execution with NO user interaction available. " +
+			"You MUST NOT ask clarifying questions or wait for user input. Proceed immediately.\n\n" +
 			`Generate spec documentation for S${specId} using the Alpha workflow. ` +
 			`Read and follow the instructions in ${WORKSPACE_DIR}/.claude/commands/alpha/document.md if present. ` +
 			`If that file does not exist, mirror the behavior of /alpha:document ${specId} as closely as possible.`

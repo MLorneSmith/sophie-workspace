@@ -1,0 +1,304 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1936.I3.F1",
+    "feature_name": "Logo Cloud Marquee Enhancement",
+    "feature_slug": "logo-cloud-marquee",
+    "initiative_id": "S1936.I3",
+    "spec_id": 1936,
+    "created_at": "2026-02-04T19:30:00Z",
+    "complexity": {
+      "score": 38,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1936.I3.F1.T4"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1936.I3.F1.T1",
+      "type": "task",
+      "name": "Update LogoItem to use CSS grayscale filter",
+      "action": {
+        "verb": "Update",
+        "target": "LogoItem component to use CSS filter"
+      },
+      "purpose": "Replace dual-image approach with CSS filter: grayscale(1) for consistency and simpler hover logic",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/logo-marquee.tsx"
+        ],
+        "dependencies": [
+          "framer-motion",
+          "next/image",
+          "cn utility"
+        ],
+        "constraints": [
+          "Must remove dark mode image swapping (lines 144-160)",
+          "Use single src image with filter: grayscale(1)",
+          "Keep framer-motion scale animation on hover"
+        ]
+      },
+      "input_state": "LogoItem uses separate color/grayscale images for light/dark modes, swaps between them using dark: className modifier",
+      "output_state": "LogoItem uses single color image with CSS filter: grayscale(1) applied by default, preparing for hover transition",
+      "acceptance_criterion": "LogoItem renders single Image element with grayscale filter applied, no dark mode image swapping",
+      "verification_command": "grep -A20 'const LogoItem' packages/ui/src/aceternity/logo-marquee.tsx | grep -q 'filter.*grayscale' && ! grep -q 'dark:block' packages/ui/src/aceternity/logo-marquee.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/logo-marquee.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I3.F1.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F1.T2",
+      "type": "task",
+      "name": "Add hover colorization transition to LogoItem",
+      "action": {
+        "verb": "Add",
+        "target": "grayscale-to-color transition on hover"
+      },
+      "purpose": "Create smooth visual feedback when users hover over logos, transitioning from grayscale to full color",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/logo-marquee.tsx"
+        ],
+        "dependencies": [
+          "Tailwind CSS transition utilities",
+          "CSS filter property"
+        ],
+        "constraints": [
+          "Transition duration should be 300ms (match existing opacity transition)",
+          "Use hover:filter: grayscale(0) for full color",
+          "Combine with existing scale animation"
+        ]
+      },
+      "input_state": "LogoItem has grayscale filter applied by default, no hover state change for filter",
+      "output_state": "LogoItem transitions from grayscale to color on hover with smooth 300ms transition",
+      "acceptance_criterion": "Hovering logo transitions filter from grayscale(1) to grayscale(0) with duration-300 class",
+      "verification_command": "grep -A25 'const LogoItem' packages/ui/src/aceternity/logo-marquee.tsx | grep -q 'hover:.*grayscale(0)' && grep -q 'transition.*duration-300' packages/ui/src/aceternity/logo-marquee.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/logo-marquee.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F1.T1"],
+        "blocks": ["S1936.I3.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F1.T3",
+      "type": "task",
+      "name": "Add reduced motion support to marquee",
+      "action": {
+        "verb": "Add",
+        "target": "prefers-reduced-motion detection"
+      },
+      "purpose": "Respect user accessibility preferences by disabling marquee animation when reduced motion is preferred",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/logo-marquee.tsx"
+        ],
+        "dependencies": [
+          "React useEffect and useState hooks",
+          "window.matchMedia API"
+        ],
+        "constraints": [
+          "Detect prefers-reduced-motion on mount and media query change",
+          "Set Marquee speed to 0 when reduced motion preferred",
+          "Keep hover effects (scale, colorization) active"
+        ]
+      },
+      "input_state": "Marquee always animates at speed 30/25 regardless of user motion preferences",
+      "output_state": "Marquee respects prefers-reduced-motion, sets speed to 0 when user prefers reduced motion",
+      "acceptance_criterion": "Component detects prefers-reduced-motion via matchMedia and conditionally sets Marquee speed prop",
+      "verification_command": "grep -q 'prefers-reduced-motion' packages/ui/src/aceternity/logo-marquee.tsx && grep -q 'matchMedia' packages/ui/src/aceternity/logo-marquee.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/logo-marquee.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I3.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F1.T4",
+      "type": "task",
+      "name": "Verify dual-row animation and gradient fades",
+      "action": {
+        "verb": "Test",
+        "target": "marquee functionality and visual effects"
+      },
+      "purpose": "Ensure existing dual-row opposite direction animation, gradient edge fades, and new enhancements work correctly",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Trusted by the world's best teams"
+          },
+          {
+            "command": "find role",
+            "target": "img"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/logo-marquee.tsx",
+          "apps/web/app/(marketing)/_components/home-logo-cloud-client.tsx"
+        ],
+        "dependencies": [
+          "pnpm dev server",
+          "Browser DevTools"
+        ],
+        "constraints": [
+          "Row 1 scrolls right (direction='right')",
+          "Row 2 scrolls left (direction='left')",
+          "Gradient fades visible on edges",
+          "Logos grayscale by default, colorize on hover",
+          "Mobile shows single row or stacks appropriately"
+        ]
+      },
+      "input_state": "All implementation tasks complete, component code modified",
+      "output_state": "Visual verification confirms all acceptance criteria met: dual-row animation, gradient fades, grayscale hover, reduced motion",
+      "acceptance_criterion": "Visual inspection via dev server confirms: (1) opposite scroll directions, (2) gradient edge fades, (3) grayscale-to-color hover, (4) reduced motion support, (5) mobile responsive",
+      "verification_command": "pnpm dev && echo 'Visual verification: Navigate to homepage, observe logo marquee section, verify dual-row opposite scroll, gradient fades, and grayscale-to-color hover effect'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": ".ai/alpha/specs/S1936-Spec-homepage-redesign/S1936.I3-Initiative-trust-elements/S1936.I3.F1-Feature-logo-cloud-marquee/verification-report.md"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F1.T2", "S1936.I3.F1.T3"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Implementation",
+        "task_ids": ["S1936.I3.F1.T1", "S1936.I3.F1.T2", "S1936.I3.F1.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 7,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Verification",
+        "task_ids": ["S1936.I3.F1.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1936.I3.F1.T1", "S1936.I3.F1.T2", "S1936.I3.F1.T4"],
+      "total_hours": 6
+    },
+    "duration": {
+      "sequential": 9,
+      "parallel": 5,
+      "time_saved_percent": 44
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

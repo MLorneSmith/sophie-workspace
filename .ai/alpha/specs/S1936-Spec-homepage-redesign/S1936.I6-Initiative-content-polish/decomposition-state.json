@@ -1,0 +1,44 @@
+{
+  "initiative_id": "S1936.I6",
+  "initiative_name": "Content & Polish",
+  "spec_id": "1936",
+  "status": "completed",
+  "current_phase": "finalization",
+  "started_at": "2026-02-04T00:00:00Z",
+  "completed_at": "2026-02-04T00:00:00Z",
+  "features": {
+    "S1936.I6.F1": {
+      "name": "Blog Section Redesign",
+      "status": "completed",
+      "task_count": 5,
+      "hours_estimate": 8
+    },
+    "S1936.I6.F2": {
+      "name": "Loading States & Error Boundaries",
+      "status": "completed",
+      "task_count": 12,
+      "hours_estimate": 8
+    },
+    "S1936.I6.F3": {
+      "name": "Accessibility Compliance",
+      "status": "completed",
+      "task_count": 12,
+      "hours_estimate": 8
+    },
+    "S1936.I6.F4": {
+      "name": "Performance Optimization",
+      "status": "completed",
+      "task_count": 8,
+      "hours_estimate": 6
+    }
+  },
+  "totals": {
+    "features_completed": 4,
+    "features_total": 4,
+    "tasks_total": 37,
+    "hours_sequential": 78,
+    "hours_parallel": 30,
+    "spikes_total": 0
+  },
+  "spikes_pending": []
+}

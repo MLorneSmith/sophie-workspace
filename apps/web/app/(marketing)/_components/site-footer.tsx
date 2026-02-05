@@ -1,9 +1,11 @@
 import { cn } from "@kit/ui/utils";
 
+import featureFlagsConfig from "~/config/feature-flags.config";
+
 import { FooterLinkList } from "./site-footer-link-list";
 import { FooterLogoSection } from "./site-footer-logo-section";
 
-const PRODUCT = [
+const PRODUCT_BASE = [
 	{
 		title: "Features",
 		href: "/#features",
@@ -16,10 +18,12 @@ const PRODUCT = [
 		title: "AI Presentation Builder",
 		href: "/#ai",
 	},
-	{
-		title: "Course",
-		href: "/#course",
-	},
+	featureFlagsConfig.enableCourses
+		? {
+				title: "Course",
+				href: "/#course",
+			}
+		: null,
 	{
 		title: "Coaching",
 		href: "/#coaching",
@@ -37,6 +41,10 @@ const PRODUCT = [
 		href: "/support",
 	},
 ] as const;
+
+const PRODUCT = PRODUCT_BASE.filter(
+	(item): item is NonNullable<typeof item> => item !== null,
+);
 
 const COMPANY = [
 	{

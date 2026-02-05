@@ -1,0 +1,655 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1936.I2.F1",
+    "feature_name": "Hero Section Foundation",
+    "feature_slug": "hero-section-foundation",
+    "initiative_id": "S1936.I2",
+    "spec_id": "1936",
+    "created_at": "2026-02-04T18:00:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1936.I2.F1.T6", "S1936.I2.F1.T7"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1936.I2.F1.T1",
+      "type": "task",
+      "name": "Create GradientOrbs component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "GradientOrbs component file"
+      },
+      "purpose": "Establish the client component structure for animated floating gradient orbs that will replace BackgroundBoxes",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/background-boxes.tsx",
+          ".ai/alpha/specs/S1936-Spec-homepage-redesign/research-library/context7-framer-motion-scroll.md"
+        ],
+        "dependencies": [
+          "framer-motion",
+          "cn() utility from @kit/ui/cn"
+        ],
+        "constraints": [
+          "Must be a client component ('use client' directive)",
+          "Accept className and children props for composability",
+          "Use Framer Motion for animations"
+        ]
+      },
+      "input_state": "No GradientOrbs component exists; BackgroundBoxes is current background pattern",
+      "output_state": "GradientOrbs.tsx exists with TypeScript interface and basic component structure",
+      "acceptance_criterion": "File packages/ui/src/makerkit/marketing/gradient-orbs.tsx exists with GradientOrbs export and proper TypeScript typing",
+      "verification_command": "test -f packages/ui/src/makerkit/marketing/gradient-orbs.tsx && grep -q 'export.*GradientOrbs' packages/ui/src/makerkit/marketing/gradient-orbs.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "packages/ui/src/makerkit/marketing/gradient-orbs.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I2.F1.T2", "S1936.I2.F1.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I2.F1.T2",
+      "type": "task",
+      "name": "Add gradient orb elements with radial gradients",
+      "action": {
+        "verb": "Add",
+        "target": "gradient orb div elements"
+      },
+      "purpose": "Create the visual orb elements using CSS radial gradients with dark-mode-first color palette",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/marketing/gradient-orbs.tsx",
+          ".ai/reports/brainstorming/2026-02-04-homepage-redesign-design-system.md"
+        ],
+        "dependencies": [
+          "Design system color tokens (pending S1936.I1.F1)"
+        ],
+        "constraints": [
+          "Use CSS radial-gradient() for orbs",
+          "Dark gray base colors with high-luminance accents",
+          "Position orbs using absolute positioning for layering",
+          "Create 3-5 orbs of varying sizes"
+        ]
+      },
+      "input_state": "GradientOrbs component skeleton exists with no visual elements",
+      "output_state": "Component renders 3-5 gradient orbs with CSS radial gradients and absolute positioning",
+      "acceptance_criterion": "Component renders visible gradient orbs using radial-gradient CSS, dark gray colors, and absolute positioning",
+      "verification_command": "grep -q 'radial-gradient' packages/ui/src/makerkit/marketing/gradient-orbs.tsx && grep -c 'absolute' packages/ui/src/makerkit/marketing/gradient-orbs.tsx | grep -q '[3-5]' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/makerkit/marketing/gradient-orbs.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I2.F1.T1"],
+        "blocks": ["S1936.I2.F1.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I2.F1.T3",
+      "type": "task",
+      "name": "Add floating animation to orbs using Framer Motion",
+      "action": {
+        "verb": "Add",
+        "target": "Framer Motion animate props"
+      },
+      "purpose": "Animate orbs with subtle floating motion using Framer Motion for smooth performance",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/marketing/gradient-orbs.tsx",
+          ".ai/alpha/specs/S1936-Spec-homepage-redesign/research-library/context7-framer-motion-scroll.md",
+          "packages/ui/src/aceternity/background-boxes.tsx"
+        ],
+        "dependencies": [
+          "motion.div from framer-motion",
+          "useReducedMotion hook from framer-motion"
+        ],
+        "constraints": [
+          "Use Framer Motion's animate prop for infinite float loop",
+          "Subtle motion: x/y translate by 10-20px, 8-12s duration",
+          "Each orb has different animation timing for organic feel",
+          "Use transform properties only (GPU-accelerated)"
+        ]
+      },
+      "input_state": "Gradient orbs render but are static with no animation",
+      "output_state": "Orbs float smoothly using Framer Motion with staggered timing and infinite loops",
+      "acceptance_criterion": "Orbs have motion.div wrapper with animate prop containing transform values, transition durations 8-12s, and repeat: Infinity",
+      "verification_command": "grep -q 'motion.div' packages/ui/src/makerkit/marketing/gradient-orbs.tsx && grep -q 'animate=' packages/ui/src/makerkit/marketing/gradient-orbs.tsx && grep -q 'repeat.*Infinity' packages/ui/src/makerkit/marketing/gradient-orbs.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/makerkit/marketing/gradient-orbs.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I2.F1.T2"],
+        "blocks": ["S1936.I2.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I2.F1.T4",
+      "type": "task",
+      "name": "Add prefers-reduced-motion support to GradientOrbs",
+      "action": {
+        "verb": "Add",
+        "target": "useReducedMotion hook"
+      },
+      "purpose": "Respect user accessibility preferences by disabling animations when prefers-reduced-motion is active",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/marketing/gradient-orbs.tsx",
+          ".ai/alpha/specs/S1936-Spec-homepage-redesign/research-library/context7-framer-motion-scroll.md"
+        ],
+        "dependencies": [
+          "useReducedMotion hook from framer-motion"
+        ],
+        "constraints": [
+          "Import useReducedMotion from framer-motion",
+          "Conditionally apply animate prop based on hook value",
+          "Static orbs when reduced motion is preferred"
+        ]
+      },
+      "input_state": "Orbs always animate regardless of user motion preferences",
+      "output_state": "Orbs respect prefers-reduced-motion media query and remain static when users prefer reduced motion",
+      "acceptance_criterion": "Component imports useReducedMotion, conditionally applies animation, and orbs remain static when reduced motion is preferred",
+      "verification_command": "grep -q 'useReducedMotion' packages/ui/src/makerkit/marketing/gradient-orbs.tsx && grep -q 'shouldReduceMotion.*?.*:' packages/ui/src/makerkit/marketing/gradient-orbs.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/makerkit/marketing/gradient-orbs.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I2.F1.T3"],
+        "blocks": ["S1936.I2.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I2.F1.T5",
+      "type": "task",
+      "name": "Create HeroSectionRedesigned component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "HeroSectionRedesigned component file"
+      },
+      "purpose": "Establish the full-viewport hero container that will wrap GradientOrbs and hero content",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/marketing/hero.tsx"
+        ],
+        "dependencies": [
+          "React",
+          "cn() utility from @kit/ui/cn"
+        ],
+        "constraints": [
+          "Accept children prop for content composability",
+          "Accept className prop for customization",
+          "Full-viewport container (90vh min-height)",
+          "Proper z-index layering for background and content"
+        ]
+      },
+      "input_state": "No HeroSectionRedesigned component exists",
+      "output_state": "HeroSectionRedesigned.tsx exists with TypeScript interface and basic container structure",
+      "acceptance_criterion": "File packages/ui/src/makerkit/marketing/hero-section-redesigned.tsx exists with HeroSectionRedesigned export and proper TypeScript typing",
+      "verification_command": "test -f packages/ui/src/makerkit/marketing/hero-section-redesigned.tsx && grep -q 'export.*HeroSectionRedesigned' packages/ui/src/makerkit/marketing/hero-section-redesigned.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "packages/ui/src/makerkit/marketing/hero-section-redesigned.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I2.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I2.F1.T6",
+      "type": "task",
+      "name": "Add 90vh container with GradientOrbs background",
+      "action": {
+        "verb": "Add",
+        "target": "container div with GradientOrbs"
+      },
+      "purpose": "Create full-viewport hero layout with animated gradient orbs background and content wrapper",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "SlideHeroes"
+          },
+          {
+            "command": "find role",
+            "target": "heading"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/marketing/hero-section-redesigned.tsx",
+          "packages/ui/src/makerkit/marketing/gradient-orbs.tsx",
+          "packages/ui/src/aceternity/background-boxes.tsx",
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [
+          "GradientOrbs component (S1936.I2.F1.T4)",
+          "Existing widths.focused pattern from page.tsx"
+        ],
+        "constraints": [
+          "Container: min-h-[90vh] with relative positioning",
+          "GradientOrbs: absolute inset-0 for full coverage",
+          "Content wrapper: relative z-index above background",
+          "Maintain max-w-5xl focused width for content",
+          "Responsive: min-h-[600px] fallback for small viewports"
+        ]
+      },
+      "input_state": "HeroSectionRedesigned component skeleton exists with no layout implementation",
+      "output_state": "Component renders 90vh container with GradientOrbs background and content wrapper using proper z-index layering",
+      "acceptance_criterion": "Component renders with min-h-[90vh], contains GradientOrbs with absolute positioning, has content wrapper with relative z-index, and matches focused width pattern",
+      "verification_command": "grep -q 'min-h-\\[90vh\\]' packages/ui/src/makerkit/marketing/hero-section-redesigned.tsx && grep -q 'GradientOrbs' packages/ui/src/makerkit/marketing/hero-section-redesigned.tsx && grep -q 'absolute inset-0' packages/ui/src/makerkit/marketing/hero-section-redesigned.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/makerkit/marketing/hero-section-redesigned.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I2.F1.T4", "S1936.I2.F1.T5"],
+        "blocks": ["S1936.I2.F1.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I2.F1.T7",
+      "type": "task",
+      "name": "Update homepage to use HeroSectionRedesigned",
+      "action": {
+        "verb": "Update",
+        "target": "homepage hero section"
+      },
+      "purpose": "Replace BackgroundBoxes with new HeroSectionRedesigned component on the marketing homepage",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "SlideHeroes"
+          },
+          {
+            "command": "find role",
+            "target": "heading"
+          },
+          {
+            "command": "snapshot"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "packages/ui/src/makerkit/marketing/hero-section-redesigned.tsx",
+          "packages/ui/src/makerkit/marketing/hero.tsx"
+        ],
+        "dependencies": [
+          "HeroSectionRedesigned component (S1936.I2.F1.T6)",
+          "Existing Hero component for content",
+          "homepageContentConfig.hero for title/subtitle"
+        ],
+        "constraints": [
+          "Import HeroSectionRedesigned from @kit/ui/marketing",
+          "Remove BackgroundBoxes import and usage",
+          "Preserve existing Hero title, subtitle, and CtaPresentationName",
+          "Maintain existing width system (widths.focused)",
+          "Keep same isolate and height classes on outer div"
+        ]
+      },
+      "input_state": "Homepage uses BackgroundBoxes as hero background",
+      "output_state": "Homepage uses HeroSectionRedesigned with gradient orbs, existing Hero content is preserved and functional",
+      "acceptance_criterion": "Homepage imports and renders HeroSectionRedesigned, BackgroundBoxes import is removed, Hero content displays correctly within new container",
+      "verification_command": "grep -q 'HeroSectionRedesigned' apps/web/app/(marketing)/page.tsx && ! grep -q 'BackgroundBoxes' apps/web/app/(marketing)/page.tsx && grep -q 'homepageContentConfig.hero.title' apps/web/app/(marketing)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I2.F1.T6"],
+        "blocks": ["S1936.I2.F1.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I2.F1.T8",
+      "type": "task",
+      "name": "Add responsive orb sizing for mobile and tablet",
+      "action": {
+        "verb": "Add",
+        "target": "responsive Tailwind classes"
+      },
+      "purpose": "Optimize gradient orb size and positioning for mobile and tablet viewports",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "SlideHeroes"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/marketing/gradient-orbs.tsx"
+        ],
+        "dependencies": [
+          "Tailwind CSS responsive prefixes (sm:, md:, lg:)"
+        ],
+        "constraints": [
+          "Mobile (default): smaller orbs, fewer visible, tighter positioning",
+          "Tablet (sm/md): medium orbs, more visible",
+          "Desktop (lg+): full-size orbs with wide spread",
+          "Use Tailwind responsive classes (w-32 sm:w-48 lg:w-64 pattern)",
+          "Adjust blur amount per breakpoint for performance"
+        ]
+      },
+      "input_state": "Gradient orbs have fixed desktop sizing that may overwhelm mobile viewports",
+      "output_state": "Orbs scale appropriately across mobile, tablet, and desktop breakpoints using Tailwind responsive classes",
+      "acceptance_criterion": "GradientOrbs component uses Tailwind responsive sizing classes (w-X sm:w-Y lg:w-Z pattern) and orbs render appropriately at all breakpoints",
+      "verification_command": "grep -E '(w-[0-9]+.*sm:w-[0-9]+|w-[0-9]+.*md:w-[0-9]+|w-[0-9]+.*lg:w-[0-9]+)' packages/ui/src/makerkit/marketing/gradient-orbs.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/makerkit/marketing/gradient-orbs.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I2.F1.T7"],
+        "blocks": ["S1936.I2.F1.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I2.F1.T9",
+      "type": "task",
+      "name": "Update UI package exports for new components",
+      "action": {
+        "verb": "Update",
+        "target": "package.json exports"
+      },
+      "purpose": "Export HeroSectionRedesigned and GradientOrbs from @kit/ui package for use in apps",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 9,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/package.json",
+          "packages/ui/src/makerkit/marketing/hero-section-redesigned.tsx",
+          "packages/ui/src/makerkit/marketing/gradient-orbs.tsx"
+        ],
+        "dependencies": [
+          "Existing marketing exports pattern in package.json"
+        ],
+        "constraints": [
+          "Add exports for both components in package.json",
+          "Follow existing @kit/ui/marketing pattern",
+          "Maintain alphabetical ordering in exports"
+        ]
+      },
+      "input_state": "New components exist but are not exported from @kit/ui package",
+      "output_state": "HeroSectionRedesigned and GradientOrbs are exported and importable from @kit/ui/marketing",
+      "acceptance_criterion": "package.json exports contain entries for gradient-orbs and hero-section-redesigned under makerkit/marketing path",
+      "verification_command": "grep -q '\"./marketing\".*\"gradient-orbs\"' packages/ui/package.json && grep -q '\"./marketing\".*\"hero-section-redesigned\"' packages/ui/package.json && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/package.json"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I2.F1.T8"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Foundation",
+        "task_ids": ["S1936.I2.F1.T1", "S1936.I2.F1.T5"],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 1,
+        "name": "Orb Visuals",
+        "task_ids": ["S1936.I2.F1.T2"],
+        "depends_on_groups": [0],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Orb Animation",
+        "task_ids": ["S1936.I2.F1.T3"],
+        "depends_on_groups": [0, 1],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Accessibility",
+        "task_ids": ["S1936.I2.F1.T4"],
+        "depends_on_groups": [0, 1, 2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Hero Layout",
+        "task_ids": ["S1936.I2.F1.T6"],
+        "depends_on_groups": [0, 1, 2, 3],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 5,
+        "name": "Homepage Integration",
+        "task_ids": ["S1936.I2.F1.T7"],
+        "depends_on_groups": [0, 1, 2, 3, 4],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 6,
+        "name": "Responsive Polish",
+        "task_ids": ["S1936.I2.F1.T8"],
+        "depends_on_groups": [0, 1, 2, 3, 4, 5],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 7,
+        "name": "Package Exports",
+        "task_ids": ["S1936.I2.F1.T9"],
+        "depends_on_groups": [0, 1, 2, 3, 4, 5, 6],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1936.I2.F1.T1", "S1936.I2.F1.T2", "S1936.I2.F1.T3", "S1936.I2.F1.T4", "S1936.I2.F1.T6", "S1936.I2.F1.T7", "S1936.I2.F1.T8", "S1936.I2.F1.T9"],
+      "total_hours": 18
+    },
+    "duration": {
+      "sequential": 20,
+      "parallel": 18,
+      "time_saved_percent": 10
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

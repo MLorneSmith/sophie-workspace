@@ -8,6 +8,7 @@
 export type {
 	CompletionPhaseOptions,
 	CompletionPhaseResult,
+	SetupReviewSandboxResult,
 } from "./completion-phase.js";
 // Completion phase
 export {

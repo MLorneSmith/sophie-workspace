@@ -1,0 +1,52 @@
+{
+  "initiative_id": "S1936.I1",
+  "initiative_name": "Design System Foundation",
+  "spec_id": "1936",
+  "status": "in_progress",
+  "current_phase": "decomposition",
+  "features": {
+    "S1936.I1.F1": {
+      "name": "Color Token System",
+      "status": "completed",
+      "task_count": 6,
+      "hours_estimate": 7
+    },
+    "S1936.I1.F2": {
+      "name": "Typography Scale",
+      "status": "completed",
+      "task_count": 6,
+      "hours_estimate": 6
+    },
+    "S1936.I1.F3": {
+      "name": "Spacing Layout Tokens",
+      "status": "completed",
+      "task_count": 1,
+      "hours_estimate": 2
+    },
+    "S1936.I1.F4": {
+      "name": "Animation Utilities",
+      "status": "completed",
+      "task_count": 7,
+      "hours_estimate": 13
+    },
+    "S1936.I1.F5": {
+      "name": "Glass Effect Utilities",
+      "status": "completed",
+      "task_count": 8,
+      "hours_estimate": 13
+    }
+  },
+  "totals": {
+    "features_completed": 5,
+    "features_total": 5,
+    "total_tasks": 28,
+    "total_hours_sequential": 41,
+    "total_hours_parallel": 23,
+    "total_spikes": 0
+  },
+  "spikes_pending": [],
+  "started_at": "2026-02-04T14:30:00Z",
+  "completed_at": "2026-02-04T15:15:00Z",
+  "status": "completed",
+  "current_phase": "finalization"
+}

@@ -1,0 +1,654 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1936.I3.F3",
+    "feature_name": "Testimonials Grid Enhancement",
+    "feature_slug": "testimonials-grid-enhancement",
+    "initiative_id": "S1936.I3",
+    "spec_id": 1936,
+    "created_at": "2026-02-04T19:30:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1936.I3.F3.T4", "S1936.I3.F3.T5", "S1936.I3.F3.T6", "S1936.I3.F3.T7", "S1936.I3.F3.T8", "S1936.I3.F3.T9"]
+  },
+  "tasks": [
+    {
+      "id": "S1936.I3.F3.T1",
+      "type": "task",
+      "name": "Create StarRating component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "StarRating component file"
+      },
+      "purpose": "Establish base TypeScript file structure for star rating display component",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Must be client component ('use client')",
+          "Must accept rating prop (1-5)",
+          "Must accept optional className prop",
+          "Must export StarRating as named export"
+        ]
+      },
+      "input_state": "No StarRating component exists",
+      "output_state": "packages/ui/src/aceternity/star-rating.tsx exists with component skeleton accepting rating and className props",
+      "acceptance_criterion": "File exists with StarRating component interface defined",
+      "verification_command": "test -f packages/ui/src/aceternity/star-rating.tsx && grep -q 'export.*StarRating' packages/ui/src/aceternity/star-rating.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "packages/ui/src/aceternity/star-rating.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I3.F3.T2", "S1936.I3.F3.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F3.T2",
+      "type": "task",
+      "name": "Add star icons to StarRating component",
+      "action": {
+        "verb": "Add",
+        "target": "star icon rendering logic"
+      },
+      "purpose": "Render filled and empty stars based on rating value using lucide-react Star icon",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["packages/ui/src/aceternity/star-rating.tsx"],
+        "dependencies": ["lucide-react Star icon", "cn utility from @kit/ui/utils"],
+        "constraints": [
+          "Must render exactly 5 stars",
+          "Stars 1-rating should be filled (fill=currentColor)",
+          "Stars rating+1 to 5 should be empty (fill=none)",
+          "Stars should use text-yellow-400 for filled color",
+          "Must support className prop for container styling"
+        ]
+      },
+      "input_state": "StarRating component skeleton exists without star rendering",
+      "output_state": "StarRating component renders 5 stars with correct filled/empty state based on rating prop",
+      "acceptance_criterion": "Component renders star icons with correct fill state for rating values 1-5",
+      "verification_command": "grep -q 'Star' packages/ui/src/aceternity/star-rating.tsx && grep -q 'fill=.*currentColor' packages/ui/src/aceternity/star-rating.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/star-rating.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F3.T1"],
+        "blocks": ["S1936.I3.F3.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F3.T3",
+      "type": "task",
+      "name": "Export StarRating from package.json",
+      "action": {
+        "verb": "Add",
+        "target": "StarRating export entry"
+      },
+      "purpose": "Make StarRating component importable from @kit/ui/star-rating",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["packages/ui/package.json"],
+        "dependencies": [],
+        "constraints": [
+          "Must add to exports object",
+          "Path must be ./src/aceternity/star-rating.tsx",
+          "Key must be ./star-rating",
+          "Must maintain alphabetical order in exports"
+        ]
+      },
+      "input_state": "package.json exports do not include star-rating",
+      "output_state": "package.json exports include './star-rating': './src/aceternity/star-rating.tsx'",
+      "acceptance_criterion": "grep -q '\"./star-rating\".*\"./src/aceternity/star-rating.tsx\"' packages/ui/package.json",
+      "verification_command": "grep -q '\"./star-rating\"' packages/ui/package.json && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/package.json"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F3.T1"],
+        "blocks": ["S1936.I3.F3.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F3.T4",
+      "type": "task",
+      "name": "Add glass card styling to testimonial Card",
+      "action": {
+        "verb": "Update",
+        "target": "Card component className"
+      },
+      "purpose": "Apply backdrop-blur and semi-transparent background for glass effect on testimonial cards",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "This platform transformed how I create presentations"
+          },
+          {
+            "command": "find role",
+            "target": "article"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["packages/ui/src/aceternity/testimonial-masonary-grid.tsx"],
+        "dependencies": ["cn utility"],
+        "constraints": [
+          "Must preserve existing dark theme styling",
+          "Add backdrop-blur-md class",
+          "Add bg-card/50 for semi-transparent background",
+          "Add border-border/30 for subtle border",
+          "Keep existing rounded-xl and padding",
+          "Preserve QuoteIcon decoration"
+        ]
+      },
+      "input_state": "Card component has solid background with shadow styling",
+      "output_state": "Card component has glass effect with backdrop-blur-md and semi-transparent background",
+      "acceptance_criterion": "Card className includes backdrop-blur and bg-card/50",
+      "verification_command": "grep -q 'backdrop-blur' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && grep -q 'bg-card/50' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/testimonial-masonary-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I3.F3.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F3.T5",
+      "type": "task",
+      "name": "Add StarRating to testimonial cards",
+      "action": {
+        "verb": "Add",
+        "target": "StarRating component to Card"
+      },
+      "purpose": "Display star rating below testimonial content using database rating field",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "★"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["packages/ui/src/aceternity/testimonial-masonary-grid.tsx"],
+        "dependencies": ["StarRating from @kit/ui/star-rating"],
+        "constraints": [
+          "Must import StarRating component",
+          "Place StarRating between Quote and avatar section",
+          "Pass testimonial.rating to rating prop",
+          "Add mt-4 spacing above StarRating",
+          "Default to rating=5 if testimonial.rating is undefined"
+        ]
+      },
+      "input_state": "Testimonial cards show content and author but no rating stars",
+      "output_state": "Testimonial cards display star rating below content using StarRating component",
+      "acceptance_criterion": "StarRating component is imported and rendered in Card with testimonial.rating prop",
+      "verification_command": "grep -q \"import.*StarRating.*from.*@kit/ui/star-rating\" packages/ui/src/aceternity/testimonial-masonary-grid.tsx && grep -q '<StarRating' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/testimonial-masonary-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F3.T2", "S1936.I3.F3.T3"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F3.T6",
+      "type": "task",
+      "name": "Add motion wrapper to grid container",
+      "action": {
+        "verb": "Add",
+        "target": "motion.div wrapper to grid"
+      },
+      "purpose": "Prepare grid container for staggered child animations with viewport detection",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "This platform transformed"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["packages/ui/src/aceternity/testimonial-masonary-grid.tsx"],
+        "dependencies": ["motion from motion/react"],
+        "constraints": [
+          "Must add 'use client' directive",
+          "Import motion from motion/react",
+          "Wrap outer grid container with motion.div",
+          "Add viewport prop with once: true and margin: '-50px'",
+          "Preserve grid className and structure",
+          "Keep columnIndex key on columns unchanged"
+        ]
+      },
+      "input_state": "Grid uses plain div without motion wrapper",
+      "output_state": "Grid wrapped in motion.div with viewport configuration for scroll detection",
+      "acceptance_criterion": "Grid container is motion.div with viewport prop configured",
+      "verification_command": "grep -q \"'use client'\" packages/ui/src/aceternity/testimonial-masonary-grid.tsx && grep -q 'import.*motion.*from.*motion/react' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && grep -q 'viewport.*once.*true' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/testimonial-masonary-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I3.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F3.T7",
+      "type": "task",
+      "name": "Add stagger animation variants to cards",
+      "action": {
+        "verb": "Add",
+        "target": "animation variants to cards"
+      },
+      "purpose": "Create staggered fade-in animation when testimonials scroll into view",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "This platform transformed"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["packages/ui/src/aceternity/testimonial-masonary-grid.tsx"],
+        "dependencies": ["motion, stagger from motion/react"],
+        "constraints": [
+          "Define containerVariants with hidden and visible states",
+          "Use stagger(0.1) for delayChildren in visible variant",
+          "Define cardVariants with opacity 0→1 and y 20→0",
+          "Add initial='hidden' and whileInView='visible' to grid container",
+          "Add variants prop to motion.div container",
+          "Convert Card to motion.div and add cardVariants",
+          "Use spring transition with stiffness: 100, damping: 20"
+        ]
+      },
+      "input_state": "Cards appear instantly without animation when scrolling into view",
+      "output_state": "Cards fade in with staggered timing (0.1s delay between each) when section enters viewport",
+      "acceptance_criterion": "containerVariants and cardVariants are defined, motion.div has variants and whileInView props",
+      "verification_command": "grep -q 'stagger' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && grep -q 'containerVariants' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && grep -q 'cardVariants' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && grep -q 'whileInView' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/testimonial-masonary-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F3.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F3.T8",
+      "type": "task",
+      "name": "Add featured card logic and styling",
+      "action": {
+        "verb": "Add",
+        "target": "featured card span styling"
+      },
+      "purpose": "Make first testimonial card span 2 columns on desktop for visual hierarchy",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "This platform transformed"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["packages/ui/src/aceternity/testimonial-masonary-grid.tsx"],
+        "dependencies": ["cn utility"],
+        "constraints": [
+          "First testimonial (index 0 overall) should span 2 columns",
+          "Add lg:col-span-2 class to featured card",
+          "Featured card should only span on large screens (lg breakpoint)",
+          "Add subtle visual distinction: border-border instead of border-border/30",
+          "Featured card should remain in grid flow (not absolute positioned)"
+        ]
+      },
+      "input_state": "All testimonial cards have equal width in grid",
+      "output_state": "First testimonial card spans 2 columns on desktop (lg breakpoint and above)",
+      "acceptance_criterion": "First card has lg:col-span-2 class applied conditionally",
+      "verification_command": "grep -q 'col-span-2' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/testimonial-masonary-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F3.T9",
+      "type": "task",
+      "name": "Add hover effect to cards",
+      "action": {
+        "verb": "Add",
+        "target": "hover transform to Card"
+      },
+      "purpose": "Create subtle lift effect on card hover for interactivity feedback",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "This platform transformed"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["packages/ui/src/aceternity/testimonial-masonary-grid.tsx"],
+        "dependencies": [],
+        "constraints": [
+          "Add hover:-translate-y-1 class to Card",
+          "Add transition-transform duration-200 for smooth animation",
+          "Preserve existing glass effect styling",
+          "Effect should work on both regular and featured cards"
+        ]
+      },
+      "input_state": "Cards have no hover interaction effect",
+      "output_state": "Cards lift slightly (translate -4px) on hover with smooth transition",
+      "acceptance_criterion": "Card className includes hover:-translate-y-1 and transition-transform",
+      "verification_command": "grep -q 'hover:-translate-y-1' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && grep -q 'transition' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/testimonial-masonary-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F3.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F3.T10",
+      "type": "task",
+      "name": "Add reduced motion support",
+      "action": {
+        "verb": "Add",
+        "target": "prefers-reduced-motion handling"
+      },
+      "purpose": "Respect user's reduced motion preference by disabling animations when requested",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 10,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["packages/ui/src/aceternity/testimonial-masonary-grid.tsx"],
+        "dependencies": ["useReducedMotion from motion/react"],
+        "constraints": [
+          "Import useReducedMotion hook",
+          "Check shouldReduceMotion before applying animations",
+          "If reduced motion: skip stagger animation, show cards immediately",
+          "If reduced motion: keep hover effect but reduce/remove transition",
+          "Default to immediate visibility if motion disabled"
+        ]
+      },
+      "input_state": "Animations always play regardless of user preference",
+      "output_state": "Animations skip when prefers-reduced-motion is enabled, cards appear immediately",
+      "acceptance_criterion": "useReducedMotion hook is used to conditionally apply animations",
+      "verification_command": "grep -q 'useReducedMotion' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/testimonial-masonary-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F3.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "StarRating Component Foundation",
+        "task_ids": ["S1936.I3.F3.T1", "S1936.I3.F3.T2", "S1936.I3.F3.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 6,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Visual Enhancements",
+        "task_ids": ["S1936.I3.F3.T4", "S1936.I3.F3.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Animation System",
+        "task_ids": ["S1936.I3.F3.T6", "S1936.I3.F3.T7"],
+        "depends_on_groups": [],
+        "estimated_hours": 6,
+        "parallel_hours": 3
+      },
+      {
+        "id": 4,
+        "name": "Polish and Accessibility",
+        "task_ids": ["S1936.I3.F3.T8", "S1936.I3.F3.T9", "S1936.I3.F3.T10"],
+        "depends_on_groups": [2, 3],
+        "estimated_hours": 7,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1936.I3.F3.T1", "S1936.I3.F3.T2", "S1936.I3.F3.T5", "S1936.I3.F3.T9"],
+      "total_hours": 8
+    },
+    "duration": {
+      "sequential": 23,
+      "parallel": 10,
+      "time_saved_percent": 57
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

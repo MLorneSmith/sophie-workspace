@@ -1,0 +1,470 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1936.I5.F2",
+    "feature_name": "Pricing Glass Cards",
+    "feature_slug": "pricing-glass-cards",
+    "initiative_id": "S1936.I5",
+    "spec_id": "S1936",
+    "created_at": "2026-02-04T19:30:00Z",
+    "complexity": {
+      "score": 56,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1936.I5.F2.T7"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1936.I5.F2.T1",
+      "type": "task",
+      "name": "Add glass card CSS utilities to shadcn-ui.css",
+      "action": {
+        "verb": "Add",
+        "target": "glass card CSS custom properties"
+      },
+      "purpose": "Create reusable CSS variables for glass card effect (backdrop blur + semi-transparent backgrounds) that match design system",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/styles/shadcn-ui.css"
+        ],
+        "dependencies": [
+          "Tailwind CSS 4 with backdrop-filter support",
+          "Existing CSS custom properties pattern"
+        ],
+        "constraints": [
+          "Must work in both light and dark modes",
+          "Must gracefully degrade on browsers without backdrop-filter support",
+          "CSS must be added to shadcn-ui.css @layer utilities or @layer components"
+        ]
+      },
+      "input_state": "shadcn-ui.css contains theme variables but no glass effect utilities",
+      "output_state": "shadcn-ui.css contains .glass-card class with backdrop-blur-lg, semi-transparent background, and border",
+      "acceptance_criterion": "grep -q 'glass-card' apps/web/styles/shadcn-ui.css && grep -q 'backdrop-blur' apps/web/styles/shadcn-ui.css",
+      "verification_command": "grep -A5 'glass-card' apps/web/styles/shadcn-ui.css | grep -q 'backdrop-blur'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/shadcn-ui.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I5.F2.T2", "S1936.I5.F2.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I5.F2.T2",
+      "type": "task",
+      "name": "Create pricing-interval-toggle component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "pricing interval toggle component file"
+      },
+      "purpose": "Build the file structure and basic component for animated monthly/annual billing toggle",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "motion/react (useMotionValue, useSpring, motion.button)",
+          "@kit/ui/button",
+          "@kit/ui/trans for i18n"
+        ],
+        "constraints": [
+          "Must be client component ('use client')",
+          "Must accept intervals prop and onChange handler",
+          "Must use Framer Motion for smooth animation",
+          "Must match existing PlanIntervalSwitcher pattern from PricingTable"
+        ]
+      },
+      "input_state": "File does not exist",
+      "output_state": "apps/web/app/(marketing)/_components/pricing-interval-toggle.tsx exists with PricingIntervalToggle component that renders two buttons (Monthly/Annual) with animation placeholder",
+      "acceptance_criterion": "File exists and exports PricingIntervalToggle component accepting intervals and selectedInterval props",
+      "verification_command": "grep -q 'export.*PricingIntervalToggle' apps/web/app/\\(marketing\\)/_components/pricing-interval-toggle.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/pricing-interval-toggle.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I5.F2.T1"],
+        "blocks": ["S1936.I5.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I5.F2.T3",
+      "type": "task",
+      "name": "Add smooth slide animation to interval toggle",
+      "action": {
+        "verb": "Add",
+        "target": "motion animation to toggle component"
+      },
+      "purpose": "Implement Framer Motion slide animation when switching between Monthly/Annual intervals",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/pricing-interval-toggle.tsx"
+        ],
+        "dependencies": [
+          "motion/react layoutId for smooth slide",
+          "AnimatePresence for exit animations",
+          "Research: context7-framer-motion-scroll.md (layout animations)"
+        ],
+        "constraints": [
+          "Animation should use layoutId for morphing effect",
+          "Transition duration ~200-300ms for snappy feel",
+          "Must respect prefers-reduced-motion"
+        ]
+      },
+      "input_state": "pricing-interval-toggle.tsx has static button toggle",
+      "output_state": "Toggle has smooth slide animation using motion.div with layoutId when switching intervals",
+      "acceptance_criterion": "Toggle component uses motion.div with layoutId and transition config",
+      "verification_command": "grep -q 'layoutId' apps/web/app/\\(marketing\\)/_components/pricing-interval-toggle.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/pricing-interval-toggle.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I5.F2.T2"],
+        "blocks": ["S1936.I5.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I5.F2.T4",
+      "type": "task",
+      "name": "Create price counter animation helper",
+      "action": {
+        "verb": "Create",
+        "target": "price counter hook using useSpring"
+      },
+      "purpose": "Build reusable hook for animating price numbers when interval changes",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "motion/react (useMotionValue, useSpring, useTransform)",
+          "React (useEffect, useRef)",
+          "Research: context7-framer-motion-scroll.md (useSpring pattern for counters)"
+        ],
+        "constraints": [
+          "Must animate from old price to new price smoothly",
+          "Must format numbers correctly (currency, decimals)",
+          "Must use spring physics for natural motion",
+          "Must avoid layout shifts during animation"
+        ]
+      },
+      "input_state": "No price animation utility exists",
+      "output_state": "apps/web/app/(marketing)/_components/pricing-interval-toggle.tsx exports useAnimatedPrice hook that returns animated price value",
+      "acceptance_criterion": "Hook exists and uses useSpring with stiffness/damping config",
+      "verification_command": "grep -q 'useAnimatedPrice.*useSpring' apps/web/app/\\(marketing\\)/_components/pricing-interval-toggle.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/pricing-interval-toggle.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I5.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I5.F2.T5",
+      "type": "task",
+      "name": "Create home-pricing-section wrapper component",
+      "action": {
+        "verb": "Create",
+        "target": "HomePricingSection component file"
+      },
+      "purpose": "Build wrapper component that applies glass card styling and glow effect to PricingTable tiers",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "PricingTable from @kit/billing-gateway/marketing",
+          "Glass card CSS utilities from T1",
+          "billingConfig from config",
+          "Existing PricingTable props pattern"
+        ],
+        "constraints": [
+          "Must wrap existing PricingTable without breaking functionality",
+          "Must pass through all PricingTable props",
+          "Must apply glass-card class to container",
+          "Must add gradient glow for highlighted tier",
+          "Must remain client component"
+        ]
+      },
+      "input_state": "File does not exist",
+      "output_state": "apps/web/app/(marketing)/_components/home-pricing-section.tsx exists with HomePricingSection component that wraps PricingTable with glass card styling",
+      "acceptance_criterion": "File exists, exports HomePricingSection, and renders PricingTable with custom container className",
+      "verification_command": "grep -q 'export.*HomePricingSection' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && grep -q 'PricingTable' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I5.F2.T1"],
+        "blocks": ["S1936.I5.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I5.F2.T6",
+      "type": "task",
+      "name": "Wire HomePricingSection to replace PricingTable in homepage",
+      "action": {
+        "verb": "Wire",
+        "target": "HomePricingSection to homepage pricing section"
+      },
+      "purpose": "Replace existing PricingTable with enhanced HomePricingSection wrapper in the marketing homepage",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        ],
+        "dependencies": [
+          "HomePricingSection component from T5",
+          "PricingIntervalToggle from T3",
+          "Existing billingConfig and paths"
+        ],
+        "constraints": [
+          "Must maintain existing props (config, paths)",
+          "Must keep Suspense wrapper",
+          "Must not break pricing section functionality",
+          "Must pass billingConfig and pathsConfig correctly"
+        ]
+      },
+      "input_state": "page.tsx uses PricingTable directly at line 239",
+      "output_state": "page.tsx imports and uses HomePricingSection instead of PricingTable, maintains all existing functionality",
+      "acceptance_criterion": "Homepage imports HomePricingSection and renders it in pricing section with correct props",
+      "verification_command": "grep -q 'HomePricingSection' apps/web/app/\\(marketing\\)/page.tsx && ! grep -q 'import.*PricingTable' apps/web/app/\\(marketing\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I5.F2.T3", "S1936.I5.F2.T4", "S1936.I5.F2.T5"],
+        "blocks": ["S1936.I5.F2.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I5.F2.T7",
+      "type": "task",
+      "name": "Add mobile responsive stacking for pricing cards",
+      "action": {
+        "verb": "Add",
+        "target": "responsive grid layout to HomePricingSection"
+      },
+      "purpose": "Ensure pricing cards stack vertically on mobile and display horizontally on desktop with proper touch interactions",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Pricing"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        ],
+        "dependencies": [
+          "Tailwind responsive utilities (sm:, md:, lg:)",
+          "Existing responsive patterns from page.tsx",
+          "Research: perplexity-saas-homepage-patterns.md (pricing responsive design)"
+        ],
+        "constraints": [
+          "Cards must stack on mobile (< 768px)",
+          "Cards must be horizontally scrollable on tablet if needed",
+          "Cards must display in row on desktop (>= 1024px)",
+          "Must add touch-friendly spacing and swipe hints",
+          "Must maintain glass effect and glow on all screen sizes"
+        ]
+      },
+      "input_state": "HomePricingSection has basic layout without responsive grid",
+      "output_state": "HomePricingSection uses responsive grid (grid-cols-1 sm:grid-cols-2 lg:grid-cols-3) with proper mobile stacking",
+      "acceptance_criterion": "Component uses Tailwind responsive grid classes and renders correctly on mobile/desktop viewports",
+      "verification_command": "grep -q 'grid-cols-1.*sm:grid-cols' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I5.F2.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation Components",
+        "task_ids": ["S1936.I5.F2.T1", "S1936.I5.F2.T2", "S1936.I5.F2.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 8,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Core Implementation",
+        "task_ids": ["S1936.I5.F2.T4", "S1936.I5.F2.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 7,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Integration & Polish",
+        "task_ids": ["S1936.I5.F2.T6", "S1936.I5.F2.T7"],
+        "depends_on_groups": [2],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1936.I5.F2.T1", "S1936.I5.F2.T2", "S1936.I5.F2.T3", "S1936.I5.F2.T6", "S1936.I5.F2.T7"],
+      "total_hours": 13
+    },
+    "duration": {
+      "sequential": 20,
+      "parallel": 10,
+      "time_saved_percent": 50
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
