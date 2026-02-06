@@ -104,7 +104,7 @@ jobs:
           path: |
             ~/.docker
             ~/Library/Containers/com.docker.docker/Data
-          key: ${{ runner.os }}-supabase-docker-${{ hashFiles('apps/web/supabase/config.toml') }}-${{ github.run_id }}
+          key: ${{ runner.os }}-supabase-docker-${{ hashFiles('apps/web/supabase/config.toml') }}
           restore-keys: |
             ${{ runner.os }}-supabase-docker-
 
@@ -112,9 +112,10 @@ jobs:
         if: steps.check-actor.outputs.should-skip != 'true'
         run: |
           # Start Supabase from apps/web where config.toml defines ports 54521/54522
+          # Exclude services not needed for E2E tests to reduce Docker pull time
           cd apps/web
           echo "Starting Supabase for E2E tests..."
-          supabase start --ignore-health-check
+          supabase start --ignore-health-check -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
 
           # Verify it's running
           supabase status
@@ -332,7 +333,8 @@ jobs:
           # Start Supabase from apps/web where config.toml defines ports 54521/54522
           cd apps/web
           # No error masking - fail fast if Supabase cannot start
-          supabase start --ignore-health-check
+          # Exclude services not needed for E2E tests to reduce Docker pull time
+          supabase start --ignore-health-check -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
 
           # Extract JWT keys IMMEDIATELY after start for health check
           # This MUST happen before the health check curl command below
