@@ -413,11 +413,8 @@ jobs:
           # Wait for database to be ready
           sleep 5
           
-          # Run database migrations
+          # Reset database (applies migrations and seeds)
           supabase db reset --linked=false
-          
-          # Seed test data
-          supabase db seed --linked=false
 
       - name: Run accessibility tests
         run: pnpm --filter e2e a11y:test:ci  # Use CI-specific script with JUnit reporter
