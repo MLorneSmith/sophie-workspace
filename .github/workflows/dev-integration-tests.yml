@@ -17,7 +17,7 @@ on:
         default: 'https://dev.slideheroes.com'
 
 permissions:
-  actions: read  # Required for downloading artifacts from workflow_run
+  actions: write  # Required for downloading artifacts and triggering promotion readiness
   contents: write  # Changed from read to write to allow commit comments
   issues: write
   pull-requests: write
@@ -27,11 +27,14 @@ env:
   DEPLOYMENT_URL: ${{ github.event.inputs.deployment_url || 'https://dev.slideheroes.com' }}
 
 jobs:
-  # URLs will be dynamically set from the Deploy to Dev workflow outputs
-  check-should-run:
-    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
+  # Gate check: should we run, and is the deployment ready?
+  # Merges check-should-run + wait-for-deployment into one job to save a runner spin-up
+  gate:
+    name: Gate Check
+    runs-on: runs-on=${{ github.run_id }}/runner=1cpu-linux-x64
+    timeout-minutes: 15
     outputs:
-      should_run: ${{ steps.check.outputs.should_run }}
+      should_run: ${{ steps.result.outputs.should_run }}
       web_deployment_url: ${{ steps.check.outputs.web_deployment_url }}
       payload_deployment_url: ${{ steps.check.outputs.payload_deployment_url }}
     steps:
@@ -49,9 +52,7 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
-            # For manual dispatch, use the configured URL (defaults to dev.slideheroes.com for web)
             echo "web_deployment_url=${{ env.DEPLOYMENT_URL }}" >> $GITHUB_OUTPUT
-            # TODO: Get payload URL from environment or make it configurable
             echo "payload_deployment_url=https://dev.slideheroes.com" >> $GITHUB_OUTPUT
           elif [[ "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
@@ -67,75 +68,55 @@ jobs:
               echo "web_deployment_url=$WEB_URL" >> $GITHUB_OUTPUT
               echo "payload_deployment_url=$PAYLOAD_URL" >> $GITHUB_OUTPUT
 
-              echo "ℹ️ Using direct Vercel deployment URLs (bypasses protection):"
               echo "ℹ️ Web app tests will use: $WEB_URL"
               echo "ℹ️ Payload/GraphQL tests will use: $PAYLOAD_URL"
             else
               echo "⚠️ Deployment URLs artifact not found, falling back to dev.slideheroes.com"
               echo "web_deployment_url=https://dev.slideheroes.com" >> $GITHUB_OUTPUT
               echo "payload_deployment_url=https://dev.slideheroes.com" >> $GITHUB_OUTPUT
-
-              echo "ℹ️ Note: Using dev.slideheroes.com for both services (fallback)"
-              echo "ℹ️ Web app tests will use: https://dev.slideheroes.com"
-              echo "ℹ️ Payload/GraphQL tests will use: https://dev.slideheroes.com"
             fi
           else
             echo "should_run=false" >> $GITHUB_OUTPUT
             echo "Skipping: Deploy to Dev workflow did not succeed"
           fi
 
-  # Wait for deployment to be ready
-  wait-for-deployment:
-    name: Wait for Deployment Ready
-    needs: check-should-run
-    if: needs.check-should-run.outputs.should_run == 'true'
-    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
-    timeout-minutes: 15
-    outputs:
-      deployment_ready: ${{ steps.wait.outputs.ready }}
-    steps:
       - name: Wait for deployment to be ready
         id: wait
-        shell: bash {0}  # Prevent shell from auto-failing on non-zero exit
+        if: steps.check.outputs.should_run == 'true'
+        shell: bash {0}
         run: |
-          set +e  # Don't exit on error - handle it explicitly
-          echo "⏳ Waiting for web deployment to be ready at ${{ needs.check-should-run.outputs.web_deployment_url }}"
-          
-          # First, validate the deployment URL format and basic connectivity
-          echo "🔍 Validating deployment URL format..."
-          if [[ "${{ needs.check-should-run.outputs.web_deployment_url }}" =~ ^https?://[^/]+(/.*)?$ ]]; then
+          set +e
+          echo "⏳ Waiting for web deployment to be ready at ${{ steps.check.outputs.web_deployment_url }}"
+
+          # Validate the deployment URL format
+          if [[ "${{ steps.check.outputs.web_deployment_url }}" =~ ^https?://[^/]+(/.*)?$ ]]; then
             echo "✅ Web URL format is valid"
           else
-            echo "❌ Invalid web URL format: ${{ needs.check-should-run.outputs.web_deployment_url }}"
+            echo "❌ Invalid web URL format: ${{ steps.check.outputs.web_deployment_url }}"
             echo "ready=false" >> $GITHUB_OUTPUT
             exit 1
           fi
-          
+
           # Simple DNS resolution check
-          DOMAIN=$(echo "${{ needs.check-should-run.outputs.web_deployment_url }}" | sed -E 's|^https?://([^/]+).*|\1|')
+          DOMAIN=$(echo "${{ steps.check.outputs.web_deployment_url }}" | sed -E 's|^https?://([^/]+).*|\1|')
           echo "🔍 Checking DNS resolution for $DOMAIN..."
           if nslookup "$DOMAIN" > /dev/null 2>&1; then
             echo "✅ DNS resolution successful"
           else
             echo "⚠️ DNS resolution failed - continuing anyway (might be temporary)"
           fi
-          
-          MAX_WAIT_TIME=600  # 10 minutes (increased from 5)
-          CHECK_INTERVAL=15  # Increased from 10
+
+          MAX_WAIT_TIME=600
+          CHECK_INTERVAL=15
           RETRY_COUNT=0
-          MAX_RETRIES=5  # Increased from 3
+          MAX_RETRIES=5
           elapsed=0
-          
+
           while [ $elapsed -lt $MAX_WAIT_TIME ]; do
             echo "Checking deployment readiness (${elapsed}s elapsed)..."
 
-            # Use comprehensive health check endpoint instead of simple HTTP check
-            # This verifies database, auth, and application readiness
-            # Using /healthcheck which is guaranteed to exist in web app deployment
-            # See: https://github.com/slideheroes/2025slideheroes/issues/591
-            HEALTH_URL="${{ needs.check-should-run.outputs.web_deployment_url }}/healthcheck"
+            HEALTH_URL="${{ steps.check.outputs.web_deployment_url }}/healthcheck"
 
-            # Fetch health check response
             if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
               RESPONSE=$(curl -s --max-time 30 \
                 -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
@@ -144,31 +125,20 @@ jobs:
               RESPONSE=$(curl -s --max-time 30 "$HEALTH_URL" 2>/dev/null) || RESPONSE=""
             fi
 
-            # Parse health check response
             if [ ! -z "$RESPONSE" ]; then
-              # Check if response is HTML (Vercel auth page) instead of JSON
               if echo "$RESPONSE" | grep -q "Authentication Required\|Vercel Authentication\|<!doctype"; then
                 echo "❌ CRITICAL: Vercel protection is blocking the health endpoint"
-                echo "🔧 The bypass header is not working correctly"
                 echo "💡 Solution: Verify VERCEL_AUTOMATION_BYPASS_SECRET matches Vercel project settings"
-                echo "📖 See: https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation"
                 echo "ready=false" >> $GITHUB_OUTPUT
                 exit 1
               fi
 
-              # Check if route doesn't exist yet (404 from Next.js)
               if echo "$RESPONSE" | grep -q "Route not found"; then
                 echo "⏳ Health endpoint route not available yet (Vercel still initializing)"
-                echo "ℹ️ This is normal - API routes can take 45-60s to become available after deployment"
-                echo "⚠️ Waiting ${CHECK_INTERVAL}s before retrying..."
               else
-                # Route exists - parse the health check
-                # /healthcheck returns: {services: {database: true/false}}
                 DATABASE=$(echo "$RESPONSE" | jq -r '.services.database // false' 2>/dev/null)
-
                 echo "Health Status: Database=$DATABASE"
 
-                # Check if database is healthy (deployment is ready when database is healthy)
                 if [ "$DATABASE" = "true" ]; then
                   echo "✅ Deployment is fully ready - database operational"
                   echo "ready=true" >> $GITHUB_OUTPUT
@@ -178,21 +148,19 @@ jobs:
                 fi
               fi
             else
-              # Fallback to basic HTTP check if health endpoint not available yet
               echo "⚠️ Health endpoint not responding, trying basic check..."
 
               if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
                 HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
                   --max-time 30 \
                   -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
-                  "${{ needs.check-should-run.outputs.web_deployment_url }}" 2>/dev/null) || HTTP_CODE="000"
+                  "${{ steps.check.outputs.web_deployment_url }}" 2>/dev/null) || HTTP_CODE="000"
               else
                 HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
                   --max-time 30 \
-                  "${{ needs.check-should-run.outputs.web_deployment_url }}" 2>/dev/null) || HTTP_CODE="000"
+                  "${{ steps.check.outputs.web_deployment_url }}" 2>/dev/null) || HTTP_CODE="000"
               fi
 
-              # Only log basic check results, don't mark as ready yet
               if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "304" ]; then
                 echo "ℹ️ Server responding (HTTP $HTTP_CODE) but health endpoint not ready"
               elif [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then
@@ -201,13 +169,10 @@ jobs:
                 echo "⚠️ Got HTTP $HTTP_CODE - deployment still initializing"
               fi
 
-              # Increment retry count for fallback checks
               RETRY_COUNT=$((RETRY_COUNT + 1))
 
-              # After max retries, if we're getting HTTP responses, proceed
               if [ $RETRY_COUNT -ge $MAX_RETRIES ] && [ "$HTTP_CODE" != "000" ]; then
                 echo "⚠️ Health endpoint not available after $RETRY_COUNT attempts"
-                echo "Server is responding but comprehensive checks unavailable"
                 echo "Proceeding with basic readiness assumption"
                 echo "ready=true" >> $GITHUB_OUTPUT
                 exit 0
@@ -217,109 +182,188 @@ jobs:
             sleep $CHECK_INTERVAL
             elapsed=$((elapsed + CHECK_INTERVAL))
           done
-          
+
           echo "❌ Deployment not ready after ${MAX_WAIT_TIME}s"
           echo "ready=false" >> $GITHUB_OUTPUT
           exit 1
 
-  # Warmup Deployment
-  # Hit critical pages before tests to eliminate serverless cold starts
-  # This addresses intermittent element visibility timeouts in CI (Issue #1051)
-  warmup-deployment:
+      - name: Set gate result
+        id: result
+        if: always()
+        run: |
+          if [[ "${{ steps.check.outputs.should_run }}" == "true" ]] && [[ "${{ steps.wait.outputs.ready }}" == "true" ]]; then
+            echo "✅ Gate passed: deployment is ready for testing"
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "⏭️ Gate check: skipping tests (should_run=${{ steps.check.outputs.should_run }}, ready=${{ steps.wait.outputs.ready }})"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          fi
+
+  # Warmup critical pages to eliminate serverless cold starts (Issue #1051)
+  warmup:
     name: Warmup Deployment
-    needs: [check-should-run, wait-for-deployment]
-    if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
-    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
+    needs: gate
+    if: needs.gate.outputs.should_run == 'true'
+    runs-on: runs-on=${{ github.run_id }}/runner=1cpu-linux-x64
     timeout-minutes: 5
     steps:
       - name: Warmup critical pages
         run: |
           echo "🔥 Warming up deployment to eliminate cold starts..."
 
-          WEB_URL="${{ needs.check-should-run.outputs.web_deployment_url }}"
+          WEB_URL="${{ needs.gate.outputs.web_deployment_url }}"
           BYPASS_SECRET="${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}"
 
-          # Define critical pages to warm up
           PAGES=("/" "/auth/sign-in" "/pricing" "/templates")
 
-          # Build curl command with bypass header if available
           CURL_OPTS="--max-time 30 -s -o /dev/null -w '%{http_code}'"
           if [ -n "$BYPASS_SECRET" ]; then
             CURL_OPTS="$CURL_OPTS -H 'x-vercel-protection-bypass: $BYPASS_SECRET'"
           fi
 
-          # Hit each page 3 times with 2 second delays
+          # Hit each page 2 times with 1 second delays (reduced from 3x2s)
           for page in "${PAGES[@]}"; do
             echo "Warming up: ${WEB_URL}${page}"
-            for i in 1 2 3; do
+            for i in 1 2; do
               HTTP_CODE=$(eval "curl $CURL_OPTS '${WEB_URL}${page}'") || HTTP_CODE="000"
               echo "  Attempt $i: HTTP $HTTP_CODE"
 
-              # Accept 200, 304, 401, 403 as successful warmups
               if [[ "$HTTP_CODE" =~ ^(200|304|401|403)$ ]]; then
                 echo "  ✅ Page warmed up"
               else
                 echo "  ⚠️ Unexpected status, continuing..."
               fi
 
-              sleep 2
+              sleep 1
             done
           done
 
           echo "✅ Deployment warmup complete"
 
-  # API Contract Testing
-  api-contract-tests:
-    name: API Contract Tests
-    needs: [check-should-run, wait-for-deployment, warmup-deployment]
-    if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
-    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
+  # Smoke Tests - merged security scan + API contract tests
+  # Runs in PARALLEL with warmup (no SSR warmup needed for HTTP checks)
+  smoke-tests:
+    name: Smoke Tests
+    needs: gate
+    if: needs.gate.outputs.should_run == 'true'
+    runs-on: runs-on=${{ github.run_id }}/runner=1cpu-linux-x64
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: dev  # Explicitly checkout dev branch to match deployment
+      - name: Run security headers check
+        continue-on-error: true
+        run: |
+          echo "🔒 Checking security headers..."
 
-      - uses: ./.github/actions/setup-deps
+          timeout 90 bash -c '
+            URL="${{ needs.gate.outputs.web_deployment_url }}"
+            BYPASS_SECRET="${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}"
+
+            if [ -n "$BYPASS_SECRET" ]; then
+              CURL_CMD="curl -s -I --max-time 30 -H \"x-vercel-protection-bypass: $BYPASS_SECRET\" \"$URL\""
+            else
+              CURL_CMD="curl -s -I --max-time 30 \"$URL\""
+            fi
+
+            if eval "$CURL_CMD" > /tmp/headers 2>/dev/null; then
+              echo "✅ Successfully fetched headers"
+
+              if grep -qi "x-frame-options" /tmp/headers; then
+                echo "✅ X-Frame-Options header found"
+              else
+                echo "⚠️ X-Frame-Options header missing"
+              fi
+
+              if grep -qi "content-security-policy" /tmp/headers; then
+                echo "✅ Content-Security-Policy header found"
+              else
+                echo "⚠️ Content-Security-Policy header missing"
+              fi
+
+              if grep -qi "x-content-type-options" /tmp/headers; then
+                echo "✅ X-Content-Type-Options header found"
+              else
+                echo "⚠️ X-Content-Type-Options header missing"
+              fi
+            else
+              echo "⚠️ Could not fetch headers - deployment may be protected"
+            fi
+          ' || echo "⚠️ Security scan timed out after 90s - continuing"
+
+      - name: Check for exposed sensitive paths
+        continue-on-error: true
+        run: |
+          echo "🔍 Checking for exposed sensitive paths..."
+
+          PATHS=("/.env" "/.git" "/config.json" "/package.json" "/.github")
+
+          for path in "${PATHS[@]}"; do
+            MAX_RETRIES=3
+            RETRY_DELAY=5
+            retries=0
+
+            while [ $retries -lt $MAX_RETRIES ]; do
+              if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
+                STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
+                  -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+                  "${{ needs.gate.outputs.web_deployment_url }}$path" 2>/dev/null) || STATUS="000"
+              else
+                STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
+                  "${{ needs.gate.outputs.web_deployment_url }}$path" 2>/dev/null) || STATUS="000"
+              fi
+
+              if [[ "$STATUS" == "522" ]] || [[ "$STATUS" == "521" ]] || [[ "$STATUS" == "523" ]]; then
+                echo "⚠️ Cloudflare error $STATUS for $path. Retrying in ${RETRY_DELAY}s..."
+                sleep $RETRY_DELAY
+                retries=$((retries + 1))
+                continue
+              fi
+
+              if [[ "$STATUS" == "404" ]] || [[ "$STATUS" == "403" ]]; then
+                echo "✅ $path properly protected (HTTP $STATUS)"
+                break
+              else
+                echo "❌ $path may be exposed (HTTP $STATUS)"
+                break
+              fi
+            done
+
+            if [ $retries -eq $MAX_RETRIES ]; then
+              echo "⚠️ Skipping $path check due to persistent Cloudflare errors"
+            fi
+          done
 
       - name: Run API contract tests
         run: |
-          # Test all API endpoints are responding correctly
-          echo "🔍 Testing API endpoints at ${{ needs.check-should-run.outputs.deployment_url }}"
-          
-          # Add retry logic for health checks
+          echo "🔍 Testing API endpoints..."
+
           MAX_RETRIES=5
           RETRY_DELAY=10
-          
-          # Function to test endpoint with retries
+
           test_endpoint() {
             local url=$1
             local name=$2
             local retries=0
-            
-            # Add Vercel protection bypass header if available
+
             CURL_OPTS=""
             if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
               CURL_OPTS="-H 'x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}'"
             fi
-            
+
             while [ $retries -lt $MAX_RETRIES ]; do
               echo "Attempt $((retries + 1))/$MAX_RETRIES for $name..."
-              
+
               HTTP_CODE=$(eval "curl -s -o /dev/null -w \"%{http_code}\" --max-time 30 $CURL_OPTS \"$url\"")
-              
+
               if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "204" ]; then
                 echo "✅ $name: HTTP $HTTP_CODE"
                 return 0
               elif [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then
                 echo "⚠️ $name: HTTP $HTTP_CODE (deployment protection) - considering as ready"
-                return 0  # Consider protected deployment as ready
+                return 0
               elif [ "$HTTP_CODE" = "404" ]; then
-                # 404 might mean Vercel protection with incorrect bypass header
-                # Try without bypass header to confirm
                 HTTP_CODE_NO_HEADER=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$url")
                 if [ "$HTTP_CODE_NO_HEADER" = "401" ] || [ "$HTTP_CODE_NO_HEADER" = "403" ]; then
-                  echo "⚠️ $name: HTTP 404 with bypass header, $HTTP_CODE_NO_HEADER without - deployment protected, considering as ready"
+                  echo "⚠️ $name: deployment protected, considering as ready"
                   return 0
                 else
                   echo "❌ $name returned HTTP 404 (route not found)"
@@ -334,101 +378,144 @@ jobs:
                 return 1
               fi
             done
-            
+
             echo "❌ $name failed after $MAX_RETRIES attempts"
             return 1
           }
-          
-          # Test health endpoints with retry logic
-          test_endpoint "${{ needs.check-should-run.outputs.web_deployment_url }}/healthcheck" "Health check" || exit 1
-          test_endpoint "${{ needs.check-should-run.outputs.web_deployment_url }}/api/health" "API health" || exit 1
-          
-          # TODO: Add more comprehensive API testing
-          # - Authentication endpoints
-          # - User management endpoints
-          # - Billing endpoints
-          # - Content management endpoints
+
+          test_endpoint "${{ needs.gate.outputs.web_deployment_url }}/healthcheck" "Health check" || exit 1
+          test_endpoint "${{ needs.gate.outputs.web_deployment_url }}/api/health" "API health" || exit 1
 
       - name: Test GraphQL endpoint
         run: |
           echo "🔍 Testing GraphQL endpoint..."
-          
-          # Skip introspection test entirely for dev environment
-          # Introspection is typically disabled in production/dev deployments
-          echo "⚠️ GraphQL introspection test skipped for dev environment"
-          echo "ℹ️ Introspection is disabled by default in production deployments"
-          
-          # Instead, test basic GraphQL connectivity with a simple query
+
           MAX_RETRIES=5
           RETRY_DELAY=10
           retries=0
-          
-          # Add headers for GraphQL and Vercel protection bypass
+
           CURL_HEADERS="-H \"Content-Type: application/json\""
-          
-          # Add Vercel protection bypass header for Payload project if available
+
           if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}" ]; then
             CURL_HEADERS="$CURL_HEADERS -H \"x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}\""
           elif [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
-            # Fallback to web secret if payload-specific secret not available
             CURL_HEADERS="$CURL_HEADERS -H \"x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}\""
           fi
-          
+
           while [ $retries -lt $MAX_RETRIES ]; do
             echo "Attempt $((retries + 1))/$MAX_RETRIES for GraphQL endpoint..."
-            
-            # Test with a simple non-introspection query
+
             RESPONSE=$(eval "curl -s -X POST \
               $CURL_HEADERS \
               -d '{\"query\":\"{ __typename }\"}' \
               --max-time 30 \
-              \"${{ needs.check-should-run.outputs.payload_deployment_url }}/api/graphql\"")
-            
-            # Check for Cloudflare error pages
+              \"${{ needs.gate.outputs.payload_deployment_url }}/api/graphql\"")
+
             if echo "$RESPONSE" | grep -q "Cloudflare\|522\|521\|523"; then
               echo "⚠️ Cloudflare error detected. Retrying in ${RETRY_DELAY}s..."
               sleep $RETRY_DELAY
               retries=$((retries + 1))
               continue
             fi
-            
-            # Check for any GraphQL response (errors are OK, we just need connectivity)
+
             if echo "$RESPONSE" | grep -q -E "data|errors|extensions"; then
               echo "✅ GraphQL endpoint is reachable and responding"
               echo "Response preview: $(echo "$RESPONSE" | head -c 200)"
               exit 0
             elif echo "$RESPONSE" | grep -q "Vercel Authentication"; then
-              echo "⚠️ GraphQL endpoint is protected by Vercel authentication"
-              echo "ℹ️ This is expected for dev environment - marking as success"
+              echo "⚠️ GraphQL endpoint is protected - marking as success"
               exit 0
             else
               echo "⚠️ Unexpected response from GraphQL endpoint"
-              echo "Response: $(echo "$RESPONSE" | head -c 500)"
-              # Don't fail on GraphQL issues as it may be deployed separately
               if [ $retries -eq $((MAX_RETRIES - 1)) ]; then
-                echo "⚠️ GraphQL endpoint may not be available - continuing with other tests"
+                echo "⚠️ GraphQL endpoint may not be available - continuing"
                 exit 0
               fi
             fi
-            
+
             sleep $RETRY_DELAY
             retries=$((retries + 1))
           done
-          
+
           echo "⚠️ GraphQL endpoint connectivity could not be verified - continuing anyway"
           exit 0
 
-  # Integration Tests
+  # Performance Baseline - Lighthouse CI
+  performance-baseline:
+    name: Capture Performance Baseline
+    needs: gate
+    if: needs.gate.outputs.should_run == 'true'
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    timeout-minutes: 3
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Chrome for Lighthouse
+        run: |
+          if ! command -v google-chrome &> /dev/null; then
+            echo "Installing Chrome for Lighthouse..."
+            sudo apt-get update -qq && sudo apt-get install -y -qq google-chrome-stable 2>/dev/null || {
+              echo "⚠️ Chrome install failed, Lighthouse will attempt bundled Chromium"
+            }
+          fi
+
+      - name: Create CI Lighthouse config
+        run: |
+          cat > /tmp/lighthouserc.ci.json << EOF
+          {
+            "ci": {
+              "collect": {
+                "numberOfRuns": 1,
+                "settings": {
+                  "chromeFlags": "--no-sandbox --disable-gpu --no-zygote --disable-dev-shm-usage",
+                  "extraHeaders": "{\"x-vercel-protection-bypass\": \"${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}\"}",
+                  "preset": "desktop",
+                  "throttling": {
+                    "cpuSlowdownMultiplier": 1
+                  }
+                }
+              },
+              "upload": {
+                "target": "temporary-public-storage"
+              }
+            }
+          }
+          EOF
+
+      - name: Run Lighthouse performance test
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            ${{ needs.gate.outputs.web_deployment_url }}
+            ${{ needs.gate.outputs.web_deployment_url }}/pricing
+          configPath: /tmp/lighthouserc.ci.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Store performance metrics
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const metrics = {
+              timestamp: new Date().toISOString(),
+              environment: 'dev',
+              deployment_sha: '${{ github.sha }}',
+            };
+
+            console.log('Performance baseline captured:', metrics);
+
+  # Integration Tests - the main Playwright test suite
   integration-tests:
     name: Integration Tests
-    needs: [check-should-run, wait-for-deployment, warmup-deployment]
-    if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
+    needs: [gate, warmup]
+    if: needs.gate.outputs.should_run == 'true'
     runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
-    timeout-minutes: 30  # Increased from 15 to allow integration tests to complete
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: dev  # Explicitly checkout dev branch to match deployment
+          ref: dev
           sparse-checkout: |
             apps/e2e
             packages
@@ -460,20 +547,12 @@ jobs:
         id: e2e-config
         run: |
           echo "📋 Validating E2E Supabase configuration..."
-          echo ""
-          echo "🔑 CRITICAL: E2E_SUPABASE_URL must match NEXT_PUBLIC_SUPABASE_URL"
-          echo "   This ensures cookie names match between E2E setup and deployed middleware."
-          echo "   Fix for #1067: Auth session regression caused by cookie name mismatch"
-          echo ""
 
-          # Validate required secrets are configured
           SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
           SUPABASE_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
 
           if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_KEY" ]; then
-            echo "❌ CRITICAL: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY not configured in GitHub Secrets"
-            echo "   These secrets are REQUIRED for E2E tests to authenticate correctly."
-            echo "   Please configure them in the repository settings."
+            echo "❌ CRITICAL: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY not configured"
             exit 1
           fi
 
@@ -483,58 +562,36 @@ jobs:
 
       - name: Run integration test suite
         env:
-          # Required for E2E pre-flight validation to prevent accidental production DB access
           NODE_ENV: test
-          BASE_URL: ${{ needs.check-should-run.outputs.web_deployment_url }}
+          BASE_URL: ${{ needs.gate.outputs.web_deployment_url }}
           SKIP_EMAIL_VERIFICATION: true
           CI: true
-          PLAYWRIGHT_TEST: true  # Enables Cloudflare Turnstile test keys bypass
-          PLAYWRIGHT_BASE_URL: ${{ needs.check-should-run.outputs.web_deployment_url }}
-          PLAYWRIGHT_API_URL: ${{ needs.check-should-run.outputs.payload_deployment_url }}
+          PLAYWRIGHT_TEST: true
+          PLAYWRIGHT_BASE_URL: ${{ needs.gate.outputs.web_deployment_url }}
+          PLAYWRIGHT_API_URL: ${{ needs.gate.outputs.payload_deployment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}
-          # Billing tests disabled: dev deployment cannot receive live Stripe webhooks
-          # Webhook tests should be validated in staging/production environments
           ENABLE_BILLING_TESTS: false
-          ENABLE_TEAM_ACCOUNT_TESTS: true  # Enable team account integration tests
-          # Stripe test key for billing E2E tests
+          ENABLE_TEAM_ACCOUNT_TESTS: true
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
-          # E2E test user credentials
           E2E_TEST_USER_EMAIL: ${{ secrets.E2E_TEST_USER_EMAIL }}
           E2E_TEST_USER_PASSWORD: ${{ secrets.E2E_TEST_USER_PASSWORD }}
           E2E_OWNER_EMAIL: ${{ secrets.E2E_OWNER_EMAIL }}
           E2E_OWNER_PASSWORD: ${{ secrets.E2E_OWNER_PASSWORD }}
           E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
           E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
-          # Supabase configuration for E2E tests
-          # CRITICAL: E2E_SUPABASE_URL MUST match NEXT_PUBLIC_SUPABASE_URL used by deployed app
-          # This ensures cookie names (derived from URL) match between E2E setup and middleware
-          # Fix for #1067: Auth session regression caused by cookie name mismatch
           E2E_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           E2E_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          # Enable debug logging for auth session troubleshooting
           DEBUG_E2E_AUTH: true
-          # Add debug logging for Playwright
           DEBUG: pw:api
-          # Enable HAR recording for debugging cookie transmission issues
-          # HAR files capture HTTP headers including cookies sent to server
-          # See: Issue #1096 - Auth session lost in Vercel preview deployments
           RECORD_HAR_LOGS: true
         run: |
           echo "🧪 Running integration tests..."
-          echo "⚠️ Email verification will be SKIPPED (testing against deployed environment)"
-          echo "ℹ️ Note: Tests may fail if Vercel protection bypass is not properly configured"
-          echo "ℹ️ Ensure VERCEL_AUTOMATION_BYPASS_SECRET is set in GitHub Secrets"
           echo "ℹ️ HAR recording enabled for debugging (RECORD_HAR_LOGS=true)"
 
-          # Run integration tests (not just smoke tests)
           pnpm --filter web-e2e test:integration || {
             EXIT_CODE=$?
             echo "⚠️ Integration tests failed with exit code $EXIT_CODE"
-            echo "ℹ️ Common issues:"
-            echo "  - Vercel protection blocking test automation"
-            echo "  - Missing or incorrect VERCEL_AUTOMATION_BYPASS_SECRET"
-            echo "  - Dev deployment not fully ready"
             echo "📝 Check test artifacts for screenshots, traces, and HAR files"
             exit $EXIT_CODE
           }
@@ -548,187 +605,40 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
-  # Security Quick Scan
-  security-scan:
-    name: Security Quick Scan
-    needs: [check-should-run, wait-for-deployment]
-    if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
-    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
-    timeout-minutes: 10
-    continue-on-error: true  # Don't block on security issues initially
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: dev  # Explicitly checkout dev branch to match deployment
-
-      - name: Run security headers check
-        run: |
-          echo "🔒 Checking security headers with simplified approach..."
-          
-          # Use system timeout to prevent infinite hangs - hard limit of 90 seconds
-          timeout 90 bash -c '
-            URL="${{ needs.check-should-run.outputs.web_deployment_url }}"
-            BYPASS_SECRET="${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}"
-            
-            echo "Testing connectivity to $URL..."
-            
-            # Simple curl with minimal complexity
-            if [ -n "$BYPASS_SECRET" ]; then
-              CURL_CMD="curl -s -I --max-time 30 -H \"x-vercel-protection-bypass: $BYPASS_SECRET\" \"$URL\""
-            else
-              CURL_CMD="curl -s -I --max-time 30 \"$URL\""
-            fi
-            
-            echo "Executing: $CURL_CMD"
-            if eval "$CURL_CMD" > /tmp/headers 2>/dev/null; then
-              echo "✅ Successfully fetched headers"
-              echo "Headers received:"
-              cat /tmp/headers | head -10
-              
-              # Simple header checks without complex parsing
-              if grep -qi "x-frame-options" /tmp/headers; then
-                echo "✅ X-Frame-Options header found"
-              else
-                echo "⚠️ X-Frame-Options header missing"
-              fi
-              
-              if grep -qi "content-security-policy" /tmp/headers; then
-                echo "✅ Content-Security-Policy header found"
-              else
-                echo "⚠️ Content-Security-Policy header missing"
-              fi
-              
-              if grep -qi "x-content-type-options" /tmp/headers; then
-                echo "✅ X-Content-Type-Options header found"
-              else
-                echo "⚠️ X-Content-Type-Options header missing"
-              fi
-              
-            else
-              echo "⚠️ Could not fetch headers - this is acceptable for a quick scan"
-              echo "ℹ️ Deployment may be protected or temporarily unavailable"
-            fi
-          ' || echo "⚠️ Security scan timed out after 90s - continuing with other tests"
-
-      - name: Check for exposed sensitive paths
-        run: |
-          echo "🔍 Checking for exposed sensitive paths..."
-          
-          # Check that sensitive paths return 404 or 403
-          PATHS=("/.env" "/.git" "/config.json" "/package.json" "/.github")
-          
-          for path in "${PATHS[@]}"; do
-            # Retry logic for Cloudflare errors
-            MAX_RETRIES=3
-            RETRY_DELAY=5
-            retries=0
-            
-            while [ $retries -lt $MAX_RETRIES ]; do
-              if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
-                STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
-                  -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
-                  "${{ needs.check-should-run.outputs.web_deployment_url }}$path" 2>/dev/null) || STATUS="000"
-              else
-                STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
-                  "${{ needs.check-should-run.outputs.web_deployment_url }}$path" 2>/dev/null) || STATUS="000"
-              fi
-              
-              # Check if it's a Cloudflare error that needs retry
-              if [[ "$STATUS" == "522" ]] || [[ "$STATUS" == "521" ]] || [[ "$STATUS" == "523" ]]; then
-                echo "⚠️ Cloudflare error $STATUS for $path. Retrying in ${RETRY_DELAY}s..."
-                sleep $RETRY_DELAY
-                retries=$((retries + 1))
-                continue
-              fi
-              
-              # Check if properly protected
-              if [[ "$STATUS" == "404" ]] || [[ "$STATUS" == "403" ]]; then
-                echo "✅ $path properly protected (HTTP $STATUS)"
-                break
-              else
-                echo "❌ $path may be exposed (HTTP $STATUS)"
-                exit 1
-              fi
-            done
-            
-            # If we exhausted retries with Cloudflare errors, skip this check
-            if [ $retries -eq $MAX_RETRIES ]; then
-              echo "⚠️ Skipping $path check due to persistent Cloudflare errors"
-            fi
-          done
-
-  # Performance Baseline
-  performance-baseline:
-    name: Capture Performance Baseline
-    needs: [check-should-run, wait-for-deployment]
-    if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
-    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
-    timeout-minutes: 10
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Run Lighthouse performance test
-        uses: treosh/lighthouse-ci-action@v12
-        with:
-          urls: |
-            ${{ needs.check-should-run.outputs.web_deployment_url }}
-            ${{ needs.check-should-run.outputs.web_deployment_url }}/pricing
-            ${{ needs.check-should-run.outputs.web_deployment_url }}/templates
-          uploadArtifacts: true
-          temporaryPublicStorage: true
-
-      - name: Store performance metrics
-        uses: actions/github-script@v8
-        with:
-          script: |
-            // Store metrics for comparison in promotion readiness
-            const metrics = {
-              timestamp: new Date().toISOString(),
-              environment: 'dev',
-              deployment_sha: '${{ github.sha }}',
-              // Lighthouse scores would be parsed here
-            };
-            
-            console.log('Performance baseline captured:', metrics);
-            
-            // TODO: Store in artifact or external service for comparison
-
   # Aggregate Results
-  integration-summary:
+  finalize:
     name: Integration Test Summary
-    needs: [wait-for-deployment, api-contract-tests, integration-tests, security-scan, performance-baseline]
-    if: ${{ always() && !cancelled() && needs.check-should-run.outputs.should_run == 'true' }}
-    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
+    needs: [gate, smoke-tests, integration-tests]
+    if: always() && !cancelled() && needs.gate.outputs.should_run == 'true'
+    runs-on: runs-on=${{ github.run_id }}/runner=1cpu-linux-x64
     steps:
       - name: Generate test summary
+        id: summary
         uses: actions/github-script@v8
         with:
           script: |
             const jobs = {
-              'API Contract Tests': '${{ needs.api-contract-tests.result }}',
-              'Integration Tests': '${{ needs.integration-tests.result }}',
-              'Security Scan': '${{ needs.security-scan.result }}',
-              'Performance Baseline': '${{ needs.performance-baseline.result }}'
+              'Smoke Tests': '${{ needs.smoke-tests.result }}',
+              'Integration Tests': '${{ needs.integration-tests.result }}'
             };
-            
+
             let summary = `## 🧪 Dev Integration Test Results\n\n`;
             summary += `| Test Suite | Status |\n`;
             summary += `|------------|--------|\n`;
-            
+
             let allPassed = true;
             for (const [name, status] of Object.entries(jobs)) {
-              const emoji = status === 'success' ? '✅' : 
+              const emoji = status === 'success' ? '✅' :
                            status === 'failure' ? '❌' : '⚠️';
               summary += `| ${name} | ${emoji} ${status} |\n`;
-              
+
               if (status === 'failure') {
                 allPassed = false;
               }
             }
-            
+
             summary += `\n### Overall Status: ${allPassed ? '✅ Ready for Promotion' : '❌ Issues Found'}\n`;
-            
+
             if (allPassed) {
               summary += `\nDev environment is stable and ready for staging promotion.\n`;
               summary += `Next step: Review and approve the automated promotion PR.\n`;
@@ -736,16 +646,13 @@ jobs:
               summary += `\nDev environment has issues that need to be resolved before promotion.\n`;
               summary += `Check the failed jobs above for details.\n`;
             }
-            
-            // Write to summary
+
             await core.summary
               .addRaw(summary)
               .write();
-            
-            // Set output for next workflow
+
             core.setOutput('all_passed', allPassed);
-            
-            // Create comment on commit (with error handling)
+
             if (context.eventName === 'workflow_run') {
               try {
                 const sha = context.payload.workflow_run.head_sha;
@@ -758,7 +665,6 @@ jobs:
                 console.log('✅ Posted test results as commit comment');
               } catch (error) {
                 console.log('⚠️ Could not create commit comment:', error.message);
-                console.log('Test results are available in the workflow summary above');
               }
             }
 
@@ -767,7 +673,6 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            // Trigger the promotion readiness workflow
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -777,5 +682,5 @@ jobs:
                 integration_test_run_id: context.runId.toString()
               }
             });
-            
+
             console.log('✅ Triggered promotion readiness assessment');

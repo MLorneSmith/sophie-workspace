@@ -385,9 +385,6 @@ jobs:
       E2E_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
       E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
 
-      # Chrome flags for Lighthouse in CI environment
-      CHROME_FLAGS: '--no-sandbox --disable-dev-shm-usage --disable-gpu'
-
       # Legacy environment variables (for backward compatibility)
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
@@ -421,8 +418,8 @@ jobs:
       - name: Set up E2E database for accessibility tests
         run: |
           cd apps/web
-          # Start E2E Supabase instance
-          supabase start
+          # Start E2E Supabase instance (exclude unused services to speed up Docker pulls)
+          supabase start -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
           
           # Wait for database to be ready
           sleep 5

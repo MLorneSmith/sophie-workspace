@@ -36,7 +36,7 @@ env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
 jobs:
-  # Check if we should skip deployment (e.g., if recently deployed)
+  # Quick gate check - should we deploy at all?
   check-skip:
     name: Check Skip Deployment
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
@@ -50,16 +50,16 @@ jobs:
           script: |
             // Skip if this is a PR merge and we recently deployed successfully
             const isPRMerge = context.payload.head_commit?.message?.includes('Merge pull request');
-            
+
             if (!isPRMerge) {
               console.log('Not a PR merge, proceeding with deployment');
               core.setOutput('should_deploy', 'true');
               return;
             }
-            
+
             // Check if we have a successful deployment in the last 30 minutes
             const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
-            
+
             const runs = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -68,12 +68,12 @@ jobs:
               status: 'success',
               per_page: 5
             });
-            
-            const recentSuccessful = runs.data.workflow_runs.find(run => 
-              new Date(run.created_at) > thirtyMinutesAgo && 
+
+            const recentSuccessful = runs.data.workflow_runs.find(run =>
+              new Date(run.created_at) > thirtyMinutesAgo &&
               run.conclusion === 'success'
             );
-            
+
             if (recentSuccessful) {
               console.log(`Found recent successful deployment from ${recentSuccessful.created_at}, skipping`);
               core.setOutput('should_deploy', 'false');
@@ -82,10 +82,11 @@ jobs:
               core.setOutput('should_deploy', 'true');
             }
 
-  # Pre-deployment validation (quick checks before deploying)
+  # Validation runs in PARALLEL with deploys for faster pipeline
+  # If this fails, the finalize job will fail the overall workflow
   validate:
     name: Pre-deployment Validation
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64  # Reduced CPUs - sufficient for lint/typecheck
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: check-skip
     if: needs.check-skip.outputs.should_deploy == 'true'
     steps:
@@ -107,40 +108,41 @@ jobs:
           # Run typecheck and lint in parallel for faster feedback
           pnpm typecheck &
           TYPECHECK_PID=$!
-          
+
           pnpm lint &
           LINT_PID=$!
-          
+
           # Wait for both to complete and capture exit codes
           wait $TYPECHECK_PID
           TYPECHECK_EXIT=$?
-          
+
           wait $LINT_PID
           LINT_EXIT=$?
-          
+
           # Report results
           if [ $TYPECHECK_EXIT -ne 0 ]; then
             echo "❌ TypeScript check failed"
           else
             echo "✅ TypeScript check passed"
           fi
-          
+
           if [ $LINT_EXIT -ne 0 ]; then
             echo "❌ Lint check failed"
           else
             echo "✅ Lint check passed"
           fi
-          
+
           # Exit with failure if either check failed
           if [ $TYPECHECK_EXIT -ne 0 ] || [ $LINT_EXIT -ne 0 ]; then
             exit 1
           fi
 
-  # Deploy Web App to Vercel Dev environment (let Vercel handle the build)
+  # Deploy Web App to Vercel Dev environment
+  # Runs in PARALLEL with validation - only gated by check-skip
   deploy-web:
     name: Deploy Web App to Dev
-    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64  # Increased CPUs for faster Vercel operations
-    needs: [check-skip, validate]
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
+    needs: check-skip
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
       name: development
@@ -152,7 +154,7 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        
+
       - name: Install Vercel CLI
         run: |
           pnpm add -g vercel@48.8.0
@@ -165,9 +167,11 @@ jobs:
           org-id: ${{ secrets.VERCEL_ORG_ID }}
           project-id: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
           environment: preview
-          build-artifacts: false  # Let Vercel handle the build
+          build-artifacts: false
           protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           health-check-url: /healthcheck
+          readiness-check-attempts: '10'
+          health-check-attempts: '3'
 
       - name: Create deployment status
         uses: actions/github-script@v8
@@ -192,11 +196,12 @@ jobs:
               description: 'Web app deployed to dev environment'
             });
 
-  # Deploy Payload CMS to Vercel Dev environment (let Vercel handle the build)
+  # Deploy Payload CMS to Vercel Dev environment
+  # Runs in PARALLEL with validation - only gated by check-skip
   deploy-payload:
     name: Deploy Payload CMS to Dev
-    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64  # Increased CPUs for faster Vercel operations
-    needs: [check-skip, validate]
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
+    needs: check-skip
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
       name: development-payload
@@ -208,7 +213,7 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        
+
       - name: Install Vercel CLI
         run: |
           pnpm add -g vercel@48.8.0
@@ -221,9 +226,11 @@ jobs:
           org-id: ${{ secrets.VERCEL_ORG_ID }}
           project-id: ${{ secrets.VERCEL_PROJECT_ID_PAYLOAD }}
           environment: preview
-          build-artifacts: false  # Let Vercel handle the build
+          build-artifacts: false
           protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}
           health-check-url: /api/health
+          readiness-check-attempts: '10'
+          health-check-attempts: '3'
 
       - name: Create deployment status
         uses: actions/github-script@v8
@@ -248,14 +255,30 @@ jobs:
               description: 'Payload CMS deployed to dev environment'
             });
 
-  # Save deployment URLs for integration tests
-  save-deployment-urls:
-    name: Save Deployment URLs
+  # Finalize - validates all parallel jobs succeeded, saves URLs, notifies monitoring
+  # Consolidates save-deployment-urls + notify-monitoring into one job (saves 2 runner spin-ups)
+  finalize:
+    name: Finalize Deployment
     runs-on: runs-on=${{ github.run_id }}/runner=1cpu-linux-x64
-    needs: [check-skip, deploy-web, deploy-payload]
-    if: needs.check-skip.outputs.should_deploy == 'true'
+    needs: [check-skip, validate, deploy-web, deploy-payload]
+    if: always() && needs.check-skip.outputs.should_deploy == 'true'
     steps:
-      - name: Create deployment URLs file
+      - name: Check validation result
+        if: needs.validate.result != 'success'
+        run: |
+          echo "❌ Pre-deployment validation failed - typecheck or lint errors detected"
+          echo "Fix validation errors and push again."
+          exit 1
+
+      - name: Check deployment results
+        if: needs.deploy-web.result != 'success' || needs.deploy-payload.result != 'success'
+        run: |
+          echo "❌ One or more deployments failed"
+          echo "  Web: ${{ needs.deploy-web.result }}"
+          echo "  Payload: ${{ needs.deploy-payload.result }}"
+          exit 1
+
+      - name: Save deployment URLs
         run: |
           mkdir -p deployment-info
           cat > deployment-info/urls.json << EOF
@@ -267,7 +290,7 @@ jobs:
           }
           EOF
 
-          echo "📦 Deployment URLs saved:"
+          echo "📦 Deployment URLs:"
           cat deployment-info/urls.json
 
       - name: Upload deployment URLs artifact
@@ -277,20 +300,14 @@ jobs:
           path: deployment-info/urls.json
           retention-days: 1
 
-  # Notify New Relic of deployment
-  notify-monitoring:
-    name: Notify Monitoring
-    runs-on: runs-on=${{ github.run_id }}/runner=1cpu-linux-x64  # Minimal runner for notification
-    needs: [check-skip, deploy-web, deploy-payload]
-    if: needs.check-skip.outputs.should_deploy == 'true'
-    continue-on-error: true
-    steps:
       - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             .github/actions/newrelic-notify
 
-      - uses: ./.github/actions/newrelic-notify
+      - name: Notify monitoring
+        continue-on-error: true
+        uses: ./.github/actions/newrelic-notify
         with:
           api-key: ${{ secrets.NEW_RELIC_API_KEY }}
           app-id: ${{ secrets.NEW_RELIC_APP_ID }}

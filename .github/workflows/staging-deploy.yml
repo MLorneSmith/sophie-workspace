@@ -65,7 +65,8 @@ jobs:
             echo "This is a PR merge, validation already done"
             echo "should-validate=false" >> $GITHUB_OUTPUT
           # Also skip if merging from dev (already validated there)
-          elif git log --format=%B -n 1 | grep -q "Merge.*dev"; then
+          # Case-insensitive: matches "Merge branch dev", "merge dev into staging", etc.
+          elif git log --format=%B -n 1 | grep -qi "merge.*dev"; then
             echo "This is a merge from dev, validation already done"
             echo "should-validate=false" >> $GITHUB_OUTPUT
           else
@@ -148,6 +149,7 @@ jobs:
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
       DO_NOT_TRACK: 1
       # Authentication method configuration - required at build time for NEXT_PUBLIC_* vars
       # See: Issue #1849, #1850 - E2E tests fail due to missing auth form fields
@@ -221,7 +223,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 6
       matrix:
         shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     env:
@@ -244,6 +246,7 @@ jobs:
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
       ENABLE_BILLING_TESTS: true
       DO_NOT_TRACK: 1
 
@@ -483,16 +486,16 @@ jobs:
           echo "✅ All E2E tests passed"
 
   # Build application with artifact sharing
+  # Runs in parallel with test-shards to reduce wall-clock time.
+  # Deploy jobs gate on both build AND test-aggregate.
   build:
     name: Build Application
-    needs: [check-validation, validate, test-aggregate]
-    # Handle skipped test-aggregate job (for PR merges) - proceed if tests passed OR were skipped
+    needs: [check-validation, validate]
     if: |
       always() &&
       (needs.validate.result == 'success' || needs.validate.result == 'skipped') &&
-      (needs.test-aggregate.result == 'success' || needs.test-aggregate.result == 'skipped') &&
       !failure() && !cancelled()
-    uses: ./.github/workflows/artifact-sharing.yml
+    uses: ./.github/workflows/reusable-build.yml
     with:
       environment: staging
       commit_sha: ${{ github.sha }}
@@ -500,10 +503,16 @@ jobs:
     secrets: inherit
 
   # Deploy Web App to Vercel Staging environment
+  # Gates on both build (artifacts) and test-aggregate (tests must pass)
   deploy-web:
     name: Deploy Web App to Staging
     runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
-    needs: [build, test-aggregate]
+    needs: [build, check-validation, test-aggregate]
+    if: |
+      always() &&
+      needs.build.result == 'success' &&
+      (needs.test-aggregate.result == 'success' || needs.test-aggregate.result == 'skipped') &&
+      !failure() && !cancelled()
     environment:
       name: staging
       url: ${{ steps.deploy.outputs.url }}
@@ -573,10 +582,16 @@ jobs:
           echo "| Deploy URL | ${{ steps.deploy.outputs.url }} |" >> $GITHUB_STEP_SUMMARY
 
   # Deploy Payload CMS to Vercel Staging environment
+  # Gates on both build (artifacts) and test-aggregate (tests must pass)
   deploy-payload:
     name: Deploy Payload CMS to Staging
     runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
-    needs: build
+    needs: [build, check-validation, test-aggregate]
+    if: |
+      always() &&
+      needs.build.result == 'success' &&
+      (needs.test-aggregate.result == 'success' || needs.test-aggregate.result == 'skipped') &&
+      !failure() && !cancelled()
     environment:
       name: staging-payload
       url: ${{ steps.deploy.outputs.url }}

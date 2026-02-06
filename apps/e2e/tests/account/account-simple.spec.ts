@@ -238,12 +238,16 @@ test.describe("Account Settings - Simple @account @integration", () => {
 			timeout: CI_TIMEOUTS.element,
 		});
 
-		// Click the dropdown trigger with force flag to bypass overlays
-		await accountDropdownTrigger.click({ force: true });
-
-		// Wait for the dropdown menu to be visible before asserting email
-		await expect(page.locator('[role="menu"]')).toBeVisible({
+		// Click dropdown and wait for menu with retry - Radix UI dropdowns can
+		// miss clicks due to animation timing or DismissableLayer pointer-events
+		await expect(async () => {
+			await accountDropdownTrigger.click();
+			await expect(page.locator('[role="menu"]')).toBeVisible({
+				timeout: CI_TIMEOUTS.short,
+			});
+		}).toPass({
 			timeout: CI_TIMEOUTS.element,
+			intervals: RETRY_INTERVALS as unknown as number[],
 		});
 
 		// Verify the email is displayed in the dropdown content
