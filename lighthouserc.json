@@ -8,8 +8,8 @@
 				"http://localhost:3000/team"
 			],
 			"numberOfRuns": 3,
-			"chromeFlags": "--no-sandbox --disable-gpu",
 			"settings": {
+				"chromeFlags": "--no-sandbox --disable-gpu --no-zygote --disable-dev-shm-usage",
 				"preset": "desktop",
 				"throttling": {
 					"cpuSlowdownMultiplier": 1
