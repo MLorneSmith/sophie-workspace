@@ -187,14 +187,14 @@ jobs:
       - name: Build application
         run: pnpm turbo build:test --filter=web
 
-      - name: Build Payload CMS
-        run: pnpm turbo build --filter=payload
+      - name: Generate Payload importmap
+        run: pnpm --filter payload generate:importmap
         env:
           DATABASE_URI: postgresql://postgres:postgres@localhost:54522/postgres
           PAYLOAD_SECRET: test_payload_secret_for_e2e_testing
 
-      - name: Generate Payload importmap
-        run: pnpm --filter payload generate:importmap
+      - name: Build Payload CMS
+        run: pnpm turbo build --filter=payload
         env:
           DATABASE_URI: postgresql://postgres:postgres@localhost:54522/postgres
           PAYLOAD_SECRET: test_payload_secret_for_e2e_testing
