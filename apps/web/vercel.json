@@ -1,6 +1,6 @@
 {
 	"buildCommand": "pnpm turbo run build --filter=web",
 	"devCommand": "pnpm turbo run dev --filter=web",
-	"installCommand": "corepack enable && pnpm install --frozen-lockfile",
+	"installCommand": "npm i -g pnpm@10.14.0 && pnpm install --frozen-lockfile",
 	"outputDirectory": ".next"
 }
