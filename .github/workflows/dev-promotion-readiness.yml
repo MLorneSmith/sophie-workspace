@@ -391,15 +391,24 @@ jobs:
   check-stale-deployment:
     name: Check for Stale Deployment
     runs-on: ubuntu-latest
+    continue-on-error: true  # Informational only - don't fail the workflow
     if: github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Check deployment age
         uses: actions/github-script@v8
         with:
+          github-token: ${{ steps.app-token.outputs.token }}
           script: |
             // Get last deployment to dev
             const deployments = await github.rest.repos.listDeployments({
