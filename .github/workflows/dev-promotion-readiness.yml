@@ -296,29 +296,41 @@ jobs:
               labels: ['staging', 'deployment', 'automated']
             });
 
-            // Enable auto-merge with squash to avoid merge commit confusion
-            // (staging won't have commits that dev lacks)
-            try {
-              await github.graphql(`
-                mutation EnableAutoMerge($pullRequestId: ID!) {
-                  enablePullRequestAutoMerge(input: {
-                    pullRequestId: $pullRequestId,
-                    mergeMethod: SQUASH
-                  }) {
-                    pullRequest {
-                      autoMergeRequest {
-                        enabledAt
+            // Enable auto-merge with squash - retry with backoff since
+            // checks need time to register before GitHub allows this
+            let autoMergeEnabled = false;
+            for (let attempt = 1; attempt <= 5; attempt++) {
+              try {
+                await github.graphql(`
+                  mutation EnableAutoMerge($pullRequestId: ID!) {
+                    enablePullRequestAutoMerge(input: {
+                      pullRequestId: $pullRequestId,
+                      mergeMethod: SQUASH
+                    }) {
+                      pullRequest {
+                        autoMergeRequest {
+                          enabledAt
+                        }
                       }
                     }
                   }
+                `, {
+                  pullRequestId: pr.data.node_id
+                });
+                console.log(`Auto-merge (squash) enabled for PR (attempt ${attempt})`);
+                autoMergeEnabled = true;
+                break;
+              } catch (error) {
+                console.log(`Auto-merge attempt ${attempt}/5 failed: ${error.message}`);
+                if (attempt < 5) {
+                  const delay = attempt * 5000;
+                  console.log(`Waiting ${delay/1000}s for checks to register...`);
+                  await new Promise(r => setTimeout(r, delay));
                 }
-              `, {
-                pullRequestId: pr.data.node_id
-              });
-              console.log('Auto-merge (squash) enabled for PR');
-            } catch (error) {
-              console.log('Could not enable auto-merge:', error.message);
-              // Auto-merge may not be available if branch protection doesn't require reviews
+              }
+            }
+            if (!autoMergeEnabled) {
+              console.log('⚠️ Could not enable auto-merge after 5 attempts');
             }
 
             console.log(`Created PR #${pr.data.number}: ${pr.data.html_url}`);
