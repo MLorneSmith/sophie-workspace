@@ -82,7 +82,7 @@ jobs:
              | jq -r '.[] | select(.headSha == "${{ inputs.commit_sha }}" and .status == "completed") | .databaseId' \
              | head -1 | xargs -I {} gh run download {} -n "build-artifacts-staging" 2>/dev/null; then
             echo "found=true" >> $GITHUB_OUTPUT
-            if [ -d "apps/web/.next" ] && [ -d "apps/payload/dist" ]; then
+            if [ -d "apps/web/.next" ] && [ -d "apps/payload/.next" ]; then
               echo "✅ Existing artifacts found and validated"
             else
               echo "❌ Artifacts incomplete, will rebuild"
@@ -166,7 +166,7 @@ jobs:
           path: |
             apps/web/.next
             apps/web/public
-            apps/payload/dist
+            apps/payload/.next
             packages/*/dist
             .turbo
           key: build-${{ inputs.environment }}-${{ inputs.commit_sha || github.sha }}
@@ -199,7 +199,7 @@ jobs:
           tar -cf build-artifacts.tar \
             apps/web/.next \
             apps/web/public \
-            apps/payload/dist \
+            apps/payload/.next \
             packages/*/dist \
             build-info.json
 
@@ -224,7 +224,7 @@ jobs:
         with:
           path: |
             apps/web/.next
-            apps/payload/dist
+            apps/payload/.next
             packages/*/dist
             build-info.json
           key: production-build-${{ steps.artifact-key.outputs.key }}
@@ -270,7 +270,7 @@ jobs:
             exit 1
           fi
 
-          if [ ! -d "apps/payload/dist" ]; then
+          if [ ! -d "apps/payload/.next" ]; then
             echo "❌ Payload build artifacts missing!"
             exit 1
           fi
@@ -284,4 +284,4 @@ jobs:
 
           echo "📦 Artifact Sizes:"
           du -sh apps/web/.next || true
-          du -sh apps/payload/dist || true
+          du -sh apps/payload/.next || true

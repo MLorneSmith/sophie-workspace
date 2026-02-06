@@ -359,10 +359,10 @@ jobs:
             fi
           fi
           
-          # Check payload app bundle sizes  
-          if [ -d "apps/payload/dist" ]; then
-            echo "📝 Payload App (dist):"
-            du -sh apps/payload/dist || echo "  No dist directory found"
+          # Check payload app bundle sizes
+          if [ -d "apps/payload/.next" ]; then
+            echo "📝 Payload App (.next):"
+            du -sh apps/payload/.next || echo "  No .next directory found"
           fi
           
           # Check if any bundles are unusually large (basic check)

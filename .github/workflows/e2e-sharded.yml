@@ -208,7 +208,6 @@ jobs:
           path: |
             apps/web/.next
             apps/payload/.next
-            apps/payload/dist
             packages/*/dist
             .turbo
             apps/web/supabase/.tmp
@@ -368,7 +367,6 @@ jobs:
           path: |
             apps/web/.next
             apps/payload/.next
-            apps/payload/dist
             packages/*/dist
             .turbo
             apps/web/supabase/.tmp
