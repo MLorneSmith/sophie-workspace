@@ -94,6 +94,10 @@ test.describe("Admin", () => {
 			// Use pre-existing test user
 			testUserEmail = await createUser(page);
 
+			// Ensure user is in clean (unbanned) state before each test
+			// This guards against afterEach cleanup failures from previous tests
+			await unbanUser(testUserEmail);
+
 			await page.goto("/admin/accounts");
 
 			// use the email as the filter text
@@ -213,6 +217,12 @@ test.describe("Admin", () => {
 		test("reactivate user flow", async ({ page }) => {
 			// First ban the user
 			await page.getByTestId("admin-ban-account-button").click();
+
+			// Wait for ban dialog to appear before interacting
+			await expect(
+				page.getByRole("heading", { name: "Ban User" }),
+			).toBeVisible();
+
 			await page.fill('[placeholder="Type CONFIRM to confirm"]', "CONFIRM");
 
 			await Promise.all([
@@ -224,7 +234,13 @@ test.describe("Admin", () => {
 				),
 			]);
 
-			await expect(page.getByText("Banned").first()).toBeVisible();
+			// Use toPass() for resilience against React state update timing
+			await expect(async () => {
+				await expect(page.getByText("Banned").first()).toBeVisible();
+			}).toPass({
+				intervals: [500, 1000, 2000, 5000],
+				timeout: 15000,
+			});
 
 			// Now reactivate
 			await page.getByTestId("admin-reactivate-account-button").click();
@@ -244,10 +260,13 @@ test.describe("Admin", () => {
 				),
 			]);
 
-			await page.waitForTimeout(250);
-
-			// Verify ban badge is removed
-			await expect(page.getByText("Banned")).not.toBeVisible();
+			// Use toPass() for resilience instead of fixed waitForTimeout
+			await expect(async () => {
+				await expect(page.getByText("Banned")).not.toBeVisible();
+			}).toPass({
+				intervals: [500, 1000, 2000, 5000],
+				timeout: 15000,
+			});
 
 			// Log out
 			await page.context().clearCookies();
