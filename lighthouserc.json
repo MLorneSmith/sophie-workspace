@@ -8,6 +8,7 @@
 				"http://localhost:3000/team"
 			],
 			"numberOfRuns": 3,
+			"chromeFlags": "--no-sandbox --disable-gpu",
 			"settings": {
 				"preset": "desktop",
 				"throttling": {
