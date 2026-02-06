@@ -446,7 +446,7 @@ jobs:
     needs: gate
     if: needs.gate.outputs.should_run == 'true'
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
-    timeout-minutes: 10
+    timeout-minutes: 3
     continue-on-error: true
     steps:
       - uses: actions/checkout@v6
@@ -586,7 +586,7 @@ jobs:
   # Aggregate Results
   finalize:
     name: Integration Test Summary
-    needs: [gate, smoke-tests, integration-tests, performance-baseline]
+    needs: [gate, smoke-tests, integration-tests]
     if: always() && !cancelled() && needs.gate.outputs.should_run == 'true'
     runs-on: runs-on=${{ github.run_id }}/runner=1cpu-linux-x64
     steps:
@@ -597,8 +597,7 @@ jobs:
           script: |
             const jobs = {
               'Smoke Tests': '${{ needs.smoke-tests.result }}',
-              'Integration Tests': '${{ needs.integration-tests.result }}',
-              'Performance Baseline': '${{ needs.performance-baseline.result }}'
+              'Integration Tests': '${{ needs.integration-tests.result }}'
             };
 
             let summary = `## 🧪 Dev Integration Test Results\n\n`;
