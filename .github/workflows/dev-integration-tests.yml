@@ -460,20 +460,6 @@ jobs:
             }
           fi
 
-      - name: Create Lighthouse config
-        run: |
-          cat > /tmp/lighthouserc.json << 'EOF'
-          {
-            "ci": {
-              "collect": {
-                "settings": {
-                  "chromeFlags": ["--no-sandbox", "--disable-dev-shm-usage"]
-                }
-              }
-            }
-          }
-          EOF
-
       - name: Run Lighthouse performance test
         uses: treosh/lighthouse-ci-action@v12
         with:
@@ -481,7 +467,7 @@ jobs:
             ${{ needs.gate.outputs.web_deployment_url }}
             ${{ needs.gate.outputs.web_deployment_url }}/pricing
             ${{ needs.gate.outputs.web_deployment_url }}/templates
-          configPath: /tmp/lighthouserc.json
+          configPath: ./lighthouserc.json
           uploadArtifacts: true
           temporaryPublicStorage: true
 
