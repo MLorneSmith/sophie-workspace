@@ -18,7 +18,7 @@ const content = fs.readFileSync(sourceFile, "utf8");
 
 // Remove the module augmentation block (matches the full declare module block including closing brace)
 const cleanedContent = content.replace(
-	/declare module ['"]payload['"] \{[^}]*\}\s*$/gm,
+	/declare module ['"]payload['"] \{[\s\S]*?\n\}\s*$/gm,
 	"// Module augmentation removed for cross-app compatibility\n",
 );
 
