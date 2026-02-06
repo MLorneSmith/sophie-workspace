@@ -30,6 +30,14 @@ inputs:
     description: 'Vercel protection bypass secret for automated health checks'
     required: false
     default: ''
+  readiness-check-attempts:
+    description: 'Number of readiness check polling attempts (2s interval)'
+    required: false
+    default: '20'
+  health-check-attempts:
+    description: 'Number of health check retry attempts (10s interval)'
+    required: false
+    default: '6'
 
 outputs:
   url:
@@ -108,9 +116,8 @@ runs:
       shell: bash
       run: |
         echo "⏳ Checking deployment readiness..."
-        # Instead of arbitrary sleep, do a quick readiness check
         url="${{ steps.deploy.outputs.url }}"
-        max_attempts=20
+        max_attempts=${{ inputs.readiness-check-attempts }}
         attempt=0
         
         while [ $attempt -lt $max_attempts ]; do
@@ -145,23 +152,26 @@ runs:
           CURL_OPTS=""
         fi
         
-        for i in {1..6}; do
+        max_attempts=${{ inputs.health-check-attempts }}
+        attempt=1
+        while [ $attempt -le $max_attempts ]; do
           response=$(eval "curl -s -w '\n%{http_code}' $CURL_OPTS \"$url\"" 2>&1)
           http_code=$(echo "$response" | tail -n1)
-          
+
           if [ "$http_code" = "200" ]; then
             echo "✅ Health check passed!"
             exit 0
           else
-            echo "⏳ Attempt $i/6 failed with HTTP $http_code, waiting..."
-            if [ "$i" -eq 1 ]; then
+            echo "⏳ Attempt $attempt/$max_attempts failed with HTTP $http_code, waiting..."
+            if [ "$attempt" -eq 1 ]; then
               echo "Response preview: $(echo "$response" | head -c 200)..."
             fi
           fi
           sleep 10
+          attempt=$((attempt + 1))
         done
-        
-        echo "❌ Health check failed after ${{ inputs.health-check-timeout }} seconds"
+
+        echo "❌ Health check failed after $max_attempts attempts"
         exit 1
 
     - name: Comment deployment URL
