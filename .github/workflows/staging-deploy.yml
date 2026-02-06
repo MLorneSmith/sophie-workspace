@@ -857,8 +857,10 @@ jobs:
         run: |
           echo "🔄 Syncing staging into dev to prevent future merge conflicts..."
 
-          # Fetch latest staging
+          # Fetch latest staging and dev
           git fetch origin staging
+          git fetch origin dev
+          git reset --hard origin/dev
 
           # Check if there are differences to merge
           if git merge-base --is-ancestor origin/staging HEAD; then
@@ -866,31 +868,24 @@ jobs:
             exit 0
           fi
 
-          # Merge staging into dev
-          if git merge origin/staging -m "chore(ci): sync staging into dev after promotion
-
-          Automatic sync to prevent merge conflicts in future promotion PRs.
-          This keeps dev and staging histories aligned after squash merge.
-
-          [skip ci]"; then
-            echo "✅ Successfully merged staging into dev"
+          # Use squash merge to avoid creating a merge commit
+          # (dev branch protection forbids merge commits)
+          if git merge --squash origin/staging; then
+            git commit -m "chore(ci): sync staging into dev after promotion [skip ci]"
+            echo "✅ Successfully squash-merged staging into dev"
           else
             echo "⚠️ Merge conflict detected, attempting auto-resolution..."
 
-            # For spec-manifest.json conflicts, prefer the staging version (more complete)
+            # For spec-manifest.json conflicts, prefer the staging version
             git checkout --theirs .ai/alpha/specs/*/spec-manifest.json 2>/dev/null || true
             git add .ai/alpha/specs/*/spec-manifest.json 2>/dev/null || true
+            git add -A
 
-            # Try to complete the merge
-            if git commit -m "chore(ci): sync staging into dev after promotion (auto-resolved)
-
-            Automatic sync with auto-resolved conflicts in spec manifests.
-
-            [skip ci]"; then
+            if git commit -m "chore(ci): sync staging into dev after promotion (auto-resolved) [skip ci]"; then
               echo "✅ Merge completed with auto-resolved conflicts"
             else
               echo "❌ Could not auto-resolve conflicts, manual intervention required"
-              git merge --abort
+              git merge --abort || true
               exit 1
             fi
           fi
