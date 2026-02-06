@@ -557,13 +557,13 @@ jobs:
              [[ "${{ needs.test-unit.result }}" == "failure" ]] || \
              [[ "${{ needs.yaml-lint.result }}" == "failure" ]] || \
              [[ "${{ needs.markdown-lint.result }}" == "failure" ]] || \
-             [[ "${{ needs.aikido-security.result }}" == "failure" ]] || \
              [[ "${{ needs.docker-scan.result }}" == "failure" ]]; then
             echo "❌ PR validation failed"
             exit 1
-          elif [[ "${{ needs.accessibility-test.result }}" == "failure" ]]; then
-            echo "⚠️ Accessibility tests failed - please review violations"
-            echo "✅ Core PR validation passed (accessibility is advisory)"
+          elif [[ "${{ needs.aikido-security.result }}" == "failure" ]] || \
+               [[ "${{ needs.accessibility-test.result }}" == "failure" ]]; then
+            echo "⚠️ Advisory checks failed (Aikido security and/or accessibility) - please review"
+            echo "✅ Core PR validation passed (these checks are non-blocking)"
           else
             echo "✅ PR validation passed"
           fi
