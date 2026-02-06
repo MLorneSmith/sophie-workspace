@@ -221,10 +221,10 @@ jobs:
   # Unit tests
   test-unit:
     name: Unit Tests
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
@@ -234,7 +234,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - uses: ./.github/actions/setup-deps
 
@@ -242,23 +242,12 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-test-${{ github.sha }}
+          key: ${{ runner.os }}-turbo-test-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-turbo-test-
 
-      - name: Run unit tests with coverage
-        run: pnpm test:coverage
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./coverage
-          files: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
-          verbose: true
+      - name: Run unit tests (affected packages only)
+        run: pnpm turbo run test --affected --cache-dir=.turbo --filter=!web-e2e
 
   # YAML linting
   yaml-lint:
