@@ -234,7 +234,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       - uses: ./.github/actions/setup-deps
 
@@ -246,8 +246,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-test-
 
-      - name: Run unit tests (affected packages only)
-        run: pnpm turbo run test --affected --cache-dir=.turbo --filter=!web-e2e
+      - name: Run unit tests
+        run: pnpm turbo run test --cache-dir=.turbo --filter=!web-e2e
 
   # YAML linting
   yaml-lint:
