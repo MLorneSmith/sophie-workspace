@@ -149,6 +149,7 @@ jobs:
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
       DO_NOT_TRACK: 1
       # Authentication method configuration - required at build time for NEXT_PUBLIC_* vars
       # See: Issue #1849, #1850 - E2E tests fail due to missing auth form fields
@@ -188,6 +189,12 @@ jobs:
 
       - name: Build Payload CMS
         run: pnpm turbo build --filter=payload
+        env:
+          DATABASE_URI: postgresql://postgres:postgres@localhost:54522/postgres
+          PAYLOAD_SECRET: test_payload_secret_for_e2e_testing
+
+      - name: Generate Payload importmap
+        run: pnpm --filter payload generate:importmap
         env:
           DATABASE_URI: postgresql://postgres:postgres@localhost:54522/postgres
           PAYLOAD_SECRET: test_payload_secret_for_e2e_testing
@@ -245,6 +252,7 @@ jobs:
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
       ENABLE_BILLING_TESTS: true
       DO_NOT_TRACK: 1
 
