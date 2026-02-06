@@ -421,8 +421,8 @@ jobs:
       - name: Set up E2E database for accessibility tests
         run: |
           cd apps/web
-          # Start E2E Supabase instance
-          supabase start
+          # Start E2E Supabase instance (exclude unused services to speed up Docker pulls)
+          supabase start -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
           
           # Wait for database to be ready
           sleep 5

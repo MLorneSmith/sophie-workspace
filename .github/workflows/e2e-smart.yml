@@ -149,7 +149,7 @@ jobs:
       - name: Quick database setup
         run: |
           cd apps/e2e
-          supabase start --ignore-health-check
+          supabase start --ignore-health-check -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
           supabase db reset --no-seed
 
       - name: Run targeted tests
