@@ -69,11 +69,7 @@ export type OrchestratorDeadlockEventType =
 	/** Emitted when a phantom-completed feature is detected and recovered (Bug fix #1782) */
 	| "phantom_completion_detected"
 	/** Emitted when a promise times out and the feature is reset (Bug fix #1841) */
-	| "promise_timeout"
-	/** Emitted when an orphaned in_progress feature is reset to pending (Bug fix #1948) */
-	| "orphaned_feature_reset"
-	/** Emitted when an orphaned in_progress feature exceeds max retries (Bug fix #1948) */
-	| "orphaned_feature_failed";
+	| "promise_timeout";
 
 /**
  * Event types emitted by the orchestrator during documentation generation.
