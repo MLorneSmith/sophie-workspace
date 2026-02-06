@@ -489,7 +489,6 @@ jobs:
           urls: |
             ${{ needs.gate.outputs.web_deployment_url }}
             ${{ needs.gate.outputs.web_deployment_url }}/pricing
-            ${{ needs.gate.outputs.web_deployment_url }}/templates
           configPath: /tmp/lighthouserc.ci.json
           uploadArtifacts: true
           temporaryPublicStorage: true
