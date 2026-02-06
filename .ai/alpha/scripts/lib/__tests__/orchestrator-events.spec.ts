@@ -112,6 +112,9 @@ function getOrchestratorEventMessage(eventType: OrchestratorEventType): string {
 		documentation_start: "Generating spec documentation",
 		documentation_complete: "Documentation generated",
 		documentation_failed: "Documentation generation failed",
+		// Orphaned feature recovery messages (Bug fix #1948)
+		orphaned_feature_reset: "Orphaned feature reset",
+		orphaned_feature_failed: "Orphaned feature failed",
 	};
 	return messages[eventType] || "Unknown event";
 }

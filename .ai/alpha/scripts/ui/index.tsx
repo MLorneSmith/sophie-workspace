@@ -174,6 +174,9 @@ const OrchestratorApp: React.FC<{
 				"dev_server_starting",
 				"dev_server_ready",
 				"dev_server_failed",
+				// Orphaned feature detection event types (Bug fix #1948)
+				"orphaned_feature_reset",
+				"orphaned_feature_failed",
 				// Documentation generation event types (Bug fix: missing from validTypes)
 				"documentation_start",
 				"documentation_complete",
@@ -227,6 +230,9 @@ const OrchestratorApp: React.FC<{
 				dev_server_starting: "Starting dev server",
 				dev_server_ready: "Dev server ready",
 				dev_server_failed: "Dev server failed",
+				// Orphaned feature detection messages (Bug fix #1948)
+				orphaned_feature_reset: "Orphaned feature reset to pending",
+				orphaned_feature_failed: "Orphaned feature max retries exceeded",
 				// Documentation generation messages
 				documentation_start: "Generating spec documentation",
 				documentation_complete: "Documentation generated",

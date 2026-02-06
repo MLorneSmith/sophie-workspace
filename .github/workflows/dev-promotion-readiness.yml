@@ -23,6 +23,7 @@ permissions:
   issues: write
   checks: write
   actions: read  # Add read permission for actions API
+  deployments: read  # Required for listDeployments in stale check
 
 jobs:
   assess-readiness:
@@ -259,11 +260,11 @@ jobs:
             - [x] Integration tests passed
             - [x] Quality gates verified
             - [x] PR Validation running
-            - [x] Auto-merge enabled
-            
+            - [x] Auto-approval enabled
+
             ### 🔄 Automation Flow
             1. ✅ PR Validation runs automatically
-            2. ✅ Auto-merge enabled (squash)
+            2. ✅ Auto-approved by workflow
             3. ⏳ Merges automatically when checks pass
             4. 🚀 Staging deployment triggers on merge
 
@@ -326,30 +327,39 @@ jobs:
 
             return pr.data;
 
-      # Use GITHUB_TOKEN for approval - this is a different identity (github-actions[bot])
-      # from the GitHub App that created the PR, allowing self-approval
+      # Generate token from Approval Bot (different identity from PR creator app)
+      - name: Generate Approval Bot Token
+        if: steps.create-pr.outputs.pr_number != ''
+        id: approval-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APPROVAL_APP_ID }}
+          private-key: ${{ secrets.APPROVAL_APP_PRIVATE_KEY }}
+
+      # Use Approval Bot to approve PR (different identity from PR creator)
       - name: Auto-approve staging promotion PR
         if: steps.create-pr.outputs.pr_number != ''
         env:
           PR_URL: ${{ github.server_url }}/${{ github.repository }}/pull/${{ steps.create-pr.outputs.pr_number }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.approval-token.outputs.token }}
         run: |
           echo "Auto-approving staging promotion PR #${{ steps.create-pr.outputs.pr_number }}"
-          echo "Quality gates already validated by this workflow:"
-          echo "  - Success Rate: >= 80%"
-          echo "  - Code Coverage: >= 80%"
-          echo "  - No Recent Failures"
-          echo "  - Change Size: < 100 files"
-          gh pr review --approve "$PR_URL" --body "✅ Auto-approved by Dev Promotion Readiness workflow.
+          gh pr review --approve "$PR_URL" --body "## ✅ Quality Gates Validated
 
-          **Quality Gates Validated:**
-          - Integration tests passed
-          - Success rate >= 80%
-          - Code coverage >= 80%
-          - No recent failures in last 6h
-          - Change size within limits
+          This PR has passed automated quality checks:
 
-          This PR is safe to merge to staging."
+          | Check | Status |
+          |-------|--------|
+          | Integration tests | ✅ Passed |
+          | Success rate | ✅ >= 80% |
+          | Code coverage | ✅ >= 80% |
+          | Recent failures | ✅ None in last 6h |
+          | Change size | ✅ Within limits |
+
+          **This PR is safe to merge to staging.**
+
+          ---
+          *Auto-approved by Dev Promotion Readiness workflow*"
 
       - name: Send notifications
         if: always()
@@ -381,15 +391,24 @@ jobs:
   check-stale-deployment:
     name: Check for Stale Deployment
     runs-on: ubuntu-latest
+    continue-on-error: true  # Informational only - don't fail the workflow
     if: github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Check deployment age
         uses: actions/github-script@v8
         with:
+          github-token: ${{ steps.app-token.outputs.token }}
           script: |
             // Get last deployment to dev
             const deployments = await github.rest.repos.listDeployments({
@@ -428,3 +447,4 @@ jobs:
               console.log(`Created issue #${issue.data.number} for stale deployment`);
             } else {
               console.log(`Dev deployment is ${hoursOld.toFixed(1)} hours old (within 24h limit)`);
+            }

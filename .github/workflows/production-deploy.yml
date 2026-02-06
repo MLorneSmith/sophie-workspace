@@ -4,6 +4,16 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '**.md'
+      - '**.mdx'
+      - 'docs/**'
+      - '.github/**.md'
+      - '.claude/**'
+      - '.vscode/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.env.example'
 
 # Prevent multiple deployments from running simultaneously
 concurrency:
@@ -13,11 +23,13 @@ concurrency:
 permissions:
   contents: read
   deployments: write
+  actions: read  # Required for workflow job introspection
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
   TURBO_REMOTE_CACHE_ENABLED: true
+  TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY || '' }}
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
 jobs:
@@ -78,8 +90,8 @@ jobs:
           minimum-severity: 'HIGH'
           timeout-seconds: 300
       
-      - name: Run Weekly Security Scan
-        uses: ./.github/workflows/security-weekly-scan.yml
+      # Weekly security scan runs separately via security-weekly-scan.yml workflow
+      # Cannot invoke reusable workflow from a step - must use it as a job directly
 
   # Build application once
   build:
@@ -128,7 +140,7 @@ jobs:
         with:
           token: ${{ secrets.VERCEL_TOKEN }}
           org-id: ${{ secrets.VERCEL_ORG_ID }}
-          project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          project-id: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
           environment: production
           build-artifacts: true
           health-check-url: /healthcheck
@@ -330,4 +342,4 @@ jobs:
     secrets:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}

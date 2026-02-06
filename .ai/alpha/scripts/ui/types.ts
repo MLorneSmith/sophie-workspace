@@ -237,6 +237,9 @@ export type OrchestratorEventType =
 	| "dev_server_starting"
 	| "dev_server_ready"
 	| "dev_server_failed"
+	// Orphaned feature detection event types (Bug fix #1948)
+	| "orphaned_feature_reset"
+	| "orphaned_feature_failed"
 	// Documentation generation event types (from orchestrator)
 	| "documentation_start"
 	| "documentation_complete"

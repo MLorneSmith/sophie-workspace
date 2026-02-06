@@ -22,7 +22,7 @@ jobs:
   # Simple validation without reusable workflows
   validate:
     name: Simple Validation
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-deps
@@ -33,7 +33,7 @@ jobs:
   # Deploy Web App to Vercel Staging environment (simplified)
   deploy-web:
     name: Deploy Web App to Staging (Simple)
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: validate
     environment:
       name: staging
