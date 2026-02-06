@@ -460,6 +460,29 @@ jobs:
             }
           fi
 
+      - name: Create CI Lighthouse config
+        run: |
+          cat > /tmp/lighthouserc.ci.json << EOF
+          {
+            "ci": {
+              "collect": {
+                "numberOfRuns": 1,
+                "settings": {
+                  "chromeFlags": "--no-sandbox --disable-gpu --no-zygote --disable-dev-shm-usage",
+                  "extraHeaders": "{\"x-vercel-protection-bypass\": \"${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}\"}",
+                  "preset": "desktop",
+                  "throttling": {
+                    "cpuSlowdownMultiplier": 1
+                  }
+                }
+              },
+              "upload": {
+                "target": "temporary-public-storage"
+              }
+            }
+          }
+          EOF
+
       - name: Run Lighthouse performance test
         uses: treosh/lighthouse-ci-action@v12
         with:
@@ -467,7 +490,7 @@ jobs:
             ${{ needs.gate.outputs.web_deployment_url }}
             ${{ needs.gate.outputs.web_deployment_url }}/pricing
             ${{ needs.gate.outputs.web_deployment_url }}/templates
-          configPath: ./lighthouserc.json
+          configPath: /tmp/lighthouserc.ci.json
           uploadArtifacts: true
           temporaryPublicStorage: true
 
