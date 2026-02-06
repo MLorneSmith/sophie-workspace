@@ -23,6 +23,7 @@ permissions:
   issues: write
   checks: write
   actions: read  # Add read permission for actions API
+  deployments: read  # Required for listDeployments in stale check
 
 jobs:
   assess-readiness:
