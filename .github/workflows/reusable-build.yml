@@ -1,5 +1,8 @@
 name: Reusable Build
 
+# Consolidated from reusable-build.yml + artifact-sharing.yml
+# Supports simple builds (production-deploy) and SHA-based reuse (staging-deploy)
+
 on:
   workflow_call:
     inputs:
@@ -7,15 +10,29 @@ on:
         required: true
         type: string
         description: 'Environment to build for (development, staging, production)'
-      node-version:
+      commit_sha:
         required: false
         type: string
-        default: 'lts/*'
-        description: 'Node.js version to use'
+        default: ''
+        description: 'Git commit SHA for artifact reuse checks. When set, enables SHA-based artifact naming and reuse.'
+      force_rebuild:
+        required: false
+        type: boolean
+        default: false
+        description: 'Force a rebuild even if artifacts exist'
     outputs:
       build-cache-key:
         description: 'Cache key for build artifacts'
         value: ${{ jobs.build.outputs.cache-key }}
+      artifact_key:
+        description: 'The artifact cache key used'
+        value: ${{ jobs.build.outputs.artifact_key }}
+      artifact_found:
+        description: 'Whether existing artifacts were found and reused'
+        value: ${{ jobs.build.outputs.artifact_found }}
+      build_time:
+        description: 'Build time in seconds (0 if reused)'
+        value: ${{ jobs.build.outputs.build_time }}
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -30,42 +47,91 @@ jobs:
     environment: ${{ inputs.environment }}
     outputs:
       cache-key: ${{ steps.cache.outputs.key }}
+      artifact_key: ${{ steps.artifact-key.outputs.key }}
+      artifact_name: ${{ steps.artifact-key.outputs.name }}
+      artifact_found: ${{ steps.check-existing.outputs.found }}
+      build_time: ${{ steps.build.outputs.time }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.commit_sha || github.sha }}
 
-      - uses: ./.github/actions/setup-deps
+      - name: Generate artifact key
+        id: artifact-key
+        run: |
+          SHA="${{ inputs.commit_sha || github.sha }}"
+          FILES_HASH=$(find . -name "package.json" -o -name "pnpm-lock.yaml" -o -name "turbo.json" -o -name "*.config.*" | xargs sha256sum 2>/dev/null | sha256sum | cut -d' ' -f1)
+          ARTIFACT_KEY="build-${SHA}-${FILES_HASH:0:8}"
+          echo "key=${ARTIFACT_KEY}" >> $GITHUB_OUTPUT
+
+          # Determine artifact name: include SHA suffix when commit_sha is provided
+          if [ -n "${{ inputs.commit_sha }}" ]; then
+            echo "name=build-artifacts-${{ inputs.environment }}-${{ inputs.commit_sha }}" >> $GITHUB_OUTPUT
+          else
+            echo "name=build-artifacts-${{ inputs.environment }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check for existing artifacts
+        id: check-existing
+        if: inputs.commit_sha != '' && inputs.force_rebuild != true
+        continue-on-error: true
+        run: |
+          echo "🔍 Checking for existing artifacts for commit ${{ inputs.commit_sha }}..."
+
+          if gh run list --workflow "Deploy to Staging" --json databaseId,headSha,status \
+             | jq -r '.[] | select(.headSha == "${{ inputs.commit_sha }}" and .status == "completed") | .databaseId' \
+             | head -1 | xargs -I {} gh run download {} -n "build-artifacts-staging" 2>/dev/null; then
+            echo "found=true" >> $GITHUB_OUTPUT
+            if [ -d "apps/web/.next" ] && [ -d "apps/payload/dist" ]; then
+              echo "✅ Existing artifacts found and validated"
+            else
+              echo "❌ Artifacts incomplete, will rebuild"
+              echo "found=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "📦 No existing artifacts found, will build fresh"
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup dependencies
+        if: steps.check-existing.outputs.found != 'true'
+        uses: ./.github/actions/setup-deps
 
       - name: Fix script permissions
+        if: steps.check-existing.outputs.found != 'true'
         run: |
-          # Ensure shell scripts are executable (git may strip execute bit)
           chmod +x .claude/statusline/*.sh 2>/dev/null || true
           chmod +x fix-build-permissions.sh 2>/dev/null || true
 
       - name: Cache turbo build
+        if: steps.check-existing.outputs.found != 'true'
         uses: actions/cache@v5
-        id: turbo-cache
         with:
-          path: .turbo
-          key: ${{ runner.os }}-turbo-${{ inputs.environment }}-${{ github.sha }}
+          path: |
+            .turbo
+            apps/web/.next/cache
+            apps/payload/.next/cache
+          key: ${{ runner.os }}-turbo-${{ inputs.environment }}-${{ inputs.commit_sha || github.sha }}
           restore-keys: |
             ${{ runner.os }}-turbo-${{ inputs.environment }}-
+            ${{ runner.os }}-build-cache-
 
       - name: Build application
+        id: build
+        if: steps.check-existing.outputs.found != 'true'
         run: |
-          # Debug environment
+          START_TIME=$(date +%s)
+
           echo "::group::Environment Info"
           echo "Node version: $(node --version)"
           echo "pnpm version: $(pnpm --version)"
-          echo "Working directory: $(pwd)"
           echo "Environment: ${{ inputs.environment }}"
           echo "::endgroup::"
-          
-          # Show Turbo cache status
+
           echo "::group::Turbo Cache Status"
           npx turbo build --dry-run --summarize | head -20 || true
           echo "::endgroup::"
-          
-          # Run build with appropriate cache settings
+
           echo "::group::Build Output"
           if [ -n "$TURBO_TOKEN" ]; then
             echo "Building with remote cache enabled"
@@ -78,13 +144,14 @@ jobs:
             TURBO_REMOTE_CACHE_ENABLED=false pnpm build
           fi
           echo "::endgroup::"
+
+          END_TIME=$(date +%s)
+          BUILD_TIME=$((END_TIME - START_TIME))
+          echo "time=${BUILD_TIME}" >> $GITHUB_OUTPUT
+          echo "⏱️ Build completed in ${BUILD_TIME} seconds"
         env:
           NODE_ENV: production
           NEXT_PUBLIC_APP_ENV: ${{ inputs.environment }}
-          TURBO_FORCE: ${{ github.event.inputs.force_build == 'true' && '1' || '' }}
-          # Add required environment variables for payload build
-          # These are needed at build time for type generation
-          # Note: Both DATABASE_URI and DATABASE_URL are set for compatibility
           DATABASE_URI: ${{ secrets.DATABASE_URI }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
@@ -102,17 +169,22 @@ jobs:
             apps/payload/dist
             packages/*/dist
             .turbo
-          key: build-${{ inputs.environment }}-${{ github.sha }}
+          key: build-${{ inputs.environment }}-${{ inputs.commit_sha || github.sha }}
 
-      - name: Generate build info
+      - name: Generate build manifest
         run: |
-          echo "{
-            \"commit\": \"${{ github.sha }}\",
-            \"branch\": \"${{ github.ref_name }}\",
-            \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",
-            \"environment\": \"${{ inputs.environment }}\",
-            \"actor\": \"${{ github.actor }}\"
-          }" > build-info.json
+          cat > build-info.json << EOF
+          {
+            "commit": "${{ inputs.commit_sha || github.sha }}",
+            "branch": "${{ github.ref_name }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "environment": "${{ inputs.environment }}",
+            "actor": "${{ github.actor }}",
+            "artifact_key": "${{ steps.artifact-key.outputs.key }}",
+            "build_time": ${{ steps.build.outputs.time || 0 }},
+            "reused": ${{ steps.check-existing.outputs.found == 'true' && 'true' || 'false' }}
+          }
+          EOF
 
       - name: Upload build info
         uses: actions/upload-artifact@v6
@@ -124,11 +196,11 @@ jobs:
       - name: Archive build artifacts
         run: |
           echo "📦 Creating tar archive of build artifacts..."
-          # Create tar archive to avoid GitHub Actions upload-artifact colon restriction
-          # (Next.js/Turbopack generates files like [externals]_node:child_process_*.js)
           tar -cf build-artifacts.tar \
             apps/web/.next \
+            apps/web/public \
             apps/payload/dist \
+            packages/*/dist \
             build-info.json
 
           echo "✅ Archive created:"
@@ -140,7 +212,76 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v6
         with:
-          name: build-artifacts-${{ inputs.environment }}
+          name: ${{ steps.artifact-key.outputs.name }}
           path: build-artifacts.tar
-          retention-days: 1
+          retention-days: ${{ inputs.commit_sha != '' && 7 || 1 }}
+          compression-level: 6
           if-no-files-found: error
+
+      - name: Save to long-term cache
+        if: inputs.environment == 'production'
+        uses: actions/cache@v5
+        with:
+          path: |
+            apps/web/.next
+            apps/payload/dist
+            packages/*/dist
+            build-info.json
+          key: production-build-${{ steps.artifact-key.outputs.key }}
+
+      - name: Report metrics
+        if: always()
+        run: |
+          echo "## 📊 Build Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${{ inputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ inputs.commit_sha || github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Artifact Key | \`${{ steps.artifact-key.outputs.key }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Reused Artifacts | ${{ steps.check-existing.outputs.found == 'true' && '✅ Yes' || '❌ No' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build Time | ${{ steps.build.outputs.time || 0 }}s |" >> $GITHUB_STEP_SUMMARY
+
+  validate-artifacts:
+    name: Validate Build Artifacts
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: build
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.commit_sha || github.sha }}
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.build.outputs.artifact_name }}
+          path: .
+
+      - name: Extract and validate artifacts
+        run: |
+          echo "📦 Extracting build artifacts..."
+          tar -xf build-artifacts.tar
+          rm build-artifacts.tar
+
+          echo "🔍 Validating build artifacts..."
+
+          if [ ! -d "apps/web/.next" ]; then
+            echo "❌ Web build artifacts missing!"
+            exit 1
+          fi
+
+          if [ ! -d "apps/payload/dist" ]; then
+            echo "❌ Payload build artifacts missing!"
+            exit 1
+          fi
+
+          if [ ! -f "build-info.json" ]; then
+            echo "❌ Build manifest missing!"
+            exit 1
+          fi
+
+          echo "✅ All artifacts validated successfully!"
+
+          echo "📦 Artifact Sizes:"
+          du -sh apps/web/.next || true
+          du -sh apps/payload/dist || true

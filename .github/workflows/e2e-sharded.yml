@@ -7,21 +7,19 @@
 # the dependabot PR is merged and tested via dev-integration-tests.
 # See: CI/CD assessment 2026-01-21
 #
-# IMPORTANT: Runner Configuration
+# Runner Configuration
 # ================================
-# Using ubuntu-latest instead of RunsOn self-hosted runners.
-#
-# RunsOn labels (runs-on=${{ github.run_id }}/runner=2cpu-linux-x64) caused
-# matrix job scheduling failures specifically for workflow_dispatch triggers.
-# Matrix jobs were silently not created (only 2 of 14 jobs appeared).
-# Switching to ubuntu-latest resolves this GitHub Actions compatibility issue.
-#
-# See: Issue #1709, #1710 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
-# See: Issue #1641, #1642 - E2E Sharded Workflow Dual Failure Modes (original RunsOn issues)
+# Using RunsOn self-hosted runners (more disk space than ubuntu-latest).
+# Previously used ubuntu-latest to work around matrix/workflow_dispatch issues
+# (Issue #1709, #1710), but this workflow is now manual-dispatch-only so that
+# issue no longer applies. ubuntu-latest runners ran out of disk space loading
+# Supabase Docker images (~14GB limit).
 
 name: E2E Tests (Sharded)
 
 on:
+  # Manual dispatch only — E2E Smart Tests handles PR testing.
+  # Staging-deploy has its own inline sharded E2E suite.
   workflow_dispatch:
     inputs:
       max_parallel:
@@ -35,13 +33,6 @@ on:
           - '4'
           - '5'
           - '6'
-  pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - 'apps/web/**'
-      - 'apps/e2e/**'
-      - 'packages/**'
-      - '.github/workflows/e2e-sharded.yml'
 
 permissions:
   contents: read
@@ -64,7 +55,7 @@ jobs:
   # See: Issue #1698, #1700 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
   setup-server:
     name: Setup Test Server
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     outputs:
       cache-key: ${{ steps.docker-cache.outputs.cache-key }}
       # Output whether to skip E2E tests (for dependabot PRs)
@@ -236,9 +227,8 @@ jobs:
     # Job-level if: conditions (even ones checking outputs) prevent matrix job creation
     # for workflow_dispatch triggers. Instead, we use step-level conditions.
     # See: Issue #1698, #1700 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
-    # Using ubuntu-latest instead of RunsOn to fix workflow_dispatch matrix job creation.
-    # See: Issue #1709, #1710 - RunsOn labels caused matrix jobs to not be created
-    runs-on: ubuntu-latest
+    # Switched back to RunsOn now that this workflow is manual-dispatch-only
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     strategy:
       fail-fast: false
       # Control concurrency with max-parallel - reduced from 6 to 3 for better stability
@@ -303,6 +293,29 @@ jobs:
             echo "✅ Running E2E shard ${{ matrix.shard }}"
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
+
+      # Free disk space on ubuntu-latest runners (~8GB recovered)
+      # Supabase Docker images (Postgres, Kong, GoTrue, Storage) need significant disk
+      # See: Run 21762910131 - all shards failed with "no space left on device"
+      - name: Free disk space
+        if: steps.check-skip.outputs.skip != 'true'
+        run: |
+          echo "🧹 Freeing disk space on ubuntu-latest runner..."
+          echo "Before cleanup: $(df -h / | tail -1 | awk '{print $4}') free"
+
+          # Remove large pre-installed toolchains not needed for E2E tests
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /opt/hostedtoolcache/CodeQL || true
+          sudo rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/share/swift || true
+          sudo rm -rf /usr/local/.ghcup || true
+
+          # Clean apt cache
+          sudo apt-get clean || true
+
+          echo "After cleanup: $(df -h / | tail -1 | awk '{print $4}') free"
 
       # Determine what infrastructure each shard needs
       # Shards 1-10: Real tests requiring Supabase database
@@ -546,7 +559,7 @@ jobs:
     # Use setup-server's should-skip output for consistency with other jobs
     # See: Issue #1698, #1700 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
     if: ${{ always() && needs.setup-server.outputs.should-skip != 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     steps:
       - uses: actions/checkout@v6
 

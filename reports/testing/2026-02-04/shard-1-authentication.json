@@ -1,0 +1,37 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Authentication",
+		"files": [
+			"tests/authentication/auth-simple.spec.ts",
+			"tests/authentication/auth.spec.ts",
+			"tests/authentication/password-reset.spec.ts"
+		],
+		"expectedTests": 21,
+		"shardCommand": "test:shard2"
+	},
+	"execution": {
+		"startTime": "2026-02-04T18:46:12.468Z",
+		"endTime": "2026-02-04T18:49:51.468Z",
+		"duration": "219s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 6,
+		"passed": 4,
+		"failed": 1,
+		"skipped": 1,
+		"intentionalFailures": 0,
+		"integrationTests": 2,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values.",
+		"Failed to create user michael@slideheroes.com: AuthApiError: A user with this email address has already been registered",
+		"    at handleError (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.86.2/node_modules/@supabase/auth-js/src/lib/fetch.ts:102:9)",
+		"  __isAuthError: true,"
+	],
+	"rawOutput": "...(truncated 20537 bytes)...\n, enabled and stable\u001b[22m\n    \u001b[2m       - element is visible, enabled and stable\u001b[22m\n    \u001b[2m       - scrolling into view if needed\u001b[22m\n    \u001b[2m       - done scrolling\u001b[22m\n    \u001b[2m       - <nextjs-portal></nextjs-portal> from <script data-nextjs-dev-overlay=\"true\">…</script> subtree intercepts pointer events\u001b[22m\n    \u001b[2m     - retrying click action\u001b[22m\n    \u001b[2m       - waiting 500ms\u001b[22m\n\n\n       at authentication/auth.po.ts:50\n\n      48 | \t\tawait expect(dropdownTrigger).toBeVisible({ timeout: 15000 });\n      49 |\n    > 50 | \t\tawait dropdownTrigger.click();\n         | \t\t                      ^\n      51 | \t\tawait this.page.click('[data-testid=\"account-dropdown-sign-out\"]');\n      52 | \t}\n      53 |\n        at AuthPageObject.signOut (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:50:25)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth-simple.spec.ts:121:3\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/authentication-auth-simple-975f7-ion-sign-out-clears-session-chromium-retry2/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/authentication-auth-simple-975f7-ion-sign-out-clears-session-chromium-retry2/error-context.md\n\n    Retry #3 ───────────────────────────────────────────────────────────────────────────────────────\n\n    \u001b[31mTest timeout of 45000ms exceeded.\u001b[39m\n\n    Error: locator.click: Test timeout of 45000ms exceeded.\n    Call log:\n    \u001b[2m  - waiting for locator('[data-testid=\"account-dropdown\"]')\u001b[22m\n    \u001b[2m    - locator resolved to <button type=\"button\" id=\"radix-_r_d_\" data-state=\"closed\" aria-haspopup=\"menu\" aria-expanded=\"false\" data-testid=\"account-dropdown\" aria-label=\"Open your profile menu\" class=\"animate-in group/trigger fade-in focus:outline-primary flex cursor-pointer group-data-[minimized=true]/sidebar:px-0 w-full active:bg-secondary/50 items-center gap-4 rounded-md hover:bg-secondary border border-dashed p-2 transition-colors\">…</button>\u001b[22m\n    \u001b[2m  - attempting click action\u001b[22m\n    \u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n    \u001b[2m      - element is visible, enabled and stable\u001b[22m\n    \u001b[2m      - scrolling into view if needed\u001b[22m\n    \u001b[2m      - done scrolling\u001b[22m\n    \u001b[2m      - <nextjs-portal></nextjs-portal> from <script data-nextjs-dev-overlay=\"true\">…</script> subtree intercepts pointer events\u001b[22m\n    \u001b[2m    - retrying click action\u001b[22m\n    \u001b[2m    - waiting 20ms\u001b[22m\n    \u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n    \u001b[2m      - element is visible, enabled and stable\u001b[22m\n    \u001b[2m      - scrolling into view if needed\u001b[22m\n    \u001b[2m      - done scrolling\u001b[22m\n    \u001b[2m      - <nextjs-portal></nextjs-portal> from <script data-nextjs-dev-overlay=\"true\">…</script> subtree intercepts pointer events\u001b[22m\n    \u001b[2m    - retrying click action\u001b[22m\n    \u001b[2m      - waiting 100ms\u001b[22m\n    \u001b[2m    85 × waiting for element to be visible, enabled and stable\u001b[22m\n    \u001b[2m       - element is visible, enabled and stable\u001b[22m\n    \u001b[2m       - scrolling into view if needed\u001b[22m\n    \u001b[2m       - done scrolling\u001b[22m\n    \u001b[2m       - <nextjs-portal></nextjs-portal> from <script data-nextjs-dev-overlay=\"true\">…</script> subtree intercepts pointer events\u001b[22m\n    \u001b[2m     - retrying click action\u001b[22m\n    \u001b[2m       - waiting 500ms\u001b[22m\n\n\n       at authentication/auth.po.ts:50\n\n      48 | \t\tawait expect(dropdownTrigger).toBeVisible({ timeout: 15000 });\n      49 |\n    > 50 | \t\tawait dropdownTrigger.click();\n         | \t\t                      ^\n      51 | \t\tawait this.page.click('[data-testid=\"account-dropdown-sign-out\"]');\n      52 | \t}\n      53 |\n        at AuthPageObject.signOut (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:50:25)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth-simple.spec.ts:121:3\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/authentication-auth-simple-975f7-ion-sign-out-clears-session-chromium-retry3/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/authentication-auth-simple-975f7-ion-sign-out-clears-session-chromium-retry3/error-context.md\n\n  1 failed\n    [chromium] › tests/authentication/auth-simple.spec.ts:111:6 › Authentication - Simple Tests @auth @integration › sign out clears session \n  1 skipped\n  5 did not run\n  4 passed (3.5m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard2: `playwright test tests/authentication/auth-simple.spec.ts tests/authentication/auth.spec.ts tests/authentication/password-reset.spec.ts --config=playwright.auth.config.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-1.json --retries=0`\nExit status 1\n"
+}

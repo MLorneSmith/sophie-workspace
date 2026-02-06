@@ -495,7 +495,7 @@ jobs:
       always() &&
       (needs.validate.result == 'success' || needs.validate.result == 'skipped') &&
       !failure() && !cancelled()
-    uses: ./.github/workflows/artifact-sharing.yml
+    uses: ./.github/workflows/reusable-build.yml
     with:
       environment: staging
       commit_sha: ${{ github.sha }}
