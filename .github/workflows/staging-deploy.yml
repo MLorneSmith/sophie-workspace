@@ -32,6 +32,7 @@ permissions:
   checks: write
   security-events: write
   actions: read  # Required for workflow job introspection
+  workflows: write  # Required for sync job to push .github/workflows/ file changes
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
