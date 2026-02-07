@@ -259,7 +259,7 @@ jobs:
           TURBO_TOKEN: ''
           TURBO_TEAM: ''
           TURBO_REMOTE_CACHE_SIGNATURE_KEY: ''
-        run: pnpm turbo run test --no-daemon --cache-dir=.turbo --filter=!web-e2e --filter=!payload --filter=!@slideheroes/alpha-scripts --concurrency=4
+        run: pnpm -r --filter=!web-e2e --filter=!payload --filter=!@slideheroes/alpha-scripts run test
 
   # YAML linting
   yaml-lint:
