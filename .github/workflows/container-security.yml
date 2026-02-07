@@ -97,8 +97,12 @@ jobs:
           # copy pnpm-lock.yaml from root, not from the app subdirectory
           if [ -f "${{ inputs.dockerfile_path }}" ]; then
             echo "Building container from ${{ inputs.dockerfile_path }}..."
-            docker build -t app:scan -f ${{ inputs.dockerfile_path }} .
-            echo "image=app:scan" >> $GITHUB_OUTPUT
+            if docker build -t app:scan -f ${{ inputs.dockerfile_path }} .; then
+              echo "image=app:scan" >> $GITHUB_OUTPUT
+            else
+              echo "⚠️ Docker build failed, falling back to filesystem scan"
+              echo "image=" >> $GITHUB_OUTPUT
+            fi
           else
             echo "No Dockerfile found to build"
             echo "image=" >> $GITHUB_OUTPUT
