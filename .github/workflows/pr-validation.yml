@@ -254,8 +254,8 @@ jobs:
             ${{ runner.os }}-turbo-test-
 
       - name: Run unit tests
-        timeout-minutes: 5
-        run: pnpm turbo run test --no-daemon --cache-dir=.turbo --filter=!web-e2e --filter=!payload --filter=!@slideheroes/alpha-scripts --concurrency=4
+        timeout-minutes: 10  # Temporarily increased for -vvv diagnostics
+        run: pnpm turbo run test --no-daemon -vvv --cache-dir=.turbo --filter=!web-e2e --filter=!payload --filter=!@slideheroes/alpha-scripts --concurrency=4
 
   # YAML linting
   yaml-lint:
