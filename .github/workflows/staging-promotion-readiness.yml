@@ -38,14 +38,69 @@ jobs:
           ref: staging
           fetch-depth: 0
 
+      - name: Get deployment URLs from staging deploy
+        id: urls
+        if: github.event.workflow_run.id
+        uses: actions/github-script@v8
+        with:
+          script: |
+            // Get the deploy jobs from the triggering staging deploy run
+            const jobs = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.payload.workflow_run.id
+            });
+
+            // Find deploy jobs and extract URLs from their outputs
+            for (const job of jobs.data.jobs) {
+              if (job.name.includes('Deploy Web')) {
+                // Extract URL from job steps log isn't possible, but we can
+                // check the deployment environment URL
+                core.setOutput('web_job_id', job.id);
+              }
+              if (job.name.includes('Deploy Payload')) {
+                core.setOutput('payload_job_id', job.id);
+              }
+            }
+
+            // Get deployment URLs from GitHub Deployments API
+            const deployments = await github.rest.repos.listDeployments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 10
+            });
+
+            for (const deployment of deployments.data) {
+              const statuses = await github.rest.repos.listDeploymentStatuses({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                deployment_id: deployment.id,
+                per_page: 1
+              });
+
+              if (statuses.data.length > 0 && statuses.data[0].state === 'success') {
+                const url = statuses.data[0].environment_url;
+                if (deployment.environment === 'staging-web' && url) {
+                  core.setOutput('web_url', url);
+                  console.log(`Found web URL: ${url}`);
+                }
+                if (deployment.environment === 'staging-payload' && url) {
+                  core.setOutput('payload_url', url);
+                  console.log(`Found payload URL: ${url}`);
+                }
+              }
+            }
+
       - name: Check staging deployment health
         id: health
         run: |
-          # Get staging URLs from Vercel
-          STAGING_WEB_URL="${{ vars.STAGING_WEB_URL || 'https://staging.slideheroes.com' }}"
-          STAGING_PAYLOAD_URL="${{ vars.STAGING_PAYLOAD_URL || 'https://staging-cms.slideheroes.com' }}"
+          # Use deployment URLs from GitHub API, fall back to vars/defaults
+          STAGING_WEB_URL="${{ steps.urls.outputs.web_url || vars.STAGING_WEB_URL || 'https://staging.slideheroes.com' }}"
+          STAGING_PAYLOAD_URL="${{ steps.urls.outputs.payload_url || vars.STAGING_PAYLOAD_URL || 'https://staging-cms.slideheroes.com' }}"
 
           echo "Checking staging health..."
+          echo "  Web URL: $STAGING_WEB_URL"
+          echo "  Payload URL: $STAGING_PAYLOAD_URL"
 
           # Vercel Deployment Protection requires bypass header on staging
           BYPASS_HEADER=""
