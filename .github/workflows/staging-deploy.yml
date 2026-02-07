@@ -68,6 +68,10 @@ jobs:
           elif git log --format=%B -n 1 | grep -qi "merge.*dev"; then
             echo "This is a merge from dev, validation already done"
             echo "should-validate=false" >> $GITHUB_OUTPUT
+          # Skip E2E if only CI/workflow files changed (not app code)
+          elif ! git diff --name-only HEAD^ HEAD | grep -qv '^\.github/'; then
+            echo "Only CI/workflow files changed, skipping E2E validation"
+            echo "should-validate=false" >> $GITHUB_OUTPUT
           else
             echo "This is a direct push, validation needed"
             echo "should-validate=true" >> $GITHUB_OUTPUT
@@ -270,11 +274,11 @@ jobs:
     steps:
       # Stagger job creation to prevent GitHub Actions/RunsOn race condition
       # when multiple matrix jobs are created simultaneously (fixes Shard 10 stuck issue)
-      # Delay calculation: (shard - 1) * 10 seconds
-      # Shard 1=0s, Shard 2=10s, Shard 3=20s, ..., Shard 10=90s
+      # Delay calculation: (shard - 1) * 5 seconds
+      # Shard 1=0s, Shard 2=5s, Shard 3=10s, ..., Shard 12=55s
       - name: Stagger matrix job start
         run: |
-          DELAY=$(( (${{ matrix.shard }} - 1) * 10 ))
+          DELAY=$(( (${{ matrix.shard }} - 1) * 5 ))
           echo "Shard ${{ matrix.shard }}: waiting ${DELAY} seconds to prevent race condition..."
           sleep $DELAY
 
@@ -415,7 +419,7 @@ jobs:
 
       - name: Run E2E tests for shard ${{ matrix.shard }}
         run: |
-          echo "🚀 Running E2E test shard ${{ matrix.shard }} of 10"
+          echo "🚀 Running E2E test shard ${{ matrix.shard }} of 12"
           pnpm --filter web-e2e test:shard${{ matrix.shard }}
 
       - name: Upload test results
@@ -448,8 +452,8 @@ jobs:
           echo "## 🎭 Staging E2E Test Results (Sharded)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Configuration" >> $GITHUB_STEP_SUMMARY
-          echo "- **Total Shards**: 10" >> $GITHUB_STEP_SUMMARY
-          echo "- **Max Parallel**: 3" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Shards**: 12" >> $GITHUB_STEP_SUMMARY
+          echo "- **Max Parallel**: 6" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
@@ -466,6 +470,8 @@ jobs:
           echo "| 8 | Payload Seeding & Performance | Check artifacts |" >> $GITHUB_STEP_SUMMARY
           echo "| 9 | User Billing | Check artifacts |" >> $GITHUB_STEP_SUMMARY
           echo "| 10 | Team Billing | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 11 | Billing Webhooks | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 12 | Billing Edge Cases | Check artifacts |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
           if [[ "${{ needs.test-shards.result }}" == "success" ]]; then
@@ -650,6 +656,7 @@ jobs:
   # Run smoke tests against staging
   smoke-tests:
     name: Staging Smoke Tests
+    if: false  # TODO: Enable when staging smoke tests are implemented
     runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: deploy-web
     environment: staging
