@@ -854,11 +854,17 @@ jobs:
           ref: dev
           fetch-depth: 0
           token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
 
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Use GITHUB_TOKEN for all git operations (fetch, push).
+          # GITHUB_TOKEN from push-triggered workflows has implicit 'workflows' scope,
+          # which is required to push changes to .github/workflows/ files.
+          # The App token is only used for gh CLI calls (PR creation, auto-merge).
+          git remote set-url origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
 
       - name: Merge staging into dev
         run: |
@@ -908,16 +914,6 @@ jobs:
         run: |
           SYNC_BRANCH="sync/staging-to-dev-${{ github.run_id }}"
           git checkout -b "$SYNC_BRANCH"
-
-          # Clear checkout action's App token credentials before push.
-          # App tokens lack 'workflows' permission needed to push workflow files.
-          # GITHUB_TOKEN (from push trigger) has implicit workflows scope.
-          git config --local --unset-all 'http.https://github.com/.extraheader' 2>/dev/null || true
-          for key in $(git config --local --name-only --get-regexp '^includeIf\.' 2>/dev/null); do
-            git config --local --unset "$key" 2>/dev/null || true
-          done
-
-          git remote set-url origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
           git push origin "$SYNC_BRANCH"
 
           # Create PR and enable auto-merge (squash)
