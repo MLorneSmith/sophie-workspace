@@ -59,6 +59,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # Skip validation for staging-to-dev sync PRs (already validated on staging)
+          if [[ "${{ github.head_ref }}" == sync/staging-to-dev-* ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "reason=✅ Automated staging-to-dev sync - changes already validated on staging" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           # Skip validation for promotion PRs if source branch recently passed
           if [[ "${{ github.base_ref }}" == "staging" && "${{ github.head_ref }}" == "dev" ]]; then
             echo "🔍 Checking if dev branch recently passed validation..."

@@ -901,19 +901,35 @@ jobs:
             fi
           fi
 
-      - name: Push to dev
+      - name: Create sync PR
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          if git push origin dev; then
-            echo "✅ Successfully pushed sync commit to dev"
-          else
-            echo "❌ Failed to push to dev"
-            exit 1
-          fi
+          SYNC_BRANCH="sync/staging-to-dev-${{ github.run_id }}"
+          git checkout -b "$SYNC_BRANCH"
+          git push origin "$SYNC_BRANCH"
+
+          # Create PR and enable auto-merge (squash)
+          PR_URL=$(gh pr create \
+            --base dev \
+            --head "$SYNC_BRANCH" \
+            --title "chore(ci): sync staging into dev after promotion [skip ci]" \
+            --body "Automated sync of staging back into dev to prevent merge conflicts in future promotion PRs.
+
+          This PR is auto-merged. All changes were already validated on staging." \
+            --label "automated")
+
+          echo "✅ Created sync PR: $PR_URL"
+
+          # Enable auto-merge so it merges once PR Status Check passes
+          gh pr merge "$PR_URL" --squash --auto
+
+          echo "✅ Auto-merge enabled on sync PR"
 
       - name: Add workflow summary
         run: |
           echo "## 🔄 Dev Branch Sync" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Staging has been merged back into dev to keep branch histories aligned." >> $GITHUB_STEP_SUMMARY
+          echo "Created a sync PR to merge staging back into dev." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "This prevents merge conflicts in future \`dev → staging\` promotion PRs." >> $GITHUB_STEP_SUMMARY
