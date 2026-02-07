@@ -16,9 +16,13 @@
 		"payload": "3.75.0",
 		"react": "19.2.1"
 	},
+	"peerDependencies": {
+		"next": ">=14.0.0"
+	},
 	"devDependencies": {
 		"@types/node": "^24.10.1",
 		"@types/react": "19.2.7",
+		"next": "15.4.0-canary.109",
 		"typescript": "^5.9.3"
 	},
 	"exports": {
