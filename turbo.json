@@ -199,13 +199,13 @@
 			"cache": true
 		},
 		"test": {
-			"dependsOn": ["^topo"],
+			"dependsOn": [],
 			"outputs": ["coverage/**", ".vitest/**"],
 			"cache": true,
 			"env": ["NODE_ENV"]
 		},
 		"test:coverage": {
-			"dependsOn": ["^topo"],
+			"dependsOn": [],
 			"outputs": ["coverage/**"],
 			"cache": true
 		},
@@ -219,7 +219,7 @@
 			"outputLogs": "errors-only"
 		},
 		"@kit/monitoring-newrelic#test": {
-			"dependsOn": ["^topo"],
+			"dependsOn": [],
 			"outputs": [],
 			"cache": true,
 			"env": ["NODE_ENV"]
