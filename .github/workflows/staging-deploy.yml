@@ -909,7 +909,14 @@ jobs:
           SYNC_BRANCH="sync/staging-to-dev-${{ github.run_id }}"
           git checkout -b "$SYNC_BRANCH"
 
-          # Use GITHUB_TOKEN for push - App tokens can't push workflow file changes
+          # Clear checkout action's App token credentials before push.
+          # App tokens lack 'workflows' permission needed to push workflow files.
+          # GITHUB_TOKEN (from push trigger) has implicit workflows scope.
+          git config --local --unset-all 'http.https://github.com/.extraheader' 2>/dev/null || true
+          for key in $(git config --local --name-only --get-regexp '^includeIf\.' 2>/dev/null); do
+            git config --local --unset "$key" 2>/dev/null || true
+          done
+
           git remote set-url origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
           git push origin "$SYNC_BRANCH"
 
