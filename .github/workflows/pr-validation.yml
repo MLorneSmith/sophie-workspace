@@ -248,7 +248,7 @@ jobs:
 
       - name: Run unit tests
         timeout-minutes: 5
-        run: pnpm turbo run test --cache-dir=.turbo --filter=!web-e2e --filter=!payload --concurrency=6
+        run: pnpm turbo run test --cache-dir=.turbo --filter=!web-e2e --filter=!payload --concurrency=2
 
   # YAML linting
   yaml-lint:

@@ -50,8 +50,9 @@ export default defineProject({
 		testTimeout: 10000, // 10 seconds max per test
 		hookTimeout: 10000,
 
-		// Use threads pool for faster execution (jsdom doesn't need process isolation)
-		pool: "threads" as const,
+		// forks pool: child_process.fork() terminates cleanly in CI unlike
+		// worker_threads which hits tinypool termination bug under resource pressure
+		pool: "forks" as const,
 
 		// Server-side module handling for SSR components
 		server: {
