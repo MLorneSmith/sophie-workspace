@@ -47,8 +47,18 @@ jobs:
 
           echo "Checking staging health..."
 
+          # Vercel Deployment Protection requires bypass header on staging
+          BYPASS_HEADER=""
+          if [ -n "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
+            BYPASS_HEADER="-H x-vercel-protection-bypass:${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}"
+          fi
+          BYPASS_HEADER_PAYLOAD=""
+          if [ -n "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}" ]; then
+            BYPASS_HEADER_PAYLOAD="-H x-vercel-protection-bypass:${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}"
+          fi
+
           # Check web app health
-          WEB_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$STAGING_WEB_URL/healthcheck" || echo "000")
+          WEB_STATUS=$(curl -s -o /dev/null -w "%{http_code}" $BYPASS_HEADER "$STAGING_WEB_URL/healthcheck" || echo "000")
           if [ "$WEB_STATUS" = "200" ]; then
             echo "web_healthy=true" >> $GITHUB_OUTPUT
             echo "✅ Web app healthy (HTTP $WEB_STATUS)"
@@ -58,7 +68,7 @@ jobs:
           fi
 
           # Check Payload CMS health
-          PAYLOAD_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$STAGING_PAYLOAD_URL/api/health" || echo "000")
+          PAYLOAD_STATUS=$(curl -s -o /dev/null -w "%{http_code}" $BYPASS_HEADER_PAYLOAD "$STAGING_PAYLOAD_URL/api/health" || echo "000")
           if [ "$PAYLOAD_STATUS" = "200" ]; then
             echo "payload_healthy=true" >> $GITHUB_OUTPUT
             echo "✅ Payload CMS healthy (HTTP $PAYLOAD_STATUS)"
@@ -195,7 +205,7 @@ jobs:
               successRate: metrics.successRate >= 90,  // Stricter: 90% for production
               codeCoverage: metrics.codeCoverage >= 80,
               noRecentFailures: metrics.recentFailures === 0,
-              notTooManyChanges: changedFiles < 200,  // Allow more for production batches
+              notTooManyChanges: changedFiles < 2000,  // High threshold for initial promotions
               stagingNotStale: (metrics.stagingDeployAgeHours || 0) < 48,  // Deploy within 48h
               noBreakingChanges: breakingChanges === 0 || forcePromotion
             };
@@ -253,7 +263,7 @@ jobs:
             summary += `| Success Rate | ${criteria.successRate ? '✅' : '❌'} | ${metrics.successRate.toFixed(1)}% (target: 90%) |\n`;
             summary += `| Code Coverage | ${criteria.codeCoverage ? '✅' : '❌'} | ${metrics.codeCoverage}% (target: 80%) |\n`;
             summary += `| Recent Failures | ${criteria.noRecentFailures ? '✅' : '❌'} | ${metrics.recentFailures} failures in last 12h |\n`;
-            summary += `| Change Size | ${criteria.notTooManyChanges ? '✅' : '❌'} | ${changedFiles} files (limit: 200) |\n`;
+            summary += `| Change Size | ${criteria.notTooManyChanges ? '✅' : '❌'} | ${changedFiles} files (limit: 2000) |\n`;
             summary += `| Staging Freshness | ${criteria.stagingNotStale ? '✅' : '❌'} | ${(metrics.stagingDeployAgeHours || 0).toFixed(1)}h old (limit: 48h) |\n`;
             summary += `| Breaking Changes | ${criteria.noBreakingChanges ? '✅' : '⚠️'} | ${breakingChanges} detected |\n`;
 
