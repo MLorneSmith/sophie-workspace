@@ -1,4 +1,8 @@
-import { BlocksFeature, lexicalEditor } from "@payloadcms/richtext-lexical";
+import {
+	BlocksFeature,
+	UploadFeature,
+	lexicalEditor,
+} from "@payloadcms/richtext-lexical";
 import type { CollectionConfig } from "payload";
 import { BunnyVideo, CallToAction, TestBlock, YouTubeVideo } from "../blocks";
 
@@ -68,6 +72,25 @@ export const Posts: CollectionConfig = {
 			editor: lexicalEditor({
 				features: ({ defaultFeatures }) => [
 					...defaultFeatures,
+					UploadFeature({
+						collections: {
+							media: {
+								fields: [
+									{
+										name: "caption",
+										type: "text",
+										label: "Caption",
+									},
+									{
+										name: "altText",
+										type: "text",
+										label: "Alt Text",
+										required: true,
+									},
+								],
+							},
+						},
+					}),
 					BlocksFeature({
 						blocks: [BunnyVideo, CallToAction, TestBlock, YouTubeVideo],
 					}),
