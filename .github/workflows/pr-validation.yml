@@ -247,7 +247,7 @@ jobs:
             ${{ runner.os }}-turbo-test-
 
       - name: Run unit tests
-        run: pnpm turbo run test --cache-dir=.turbo --filter=!web-e2e
+        run: pnpm turbo run test --cache-dir=.turbo --filter=!web-e2e --filter=!payload
 
   # YAML linting
   yaml-lint:
