@@ -1,6 +1,6 @@
 name: Deploy to Staging
 
-# Staging deployment pipeline
+# Test RunsOn syntax fix - deployment trigger
 on:
   push:
     branches:
@@ -840,6 +840,8 @@ jobs:
     if: always() && !cancelled()
     permissions:
       contents: write
+      pull-requests: write
+      workflows: write  # Required to push changes to .github/workflows/ files
     steps:
       - name: Generate GitHub App Token
         id: app-token
@@ -852,7 +854,9 @@ jobs:
         with:
           ref: dev
           fetch-depth: 0
-          token: ${{ steps.app-token.outputs.token }}
+          # Use GITHUB_TOKEN for checkout/push so workflow file changes are allowed
+          # (GitHub App tokens cannot push to .github/workflows/ files)
+          token: ${{ github.token }}
 
       - name: Configure Git
         run: |
