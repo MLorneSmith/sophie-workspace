@@ -93,11 +93,9 @@ jobs:
         if: inputs.image_ref == ''
         run: |
           # Determine which Dockerfiles exist
-          if [ -f "apps/payload/Dockerfile" ]; then
-            echo "Building Payload container..."
-            docker build -t payload:scan -f apps/payload/Dockerfile apps/payload
-            echo "image=payload:scan" >> $GITHUB_OUTPUT
-          elif [ -f "${{ inputs.dockerfile_path }}" ]; then
+          # Build context must be repo root (.) for monorepo Dockerfiles that
+          # copy pnpm-lock.yaml from root, not from the app subdirectory
+          if [ -f "${{ inputs.dockerfile_path }}" ]; then
             echo "Building container from ${{ inputs.dockerfile_path }}..."
             docker build -t app:scan -f ${{ inputs.dockerfile_path }} .
             echo "image=app:scan" >> $GITHUB_OUTPUT
