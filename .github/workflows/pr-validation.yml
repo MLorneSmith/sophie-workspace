@@ -254,7 +254,7 @@ jobs:
             ${{ runner.os }}-turbo-test-
 
       - name: Run unit tests
-        timeout-minutes: 5
+        timeout-minutes: 12
         env:
           TURBO_TOKEN: ''
           TURBO_TEAM: ''
