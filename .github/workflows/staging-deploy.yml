@@ -907,11 +907,18 @@ jobs:
             git checkout origin/dev -- .github/workflows/ 2>/dev/null || true
             git add -A
 
+            # After excluding workflow files, there may be nothing left to commit
+            # (e.g., all differences were in .github/workflows/). That's a success.
+            if git diff --cached --quiet; then
+              echo "✅ No differences after excluding workflow files - branches are already in sync"
+              exit 0
+            fi
+
             if git commit -m "chore(ci): sync staging into dev after promotion (auto-resolved) [skip ci]"; then
               echo "✅ Merge completed with auto-resolved conflicts"
             else
               echo "❌ Could not auto-resolve conflicts, manual intervention required"
-              git merge --abort || true
+              git reset --hard origin/dev
               exit 1
             fi
           fi
