@@ -910,7 +910,8 @@ jobs:
           git checkout -b "$SYNC_BRANCH"
 
           # Use GITHUB_TOKEN for push - App tokens can't push workflow file changes
-          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $(echo -n x-access-token:${{ github.token }} | base64)" push origin "$SYNC_BRANCH"
+          git remote set-url origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          git push origin "$SYNC_BRANCH"
 
           # Create PR and enable auto-merge (squash)
           PR_URL=$(gh pr create \
