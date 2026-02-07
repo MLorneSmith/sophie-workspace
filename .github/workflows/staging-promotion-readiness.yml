@@ -162,8 +162,8 @@ jobs:
           echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
 
           # Check for breaking changes indicators
-          BREAKING_CHANGES=$(git log --oneline origin/main..origin/staging 2>/dev/null | grep -c "BREAKING\|!" || echo "0")
-          echo "breaking_changes=$BREAKING_CHANGES" >> $GITHUB_OUTPUT
+          BREAKING_CHANGES=$(git log --oneline origin/main..origin/staging 2>/dev/null | grep -c "BREAKING\|!" || true)
+          echo "breaking_changes=${BREAKING_CHANGES:-0}" >> $GITHUB_OUTPUT
 
           # Generate changelog
           if [ "$PENDING_COMMITS" -gt 0 ]; then
