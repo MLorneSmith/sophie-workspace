@@ -43,7 +43,6 @@ env:
   PNPM_VERSION: '10.14.0'
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-  TURBO_REMOTE_CACHE_ENABLED: true
 
 jobs:
   # Check if we should skip validation for promotion PRs
@@ -249,7 +248,8 @@ jobs:
       - name: Run unit tests
         timeout-minutes: 5
         env:
-          TURBO_REMOTE_CACHE_ENABLED: 'false'
+          TURBO_TOKEN: ''
+          TURBO_TEAM: ''
         run: pnpm turbo run test --cache-dir=.turbo --filter=!web-e2e --filter=!payload --concurrency=4
 
   # YAML linting
