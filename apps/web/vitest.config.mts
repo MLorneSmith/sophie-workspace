@@ -50,7 +50,8 @@ export default defineProject({
 		testTimeout: 10000, // 10 seconds max per test
 		hookTimeout: 10000,
 
-		// Use forks pool for better stability in Vitest 4
+		// forks pool: child_process.fork() terminates cleanly in CI unlike
+		// worker_threads which hits tinypool termination bug under resource pressure
 		pool: "forks" as const,
 
 		// Server-side module handling for SSR components
