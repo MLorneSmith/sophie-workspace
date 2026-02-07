@@ -79,8 +79,11 @@ jobs:
             --fail \
             --no-update
       
+      # NOTE: AikidoSec/github-actions-workflow is deprecated (May 2025).
+      # Migrate to Aikido Dashboard PR Gating when ready.
       - name: Aikido Security Scan
         uses: AikidoSec/github-actions-workflow@v1.0.13
+        continue-on-error: true  # Deprecated action fails with 400 errors; unblock CI while migrating
         with:
           secret-key: ${{ secrets.AIKIDO_SECRET_KEY }}
           fail-on-timeout: true

@@ -99,7 +99,8 @@ jobs:
 
       - uses: ./.github/actions/setup-deps
 
-      # Run comprehensive Aikido scan for the main branch
+      # NOTE: AikidoSec/github-actions-workflow is deprecated (May 2025).
+      # Migrate to Aikido Dashboard PR Gating when ready.
       - name: Run Aikido Security Scan
         id: aikido_scan
         uses: AikidoSec/github-actions-workflow@v1.0.13
