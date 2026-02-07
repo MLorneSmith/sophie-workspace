@@ -871,6 +871,11 @@ jobs:
           # Use squash merge to avoid creating a merge commit
           # (dev branch protection forbids merge commits)
           if git merge --squash origin/staging; then
+            # Check if squash produced any changes (branches may already be aligned)
+            if git diff --cached --quiet; then
+              echo "✅ No differences after squash merge - branches are already in sync"
+              exit 0
+            fi
             git commit -m "chore(ci): sync staging into dev after promotion [skip ci]"
             echo "✅ Successfully squash-merged staging into dev"
           else
