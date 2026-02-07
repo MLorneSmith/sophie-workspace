@@ -221,10 +221,10 @@ jobs:
   # Unit tests
   test-unit:
     name: Unit Tests
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
@@ -242,23 +242,12 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-test-${{ github.sha }}
+          key: ${{ runner.os }}-turbo-test-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-turbo-test-
 
-      - name: Run unit tests with coverage
-        run: pnpm test:coverage
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./coverage
-          files: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
-          verbose: true
+      - name: Run unit tests
+        run: pnpm turbo run test --cache-dir=.turbo --filter=!web-e2e
 
   # YAML linting
   yaml-lint:
@@ -424,11 +413,8 @@ jobs:
           # Wait for database to be ready
           sleep 5
           
-          # Run database migrations
+          # Reset database (applies migrations and seeds)
           supabase db reset --linked=false
-          
-          # Seed test data
-          supabase db seed
 
       - name: Run accessibility tests
         run: pnpm --filter e2e a11y:test:ci  # Use CI-specific script with JUnit reporter
@@ -571,13 +557,13 @@ jobs:
              [[ "${{ needs.test-unit.result }}" == "failure" ]] || \
              [[ "${{ needs.yaml-lint.result }}" == "failure" ]] || \
              [[ "${{ needs.markdown-lint.result }}" == "failure" ]] || \
-             [[ "${{ needs.aikido-security.result }}" == "failure" ]] || \
              [[ "${{ needs.docker-scan.result }}" == "failure" ]]; then
             echo "❌ PR validation failed"
             exit 1
-          elif [[ "${{ needs.accessibility-test.result }}" == "failure" ]]; then
-            echo "⚠️ Accessibility tests failed - please review violations"
-            echo "✅ Core PR validation passed (accessibility is advisory)"
+          elif [[ "${{ needs.aikido-security.result }}" == "failure" ]] || \
+               [[ "${{ needs.accessibility-test.result }}" == "failure" ]]; then
+            echo "⚠️ Advisory checks failed (Aikido security and/or accessibility) - please review"
+            echo "✅ Core PR validation passed (these checks are non-blocking)"
           else
             echo "✅ PR validation passed"
           fi

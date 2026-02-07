@@ -668,19 +668,3 @@ jobs:
               }
             }
 
-      - name: Trigger promotion readiness if all passed
-        if: steps.summary.outputs.all_passed == 'true'
-        uses: actions/github-script@v8
-        with:
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'dev-promotion-readiness.yml',
-              ref: 'dev',
-              inputs: {
-                integration_test_run_id: context.runId.toString()
-              }
-            });
-
-            console.log('✅ Triggered promotion readiness assessment');
