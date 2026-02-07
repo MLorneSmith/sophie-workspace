@@ -247,6 +247,7 @@ jobs:
             ${{ runner.os }}-turbo-test-
 
       - name: Run unit tests
+        # payload excluded: requires Postgres, tested in staging-deploy and e2e-sharded
         run: pnpm turbo run test --cache-dir=.turbo --filter=!web-e2e --filter=!payload
 
   # YAML linting
