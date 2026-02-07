@@ -884,6 +884,11 @@ jobs:
           # Use squash merge to avoid creating a merge commit
           # (dev branch protection forbids merge commits)
           if git merge --squash origin/staging; then
+            # Exclude workflow files from sync - they originate on dev and flow to
+            # staging via PRs. Neither GITHUB_TOKEN nor GitHub App tokens have the
+            # 'workflows' permission needed to push .github/workflows/ changes.
+            git checkout origin/dev -- .github/workflows/ 2>/dev/null || true
+
             # Check if squash produced any changes (branches may already be aligned)
             if git diff --cached --quiet; then
               echo "✅ No differences after squash merge - branches are already in sync"
@@ -897,6 +902,9 @@ jobs:
             # For spec-manifest.json conflicts, prefer the staging version
             git checkout --theirs .ai/alpha/specs/*/spec-manifest.json 2>/dev/null || true
             git add .ai/alpha/specs/*/spec-manifest.json 2>/dev/null || true
+
+            # Exclude workflow files from sync (see comment above)
+            git checkout origin/dev -- .github/workflows/ 2>/dev/null || true
             git add -A
 
             if git commit -m "chore(ci): sync staging into dev after promotion (auto-resolved) [skip ci]"; then
