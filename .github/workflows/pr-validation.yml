@@ -247,7 +247,9 @@ jobs:
             ${{ runner.os }}-turbo-test-
 
       - name: Run unit tests
-        run: pnpm turbo run test --cache-dir=.turbo --filter=!web-e2e --filter=!payload
+        # payload excluded: requires Postgres, tested in staging-deploy and e2e-sharded
+        # concurrency=6: prevents 42 packages from spawning vitest simultaneously on 4-CPU runner
+        run: pnpm turbo run test --cache-dir=.turbo --filter=!web-e2e --filter=!payload --concurrency=6
 
   # YAML linting
   yaml-lint:

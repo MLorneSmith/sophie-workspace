@@ -50,8 +50,8 @@ export default defineProject({
 		testTimeout: 10000, // 10 seconds max per test
 		hookTimeout: 10000,
 
-		// Use forks pool for better stability in Vitest 4
-		pool: "forks" as const,
+		// Use threads pool for faster execution (jsdom doesn't need process isolation)
+		pool: "threads" as const,
 
 		// Server-side module handling for SSR components
 		server: {
