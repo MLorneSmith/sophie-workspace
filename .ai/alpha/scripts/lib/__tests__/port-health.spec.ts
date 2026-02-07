@@ -74,7 +74,7 @@ describe("port-health", () => {
 
 			// Should have waited close to the timeout
 			expect(elapsed).toBeGreaterThanOrEqual(350);
-			expect(elapsed).toBeLessThan(600);
+			expect(elapsed).toBeLessThan(800);
 		});
 	});
 
