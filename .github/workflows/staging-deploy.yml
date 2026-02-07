@@ -627,7 +627,7 @@ jobs:
           project-id: ${{ secrets.VERCEL_PROJECT_ID_PAYLOAD }}
           environment: staging
           build-artifacts: true
-          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}
           health-check-url: /api/health
 
       - name: Create deployment status
