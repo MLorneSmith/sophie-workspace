@@ -202,7 +202,8 @@
 			"dependsOn": [],
 			"outputs": ["coverage/**", ".vitest/**"],
 			"cache": true,
-			"env": ["NODE_ENV"]
+			"env": ["NODE_ENV"],
+			"passThroughEnv": ["CI"]
 		},
 		"test:coverage": {
 			"dependsOn": [],
