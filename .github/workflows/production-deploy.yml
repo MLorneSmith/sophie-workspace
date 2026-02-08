@@ -73,10 +73,10 @@ jobs:
       - name: TruffleHog Secret Scan
         uses: docker://trufflesecurity/trufflehog:3.63.7
         with:
-          args: |
-            git file://./ \
-            --since-commit HEAD~1 \
-            --fail \
+          args: >-
+            git file://./
+            --since-commit HEAD~1
+            --fail
             --no-update
       
       # NOTE: AikidoSec/github-actions-workflow is deprecated (May 2025).
