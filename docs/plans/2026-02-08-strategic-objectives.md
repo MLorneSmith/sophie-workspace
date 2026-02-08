@@ -1,150 +1,109 @@
 # SlideHeroes Strategic Objectives
 
 **Date:** 2026-02-08
-**Status:** Draft — for Mike's review
-**Author:** Sophie
+**Status:** Approved — v2
+**Author:** Sophie, with Mike
 
 ---
 
 ## Overview
 
-Seven strategic objectives covering the full scope of SlideHeroes work. Designed to be MECE — every initiative and task should fit cleanly under exactly one objective.
+Seven strategic objectives covering the full SaaS lifecycle for SlideHeroes. Designed to be MECE — every initiative and task fits cleanly under exactly one objective.
 
-These objectives are organized from **core product outward** — starting with what we build, then how we reach people, then the systems that make it all work.
+**Framing:** Objectives are outcome-focused and aspirational. Key Results underneath are measurable and time-bound. Per quarter, activate 2-3 objectives as primary focus — don't chase all 7 simultaneously.
 
 ---
 
 ## The Seven Objectives
 
-### 1. 🚀 Build the Product
-**Develop and ship the SlideHeroes AI-powered SaaS platform.**
+### 1. 🚀 Build a Product Customers Love
 
-Everything related to the `2025slideheroes` codebase, product features, UX, infrastructure, and the pivot from course-only to AI-powered presentation tool. This is the core of the business.
+Ship the SlideHeroes AI SaaS platform that customers actively choose over alternatives.
 
-**Scope includes:**
-- AI presentation generation and editing features
-- Alpha Orchestrator and spec implementation
-- Dashboard, onboarding, user flows
-- Template system and presentation library
-- Product infrastructure (hosting, CI/CD, deployment)
-- Pricing, packaging, product-market fit experiments
+**Scope:** Everything related to the `2025slideheroes` codebase — product features, UX, AI presentation generation, infrastructure, onboarding flows, pricing/packaging, and the pivot from course-only to AI-powered SaaS.
 
-**Scope excludes:** Internal tools (→ #5), content (→ #3), marketing site (→ #2)
-
-**Current MC board:** 🚀 Build Product
+**Key Results:**
+- KR: Public beta live with core presentation generation by [date]
+- KR: [X] beta users with [Y]% weekly active rate
+- KR: NPS of [Z]+ from beta cohort
 
 ---
 
-### 2. 📢 Grow the Audience
-**Attract, engage, and convert the right people through content and marketing.**
+### 2. 📢 Build an Audience That Trusts Us
 
-Everything customer-facing that isn't the product itself — the blog, email marketing, social media, SEO, outbound, and any campaigns that bring people to SlideHeroes or nurture them toward purchase.
+Establish SlideHeroes as the go-to authority on business presentations.
 
-**Scope includes:**
-- Blog posts, email sequences, social media content
-- SEO strategy and optimization
-- Outbound email campaigns
-- Landing pages and conversion optimization
-- Newsletter and subscriber growth
-- Content calendar and cadence management
-- Partnerships and co-marketing (Seneca, DoE, etc.)
+**Scope:** All top-of-funnel work — blog posts, email marketing, social media, SEO, content campaigns, and thought leadership. Getting the right people to know SlideHeroes exists, trust our expertise, and engage with our content.
 
-**Scope excludes:** Content *system* tooling (→ #5), brand/positioning strategy (→ #4)
-
-**Current MC boards:** ✍️ Create Content, 📰 Build Content System (the output side)
+**Key Results:**
+- KR: Grow email list to [X] subscribers
+- KR: [Y] monthly organic visitors via blog/SEO
+- KR: [Z] LinkedIn followers / average post engagement rate
 
 ---
 
-### 3. 🧠 Sharpen the Strategy
-**Define and refine SlideHeroes' positioning, messaging, and strategic direction.**
+### 3. 🔄 Convert Existing Customers to the New Platform
 
-The thinking work — who we are, who we serve, what we stand for, how we're positioned competitively. This is the context layer in human form: the strategy that informs everything else.
+Migrate the current SlideHeroes course customer base onto the AI SaaS product.
 
-**Scope includes:**
-- Market positioning and competitive analysis
-- Persona development and validation
-- Pricing strategy
-- Product roadmap and prioritization decisions
-- Brand voice and messaging framework
-- Manifesto / POV development
-- Financial planning and business model
-- Best practices capture and synthesis (from #capture)
+**Scope:** Upsell, cross-sell, and migration campaigns targeting people who already know and trust SlideHeroes. This is the most efficient path to early revenue — they've already bought once.
 
-**Scope excludes:** Executing on strategy (→ other objectives), tool-building (→ #5)
+**Key Results:**
+- KR: [X]% of existing customers activated on new platform
+- KR: $[Y] upsell MRR from existing base
+- KR: Churn from migration < [Z]%
 
 ---
 
-### 4. 📚 Build the Knowledge Base
-**Curate and maintain the information, examples, and research that fuel quality output.**
+### 4. 🆕 Acquire Net-New Paying Customers
 
-The raw material — presentation examples, competitive intelligence, industry research, customer insights, and the Context Foundation files. This is what makes our content and product decisions informed rather than guesswork.
+Build distribution channels that bring new customers to SlideHeroes.
 
-**Scope includes:**
-- Context Foundation (`~/.ai/contexts/`) — audit, expand, maintain
-- Presentation examples discovery, evaluation, and storage
-- Competitive research and monitoring
-- Best practices database (Notion)
-- Resources database (captured articles, videos, research)
-- Customer feedback and insights
-- Notion Second Brain maintenance
+**Scope:** All bottom-of-funnel and distribution work — self-serve conversion, outbound sales, partnerships (Seneca, DoE, etc.), marketplace presence (Product Hunt, G2), affiliates, paid acquisition, and any channel that converts strangers into paying users.
 
-**Scope excludes:** Creating content from this knowledge (→ #2), strategic decisions derived from it (→ #3)
+**Key Results:**
+- KR: [X] net-new paying users
+- KR: $[Y] new MRR from non-existing-customer channels
+- KR: CAC < $[Z] across all channels
 
 ---
 
-### 5. ⚙️ Build the Systems
-**Create and improve the internal tools, workflows, and infrastructure that make everything else efficient.**
+### 5. 💎 Delight & Retain Customers
 
-The meta-work — Mission Control, Sophie Loop, agent profiles, content pipelines, deployment infrastructure, monitoring, and automation. This is the machinery that lets a two-person team (one human, one AI) punch above its weight.
+Keep paying customers engaged, successful, and growing with SlideHeroes.
 
-**Scope includes:**
-- Mission Control (UI, features, API)
-- Sophie Loop implementation (loop runner, agent profiles, orchestration)
-- Content system tooling (skills, workflows, templates)
-- Internal tools (`slideheroes-internal-tools` repo)
-- Clawdbot/Sophie configuration and capabilities
-- Monitoring, alerts, cron jobs
-- Morning Brief and reporting
-- CI/CD and deployment pipelines
+**Scope:** Everything post-sale — onboarding experience, engagement and usage growth, churn reduction, support, community building, feedback collection, expansion revenue (upsells within active customers), and NPS. The goal is LTV:CAC > 3x.
 
-**Scope excludes:** Product infrastructure (→ #1), content output (→ #2)
-
-**Current MC boards:** 🎯 Mission Control, 🔧 Build Sophie, 📰 Build Content System (the tooling side)
+**Key Results:**
+- KR: Monthly churn < [X]%
+- KR: NPS of [Y]+ across active customer base
+- KR: [Z]% of active users engage weekly
 
 ---
 
-### 6. 🤝 Validate with Customers
-**Get SlideHeroes in front of real users and learn from their experience.**
+### 6. 🤖 Build the AI & Content Engine
 
-Everything related to customer discovery, beta testing, feedback loops, and market validation. The bridge between what we build and what people actually need.
+Create the AI systems, content workflows, and knowledge base that produce consistently high-quality output.
 
-**Scope includes:**
-- Beta user recruitment and management
-- User testing and feedback collection
-- Product Hunt and launch planning
-- Customer interviews and discovery calls
-- Usage analytics and behavior analysis
-- Testimonial and case study development
-- Community building (if applicable)
+**Scope:** Sophie Loop (loop runner, agent profiles, orchestration), Context Foundation, content skills and pipelines, presentation examples library, research infrastructure, best practices database, and all AI-powered automation that generates content or product assets.
 
-**Scope excludes:** Building features based on feedback (→ #1), marketing to non-beta audiences (→ #2)
+**Key Results:**
+- KR: Sophie Loop operational with [X] agent profiles
+- KR: Context Foundation complete and validated ([Y] files)
+- KR: [Z] content pieces produced per month through automated pipeline
 
 ---
 
-### 7. 🏠 Run the Business
-**Handle the operational, financial, and administrative work that keeps things running.**
+### 7. ⚙️ Build the Business Operating System
 
-The housekeeping — legal, finance, accounts, vendor management, personal productivity systems, and anything that doesn't directly build product or audience but is necessary to operate.
+Implement the tools, infrastructure, and processes required to run and scale the business.
 
-**Scope includes:**
-- Financial management (accounting, taxes, cash flow)
-- Legal and compliance
-- Vendor and subscription management
-- Domain, hosting, and account administration
-- Personal productivity (Todoist, calendar, GTD)
-- Mike's professional development and learning
+**Scope:** Mission Control (UI, features, hierarchy), CRM, analytics, billing, CI/CD, deployment, monitoring, project management, reporting (Morning Brief), financial tracking, legal/compliance, vendor management, and all operational processes that keep the business running.
 
-**Scope excludes:** Strategic financial planning (→ #3), infrastructure tooling (→ #5)
+**Key Results:**
+- KR: Mission Control fully operational with 3-level hierarchy
+- KR: CRM/analytics tracking customer journey end-to-end
+- KR: Morning Brief + review workflow achieving < [X] min review time per deliverable
 
 ---
 
@@ -152,43 +111,57 @@ The housekeeping — legal, finance, accounts, vendor management, personal produ
 
 | Question | Objective |
 |----------|-----------|
-| "Should we add dark mode to the app?" | 1. Build the Product |
-| "Let's write a blog post on data viz" | 2. Grow the Audience |
-| "Are we positioned right against Tome?" | 3. Sharpen the Strategy |
-| "Audit and expand the context files" | 4. Build the Knowledge Base |
-| "Add a Ready for Review column to MC" | 5. Build the Systems |
-| "Get 10 beta testers this month" | 6. Validate with Customers |
-| "Renew the AWS account" | 7. Run the Business |
+| "Add AI template generation feature" | 1. Build a Product |
+| "Write a blog post on data viz" | 2. Build an Audience |
+| "Email existing customers about the new platform" | 3. Convert Existing Customers |
+| "Launch on Product Hunt" | 4. Acquire New Customers |
+| "Reduce monthly churn by 2%" | 5. Delight & Retain |
+| "Create the Writer agent profile" | 6. AI & Content Engine |
+| "Add Ready for Review column to MC" | 7. Business Operating System |
 
 ### Boundary Cases
 
 | Task | Could Be... | Belongs In... | Why |
 |------|-------------|---------------|-----|
-| SEO audit of the blog | #2 or #5 | **#2** Grow the Audience | It's about the content ranking, not the tool |
-| Build email-marketing skill | #2 or #5 | **#5** Build the Systems | It's tooling that enables content creation |
-| Write the manifesto | #2 or #3 | **#3** Sharpen the Strategy | It's defining our position, not marketing it |
-| Publish the manifesto on the site | #2 or #3 | **#2** Grow the Audience | Now it's customer-facing content |
-| Presentation examples pipeline | #4 or #5 | **#5** Build the Systems | The pipeline is a tool; the examples are #4 |
-| Customer interview notes | #6 or #4 | **#6** Validate with Customers | It's about learning from users |
+| Build onboarding flow | #1 or #5 | **#1** Product | It's a product feature, even though it serves retention |
+| Collect user feedback | #1 or #5 | **#5** Delight & Retain | It's a post-sale motion to understand and keep customers |
+| Context Foundation audit | #6 or #7 | **#6** AI & Content Engine | It's knowledge that powers AI output |
+| Set up billing system | #1 or #7 | **#7** Business OS | It's operational infrastructure |
+| Outbound email to consultancies | #2 or #4 | **#4** Acquire New | It's bottom-of-funnel conversion, not awareness |
+| Blog post SEO optimization | #2 or #6 | **#2** Build Audience | It's about reaching people, not about the AI system |
+| Email-marketing skill improvements | #2 or #6 | **#6** AI & Content Engine | It's tooling that enables content creation |
+| Community Slack/Discord | #2 or #5 | **#5** Delight & Retain | Community is about keeping customers engaged |
+| Partnership with Seneca | #4 or #5 | **#4** Acquire New | It's a distribution channel for new users |
 
 ---
 
-## How This Maps to Current MC Boards
+## Quarterly Focus Guide
 
-| Current Board | Maps To |
-|---------------|---------|
-| 🚀 Build Product | 1. Build the Product |
-| ✍️ Create Content | 2. Grow the Audience |
-| 📰 Build Content System | Split: tooling → #5, output → #2 |
-| 🔧 Build Sophie | 5. Build the Systems |
-| 🎯 Mission Control | 5. Build the Systems |
-| *(new)* | 3. Sharpen the Strategy |
-| *(new)* | 4. Build the Knowledge Base |
-| *(new)* | 6. Validate with Customers |
-| *(new)* | 7. Run the Business |
+For a bootstrapped 1-2 person team, focus on 2-3 objectives per quarter. Example phasing:
 
-**Recommendation:** When we implement the three-level hierarchy (Sophie Loop Phase 3), these 7 objectives become the top level. Boards could either map 1:1 to objectives or be deprecated in favor of the new hierarchy.
+| Quarter | Primary Focus | Why |
+|---------|--------------|-----|
+| **Q1 2026** | #1 Product + #6 AI Engine + #7 Business OS | Build the foundation — product, systems, knowledge |
+| **Q2 2026** | #1 Product + #2 Audience + #3 Existing Customers | Ship beta, start marketing, activate existing base |
+| **Q3 2026** | #4 New Customers + #5 Retain + #2 Audience | Grow beyond existing base, keep what you've got |
+| **Q4 2026** | #4 New Customers + #5 Retain + #1 Product | Scale acquisition, optimize retention, iterate product |
+
+*Phasing is illustrative — adjust based on actual progress and market signals.*
 
 ---
 
-*Draft for Mike's review. These objectives should be stable for 6-12 months — they describe what we're doing, not how or when.*
+## How This Maps to Mission Control
+
+When the 3-level hierarchy is implemented (Sophie Loop Phase 3):
+
+| Level | Entity | Example |
+|-------|--------|---------|
+| **Strategic Objective** | These 7 objectives | "Build a Product Customers Love" |
+| **Initiative** | A coherent body of work | "Ship AI template generation MVP" |
+| **Task** | Single unit of work | "Implement template preview component" |
+
+Current MC boards will be replaced by or mapped to these objectives.
+
+---
+
+*Brainstormed and approved 2026-02-08. KR targets to be filled in by Mike.*
