@@ -1,0 +1,822 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1936.I3.F2",
+    "feature_name": "Statistics Counter Section",
+    "feature_slug": "statistics-counter-section",
+    "initiative_id": "S1936.I3",
+    "spec_id": 1936,
+    "created_at": "2026-02-04T14:30:00Z",
+    "complexity": {
+      "score": 68.75,
+      "level": "HIGH",
+      "target_steps": {
+        "min": 12,
+        "max": 20
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1936.I3.F2.T10"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1936.I3.F2.T1",
+      "type": "task",
+      "name": "Create AnimatedCounter component interface",
+      "action": {
+        "verb": "Create",
+        "target": "AnimatedCounter TypeScript interface"
+      },
+      "purpose": "Define the props interface for the reusable animated counter component",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/logo-marquee.tsx (pattern reference)",
+          "Research: context7-framer-motion-scroll.md (counter pattern)"
+        ],
+        "dependencies": [
+          "framer-motion (useInView, useMotionValue, useSpring, useTransform)"
+        ],
+        "constraints": [
+          "Must support value, prefix, suffix, duration props",
+          "Must use spring physics for animation",
+          "Must support reduced motion"
+        ]
+      },
+      "input_state": "No AnimatedCounter component exists",
+      "output_state": "AnimatedCounter interface defined with value, prefix, suffix, duration, className props",
+      "acceptance_criterion": "Interface exports AnimatedCounterProps with all required fields typed",
+      "verification_command": "grep -q 'interface AnimatedCounterProps' packages/ui/src/aceternity/animated-counter.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "packages/ui/src/aceternity/animated-counter.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I3.F2.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F2.T2",
+      "type": "task",
+      "name": "Create AnimatedCounter skeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "AnimatedCounter component structure"
+      },
+      "purpose": "Build the basic component structure with motion.span wrapper",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/animated-counter.tsx (interface from T1)"
+        ],
+        "dependencies": [
+          "motion from framer-motion",
+          "cn utility from @kit/ui/utils"
+        ],
+        "constraints": [
+          "Use 'use client' directive",
+          "Return motion.span with ref",
+          "Include className prop with cn utility"
+        ]
+      },
+      "input_state": "AnimatedCounter interface exists",
+      "output_state": "Component skeleton with motion.span wrapper and props destructuring",
+      "acceptance_criterion": "Component renders motion.span with className support",
+      "verification_command": "grep -q \"'use client'\" packages/ui/src/aceternity/animated-counter.tsx && grep -q 'motion.span' packages/ui/src/aceternity/animated-counter.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/animated-counter.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F2.T1"],
+        "blocks": ["S1936.I3.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F2.T3",
+      "type": "task",
+      "name": "Add useInView hook to AnimatedCounter",
+      "action": {
+        "verb": "Add",
+        "target": "useInView scroll trigger hook"
+      },
+      "purpose": "Detect when counter scrolls into viewport using intersection observer",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/animated-counter.tsx (skeleton from T2)",
+          "Research: context7-framer-motion-scroll.md (useInView pattern)"
+        ],
+        "dependencies": [
+          "useRef, useInView from framer-motion"
+        ],
+        "constraints": [
+          "Use once: true to trigger only once",
+          "Use amount: 0.5 for 50% visibility threshold",
+          "Attach ref to motion.span"
+        ]
+      },
+      "input_state": "Component skeleton with motion.span exists",
+      "output_state": "useInView hook added with ref and once: true config",
+      "acceptance_criterion": "useInView hook configured with once: true and ref attached to motion.span",
+      "verification_command": "grep -q 'useInView(ref, { once: true' packages/ui/src/aceternity/animated-counter.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/animated-counter.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F2.T2"],
+        "blocks": ["S1936.I3.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F2.T4",
+      "type": "task",
+      "name": "Add motion value and spring to AnimatedCounter",
+      "action": {
+        "verb": "Add",
+        "target": "useMotionValue and useSpring hooks"
+      },
+      "purpose": "Create motion value with spring physics for smooth counter animation",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/animated-counter.tsx (with useInView from T3)",
+          "Research: context7-framer-motion-scroll.md (spring config)"
+        ],
+        "dependencies": [
+          "useMotionValue, useSpring from framer-motion"
+        ],
+        "constraints": [
+          "Initialize count with useMotionValue(0)",
+          "Use stiffness: 50, damping: 20 for natural feel",
+          "Spring should track motion value"
+        ]
+      },
+      "input_state": "Component has useInView hook",
+      "output_state": "Motion value and spring configured with physics parameters",
+      "acceptance_criterion": "count motion value and springCount with stiffness: 50, damping: 20 exist",
+      "verification_command": "grep -q 'useMotionValue(0)' packages/ui/src/aceternity/animated-counter.tsx && grep -q 'stiffness: 50, damping: 20' packages/ui/src/aceternity/animated-counter.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/animated-counter.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F2.T3"],
+        "blocks": ["S1936.I3.F2.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F2.T5",
+      "type": "task",
+      "name": "Add useTransform for number formatting",
+      "action": {
+        "verb": "Add",
+        "target": "useTransform hook for display formatting"
+      },
+      "purpose": "Format animated number with commas and rounding using useTransform",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/animated-counter.tsx (with spring from T4)",
+          "Research: context7-framer-motion-scroll.md (useTransform pattern)"
+        ],
+        "dependencies": [
+          "useTransform from framer-motion"
+        ],
+        "constraints": [
+          "Round value using Math.round",
+          "Format with toLocaleString() for commas",
+          "Apply to springCount"
+        ]
+      },
+      "input_state": "Component has springCount motion value",
+      "output_state": "useTransform hook formats springCount to displayValue with rounding and commas",
+      "acceptance_criterion": "displayValue transforms springCount using Math.round and toLocaleString",
+      "verification_command": "grep -q 'useTransform(springCount' packages/ui/src/aceternity/animated-counter.tsx && grep -q 'toLocaleString()' packages/ui/src/aceternity/animated-counter.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/animated-counter.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F2.T4"],
+        "blocks": ["S1936.I3.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F2.T6",
+      "type": "task",
+      "name": "Add useEffect trigger for count animation",
+      "action": {
+        "verb": "Add",
+        "target": "useEffect to set count on scroll"
+      },
+      "purpose": "Trigger count animation when component enters viewport",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/animated-counter.tsx (with displayValue from T5)",
+          "Research: context7-framer-motion-scroll.md (useEffect pattern)"
+        ],
+        "dependencies": [
+          "useEffect from react"
+        ],
+        "constraints": [
+          "Trigger only when isInView becomes true",
+          "Set count motion value to target value prop",
+          "Include isInView, value, count in dependency array"
+        ]
+      },
+      "input_state": "Component has displayValue and isInView",
+      "output_state": "useEffect triggers count.set(value) when isInView is true",
+      "acceptance_criterion": "useEffect with isInView condition sets count motion value to value prop",
+      "verification_command": "grep -Pzo 'useEffect.*isInView.*count\\.set\\(value\\)' packages/ui/src/aceternity/animated-counter.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/animated-counter.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F2.T5"],
+        "blocks": ["S1936.I3.F2.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F2.T7",
+      "type": "task",
+      "name": "Add display render with prefix and suffix",
+      "action": {
+        "verb": "Add",
+        "target": "JSX render with prefix, displayValue, suffix"
+      },
+      "purpose": "Render formatted number with optional prefix and suffix",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/animated-counter.tsx (with useEffect from T6)"
+        ],
+        "dependencies": [
+          "displayValue from useTransform",
+          "prefix, suffix from props"
+        ],
+        "constraints": [
+          "Use tabular-nums class for monospace numbers",
+          "Render prefix + displayValue + suffix",
+          "Apply className with cn utility"
+        ]
+      },
+      "input_state": "Component has displayValue and all hooks",
+      "output_state": "motion.span renders prefix + displayValue + suffix with tabular-nums class",
+      "acceptance_criterion": "JSX renders {prefix}{displayValue}{suffix} with tabular-nums className",
+      "verification_command": "grep -q 'tabular-nums' packages/ui/src/aceternity/animated-counter.tsx && grep -Pzo 'prefix.*displayValue.*suffix' packages/ui/src/aceternity/animated-counter.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/animated-counter.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F2.T6"],
+        "blocks": ["S1936.I3.F2.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F2.T8",
+      "type": "task",
+      "name": "Create StatisticsSection component interface",
+      "action": {
+        "verb": "Create",
+        "target": "StatisticsSection TypeScript interface"
+      },
+      "purpose": "Define props interface for statistics section wrapper component",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/logo-marquee.tsx (pattern reference)"
+        ],
+        "dependencies": [
+          "AnimatedCounter component (from T1-T7)"
+        ],
+        "constraints": [
+          "Must accept statistics array prop",
+          "Each statistic has value, label, prefix, suffix",
+          "Support optional className prop"
+        ]
+      },
+      "input_state": "AnimatedCounter component complete",
+      "output_state": "StatisticsSection interface with statistics array and className props defined",
+      "acceptance_criterion": "Interface exports StatisticsSectionProps and Statistic types",
+      "verification_command": "grep -q 'interface StatisticsSectionProps' packages/ui/src/aceternity/statistics-section.tsx && grep -q 'interface Statistic' packages/ui/src/aceternity/statistics-section.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "packages/ui/src/aceternity/statistics-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F2.T7"],
+        "blocks": ["S1936.I3.F2.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F2.T9",
+      "type": "task",
+      "name": "Create StatisticsSection grid layout",
+      "action": {
+        "verb": "Create",
+        "target": "StatisticsSection responsive grid component"
+      },
+      "purpose": "Build 4-column responsive grid that maps statistics to AnimatedCounter components",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 9,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/statistics-section.tsx (interface from T8)",
+          "packages/ui/src/aceternity/logo-marquee.tsx (grid pattern reference)"
+        ],
+        "dependencies": [
+          "AnimatedCounter from ./animated-counter",
+          "cn utility from @kit/ui/utils"
+        ],
+        "constraints": [
+          "Use 'use client' directive",
+          "Grid: 1 col mobile, 2 cols tablet, 4 cols desktop",
+          "Map statistics array to AnimatedCounter components",
+          "Include heading, subheading, and subtle background"
+        ]
+      },
+      "input_state": "StatisticsSection interface exists, AnimatedCounter complete",
+      "output_state": "StatisticsSection component with responsive grid rendering AnimatedCounters",
+      "acceptance_criterion": "Component renders grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 with AnimatedCounter for each statistic",
+      "verification_command": "grep -q \"'use client'\" packages/ui/src/aceternity/statistics-section.tsx && grep -q 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' packages/ui/src/aceternity/statistics-section.tsx && grep -q 'AnimatedCounter' packages/ui/src/aceternity/statistics-section.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/statistics-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F2.T8"],
+        "blocks": ["S1936.I3.F2.T10"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F2.T10",
+      "type": "task",
+      "name": "Add statistics configuration to homepage config",
+      "action": {
+        "verb": "Add",
+        "target": "statistics config object"
+      },
+      "purpose": "Define 4 statistics data in homepage content configuration",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 10,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts (existing config)"
+        ],
+        "dependencies": [
+          "Statistic interface from StatisticsSection"
+        ],
+        "constraints": [
+          "4 statistics: users (2000+), presentations (50000+), rating (4.9/5), time saved (85%)",
+          "Include title and subtitle for section",
+          "Follow existing config pattern"
+        ]
+      },
+      "input_state": "Homepage config has hero, sticky, features, testimonials, pricing, essentialReads",
+      "output_state": "Homepage config includes statistics object with title, subtitle, stats array",
+      "acceptance_criterion": "homepageContentConfig.statistics exists with 4 statistics entries",
+      "verification_command": "grep -q 'statistics:' apps/web/config/homepage-content.config.ts && grep -c '2000' apps/web/config/homepage-content.config.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/config/homepage-content.config.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F2.T9"],
+        "blocks": ["S1936.I3.F2.T11"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F2.T11",
+      "type": "task",
+      "name": "Create HomeStatisticsClient wrapper component",
+      "action": {
+        "verb": "Create",
+        "target": "client wrapper for StatisticsSection"
+      },
+      "purpose": "Create client component wrapper with dynamic import for code splitting",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 11,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-logo-cloud-client.tsx (pattern reference)"
+        ],
+        "dependencies": [
+          "StatisticsSection from @kit/ui/statistics-section",
+          "homepageContentConfig.statistics"
+        ],
+        "constraints": [
+          "Use 'use client' directive",
+          "Pass statistics from config",
+          "Follow existing client wrapper pattern"
+        ]
+      },
+      "input_state": "StatisticsSection component complete, config has statistics",
+      "output_state": "HomeStatisticsClient component wraps StatisticsSection with config data",
+      "acceptance_criterion": "Component imports StatisticsSection and passes homepageContentConfig.statistics",
+      "verification_command": "grep -q \"'use client'\" apps/web/app/\\(marketing\\)/_components/home-statistics-client.tsx && grep -q 'StatisticsSection' apps/web/app/\\(marketing\\)/_components/home-statistics-client.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/home-statistics-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F2.T10"],
+        "blocks": ["S1936.I3.F2.T12", "S1936.I3.F2.T13"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F2.T12",
+      "type": "task",
+      "name": "Add component exports to packages/ui/package.json",
+      "action": {
+        "verb": "Add",
+        "target": "exports for AnimatedCounter and StatisticsSection"
+      },
+      "purpose": "Export new components from UI package for import in web app",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 12,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/package.json (existing exports)"
+        ],
+        "dependencies": [
+          "AnimatedCounter component (T1-T7)",
+          "StatisticsSection component (T8-T9)"
+        ],
+        "constraints": [
+          "Follow existing export pattern",
+          "Add to exports object",
+          "Use correct file paths"
+        ]
+      },
+      "input_state": "package.json has exports for aceternity components",
+      "output_state": "package.json exports ./animated-counter and ./statistics-section",
+      "acceptance_criterion": "Exports object includes animated-counter and statistics-section entries",
+      "verification_command": "grep -q '\"./animated-counter\"' packages/ui/package.json && grep -q '\"./statistics-section\"' packages/ui/package.json && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/package.json"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F2.T11"],
+        "blocks": ["S1936.I3.F2.T13"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I3.F2.T13",
+      "type": "task",
+      "name": "Add StatisticsSection to homepage after LogoCloud",
+      "action": {
+        "verb": "Add",
+        "target": "StatisticsSection to marketing page"
+      },
+      "purpose": "Integrate statistics section into homepage between logo cloud and sticky scroll",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 13,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "2,000+"
+          },
+          {
+            "command": "is visible",
+            "target": "50,000+"
+          },
+          {
+            "command": "is visible",
+            "target": "Professionals"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx (homepage structure)"
+        ],
+        "dependencies": [
+          "HomeStatisticsClient from ./_components/home-statistics-client",
+          "Suspense from react",
+          "spacing and widths constants"
+        ],
+        "constraints": [
+          "Add after Logo Cloud Section (line ~129)",
+          "Before Sticky Scroll Section (line ~131)",
+          "Use bg-background with border-b border-border",
+          "Wrap in Suspense with SectionLoader fallback",
+          "Use widths.content container width"
+        ]
+      },
+      "input_state": "Homepage has Logo Cloud and Sticky Scroll sections",
+      "output_state": "Statistics section added between Logo Cloud and Sticky Scroll with proper spacing",
+      "acceptance_criterion": "Statistics section renders in homepage with Suspense wrapper between logo cloud and sticky scroll",
+      "verification_command": "grep -A5 'Logo Cloud Section' apps/web/app/\\(marketing\\)/page.tsx | grep -q 'Statistics Section' && grep -q 'HomeStatisticsClient' apps/web/app/\\(marketing\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I3.F2.T11", "S1936.I3.F2.T12"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "AnimatedCounter Implementation",
+        "task_ids": [
+          "S1936.I3.F2.T1",
+          "S1936.I3.F2.T2",
+          "S1936.I3.F2.T3",
+          "S1936.I3.F2.T4",
+          "S1936.I3.F2.T5",
+          "S1936.I3.F2.T6",
+          "S1936.I3.F2.T7"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 15,
+        "parallel_hours": 15
+      },
+      {
+        "id": 2,
+        "name": "StatisticsSection Implementation",
+        "task_ids": [
+          "S1936.I3.F2.T8",
+          "S1936.I3.F2.T9"
+        ],
+        "depends_on_groups": [1],
+        "estimated_hours": 5,
+        "parallel_hours": 5
+      },
+      {
+        "id": 3,
+        "name": "Configuration and Integration Prep",
+        "task_ids": [
+          "S1936.I3.F2.T10",
+          "S1936.I3.F2.T11",
+          "S1936.I3.F2.T12"
+        ],
+        "depends_on_groups": [2],
+        "estimated_hours": 5,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Homepage Integration",
+        "task_ids": [
+          "S1936.I3.F2.T13"
+        ],
+        "depends_on_groups": [3],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1936.I3.F2.T1",
+        "S1936.I3.F2.T2",
+        "S1936.I3.F2.T3",
+        "S1936.I3.F2.T4",
+        "S1936.I3.F2.T5",
+        "S1936.I3.F2.T6",
+        "S1936.I3.F2.T7",
+        "S1936.I3.F2.T8",
+        "S1936.I3.F2.T9",
+        "S1936.I3.F2.T10",
+        "S1936.I3.F2.T11",
+        "S1936.I3.F2.T12",
+        "S1936.I3.F2.T13"
+      ],
+      "total_hours": 27
+    },
+    "duration": {
+      "sequential": 27,
+      "parallel": 24,
+      "time_saved_percent": 11
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

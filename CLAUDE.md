@@ -604,6 +604,28 @@ Please use the Task tool to delegate suitable tasks to specialized sub-agents fo
 - `export PROJECT_ROOT=$(git rev-parse --show-toplevel)` - Set project root
 - `cp apps/web/.env.example apps/web/.env.test` - Copy environment file
 
+### agent-browser (Visual Validation)
+
+agent-browser is used in the Alpha workflow for visual validation of UI implementations.
+
+- `agent-browser --version` - Check agent-browser version
+- `agent-browser open <url>` - Navigate to URL
+- `agent-browser wait <ms>` - Wait for specified milliseconds
+- `agent-browser snapshot -i -c` - Capture accessibility tree snapshot
+- `agent-browser screenshot <path>` - Capture screenshot to file
+- `agent-browser is visible "<text>"` - Check if text is visible on page
+- `agent-browser find role <role>` - Find element by ARIA role
+- `agent-browser find label "<label>"` - Find element by label
+
+**When to use:**
+
+- Validating UI component renders correctly during Alpha workflow
+- Quick visual verification without full E2E test suite
+- Capturing screenshots for documentation
+- Debugging accessibility issues
+
+**Note:** agent-browser complements, not replaces, Playwright E2E tests.
+
 ## Code Quality & Testing
 
 ### Code Standards
@@ -677,7 +699,8 @@ Reports are saved to `.ai/reports/` with four category-specific subdirectories:
 | Bug implementation | `/implement` | `<issue#>-implementation-<slug>.md` |
 | Feature plan | `/feature` | `<issue#>-feature-plan-<slug>.md` |
 | Feature implementation | `/implement` | `<issue#>-implementation-<slug>.md` |
-| Chore plan | `/chore` | `<issue#>-chore-plan-<slug>.md` |
+| Chore plan (basic) | `/chore` | `<issue#>-chore-plan-<slug>.md` |
+| Chore plan (detailed) | `/chore-plan` | `<issue#>-chore-plan-<slug>.md` |
 | Chore implementation | `/implement` | `<issue#>-implementation-<slug>.md` |
 | Research (context7) | Agent | `context7-<description>.md` |
 | Research (perplexity) | Agent | `perplexity-<description>.md` |
@@ -688,6 +711,7 @@ Reports are saved to `.ai/reports/` with four category-specific subdirectories:
 - Reports use `pending-` prefix until GitHub issue is created, then renamed with issue number
 - `<slug>` is a short kebab-case description (first few words of title)
 - Date directories use `YYYY-MM-DD` format (e.g., `2025-11-27`)
+- **Chore workflows**: Use `/chore` → `/implement` for simple tasks, or `/chore` → `/chore-plan` → `/implement` for complex tasks requiring detailed research
 
 ### Temporary Files
 
@@ -742,6 +766,62 @@ Send all tool calls in single message for parallel execution (3-5x faster).
 │   ├── 001.md (tasks → GitHub issues)
 │   └── github-mapping.md
 └── rules/agent-coordination.md
+```
+
+## Alpha Workflow Validation Checklist
+
+Use this checklist before running the Alpha workflow orchestrator to ensure quality gates are in place.
+
+### Feature Decomposition (`/alpha:feature-decompose`)
+
+Before finalizing features:
+
+- [ ] All features with database tasks have `requires_database: true`
+- [ ] Schema features ordered before data features (F1, F2 priority)
+- [ ] Features using tables have `blockedBy` on schema features
+- [ ] Feature dependency graph has no cycles
+- [ ] All features pass INVEST-V criteria
+- [ ] Cross-initiative dependencies use feature-level IDs (not initiative-level)
+
+### Task Decomposition (`/alpha:task-decompose`)
+
+Before finalizing tasks.json:
+
+- [ ] All database-referencing tasks have `requires_database: true`
+- [ ] All `verification_commands` include `pnpm typecheck`
+- [ ] Database tasks include type generation steps:
+  - `pnpm --filter web supabase migration up`
+  - `pnpm supabase:web:typegen`
+  - `grep '[table_name]' apps/web/lib/database.types.ts`
+- [ ] Tasks importing database types have `blockedBy` dependencies
+- [ ] Feature tasks.json has correct execution groups and parallelization
+
+### Implementation (`/alpha:implement`)
+
+During and after implementation:
+
+- [ ] After each task: typecheck passes for modified packages
+- [ ] Before each commit: global `pnpm typecheck` passes
+- [ ] Before feature completion: typecheck, lint, imports all pass
+- [ ] Database types verified to exist after generation
+- [ ] Progress file updated with validation results
+
+### Quick Validation Commands
+
+```bash
+# Pre-flight check - run before orchestrator
+pnpm typecheck
+pnpm lint
+grep -c "^export type" apps/web/lib/database.types.ts
+
+# Verify database types exist
+grep 'table_name' apps/web/lib/database.types.ts
+
+# Check for unresolved imports
+pnpm typecheck 2>&1 | grep -c "Cannot find module"  # Should be 0
+
+# Verify spec files committed
+git diff origin/dev --stat -- .ai/alpha/specs/
 ```
 
 ## Commands & Scripts

@@ -8,6 +8,17 @@ input=$(cat)
 # Extract model display name and convert to lowercase
 model=$(echo "$input" | jq -r '.model.display_name' | tr '[:upper:]' '[:lower:]')
 
+# Check if THIS session is using claude-code-router (via ANTHROPIC_BASE_URL)
+CCR_CONFIG="$HOME/.claude-code-router/config.json"
+if [ -f "$CCR_CONFIG" ] && [[ "${ANTHROPIC_BASE_URL:-}" == *"localhost:3456"* || "${ANTHROPIC_BASE_URL:-}" == *"127.0.0.1:3456"* ]]; then
+    # This session is routed through CCR - get the default model
+    ccr_model=$(jq -r '.Router.default // empty' "$CCR_CONFIG" 2>/dev/null)
+    if [ -n "$ccr_model" ]; then
+        # Extract just the model name (after the comma)
+        model="${ccr_model#*,}"
+    fi
+fi
+
 # ============================================================================
 # Context Window Usage
 # ============================================================================
@@ -303,69 +314,6 @@ if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.github/workflows" ]; then
     fi
 fi
 
-# ============================================================================
-# PR Status (GitHub Pull Requests)
-# ============================================================================
-
-pr_status=""
-if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.git" ]; then
-    current_branch=$(git branch --show-current 2>/dev/null)
-    # Include branch in cache to invalidate on branch switch
-    pr_cache_file="/tmp/.claude_pr_status_${GIT_ROOT//\//_}_${current_branch//\//_}"
-    current_time=$(date +%s)
-
-    # Check cache (2 minute TTL)
-    if [ -f "$pr_cache_file" ]; then
-        cache_time=$(stat -c %Y "$pr_cache_file" 2>/dev/null || stat -f %m "$pr_cache_file" 2>/dev/null || echo 0)
-        cache_age=$((current_time - cache_time))
-
-        if [ $cache_age -lt 120 ]; then
-            pr_status=$(cat "$pr_cache_file" 2>/dev/null)
-        fi
-    fi
-
-    # Fetch new status if cache is stale
-    if [ -z "$pr_status" ] || [ ! -f "$pr_cache_file" ]; then
-        # Check if current branch has an open PR
-        branch_pr=$(gh pr list --head "$current_branch" --json number,state,reviewDecision,isDraft --limit 1 2>/dev/null)
-
-        if [ -n "$branch_pr" ] && [ "$branch_pr" != "[]" ]; then
-            pr_number=$(echo "$branch_pr" | jq -r '.[0].number' 2>/dev/null)
-            pr_state=$(echo "$branch_pr" | jq -r '.[0].state' 2>/dev/null)
-            pr_review=$(echo "$branch_pr" | jq -r '.[0].reviewDecision' 2>/dev/null)
-            pr_draft=$(echo "$branch_pr" | jq -r '.[0].isDraft' 2>/dev/null)
-
-            if [ "$pr_state" = "OPEN" ]; then
-                if [ "$pr_draft" = "true" ]; then
-                    pr_status="📝 pr:draft"
-                elif [ "$pr_review" = "APPROVED" ]; then
-                    pr_status="✅ pr:approved"
-                elif [ "$pr_review" = "CHANGES_REQUESTED" ]; then
-                    pr_status="🔄 pr:changes"
-                elif [ "$pr_review" = "REVIEW_REQUIRED" ] || [ "$pr_review" = "null" ] || [ -z "$pr_review" ]; then
-                    pr_status="👀 pr:review"
-                fi
-
-                # Add PR number if available
-                [ -n "$pr_number" ] && [ "$pr_number" != "null" ] && pr_status="$pr_status #$pr_number"
-            fi
-        else
-            # Check for PRs awaiting review
-            review_prs=$(gh pr list --json number --search "review-requested:@me" 2>/dev/null | jq 'length' 2>/dev/null)
-
-            if [ -n "$review_prs" ] && [ "$review_prs" -gt 0 ]; then
-                if [ "$review_prs" -eq 1 ]; then
-                    pr_status="🔍 pr:1 needs review"
-                else
-                    pr_status="🔍 pr:$review_prs need review"
-                fi
-            fi
-        fi
-
-        # Cache the status (or empty string if no PR)
-        echo "$pr_status" > "$pr_cache_file"
-    fi
-fi
 
 # ============================================================================
 # Docker Status
@@ -487,7 +435,6 @@ output="$model | ⎇ $branch"
 [ -n "$docker_status" ] && output="$output | $docker_status"
 [ -n "$test_status" ] && output="$output | $test_status"
 [ -n "$ci_status" ] && output="$output | $ci_status"
-[ -n "$pr_status" ] && output="$output | $pr_status"
 
 # Output the status line
 printf "%s" "$output"

@@ -144,12 +144,12 @@ jobs:
         run: pnpm --filter web-e2e exec playwright install chromium --with-deps
 
       - name: Build application (with cache)
-        run: pnpm build --cache-dir=.turbo
+        run: pnpm build
 
       - name: Quick database setup
         run: |
           cd apps/e2e
-          supabase start --ignore-health-check
+          supabase start --ignore-health-check -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
           supabase db reset --no-seed
 
       - name: Run targeted tests
@@ -161,7 +161,7 @@ jobs:
           PLAYWRIGHT_WORKERS: 4
 
       - name: Upload test results
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: quick-test-results-${{ github.run_id }}
@@ -173,7 +173,7 @@ jobs:
     name: Smart Test Status
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [detect-changes, quick-test]
-    if: always()
+    if: ${{ always() && !cancelled() }}
     steps:
       - name: Comment on PR with results
         uses: actions/github-script@v8

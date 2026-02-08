@@ -22,7 +22,7 @@ You're creating a comprehensive review report with visual evidence and issue tra
 ```bash
 # Extract issue number from $ARGUMENTS and fetch the issue with comments
 gh issue view <issue-number> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json body,title,labels,number,url,comments \
   --jq '{body: .body, title: .title, labels: [.labels[].name], number: .number, url: .url, comments: [.comments[] | {author: .author.login, body: .body, createdAt: .createdAt}]}'
 ```
@@ -265,7 +265,7 @@ Post review results to the original implementation issue:
 ```bash
 # Post review summary as comment
 gh issue comment <issueNumber> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --body "## 🔍 Review Complete
 
 **Status**: $([ \"${success}\" = \"true\" ] && echo \"✅ Passed\" || echo \"❌ Failed\")
@@ -287,12 +287,12 @@ gh issue comment <issueNumber> \
 # Add labels based on review results
 if [ "${success}" = "true" ]; then
   gh issue edit <issueNumber> \
-    --repo MLorneSmith/2025slideheroes \
+    --repo slideheroes/2025slideheroes \
     --add-label "review-passed" \
     --remove-label "ready-for-review"
 else
   gh issue edit <issueNumber> \
-    --repo MLorneSmith/2025slideheroes \
+    --repo slideheroes/2025slideheroes \
     --add-label "review-failed" \
     --remove-label "ready-for-review"
 fi
@@ -310,7 +310,7 @@ if [ "${success}" = "false" ]; then
 
   # Create review issue
   REVIEW_ISSUE_NUMBER=$(gh issue create \
-    --repo MLorneSmith/2025slideheroes \
+    --repo slideheroes/2025slideheroes \
     --title "Review Issues: ${issueTitle}" \
     --body "## Review Issues for #${issueNumber}
 
@@ -342,7 +342,7 @@ ${BLOCKING_ISSUES}
 
   # Link review issue back to implementation issue
   gh issue comment <issueNumber> \
-    --repo MLorneSmith/2025slideheroes \
+    --repo slideheroes/2025slideheroes \
     --body "⚠️ **Blocking issues found**: See #${REVIEW_ISSUE_NUMBER} for details and required fixes."
 
   echo "Review issue created: #${REVIEW_ISSUE_NUMBER}"
@@ -356,7 +356,7 @@ If review passed with no blocking issues:
 ```bash
 if [ "${success}" = "true" ]; then
   gh issue close <issueNumber> \
-    --repo MLorneSmith/2025slideheroes \
+    --repo slideheroes/2025slideheroes \
     --comment "✅ Review passed! Implementation matches specification. Ready to merge."
 fi
 ```
@@ -390,7 +390,7 @@ test -f "${reviewReportPath}" || echo "WARNING: Review report not created at ${r
 
 # Verify GitHub issue was updated
 gh issue view <issueNumber> \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --json labels \
   --jq '.labels[].name' | grep -E '(review-passed|review-failed)' || echo "WARNING: Review labels not added to issue"
 ```

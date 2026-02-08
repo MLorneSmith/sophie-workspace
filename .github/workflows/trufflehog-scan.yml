@@ -21,6 +21,7 @@ jobs:
   trufflehog:
     name: Secret Scanning
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    if: github.event_name == 'pull_request'
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -28,7 +29,7 @@ jobs:
           fetch-depth: 0 # Fetch all history for initial scan
 
       - name: TruffleHog OSS Scan
-        uses: trufflesecurity/trufflehog@v3.91.2
+        uses: trufflesecurity/trufflehog@v3.92.5
         id: trufflehog
         with:
           # Scan the entire repository
@@ -93,7 +94,7 @@ jobs:
           fetch-depth: 0 # Fetch all history
 
       - name: TruffleHog Full History Scan
-        uses: trufflesecurity/trufflehog@v3.91.2
+        uses: trufflesecurity/trufflehog@v3.92.5
         with:
           path: ./
           extra_args: |

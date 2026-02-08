@@ -90,7 +90,7 @@ TypeError: Failed to execute 'measure' on 'Performance': '​Page' cannot have a
 - vercel/next.js#47560: Similar Performance.measure errors with missing marks (older issue from 2023)
 
 ### Local Repository
-- No previous issues matching this exact error in MLorneSmith/2025slideheroes
+- No previous issues matching this exact error in slideheroes/2025slideheroes
 
 ## Root Cause Analysis
 

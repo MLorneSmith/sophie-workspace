@@ -1,0 +1,366 @@
+#!/bin/bash
+# E2B CLI Non-Interactive Wrapper
+# Wraps interactive E2B CLI commands for automation
+#
+# Usage:
+#   ./e2b-wrapper template-list [--json]
+#   ./e2b-wrapper template-build <name> [--dockerfile PATH] [--cpu COUNT] [--memory MB]
+#   ./e2b-wrapper template-delete <template-id> [--force]
+#   ./e2b-wrapper sandbox-list [--json] [--state STATE]
+#   ./e2b-wrapper sandbox-kill <sandbox-id>
+#   ./e2b-wrapper sandbox-kill-all [--force]
+#   ./e2b-wrapper auth-check
+#
+# Exit Codes:
+#   0  - Success
+#   1  - General failure
+#   2  - Invalid arguments
+#   10 - Authentication failure
+#   11 - Resource not found
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+
+# Colors for output (disabled if not TTY)
+if [ -t 1 ]; then
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    YELLOW='\033[0;33m'
+    BLUE='\033[0;34m'
+    NC='\033[0m'
+else
+    RED=''
+    GREEN=''
+    YELLOW=''
+    BLUE=''
+    NC=''
+fi
+
+# Load environment variables
+load_env() {
+    local var_name=$1
+    local current_value
+    eval "current_value=\${$var_name:-}"
+
+    if [ -z "$current_value" ]; then
+        local value=""
+        # Try project root .env
+        if [ -f "$PROJECT_ROOT/.env" ]; then
+            value=$(grep -E "^${var_name}=" "$PROJECT_ROOT/.env" 2>/dev/null | cut -d'=' -f2- | tr -d '"' || true)
+        fi
+        # Try apps/web/.env.local
+        if [ -z "$value" ] && [ -f "$PROJECT_ROOT/apps/web/.env.local" ]; then
+            value=$(grep -E "^${var_name}=" "$PROJECT_ROOT/apps/web/.env.local" 2>/dev/null | cut -d'=' -f2- | tr -d '"' || true)
+        fi
+        if [ -n "$value" ]; then
+            export "$var_name=$value"
+        fi
+    fi
+}
+
+# Load all relevant env vars
+load_env "E2B_API_KEY"
+load_env "GITHUB_TOKEN"
+load_env "GH_TOKEN"
+
+# Use GH_TOKEN as fallback for GITHUB_TOKEN
+if [ -z "${GITHUB_TOKEN:-}" ] && [ -n "${GH_TOKEN:-}" ]; then
+    export GITHUB_TOKEN="$GH_TOKEN"
+fi
+
+# Check E2B CLI is installed
+check_cli() {
+    if ! command -v e2b &> /dev/null; then
+        echo -e "${RED}Error: E2B CLI not found${NC}" >&2
+        echo "Install with: npm install -g @e2b/cli" >&2
+        exit 1
+    fi
+}
+
+# Check API key is set
+check_auth() {
+    if [ -z "${E2B_API_KEY:-}" ]; then
+        echo -e "${RED}Error: E2B_API_KEY not set${NC}" >&2
+        echo "Get your API key from: https://e2b.dev/dashboard" >&2
+        exit 10
+    fi
+}
+
+# Print usage
+usage() {
+    cat << 'EOF'
+E2B CLI Non-Interactive Wrapper
+
+USAGE:
+    e2b-wrapper <command> [options]
+
+COMMANDS:
+    auth-check                      Verify E2B authentication
+
+    template-list [--json]          List all templates
+    template-build <name> [opts]    Build template from Dockerfile
+        --dockerfile PATH           Dockerfile path (default: e2b.Dockerfile)
+        --cpu COUNT                 CPU count (default: 2)
+        --memory MB                 Memory in MB (default: 512)
+        --no-cache                  Skip build cache
+    template-delete <id> [--force]  Delete template
+
+    sandbox-list [--json]           List running sandboxes
+        --state STATE               Filter by state (running, paused)
+    sandbox-kill <id>               Kill specific sandbox
+    sandbox-kill-all [--force]      Kill all sandboxes
+
+EXIT CODES:
+    0   Success
+    1   General failure
+    2   Invalid arguments
+    10  Authentication failure
+    11  Resource not found
+
+EXAMPLES:
+    e2b-wrapper auth-check
+    e2b-wrapper template-list --json
+    e2b-wrapper template-build my-template --cpu 4 --memory 2048
+    e2b-wrapper sandbox-list --state running
+    e2b-wrapper sandbox-kill abc123def
+    e2b-wrapper sandbox-kill-all --force
+EOF
+}
+
+# Auth check command
+cmd_auth_check() {
+    check_cli
+    check_auth
+
+    echo -e "${BLUE}Checking E2B authentication...${NC}"
+
+    # e2b auth info is interactive, so we just verify the key is set
+    # and try a simple operation
+    if e2b template list --json 2>/dev/null | head -1 > /dev/null; then
+        echo -e "${GREEN}Authentication successful${NC}"
+        echo "E2B_API_KEY: ${E2B_API_KEY:0:10}..."
+        exit 0
+    else
+        echo -e "${RED}Authentication failed${NC}" >&2
+        exit 10
+    fi
+}
+
+# Template list command
+cmd_template_list() {
+    check_cli
+    check_auth
+
+    local json_output=false
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --json) json_output=true; shift ;;
+            *) echo "Unknown option: $1" >&2; exit 2 ;;
+        esac
+    done
+
+    if $json_output; then
+        e2b template list --json 2>/dev/null || echo "[]"
+    else
+        echo -e "${BLUE}Templates:${NC}"
+        e2b template list 2>/dev/null || echo "No templates found"
+    fi
+}
+
+# Template build command
+cmd_template_build() {
+    check_cli
+    check_auth
+
+    local name=""
+    local dockerfile="e2b.Dockerfile"
+    local cpu="2"
+    local memory="512"
+    local no_cache=false
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --dockerfile) dockerfile="$2"; shift 2 ;;
+            --cpu) cpu="$2"; shift 2 ;;
+            --memory) memory="$2"; shift 2 ;;
+            --no-cache) no_cache=true; shift ;;
+            -*) echo "Unknown option: $1" >&2; exit 2 ;;
+            *) name="$1"; shift ;;
+        esac
+    done
+
+    if [ -z "$name" ]; then
+        echo "Error: Template name required" >&2
+        echo "Usage: e2b-wrapper template-build <name> [--dockerfile PATH] [--cpu N] [--memory MB]" >&2
+        exit 2
+    fi
+
+    echo -e "${BLUE}Building template: $name${NC}"
+    echo "  Dockerfile: $dockerfile"
+    echo "  CPU: $cpu"
+    echo "  Memory: ${memory}MB"
+
+    local cmd="e2b template build -n $name -d $dockerfile --cpu-count $cpu --memory-mb $memory"
+    if $no_cache; then
+        cmd="$cmd --no-cache"
+    fi
+
+    # Run build (this will show progress)
+    if $cmd; then
+        echo -e "${GREEN}Template built successfully${NC}"
+        exit 0
+    else
+        echo -e "${RED}Template build failed${NC}" >&2
+        exit 1
+    fi
+}
+
+# Template delete command
+cmd_template_delete() {
+    check_cli
+    check_auth
+
+    local template_id=""
+    local force=false
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --force|-f) force=true; shift ;;
+            -*) echo "Unknown option: $1" >&2; exit 2 ;;
+            *) template_id="$1"; shift ;;
+        esac
+    done
+
+    if [ -z "$template_id" ]; then
+        echo "Error: Template ID required" >&2
+        exit 2
+    fi
+
+    echo -e "${BLUE}Deleting template: $template_id${NC}"
+
+    local cmd="e2b template delete $template_id"
+    if $force; then
+        cmd="$cmd -y"
+    fi
+
+    if $cmd 2>/dev/null; then
+        echo -e "${GREEN}Template deleted${NC}"
+        exit 0
+    else
+        echo -e "${RED}Failed to delete template${NC}" >&2
+        exit 11
+    fi
+}
+
+# Sandbox list command
+cmd_sandbox_list() {
+    check_cli
+    check_auth
+
+    local json_output=false
+    local state=""
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --json) json_output=true; shift ;;
+            --state|-s) state="$2"; shift 2 ;;
+            *) echo "Unknown option: $1" >&2; exit 2 ;;
+        esac
+    done
+
+    local cmd="e2b sandbox list"
+    if [ -n "$state" ]; then
+        cmd="$cmd -s $state"
+    fi
+    if $json_output; then
+        cmd="$cmd -f json"
+    fi
+
+    $cmd 2>/dev/null || echo "No sandboxes found"
+}
+
+# Sandbox kill command
+cmd_sandbox_kill() {
+    check_cli
+    check_auth
+
+    local sandbox_id="$1"
+
+    if [ -z "$sandbox_id" ]; then
+        echo "Error: Sandbox ID required" >&2
+        exit 2
+    fi
+
+    echo -e "${BLUE}Killing sandbox: $sandbox_id${NC}"
+
+    if e2b sandbox kill "$sandbox_id" 2>/dev/null; then
+        echo -e "${GREEN}Sandbox killed${NC}"
+        exit 0
+    else
+        echo -e "${RED}Failed to kill sandbox${NC}" >&2
+        exit 11
+    fi
+}
+
+# Sandbox kill-all command
+cmd_sandbox_kill_all() {
+    check_cli
+    check_auth
+
+    local force=false
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --force|-f) force=true; shift ;;
+            *) echo "Unknown option: $1" >&2; exit 2 ;;
+        esac
+    done
+
+    if ! $force; then
+        echo -e "${YELLOW}Warning: This will kill ALL running sandboxes${NC}"
+        echo "Use --force to skip this confirmation"
+        exit 2
+    fi
+
+    echo -e "${BLUE}Killing all sandboxes...${NC}"
+
+    if e2b sandbox kill -a 2>/dev/null; then
+        echo -e "${GREEN}All sandboxes killed${NC}"
+        exit 0
+    else
+        echo -e "${YELLOW}No sandboxes to kill or operation failed${NC}"
+        exit 0
+    fi
+}
+
+# Main command dispatcher
+main() {
+    if [ $# -eq 0 ]; then
+        usage
+        exit 0
+    fi
+
+    local command="$1"
+    shift
+
+    case "$command" in
+        auth-check)      cmd_auth_check "$@" ;;
+        template-list)   cmd_template_list "$@" ;;
+        template-build)  cmd_template_build "$@" ;;
+        template-delete) cmd_template_delete "$@" ;;
+        sandbox-list)    cmd_sandbox_list "$@" ;;
+        sandbox-kill)    cmd_sandbox_kill "$@" ;;
+        sandbox-kill-all) cmd_sandbox_kill_all "$@" ;;
+        help|--help|-h)  usage ;;
+        *)
+            echo "Unknown command: $command" >&2
+            echo "Run 'e2b-wrapper help' for usage" >&2
+            exit 2
+            ;;
+    esac
+}
+
+main "$@"

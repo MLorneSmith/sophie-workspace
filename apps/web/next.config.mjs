@@ -1,8 +1,15 @@
 import withBundleAnalyzer from "@next/bundle-analyzer";
+import { withPostHogConfig } from "@posthog/nextjs-config";
 
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === "true";
+
+// PostHog source map uploads require credentials (CI/CD only)
+const POSTHOG_SOURCEMAPS_ENABLED =
+	IS_PRODUCTION &&
+	Boolean(process.env.POSTHOG_PERSONAL_API_KEY) &&
+	Boolean(process.env.POSTHOG_ENV_ID);
 
 const INTERNAL_PACKAGES = [
 	"@kit/ui",
@@ -26,6 +33,8 @@ const INTERNAL_PACKAGES = [
 /** @type {import('next').NextConfig} */
 const config = {
 	reactStrictMode: true,
+	// Required for PostHog reverse proxy to work correctly
+	skipTrailingSlashRedirect: true,
 	/** Enables hot reloading for local packages without a build step */
 	transpilePackages: INTERNAL_PACKAGES,
 	images: getImagesConfig(),
@@ -56,6 +65,7 @@ const config = {
 		"/*": ["./content/**/*"],
 	},
 	redirects: getRedirects,
+	rewrites: getPostHogRewrites,
 	turbopack: {
 		resolveExtensions: [".ts", ".tsx", ".js", ".jsx"],
 		resolveAlias: getModulesAliases(),
@@ -64,7 +74,7 @@ const config = {
 		process.env.NEXT_PUBLIC_CI === "true"
 			? false
 			: {
-					position: "bottom-right",
+					position: "bottom-left",
 				},
 	reactCompiler: ENABLE_REACT_COMPILER,
 	experimental: {
@@ -91,9 +101,20 @@ const config = {
 	typescript: { ignoreBuildErrors: true },
 };
 
-export default withBundleAnalyzer({
+const configWithBundleAnalyzer = withBundleAnalyzer({
 	enabled: process.env.ANALYZE === "true",
 })(config);
+
+export default withPostHogConfig(configWithBundleAnalyzer, {
+	personalApiKey: process.env.POSTHOG_PERSONAL_API_KEY,
+	envId: process.env.POSTHOG_ENV_ID,
+	host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+	sourcemaps: {
+		enabled: POSTHOG_SOURCEMAPS_ENABLED,
+		project: "slideheroes",
+		deleteAfterUpload: true,
+	},
+});
 
 /** @returns {import('next').NextConfig['images']} */
 function getImagesConfig() {
@@ -146,6 +167,28 @@ async function getRedirects() {
 			source: "/server-sitemap.xml",
 			destination: "/sitemap.xml",
 			permanent: true,
+		},
+	];
+}
+
+/**
+ * PostHog reverse proxy rewrites to bypass ad blockers.
+ * Routes /ingest/* requests to PostHog's EU ingestion servers.
+ * @see https://posthog.com/docs/advanced/proxy/nextjs
+ */
+async function getPostHogRewrites() {
+	return [
+		{
+			source: "/ingest/static/:path*",
+			destination: "https://eu-assets.i.posthog.com/static/:path*",
+		},
+		{
+			source: "/ingest/:path*",
+			destination: "https://eu.i.posthog.com/:path*",
+		},
+		{
+			source: "/ingest/decide",
+			destination: "https://eu.i.posthog.com/decide",
 		},
 	];
 }

@@ -1,0 +1,430 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1936.I1.F1",
+    "feature_name": "Color Token System",
+    "feature_slug": "color-token-system",
+    "initiative_id": "S1936.I1",
+    "spec_id": "S1936",
+    "created_at": "2026-02-04T19:00:00Z",
+    "complexity": {
+      "score": 25,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1936.I1.F1.T1",
+      "type": "task",
+      "name": "Add background palette tokens to theme.css",
+      "action": {
+        "verb": "Add",
+        "target": "background palette tokens"
+      },
+      "purpose": "Define dark-mode-first background color tokens for homepage surfaces",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/styles/theme.css"
+        ],
+        "dependencies": [
+          "@theme inline block (existing pattern)"
+        ],
+        "constraints": [
+          "Must use --homepage- prefix for all tokens",
+          "Add tokens inside existing @theme inline block",
+          "Follow existing custom property syntax"
+        ]
+      },
+      "input_state": "theme.css exists with @theme inline block containing typography and color utilities",
+      "output_state": "theme.css contains 4 new background palette tokens: --homepage-bg-primary, --homepage-bg-secondary, --homepage-bg-tertiary, --homepage-bg-accent",
+      "acceptance_criterion": "All 4 background tokens are defined with correct dark-mode values from design spec",
+      "verification_command": "grep -c 'homepage-bg' apps/web/styles/theme.css | grep -q '^4$' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/theme.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1936.I1.F1.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I1.F1.T2",
+      "type": "task",
+      "name": "Add text hierarchy tokens to theme.css",
+      "action": {
+        "verb": "Add",
+        "target": "text hierarchy tokens"
+      },
+      "purpose": "Define text color tokens for homepage typography hierarchy",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/styles/theme.css"
+        ],
+        "dependencies": [
+          "@theme inline block (existing pattern)"
+        ],
+        "constraints": [
+          "Must use --homepage- prefix for all tokens",
+          "Add tokens inside existing @theme inline block",
+          "Follow existing custom property syntax"
+        ]
+      },
+      "input_state": "theme.css contains background palette tokens from T1",
+      "output_state": "theme.css contains 4 new text color tokens: --homepage-text-primary, --homepage-text-secondary, --homepage-text-tertiary, --homepage-text-muted",
+      "acceptance_criterion": "All 4 text tokens are defined with correct dark-mode values from design spec",
+      "verification_command": "grep -c 'homepage-text' apps/web/styles/theme.css | grep -q '^4$' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/theme.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1936.I1.F1.T5",
+          "S1936.I1.F1.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I1.F1.T3",
+      "type": "task",
+      "name": "Add accent and glow tokens to theme.css",
+      "action": {
+        "verb": "Add",
+        "target": "accent and glow tokens"
+      },
+      "purpose": "Define accent color tokens for CTAs, highlights, and glow effects",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/styles/theme.css"
+        ],
+        "dependencies": [
+          "@theme inline block (existing pattern)"
+        ],
+        "constraints": [
+          "Must use --homepage- prefix for all tokens",
+          "Add tokens inside existing @theme inline block",
+          "Follow existing custom property syntax",
+          "Use existing cyan accent #24a9e0"
+        ]
+      },
+      "input_state": "theme.css contains background and text tokens from T1 and T2",
+      "output_state": "theme.css contains 4 new accent tokens: --homepage-accent-primary, --homepage-accent-glow, --homepage-accent-gradient-start, --homepage-accent-gradient-end",
+      "acceptance_criterion": "All 4 accent tokens are defined with correct values from design spec (primary: #24a9e0, glow: rgba, gradient endpoints)",
+      "verification_command": "grep -c 'homepage-accent' apps/web/styles/theme.css | grep -q '^4$' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/theme.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1936.I1.F1.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I1.F1.T4",
+      "type": "task",
+      "name": "Add gradient definitions to theme.css",
+      "action": {
+        "verb": "Add",
+        "target": "gradient definitions"
+      },
+      "purpose": "Define gradient tokens for hero backgrounds, card borders, and text effects",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/styles/theme.css"
+        ],
+        "dependencies": [
+          "@theme inline block (existing pattern)",
+          "--homepage-accent-gradient-start token (from T3)",
+          "--homepage-accent-gradient-end token (from T3)"
+        ],
+        "constraints": [
+          "Must use --homepage- prefix for all tokens",
+          "Add tokens inside existing @theme inline block",
+          "Reference accent gradient tokens via var()"
+        ]
+      },
+      "input_state": "theme.css contains background, text, and accent tokens from T1-T3",
+      "output_state": "theme.css contains 3 new gradient tokens: --homepage-gradient-hero, --homepage-gradient-card-border, --homepage-gradient-text",
+      "acceptance_criterion": "All 3 gradient tokens are defined with correct gradient syntax from design spec",
+      "verification_command": "grep -c 'homepage-gradient' apps/web/styles/theme.css | grep -q '^3$' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/theme.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1936.I1.F1.T3"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I1.F1.T5",
+      "type": "task",
+      "name": "Add light mode overrides to shadcn-ui.css",
+      "action": {
+        "verb": "Add",
+        "target": "light mode overrides"
+      },
+      "purpose": "Define light mode color overrides to maintain design aesthetic in light theme",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/styles/shadcn-ui.css",
+          "apps/web/styles/theme.css"
+        ],
+        "dependencies": [
+          ":root selector (existing in shadcn-ui.css)",
+          "All dark mode homepage tokens (from T1-T4)"
+        ],
+        "constraints": [
+          "Add overrides in :root selector of shadcn-ui.css",
+          "Maintain visual hierarchy and contrast in light mode",
+          "Use inverted color approach (light backgrounds, dark text)"
+        ]
+      },
+      "input_state": "shadcn-ui.css has :root and .dark selectors; theme.css has all dark mode homepage tokens",
+      "output_state": "shadcn-ui.css :root selector contains light mode overrides for all 15 homepage tokens",
+      "acceptance_criterion": "All homepage tokens have light mode overrides in :root selector with appropriate inverted values",
+      "verification_command": "grep -A 20 ':root {' apps/web/styles/shadcn-ui.css | grep -c 'homepage-' | grep -q '^15$' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/shadcn-ui.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1936.I1.F1.T1",
+          "S1936.I1.F1.T2"
+        ],
+        "blocks": [
+          "S1936.I1.F1.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I1.F1.T6",
+      "type": "task",
+      "name": "Validate WCAG AA contrast ratios for text tokens",
+      "action": {
+        "verb": "Validate",
+        "target": "WCAG AA contrast ratios"
+      },
+      "purpose": "Ensure all text/background color combinations meet accessibility standards",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/styles/theme.css",
+          "apps/web/styles/shadcn-ui.css"
+        ],
+        "dependencies": [
+          "All homepage color tokens (from T1-T5)"
+        ],
+        "constraints": [
+          "WCAG AA requires 4.5:1 minimum contrast for normal text",
+          "Test all text token + background token combinations",
+          "Validate both dark and light modes"
+        ]
+      },
+      "input_state": "All homepage tokens defined in dark mode (theme.css) and light mode (shadcn-ui.css)",
+      "output_state": "All text/background combinations validated to meet WCAG AA (4.5:1) or documented exceptions for decorative elements",
+      "acceptance_criterion": "Contrast validation report shows all critical text/background combinations pass WCAG AA requirements",
+      "verification_command": "echo 'Manual validation: Check contrast ratios using browser DevTools or online contrast checker. Primary combinations: --homepage-text-primary on --homepage-bg-primary, --homepage-text-secondary on --homepage-bg-secondary, etc. All must be >= 4.5:1' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/theme.css"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/styles/shadcn-ui.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1936.I1.F1.T2",
+          "S1936.I1.F1.T5"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Core Color Tokens",
+        "task_ids": [
+          "S1936.I1.F1.T1",
+          "S1936.I1.F1.T2",
+          "S1936.I1.F1.T3"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 1
+      },
+      {
+        "id": 2,
+        "name": "Derived Tokens and Light Mode",
+        "task_ids": [
+          "S1936.I1.F1.T4",
+          "S1936.I1.F1.T5"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Validation",
+        "task_ids": [
+          "S1936.I1.F1.T6"
+        ],
+        "depends_on_groups": [
+          1,
+          2
+        ],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1936.I1.F1.T1",
+        "S1936.I1.F1.T5",
+        "S1936.I1.F1.T6"
+      ],
+      "total_hours": 4
+    },
+    "duration": {
+      "sequential": 7,
+      "parallel": 4,
+      "time_saved_percent": 42.9
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

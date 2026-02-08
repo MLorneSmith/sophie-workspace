@@ -571,8 +571,8 @@ async function createSandbox(
 		console.log(`Template: ${template}`);
 		console.log(`Git:      ${GITHUB_TOKEN ? "Configured" : "Not configured"}`);
 		console.log(`Log:      ${logger.getLogPath()}`);
-		console.log("\nTo connect: /sandbox status " + sandbox.sandboxId);
-		console.log("To kill:    /sandbox kill " + sandbox.sandboxId);
+		console.log("\nTo connect: /alpha:sandbox status" + sandbox.sandboxId);
+		console.log("To kill:    /alpha:sandbox kill" + sandbox.sandboxId);
 
 		logger.complete(0);
 		return sandbox;
@@ -673,11 +673,11 @@ async function runClaude(
 		if (createdSandbox) {
 			console.log(`\nSandbox ${sandbox.sandboxId} is still running.`);
 			console.log(
-				"To continue using it: /sandbox run-claude --sandbox " +
+				"To continue using it: /alpha:sandbox run-claude--sandbox " +
 					sandbox.sandboxId +
 					' "your prompt"',
 			);
-			console.log("To kill it: /sandbox kill " + sandbox.sandboxId);
+			console.log("To kill it: /alpha:sandbox kill" + sandbox.sandboxId);
 		}
 	} catch (error) {
 		if (logger) {
@@ -1031,10 +1031,10 @@ async function runFeaturePhase(
 	console.log("=".repeat(70));
 	console.log("");
 	console.log("If plan looks good, continue to implementation:");
-	console.log(`   /sandbox continue ${sandboxId}`);
+	console.log(`   /alpha:sandbox continue${sandboxId}`);
 	console.log("");
 	console.log("Or reject and discard:");
-	console.log(`   /sandbox reject ${sandboxId}`);
+	console.log(`   /alpha:sandbox reject${sandboxId}`);
 	console.log("");
 
 	logger.log("info", "Feature phase complete - awaiting review");
@@ -1058,7 +1058,7 @@ async function runContinuePhase(sandboxId: string): Promise<void> {
 	const metadata = await getSandboxMetadata(sandbox);
 	if (!metadata) {
 		console.error(
-			"No sandbox metadata found. Was this sandbox created with /sandbox feature?",
+			"No sandbox metadata found. Was this sandbox created with /alpha:sandbox feature?",
 		);
 		process.exit(1);
 	}
@@ -1163,10 +1163,10 @@ async function runContinuePhase(sandboxId: string): Promise<void> {
 	console.log("=".repeat(70));
 	console.log("");
 	console.log("If code looks good and tests pass, approve to create PR:");
-	console.log(`   /sandbox approve ${sandboxId}`);
+	console.log(`   /alpha:sandbox approve${sandboxId}`);
 	console.log("");
 	console.log("Or reject and discard:");
-	console.log(`   /sandbox reject ${sandboxId}`);
+	console.log(`   /alpha:sandbox reject${sandboxId}`);
 	console.log("");
 
 	logger.log("info", "Continue phase complete - awaiting code review");
@@ -1448,7 +1448,7 @@ async function runFeatureWorkflow(
 		if (!reviewSummary.status.trim()) {
 			console.log("No changes were made by Claude Code");
 			console.log(`Sandbox ${sandboxId} is still running for manual work`);
-			console.log("To kill: /sandbox kill " + sandboxId);
+			console.log("To kill: /alpha:sandbox kill" + sandboxId);
 			return;
 		}
 
@@ -1484,7 +1484,7 @@ async function runFeatureWorkflow(
 			console.log(
 				`\nSandbox ${sandbox.sandboxId} is still running for debugging.`,
 			);
-			console.log("To kill: /sandbox kill " + sandbox.sandboxId);
+			console.log("To kill: /alpha:sandbox kill" + sandbox.sandboxId);
 		}
 
 		process.exit(1);
@@ -1535,16 +1535,16 @@ async function pauseForReview(
 	console.log("=".repeat(60));
 	console.log("");
 	console.log("1. Review the changes using the URL above or:");
-	console.log(`   /sandbox diff ${sandboxId}`);
+	console.log(`   /alpha:sandbox diff${sandboxId}`);
 	console.log("");
 	console.log("2. Optionally run /review in the sandbox:");
-	console.log(`   /sandbox review ${sandboxId}`);
+	console.log(`   /alpha:sandbox review${sandboxId}`);
 	console.log("");
 	console.log("3. When satisfied, approve to push and create PR:");
-	console.log(`   /sandbox approve ${sandboxId}`);
+	console.log(`   /alpha:sandbox approve${sandboxId}`);
 	console.log("");
 	console.log("4. Or reject to discard changes and cleanup:");
-	console.log(`   /sandbox reject ${sandboxId}`);
+	console.log(`   /alpha:sandbox reject${sandboxId}`);
 	console.log("");
 	console.log("=".repeat(60));
 }
@@ -1643,11 +1643,11 @@ ${statusOutput}
 
 	console.log(`\nSandbox ${sandboxId} is still running.`);
 	console.log(
-		"To continue working: /sandbox run-claude --sandbox " +
+		"To continue working: /alpha:sandbox run-claude--sandbox " +
 			sandboxId +
 			' "your prompt"',
 	);
-	console.log("To kill: /sandbox kill " + sandboxId);
+	console.log("To kill: /alpha:sandbox kill" + sandboxId);
 }
 
 /**
@@ -1751,10 +1751,10 @@ async function runReview(sandboxId: string): Promise<void> {
 		console.log("=".repeat(60));
 		console.log("");
 		console.log("If satisfied with the review, approve to push:");
-		console.log(`  /sandbox approve ${sandboxId}`);
+		console.log(`  /alpha:sandbox approve${sandboxId}`);
 		console.log("");
 		console.log("Or reject to discard changes:");
-		console.log(`  /sandbox reject ${sandboxId}`);
+		console.log(`  /alpha:sandbox reject${sandboxId}`);
 		console.log("");
 	} catch (error) {
 		console.error(
@@ -1883,7 +1883,7 @@ async function rejectChanges(
 
 		if (keepSandbox) {
 			console.log(`\nSandbox ${sandboxId} is still running.`);
-			console.log("To kill: /sandbox kill " + sandboxId);
+			console.log("To kill: /alpha:sandbox kill" + sandboxId);
 		} else {
 			// Kill the sandbox
 			console.log("\nKilling sandbox...");
@@ -2095,46 +2095,46 @@ E2B Sandbox Manager - Commands:
 
 Examples:
   # Basic operations
-  /sandbox create                           Create sandbox with slideheroes template
-  /sandbox list                             List running sandboxes
-  /sandbox kill abc123                      Kill sandbox abc123
+  /alpha:sandbox create                     Create sandbox with slideheroes template
+  /alpha:sandbox list                       List running sandboxes
+  /alpha:sandbox kill abc123                Kill sandbox abc123
 
   # Utility commands
-  /sandbox exec abc123 "git status"         Run git status in sandbox
-  /sandbox exec abc123 "pnpm dev" --timeout 300000
-  /sandbox url abc123                       Get dev server URL (port 3000)
-  /sandbox url abc123 8080                  Get VS Code Web URL (port 8080)
+  /alpha:sandbox exec abc123 "git status"   Run git status in sandbox
+  /alpha:sandbox exec abc123 "pnpm dev" --timeout 300000
+  /alpha:sandbox url abc123                 Get dev server URL (port 3000)
+  /alpha:sandbox url abc123 8080            Get VS Code Web URL (port 8080)
 
   # Run Claude Code
-  /sandbox run-claude "/test 1"             Run /test 1 in new sandbox
-  /sandbox run-claude "Fix auth" --sandbox abc123
+  /alpha:sandbox run-claude "/test 1"       Run /test 1 in new sandbox
+  /alpha:sandbox run-claude "Fix auth" --sandbox abc123
 
   # Git operations
-  /sandbox diff abc123                      View changes in sandbox
-  /sandbox pr abc123 "Fix auth bug"         Create PR from sandbox changes
+  /alpha:sandbox diff abc123                View changes in sandbox
+  /alpha:sandbox pr abc123 "Fix auth bug"   Create PR from sandbox changes
 
   # === RECOMMENDED: Sequential Feature Workflow ===
 
   # Step 1: Start feature planning (creates sandbox, VS Code Web)
-  /sandbox feature "#123 Add dark mode"     Creates sandbox, runs /feature,
-                                            opens VS Code Web for plan review
+  /alpha:sandbox feature "#123 Add dark mode"  Creates sandbox, runs /feature:feature,
+                                               opens VS Code Web for plan review
 
   # Step 2: Review plan in VS Code Web at provided URL
   #         Open .ai/specs/feature-*.md and verify plan
 
   # Step 3: Continue to implementation (after plan approval)
-  /sandbox continue abc123                  Runs /implement, starts dev server,
+  /alpha:sandbox continue abc123            Runs /implement, starts dev server,
                                             runs /review, opens VS Code + app
 
   # Step 4: Review code in VS Code, test app at provided URL
 
   # Step 5: Approve or reject
-  /sandbox approve abc123                   Commit, push, create PR
-  /sandbox reject abc123                    Discard changes, kill sandbox
+  /alpha:sandbox approve abc123             Commit, push, create PR
+  /alpha:sandbox reject abc123              Discard changes, kill sandbox
 
   # === LEGACY: Skip review (auto-push) ===
-  /sandbox feature "Quick fix" --no-review  Creates sandbox, runs /feature,
-                                            auto-commits, pushes, creates PR
+  /alpha:sandbox feature "Quick fix" --no-review  Creates sandbox, runs /feature:feature,
+                                                  auto-commits, pushes, creates PR
 
 Requirements:
   - E2B_API_KEY: Required for all operations

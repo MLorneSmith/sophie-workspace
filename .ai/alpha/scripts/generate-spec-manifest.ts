@@ -18,17 +18,19 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+import { validateDependencyGraph } from "./lib/cycle-detector.js";
+
 // ============================================================================
 // Types
 // ============================================================================
 
 interface TasksJson {
 	metadata: {
-		feature_id: number;
+		feature_id: string; // Semantic ID: S1362.I1.F1 or legacy: 1367
 		feature_name: string;
 		feature_slug?: string;
-		initiative_id: number;
-		spec_id: number;
+		initiative_id: string; // Semantic ID: S1362.I1 or legacy: 1365
+		spec_id: string; // Semantic ID: S1362 or legacy: 1362
 		requires_database?: boolean;
 		database_tasks?: string[];
 	};
@@ -51,8 +53,8 @@ interface TasksJson {
 }
 
 interface FeatureEntry {
-	id: number;
-	initiative_id: number;
+	id: string; // Semantic ID: S1362.I1.F1 or legacy: 1367
+	initiative_id: string; // Semantic ID: S1362.I1 or legacy: 1365
 	title: string;
 	slug?: string;
 	priority: number;
@@ -64,7 +66,7 @@ interface FeatureEntry {
 	tasks_completed: number;
 	sequential_hours: number;
 	parallel_hours: number;
-	dependencies: number[]; // Feature IDs this is blocked by
+	dependencies: string[]; // Feature IDs this is blocked by (semantic or legacy)
 	github_issue: number | null;
 	assigned_sandbox?: string;
 	error?: string;
@@ -73,7 +75,7 @@ interface FeatureEntry {
 }
 
 interface InitiativeEntry {
-	id: number;
+	id: string; // Semantic ID: S1362.I1 or legacy: 1365
 	name: string;
 	slug: string;
 	priority: number;
@@ -81,12 +83,12 @@ interface InitiativeEntry {
 	initiative_dir: string;
 	feature_count: number;
 	features_completed: number;
-	dependencies: number[]; // Initiative IDs this is blocked by
+	dependencies: string[]; // Initiative IDs this is blocked by (semantic or legacy)
 }
 
 interface SpecManifest {
 	metadata: {
-		spec_id: number;
+		spec_id: string; // Semantic ID: S1362 or legacy: 1362
 		spec_name: string;
 		generated_at: string;
 		spec_dir: string;
@@ -102,8 +104,8 @@ interface SpecManifest {
 		features_total: number;
 		tasks_completed: number;
 		tasks_total: number;
-		next_feature_id: number | null;
-		last_completed_feature_id: number | null;
+		next_feature_id: string | null; // Semantic ID: S1362.I1.F1 or legacy: 1367
+		last_completed_feature_id: string | null;
 		started_at: string | null;
 		completed_at: string | null;
 		last_checkpoint: string | null;
@@ -130,6 +132,11 @@ function findProjectRoot(): string {
 	return process.cwd();
 }
 
+/**
+ * Find spec directory by ID. Supports both old and new naming conventions:
+ * - Old: 1362-Spec-slug/
+ * - New: S1362-Spec-slug/
+ */
 function findSpecDir(projectRoot: string, specId: number): string | null {
 	const specsDir = path.join(projectRoot, ".ai", "alpha", "specs");
 
@@ -140,7 +147,8 @@ function findSpecDir(projectRoot: string, specId: number): string | null {
 	const specDirs = fs.readdirSync(specsDir);
 
 	for (const specDir of specDirs) {
-		const match = specDir.match(/^(\d+)-Spec-/);
+		// Match both: S1362-Spec- (new) and 1362-Spec- (old)
+		const match = specDir.match(/^S?(\d+)-Spec-/);
 		const idStr = match?.[1];
 		if (idStr && parseInt(idStr, 10) === specId) {
 			return path.join(specsDir, specDir);
@@ -150,6 +158,11 @@ function findSpecDir(projectRoot: string, specId: number): string | null {
 	return null;
 }
 
+/**
+ * Find initiative directories under a spec. Supports both old and new naming conventions:
+ * - Old: 1365-Initiative-slug/
+ * - New: S1362.I1-Initiative-slug/
+ */
 function findInitiativeDirectories(specDir: string): string[] {
 	const initDirs: string[] = [];
 
@@ -158,20 +171,40 @@ function findInitiativeDirectories(specDir: string): string[] {
 		const itemPath = path.join(specDir, item);
 		if (!fs.statSync(itemPath).isDirectory()) continue;
 
-		// Match pattern: <id>-Initiative-<name>
-		if (item.match(/^\d+-Initiative-/)) {
+		// Match both: S1362.I1-Initiative- (new) and 1365-Initiative- (old)
+		if (item.match(/^(S\d+\.I\d+|\d+)-Initiative-/)) {
 			initDirs.push(itemPath);
 		}
 	}
 
-	// Sort by initiative ID
+	// Sort by initiative priority (I# for new, numeric ID for old)
 	return initDirs.sort((a, b) => {
-		const idA = parseInt(path.basename(a).match(/^(\d+)/)?.[1] || "0", 10);
-		const idB = parseInt(path.basename(b).match(/^(\d+)/)?.[1] || "0", 10);
+		const nameA = path.basename(a);
+		const nameB = path.basename(b);
+
+		// Try new format first: S1362.I1-Initiative-
+		const newMatchA = nameA.match(/^S\d+\.I(\d+)-/);
+		const newMatchB = nameB.match(/^S\d+\.I(\d+)-/);
+
+		if (newMatchA?.[1] && newMatchB?.[1]) {
+			return parseInt(newMatchA[1], 10) - parseInt(newMatchB[1], 10);
+		}
+
+		// Fall back to old format: 1365-Initiative-
+		const oldMatchA = nameA.match(/^(\d+)-/);
+		const oldMatchB = nameB.match(/^(\d+)-/);
+
+		const idA = oldMatchA?.[1] ? parseInt(oldMatchA[1], 10) : 0;
+		const idB = oldMatchB?.[1] ? parseInt(oldMatchB[1], 10) : 0;
 		return idA - idB;
 	});
 }
 
+/**
+ * Find feature directories under an initiative. Supports both old and new naming conventions:
+ * - Old: 1367-Feature-slug/
+ * - New: S1362.I1.F1-Feature-slug/
+ */
 function findFeatureDirectories(initDir: string): string[] {
 	const featureDirs: string[] = [];
 
@@ -180,8 +213,8 @@ function findFeatureDirectories(initDir: string): string[] {
 		const itemPath = path.join(initDir, item);
 		if (!fs.statSync(itemPath).isDirectory()) continue;
 
-		// Match pattern: <id>-Feature-<name>
-		if (item.match(/^\d+-Feature-/)) {
+		// Match both: S1362.I1.F1-Feature- (new) and 1367-Feature- (old)
+		if (item.match(/^(S\d+\.I\d+\.F\d+|\d+)-Feature-/)) {
 			const tasksFile = path.join(itemPath, "tasks.json");
 			if (fs.existsSync(tasksFile)) {
 				featureDirs.push(itemPath);
@@ -189,10 +222,25 @@ function findFeatureDirectories(initDir: string): string[] {
 		}
 	}
 
-	// Sort by feature ID
+	// Sort by feature priority (F# for new, numeric ID for old)
 	return featureDirs.sort((a, b) => {
-		const idA = parseInt(path.basename(a).match(/^(\d+)/)?.[1] || "0", 10);
-		const idB = parseInt(path.basename(b).match(/^(\d+)/)?.[1] || "0", 10);
+		const nameA = path.basename(a);
+		const nameB = path.basename(b);
+
+		// Try new format first: S1362.I1.F1-Feature-
+		const newMatchA = nameA.match(/^S\d+\.I\d+\.F(\d+)-/);
+		const newMatchB = nameB.match(/^S\d+\.I\d+\.F(\d+)-/);
+
+		if (newMatchA?.[1] && newMatchB?.[1]) {
+			return parseInt(newMatchA[1], 10) - parseInt(newMatchB[1], 10);
+		}
+
+		// Fall back to old format: 1367-Feature-
+		const oldMatchA = nameA.match(/^(\d+)-/);
+		const oldMatchB = nameB.match(/^(\d+)-/);
+
+		const idA = oldMatchA?.[1] ? parseInt(oldMatchA[1], 10) : 0;
+		const idB = oldMatchB?.[1] ? parseInt(oldMatchB[1], 10) : 0;
 		return idA - idB;
 	});
 }
@@ -209,19 +257,21 @@ function loadTasksJson(featureDir: string): TasksJson | null {
 }
 
 /**
-
-* Raw dependency reference - can be either a GitHub issue number or internal F# reference.
+ * Raw dependency reference - can be either a GitHub issue number, internal F# reference,
+ * or a semantic ID reference (S#.I#.F#).
  */
 interface RawDependency {
-	type: "issue" | "internal";
-	value: number; // Issue number or F# number (e.g., F1 → 1)
+	type: "issue" | "internal" | "semantic";
+	value: string; // Issue number, F# number, or semantic ID (e.g., S1362.I1.F1)
 }
 
 /**
-
-* Extract feature dependencies from feature.md file.
-* Looks for "Blocked By:" section with issue numbers (#123) or internal references (F1, F2).
-* Returns raw references that need to be resolved after all features are loaded.
+ * Extract feature dependencies from feature.md file.
+ * Looks for "Blocked By:" section with:
+ * - Issue numbers (#123)
+ * - Internal references (F1, F2)
+ * - Semantic IDs (S1362.I1.F1)
+ * Returns raw references that need to be resolved after all features are loaded.
  */
 function extractFeatureDependenciesRaw(featureDir: string): RawDependency[] {
 	const featureFile = path.join(featureDir, "feature.md");
@@ -243,11 +293,25 @@ function extractFeatureDependenciesRaw(featureDir: string): RawDependency[] {
 			if (!match?.[1]) continue;
 			const section: string = match[1];
 
+			// Match semantic IDs first: S1362.I1.F1
+			const semanticMatches = section.match(/\bS\d+\.I\d+\.F\d+\b/g);
+			if (semanticMatches) {
+				for (const semanticMatch of semanticMatches) {
+					if (
+						!deps.some(
+							(d) => d.type === "semantic" && d.value === semanticMatch,
+						)
+					) {
+						deps.push({ type: "semantic", value: semanticMatch });
+					}
+				}
+			}
+
 			// Match GitHub issue numbers: #1234
 			const issueMatches = section.match(/#(\d+)/g);
 			if (issueMatches) {
 				for (const issueMatch of issueMatches) {
-					const issueNum = parseInt(issueMatch.slice(1), 10);
+					const issueNum = issueMatch.slice(1);
 					if (!deps.some((d) => d.type === "issue" && d.value === issueNum)) {
 						deps.push({ type: "issue", value: issueNum });
 					}
@@ -256,10 +320,11 @@ function extractFeatureDependenciesRaw(featureDir: string): RawDependency[] {
 
 			// Match internal feature references: F1, F2, F3, etc.
 			// Pattern: F1: or F1 or F1, - captures the number after F
-			const internalMatches = section.match(/\bF(\d+)\b/g);
+			// Skip if it's part of a semantic ID (already matched above)
+			const internalMatches = section.match(/(?<!\.)\bF(\d+)\b/g);
 			if (internalMatches) {
 				for (const internalMatch of internalMatches) {
-					const fNum = parseInt(internalMatch.slice(1), 10);
+					const fNum = internalMatch.slice(1);
 					if (!deps.some((d) => d.type === "internal" && d.value === fNum)) {
 						deps.push({ type: "internal", value: fNum });
 					}
@@ -274,24 +339,28 @@ function extractFeatureDependenciesRaw(featureDir: string): RawDependency[] {
 }
 
 /**
-
-* Resolve raw dependencies to actual feature IDs.
-* Internal F# references are resolved within the same initiative based on priority.
-*
-* @param rawDeps - Raw dependencies from extractFeatureDependenciesRaw
-* @param initiativeId - The initiative this feature belongs to
-* @param featurePriorityMap - Map of initiative_id -> priority -> feature_id
+ * Resolve raw dependencies to actual feature IDs.
+ * Internal F# references are resolved within the same initiative based on priority.
+ *
+ * @param rawDeps - Raw dependencies from extractFeatureDependenciesRaw
+ * @param initiativeId - The initiative this feature belongs to (semantic or legacy)
+ * @param featurePriorityMap - Map of "initiative_id-F#" -> feature_id (string)
  */
 function resolveFeatureDependencies(
 	rawDeps: RawDependency[],
-	initiativeId: number,
-	featurePriorityMap: Map<string, number>,
-): number[] {
-	const resolved: number[] = [];
+	initiativeId: string,
+	featurePriorityMap: Map<string, string>,
+): string[] {
+	const resolved: string[] = [];
 
 	for (const dep of rawDeps) {
-		if (dep.type === "issue") {
-			// GitHub issue number - use directly
+		if (dep.type === "semantic") {
+			// Semantic ID (S1362.I1.F1) - use directly
+			if (!resolved.includes(dep.value)) {
+				resolved.push(dep.value);
+			}
+		} else if (dep.type === "issue") {
+			// GitHub issue number - use directly as string
 			if (!resolved.includes(dep.value)) {
 				resolved.push(dep.value);
 			}
@@ -310,16 +379,16 @@ function resolveFeatureDependencies(
 }
 
 /**
-
-* Extract initiative dependencies from initiative.md file.
+ * Extract initiative dependencies from initiative.md file.
+ * Supports both legacy issue numbers (#123) and semantic IDs (S1362.I1).
  */
-function extractInitiativeDependencies(initDir: string): number[] {
+function extractInitiativeDependencies(initDir: string): string[] {
 	const initFile = path.join(initDir, "initiative.md");
 	if (!fs.existsSync(initFile)) return [];
 
 	try {
 		const content = fs.readFileSync(initFile, "utf-8");
-		const deps: number[] = [];
+		const deps: string[] = [];
 
 		// Look for "Blocked By" section
 		const patterns = [
@@ -332,10 +401,21 @@ function extractInitiativeDependencies(initDir: string): number[] {
 			const match = content.match(pattern);
 			const section = match?.[1];
 			if (section) {
+				// Match semantic IDs first: S1362.I1
+				const semanticMatches = section.match(/\bS\d+\.I\d+\b/g);
+				if (semanticMatches) {
+					for (const semanticMatch of semanticMatches) {
+						if (!deps.includes(semanticMatch)) {
+							deps.push(semanticMatch);
+						}
+					}
+				}
+
+				// Match GitHub issue numbers: #1234
 				const issueMatches = section.match(/#(\d+)/g);
 				if (issueMatches) {
 					for (const issueMatch of issueMatches) {
-						const issueNum = parseInt(issueMatch.slice(1), 10);
+						const issueNum = issueMatch.slice(1);
 						if (!deps.includes(issueNum)) {
 							deps.push(issueNum);
 						}
@@ -399,24 +479,34 @@ function extractFeaturePriority(featureDir: string): number {
 }
 
 /**
-
-* Extract the F# number from Feature ID in feature.md metadata table.
-* Feature ID format: "1365-F1" -> returns 1
-* This is used for mapping internal F# references.
+ * Extract the F# number from Feature ID in feature.md metadata table.
+ * Supports both old and new formats:
+ * - Old: "1365-F1" -> returns "1"
+ * - New: "S1362.I1.F1" -> returns "1"
+ * This is used for mapping internal F# references.
  */
-function extractFeatureFNumber(featureDir: string): number | null {
+function extractFeatureFNumber(featureDir: string): string | null {
 	const featureFile = path.join(featureDir, "feature.md");
 	if (!fs.existsSync(featureFile)) return null;
 
 	try {
 		const content = fs.readFileSync(featureFile, "utf-8");
 
-		// Look for Feature ID in metadata table: | **Feature ID** | 1365-F1 |
-		const match = content.match(
+		// Look for Feature ID in metadata table:
+		// New format: | **Feature ID** | S1362.I1.F1 |
+		const newMatch = content.match(
+			/\|\s*\*\*Feature ID\*\*\s*\|\s*S\d+\.I\d+\.F(\d+)\s*\|/i,
+		);
+		if (newMatch?.[1]) {
+			return newMatch[1];
+		}
+
+		// Old format: | **Feature ID** | 1365-F1 |
+		const oldMatch = content.match(
 			/\|\s*\*\*Feature ID\*\*\s*\|\s*\d+-F(\d+)\s*\|/i,
 		);
-		if (match?.[1]) {
-			return parseInt(match[1], 10);
+		if (oldMatch?.[1]) {
+			return oldMatch[1];
 		}
 
 		return null;
@@ -452,10 +542,14 @@ async function main() {
 
 	console.log(`Spec directory: ${specDir}`);
 
+	// Extract spec name from directory (supports both old and new formats)
 	const specName = path
 		.basename(specDir)
-		.replace(/^\d+-Spec-/, "")
+		.replace(/^S?\d+-Spec-/, "")
 		.replace(/-/g, " ");
+
+	// Construct semantic spec ID
+	const specSemanticId = `S${specId}`;
 
 	// Find all initiative directories
 	const initDirs = findInitiativeDirectories(specDir);
@@ -477,27 +571,49 @@ async function main() {
 	let totalTasks = 0;
 	let totalTasksCompleted = 0;
 
-	// Map: "initiative_id-priority" -> feature_id
+	// Map: "initiative_id-F#" -> feature_id (string)
 	// Used to resolve F1, F2, etc. references within an initiative
-	const featurePriorityMap = new Map<string, number>();
+	const featurePriorityMap = new Map<string, string>();
 
 	// Temporary storage for raw dependencies (before resolution)
-	const rawDependenciesMap = new Map<number, RawDependency[]>();
+	const rawDependenciesMap = new Map<string, RawDependency[]>();
 
 	// Pass 1: Collect all features and build the priority map
 	console.log("\n📦 Pass 1: Collecting features...");
 
 	for (const initDir of initDirs) {
 		const initDirName = path.basename(initDir);
-		const initIdMatch = initDirName.match(/^(\d+)/);
-		const initIdStr = initIdMatch?.[1];
-		const initId = initIdStr ? parseInt(initIdStr, 10) : 0;
-		const initName = initDirName
-			.replace(/^\d+-Initiative-/, "")
-			.replace(/-/g, " ");
-		const initSlug = initDirName.replace(/^\d+-Initiative-/, "");
 
-		const initPriority = extractInitiativePriority(initDir);
+		// Extract initiative ID - supports both old and new formats:
+		// Old: 1365-Initiative-slug -> "1365"
+		// New: S1362.I1-Initiative-slug -> "S1362.I1"
+		let initId: string;
+		let initPriorityNum: number;
+
+		const newInitMatch = initDirName.match(/^(S\d+\.I(\d+))-Initiative-/);
+		const oldInitMatch = initDirName.match(/^(\d+)-Initiative-/);
+
+		if (newInitMatch?.[1] && newInitMatch[2]) {
+			initId = newInitMatch[1]; // e.g., "S1362.I1"
+			initPriorityNum = parseInt(newInitMatch[2], 10); // Extract I# for priority
+		} else if (oldInitMatch?.[1]) {
+			initId = oldInitMatch[1]; // e.g., "1365"
+			initPriorityNum = extractInitiativePriority(initDir);
+		} else {
+			// Fallback
+			initId = "0";
+			initPriorityNum = 999;
+		}
+
+		const initName = initDirName
+			.replace(/^(S\d+\.I\d+|\d+)-Initiative-/, "")
+			.replace(/-/g, " ");
+		const initSlug = initDirName.replace(/^(S\d+\.I\d+|\d+)-Initiative-/, "");
+
+		// Use initPriorityNum for sorting but use extractInitiativePriority for fallback
+		const initPriority = newInitMatch
+			? initPriorityNum
+			: extractInitiativePriority(initDir);
 		const initDeps = extractInitiativeDependencies(initDir);
 
 		// Find features in this initiative
@@ -509,6 +625,7 @@ async function main() {
 			const tasksJson = loadTasksJson(featureDir);
 			if (!tasksJson) continue;
 
+			// Feature ID from tasks.json (already a string in new format)
 			const featureId = tasksJson.metadata.feature_id;
 			const relativePath = path.relative(
 				specDir,
@@ -521,8 +638,8 @@ async function main() {
 			rawDependenciesMap.set(featureId, rawDeps);
 
 			// Build F# map: initiative_id-F# -> feature_id
-			// Uses Feature ID (e.g., "1365-F1") not Priority for correct mapping
-			// This allows us to resolve "F1" -> feature with Feature ID "1365-F1"
+			// Uses Feature ID (e.g., "S1362.I1.F1") not Priority for correct mapping
+			// This allows us to resolve "F1" -> feature with Feature ID "S1362.I1.F1"
 			const fNumber = extractFeatureFNumber(featureDir);
 			if (fNumber !== null) {
 				const fKey = `${initId}-${fNumber}`;
@@ -552,9 +669,12 @@ async function main() {
 				tasksJson.metadata.database_tasks?.length ||
 				tasksJson.tasks.filter((t) => t.requires_database === true).length;
 
+			// Initiative ID from tasks.json (already a string)
+			const featureInitiativeId = tasksJson.metadata.initiative_id;
+
 			initiativeFeatures.push({
 				id: featureId,
-				initiative_id: initId,
+				initiative_id: featureInitiativeId,
 				title: tasksJson.metadata.feature_name,
 				slug: tasksJson.metadata.feature_slug,
 				priority: featurePriority,
@@ -625,6 +745,46 @@ async function main() {
 		}
 	}
 
+	// =========================================================================
+	// Pass 2b: Validate dependency graph for circular dependencies
+	// Bug fix #1916: Prevent circular dependencies from causing orchestrator hang
+	// =========================================================================
+	console.log("🔍 Pass 2b: Validating dependency graph...");
+
+	const cycleResult = validateDependencyGraph(featureQueue, console.log);
+	if (cycleResult.hasCycles) {
+		console.error(
+			"\n❌ MANIFEST GENERATION FAILED: Circular dependencies detected",
+		);
+		console.error(
+			"   Fix the dependencies in feature.md files and regenerate the manifest.",
+		);
+		process.exit(1);
+	}
+	console.log("   ✅ No circular dependencies found");
+
+	// =========================================================================
+	// Pass 3: Propagate initiative-level dependencies to features
+	// This ensures the work queue respects initiative dependency hierarchy
+	// =========================================================================
+	console.log("🔗 Pass 3: Propagating initiative dependencies to features...");
+
+	for (const initiative of initiatives) {
+		if (initiative.dependencies.length > 0) {
+			for (const feature of featureQueue) {
+				if (feature.initiative_id === initiative.id) {
+					// Prepend initiative dependencies, then existing feature dependencies
+					// Use Set to avoid duplicates
+					const combinedDeps = new Set([
+						...initiative.dependencies,
+						...feature.dependencies,
+					]);
+					feature.dependencies = [...combinedDeps];
+				}
+			}
+		}
+	}
+
 	// Sort initiatives by priority
 	initiatives.sort((a, b) => a.priority - b.priority);
 
@@ -651,7 +811,7 @@ async function main() {
 		featureQueue.filter((f) => f.status === "completed").map((f) => f.id),
 	);
 
-	let nextFeatureId: number | null = null;
+	let nextFeatureId: string | null = null;
 	for (const feature of featureQueue) {
 		if (feature.status === "pending") {
 			const depsComplete = feature.dependencies.every((depId) =>
@@ -689,7 +849,7 @@ async function main() {
 	// Build manifest
 	const manifest: SpecManifest = {
 		metadata: {
-			spec_id: specId,
+			spec_id: specSemanticId, // e.g., "S1362"
 			spec_name: specName,
 			generated_at: new Date().toISOString(),
 			spec_dir: specDir,
@@ -725,7 +885,7 @@ async function main() {
 	// Print summary
 	console.log(`\n✅ Spec manifest generated: ${manifestPath}`);
 	console.log("\n" + "═".repeat(60));
-	console.log(`   SPEC #${specId}: ${specName.toUpperCase()}`);
+	console.log(`   SPEC ${specSemanticId}: ${specName.toUpperCase()}`);
 	console.log("═".repeat(60));
 
 	console.log("\n📊 Summary:");
@@ -746,10 +906,10 @@ async function main() {
 					: "⏳";
 		const depsStr =
 			init.dependencies.length > 0
-				? ` (blocked by: ${init.dependencies.map((d) => `#${d}`).join(", ")})`
+				? ` (blocked by: ${init.dependencies.join(", ")})`
 				: "";
 		console.log(
-			`   ${statusIcon} #${init.id}: ${init.name} [P${init.priority}] - ${init.features_completed}/${init.feature_count} features${depsStr}`,
+			`   ${statusIcon} ${init.id}: ${init.name} [P${init.priority}] - ${init.features_completed}/${init.feature_count} features${depsStr}`,
 		);
 	}
 
@@ -766,12 +926,12 @@ async function main() {
 					: "⏳";
 		const depsStr =
 			feature.dependencies.length > 0
-				? ` [blocked by: ${feature.dependencies.map((d) => `#${d}`).join(", ")}]`
+				? ` [blocked by: ${feature.dependencies.join(", ")}]`
 				: "";
 		const dbMarker = feature.requires_database ? " 🗄️" : "";
 		const nextMarker = feature.id === nextFeatureId ? " ← NEXT" : "";
 		console.log(
-			`   ${statusIcon} [${feature.global_priority}] #${feature.id}: ${feature.title}${dbMarker}${depsStr}${nextMarker}`,
+			`   ${statusIcon} [${feature.global_priority}] ${feature.id}: ${feature.title}${dbMarker}${depsStr}${nextMarker}`,
 		);
 	}
 
@@ -783,7 +943,7 @@ async function main() {
 	}
 
 	if (nextFeatureId) {
-		console.log(`\n🎯 Next feature to implement: #${nextFeatureId}`);
+		console.log(`\n🎯 Next feature to implement: ${nextFeatureId}`);
 	} else if (overallStatus === "completed") {
 		console.log("\n🎉 All features completed!");
 	} else {

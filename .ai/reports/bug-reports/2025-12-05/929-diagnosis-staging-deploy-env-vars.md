@@ -18,7 +18,7 @@ The staging deployment workflow (`staging-deploy.yml`) fails during the "Full Te
 - **Node Version**: Latest LTS (per setup-deps action)
 - **Database**: Supabase (local instance in CI)
 - **Last Working**: Unknown (workflow may have always had this issue)
-- **Workflow Run**: https://github.com/MLorneSmith/2025slideheroes/actions/runs/19972690271
+- **Workflow Run**: https://github.com/slideheroes/2025slideheroes/actions/runs/19972690271
 
 ## Reproduction Steps
 

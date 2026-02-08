@@ -27,16 +27,15 @@ jobs:
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
       DO_NOT_TRACK: 1
     steps:
+      # Optimization #2: Shallow clone - only fetch PR commit, not full history
       - name: Checkout PR
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Checkout base branch
-        run: |
-          git fetch origin ${{ github.event.pull_request.base.ref }}
-          git checkout origin/${{ github.event.pull_request.base.ref }}
+      - name: Fetch base ref
+        run: git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
 
       - uses: pnpm/action-setup@v4
         with:
@@ -47,50 +46,80 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
+      # Optimization #1: Cache base branch bundle sizes to skip rebuilding
+      - name: Restore base bundle cache
+        id: base-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/base-analysis
+          key: bundle-sizes-${{ github.event.pull_request.base.ref }}-${{ github.event.pull_request.base.sha }}
+          restore-keys: |
+            bundle-sizes-${{ github.event.pull_request.base.ref }}-
+
+      # --- Base branch build (skipped entirely on cache hit) ---
+      - name: Checkout base branch
+        if: steps.base-cache.outputs.cache-hit != 'true'
+        run: git checkout origin/${{ github.event.pull_request.base.ref }}
+
       - name: Install dependencies (base)
+        if: steps.base-cache.outputs.cache-hit != 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Build base branch
+        if: steps.base-cache.outputs.cache-hit != 'true'
         run: |
-          # Build shared package first to ensure dependencies are available
           pnpm --filter @kit/shared build
-          # Then build web app
           pnpm --filter web build
         env:
           NEXT_PUBLIC_MONITORING_PROVIDER: ""
           NEXT_PUBLIC_ANALYTICS_PROVIDER: ""
 
+      # Optimization #4: Use exact byte counts instead of fragile human-readable parsing
       - name: Analyze base bundle sizes
+        if: steps.base-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p /tmp/base-analysis
-          # Get base bundle sizes for Next.js App Router
-          # App router uses different chunk structure
           if [ -d "apps/web/.next/static/chunks/app" ]; then
-            du -sh apps/web/.next/static/chunks/app 2>/dev/null | cut -f1 > /tmp/base-analysis/app-size.txt || echo "0K" > /tmp/base-analysis/app-size.txt
+            find apps/web/.next/static/chunks/app -name "*.js" -exec stat --format=%s {} + | awk '{sum+=$1}END{print sum+0}' > /tmp/base-analysis/app-bytes.txt
           else
-            echo "0K" > /tmp/base-analysis/app-size.txt
+            echo "0" > /tmp/base-analysis/app-bytes.txt
           fi
-          
-          # Framework and webpack chunks still exist
-          ls apps/web/.next/static/chunks/framework-*.js 2>/dev/null | head -1 | xargs -I {} du -sh {} | cut -f1 > /tmp/base-analysis/framework-size.txt || echo "0K" > /tmp/base-analysis/framework-size.txt
-          ls apps/web/.next/static/chunks/main-*.js 2>/dev/null | head -1 | xargs -I {} du -sh {} | cut -f1 > /tmp/base-analysis/main-size.txt || echo "0K" > /tmp/base-analysis/main-size.txt
-          ls apps/web/.next/static/chunks/webpack-*.js 2>/dev/null | head -1 | xargs -I {} du -sh {} | cut -f1 > /tmp/base-analysis/webpack-size.txt || echo "0K" > /tmp/base-analysis/webpack-size.txt
-          
-          # Calculate total bundle size
-          find apps/web/.next/static -name "*.js" -exec du -ch {} + | tail -1 | cut -f1 > /tmp/base-analysis/total-size.txt || echo "0K" > /tmp/base-analysis/total-size.txt
+          for chunk in framework main webpack; do
+            file=$(ls apps/web/.next/static/chunks/${chunk}-*.js 2>/dev/null | head -1)
+            if [ -n "$file" ]; then
+              stat --format=%s "$file" > /tmp/base-analysis/${chunk}-bytes.txt
+            else
+              echo "0" > /tmp/base-analysis/${chunk}-bytes.txt
+            fi
+          done
+          find apps/web/.next/static -name "*.js" -exec stat --format=%s {} + | awk '{sum+=$1}END{print sum+0}' > /tmp/base-analysis/total-bytes.txt
 
+      - name: Save base bundle cache
+        if: steps.base-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/base-analysis
+          key: bundle-sizes-${{ github.event.pull_request.base.ref }}-${{ github.event.pull_request.base.sha }}
+
+      # --- PR branch build ---
       - name: Checkout PR branch
-        run: |
-          git checkout ${{ github.event.pull_request.head.sha }}
+        if: steps.base-cache.outputs.cache-hit != 'true'
+        run: git checkout ${{ github.event.pull_request.head.sha }}
 
+      # Optimization #3: Skip reinstall when lockfile unchanged between branches
       - name: Install dependencies (PR)
-        run: pnpm install --frozen-lockfile
+        run: |
+          if [ "${{ steps.base-cache.outputs.cache-hit }}" = "true" ]; then
+            pnpm install --frozen-lockfile
+          elif git diff origin/${{ github.event.pull_request.base.ref }} HEAD -- pnpm-lock.yaml | grep -q .; then
+            pnpm install --frozen-lockfile
+          else
+            echo "Lockfile unchanged between base and PR, skipping reinstall"
+          fi
 
       - name: Build PR branch
         run: |
-          # Build shared package first to ensure dependencies are available
           pnpm --filter @kit/shared build
-          # Then build web app
           pnpm --filter web build
         env:
           NEXT_PUBLIC_MONITORING_PROVIDER: ""
@@ -100,102 +129,83 @@ jobs:
         id: bundle-analysis
         run: |
           mkdir -p /tmp/pr-analysis
-          
-          # Get PR bundle sizes for Next.js App Router
+
+          # Collect PR bundle sizes in exact bytes
           if [ -d "apps/web/.next/static/chunks/app" ]; then
-            du -sh apps/web/.next/static/chunks/app 2>/dev/null | cut -f1 > /tmp/pr-analysis/app-size.txt || echo "0K" > /tmp/pr-analysis/app-size.txt
+            find apps/web/.next/static/chunks/app -name "*.js" -exec stat --format=%s {} + | awk '{sum+=$1}END{print sum+0}' > /tmp/pr-analysis/app-bytes.txt
           else
-            echo "0K" > /tmp/pr-analysis/app-size.txt
+            echo "0" > /tmp/pr-analysis/app-bytes.txt
           fi
-          
-          ls apps/web/.next/static/chunks/framework-*.js 2>/dev/null | head -1 | xargs -I {} du -sh {} | cut -f1 > /tmp/pr-analysis/framework-size.txt || echo "0K" > /tmp/pr-analysis/framework-size.txt
-          ls apps/web/.next/static/chunks/main-*.js 2>/dev/null | head -1 | xargs -I {} du -sh {} | cut -f1 > /tmp/pr-analysis/main-size.txt || echo "0K" > /tmp/pr-analysis/main-size.txt
-          ls apps/web/.next/static/chunks/webpack-*.js 2>/dev/null | head -1 | xargs -I {} du -sh {} | cut -f1 > /tmp/pr-analysis/webpack-size.txt || echo "0K" > /tmp/pr-analysis/webpack-size.txt
-          find apps/web/.next/static -name "*.js" -exec du -ch {} + | tail -1 | cut -f1 > /tmp/pr-analysis/total-size.txt || echo "0K" > /tmp/pr-analysis/total-size.txt
-          
-          # Function to convert size to bytes for comparison
-          convert_to_bytes() {
-            local size=$1
-            # Remove any decimal points by extracting integer part only
-            if [[ $size == *"."* ]]; then
-              size=${size%%.*}${size##*.}
-              # Handle units after removing decimal
-              if [[ $size == *"K" ]]; then
-                size=${size%K}K
-              elif [[ $size == *"M" ]]; then
-                size=${size%M}M
-              elif [[ $size == *"G" ]]; then
-                size=${size%G}G
-              fi
-            fi
-            
-            if [[ $size == *"K" ]]; then
-              echo $((${size%K} * 1024))
-            elif [[ $size == *"M" ]]; then
-              echo $((${size%M} * 1024 * 1024))
-            elif [[ $size == *"G" ]]; then
-              echo $((${size%G} * 1024 * 1024 * 1024))
+          for chunk in framework main webpack; do
+            file=$(ls apps/web/.next/static/chunks/${chunk}-*.js 2>/dev/null | head -1)
+            if [ -n "$file" ]; then
+              stat --format=%s "$file" > /tmp/pr-analysis/${chunk}-bytes.txt
             else
-              echo ${size%B}
+              echo "0" > /tmp/pr-analysis/${chunk}-bytes.txt
+            fi
+          done
+          find apps/web/.next/static -name "*.js" -exec stat --format=%s {} + | awk '{sum+=$1}END{print sum+0}' > /tmp/pr-analysis/total-bytes.txt
+
+          # Format bytes to human-readable for the report table
+          format_bytes() {
+            local bytes=$1
+            if [ "$bytes" -ge 1048576 ]; then
+              local whole=$(( bytes / 1048576 ))
+              local frac=$(( (bytes % 1048576) * 10 / 1048576 ))
+              echo "${whole}.${frac}M"
+            elif [ "$bytes" -ge 1024 ]; then
+              echo "$(( bytes / 1024 ))K"
+            else
+              echo "${bytes}B"
             fi
           }
-          
-          # Function to calculate percentage change
-          calculate_change() {
-            local base=$1
-            local current=$2
-            local base_bytes=$(convert_to_bytes "$base")
-            local current_bytes=$(convert_to_bytes "$current")
-            
-            # Handle division by zero
-            if [ "$base_bytes" -eq 0 ]; then
-              if [ "$current_bytes" -eq 0 ]; then
-                echo 0
-              else
-                echo 100
-              fi
-              return
-            fi
-            
-            local change=$(( (current_bytes - base_bytes) * 100 / base_bytes ))
-            echo $change
-          }
-          
-          # Compare sizes and generate report
+
+          # Generate comparison report
           echo "# Bundle Size Analysis" > /tmp/bundle-report.md
           echo "" >> /tmp/bundle-report.md
           echo "| Bundle | Base Size | PR Size | Change | Status |" >> /tmp/bundle-report.md
           echo "|--------|-----------|---------|--------|--------|" >> /tmp/bundle-report.md
-          
+
           ALERT_NEEDED=false
           CRITICAL_ALERT=false
-          
-          # Check each bundle
+
           for bundle in app framework main webpack total; do
-            if [ -f "/tmp/base-analysis/${bundle}-size.txt" ] && [ -f "/tmp/pr-analysis/${bundle}-size.txt" ]; then
-              base_size=$(cat /tmp/base-analysis/${bundle}-size.txt)
-              pr_size=$(cat /tmp/pr-analysis/${bundle}-size.txt)
-              change=$(calculate_change "$base_size" "$pr_size")
-              
-              if [ $change -gt 10 ]; then
-                status="🚨 Critical (+${change}%)"
-                CRITICAL_ALERT=true
-                ALERT_NEEDED=true
-              elif [ $change -gt 5 ]; then
-                status="⚠️ Warning (+${change}%)"
-                ALERT_NEEDED=true
-              elif [ $change -gt 0 ]; then
-                status="📈 Increased (+${change}%)"
-              elif [ $change -lt 0 ]; then
-                status="📉 Decreased (${change}%)"
+            base_bytes=$(cat /tmp/base-analysis/${bundle}-bytes.txt 2>/dev/null || echo "0")
+            pr_bytes=$(cat /tmp/pr-analysis/${bundle}-bytes.txt 2>/dev/null || echo "0")
+            base_bytes=${base_bytes:-0}
+            pr_bytes=${pr_bytes:-0}
+
+            base_display=$(format_bytes "$base_bytes")
+            pr_display=$(format_bytes "$pr_bytes")
+
+            if [ "$base_bytes" -eq 0 ]; then
+              if [ "$pr_bytes" -eq 0 ]; then
+                change=0
               else
-                status="✅ No change"
+                change=100
               fi
-              
-              echo "| ${bundle^} | $base_size | $pr_size | ${change}% | $status |" >> /tmp/bundle-report.md
+            else
+              change=$(( (pr_bytes - base_bytes) * 100 / base_bytes ))
             fi
+
+            if [ "$change" -gt 10 ]; then
+              status="🚨 Critical (+${change}%)"
+              CRITICAL_ALERT=true
+              ALERT_NEEDED=true
+            elif [ "$change" -gt 5 ]; then
+              status="⚠️ Warning (+${change}%)"
+              ALERT_NEEDED=true
+            elif [ "$change" -gt 0 ]; then
+              status="📈 Increased (+${change}%)"
+            elif [ "$change" -lt 0 ]; then
+              status="📉 Decreased (${change}%)"
+            else
+              status="✅ No change"
+            fi
+
+            echo "| ${bundle^} | $base_display | $pr_display | ${change}% | $status |" >> /tmp/bundle-report.md
           done
-          
+
           echo "ALERT_NEEDED=$ALERT_NEEDED" >> $GITHUB_OUTPUT
           echo "CRITICAL_ALERT=$CRITICAL_ALERT" >> $GITHUB_OUTPUT
 
@@ -206,43 +216,43 @@ jobs:
           script: |
             const fs = require('fs');
             const report = fs.readFileSync('/tmp/bundle-report.md', 'utf8');
-            
+
             const isCritical = '${{ steps.bundle-analysis.outputs.CRITICAL_ALERT }}' === 'true';
-            const header = isCritical 
-              ? '🚨 **Critical Bundle Size Alert**' 
+            const header = isCritical
+              ? '🚨 **Critical Bundle Size Alert**'
               : '⚠️ **Bundle Size Alert**';
-            
+
             const body = `${header}
-            
+
             This PR introduces significant bundle size changes:
-            
+
             ${report}
-            
-            ${isCritical 
-              ? '**Action Required**: Bundle size increased by more than 10%. Please review and optimize before merging.' 
+
+            ${isCritical
+              ? '**Action Required**: Bundle size increased by more than 10%. Please review and optimize before merging.'
               : '**Review Recommended**: Bundle size increased by more than 5%. Consider optimization if possible.'
             }
-            
+
             ### Optimization Tips:
             - Check for new large dependencies
             - Use dynamic imports for heavy components
             - Review tree-shaking opportunities
             - See [Bundle Optimization Guidelines](./docs/bundle-optimization.md)
-            
+
             ---
             Generated by Bundle Size Alert workflow`;
-            
+
             // Find existing comment
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-            
-            const existingComment = comments.find(comment => 
+
+            const existingComment = comments.find(comment =>
               comment.body.includes('Bundle Size Alert')
             );
-            
+
             if (existingComment) {
               // Update existing comment
               await github.rest.issues.updateComment({
@@ -271,7 +281,7 @@ jobs:
           echo "❌ Critical bundle size increase detected (>10%)"
           echo "Bundle size increase is too significant and requires optimization before merging."
           exit 1
-      
+
       - name: Warn but don't fail for promotion PRs
         if: |
           steps.bundle-analysis.outputs.CRITICAL_ALERT == 'true' &&
@@ -285,6 +295,11 @@ jobs:
         if: always()
         run: |
           echo "## Bundle Size Analysis Complete"
+          if [ "${{ steps.base-cache.outputs.cache-hit }}" == "true" ]; then
+            echo "📦 Base bundle sizes restored from cache (skipped base build)"
+          else
+            echo "📦 Base bundle sizes built from source (cache miss)"
+          fi
           if [ "${{ steps.bundle-analysis.outputs.CRITICAL_ALERT }}" == "true" ]; then
             echo "🚨 Critical alert: Bundle size increased by more than 10%"
           elif [ "${{ steps.bundle-analysis.outputs.ALERT_NEEDED }}" == "true" ]; then

@@ -242,6 +242,52 @@ describe("event-emitter", () => {
 		});
 	});
 
+	describe("error logging behavior based on ORCHESTRATOR_UI_ENABLED", () => {
+		it("should log error when ORCHESTRATOR_UI_ENABLED is not set", async () => {
+			// Arrange: simulate network error
+			mockFetch.mockRejectedValue(new Error("Connection refused"));
+			const consoleSpy = vi
+				.spyOn(console, "error")
+				.mockImplementation(() => {});
+			delete process.env.ORCHESTRATOR_UI_ENABLED;
+
+			// Act
+			emitOrchestratorEvent("db_capacity_check", "Testing...");
+
+			// Wait for async fire-and-forget to complete
+			await new Promise((resolve) => setTimeout(resolve, 50));
+
+			// Assert: error should be logged
+			expect(consoleSpy).toHaveBeenCalledWith(
+				expect.stringContaining("⚠️ Failed to emit event to event server"),
+			);
+
+			consoleSpy.mockRestore();
+		});
+
+		it("should NOT log error when ORCHESTRATOR_UI_ENABLED is set", async () => {
+			// Arrange: simulate network error
+			mockFetch.mockRejectedValue(new Error("Connection refused"));
+			const consoleSpy = vi
+				.spyOn(console, "error")
+				.mockImplementation(() => {});
+			process.env.ORCHESTRATOR_UI_ENABLED = "true";
+
+			// Act
+			emitOrchestratorEvent("db_capacity_check", "Testing...");
+
+			// Wait for async fire-and-forget to complete
+			await new Promise((resolve) => setTimeout(resolve, 50));
+
+			// Assert: error should NOT be logged
+			expect(consoleSpy).not.toHaveBeenCalled();
+
+			// Cleanup
+			consoleSpy.mockRestore();
+			delete process.env.ORCHESTRATOR_UI_ENABLED;
+		});
+	});
+
 	describe("concurrent event emission", () => {
 		it("should handle multiple rapid fire events without issues", async () => {
 			// Arrange: Add small delay to simulate network

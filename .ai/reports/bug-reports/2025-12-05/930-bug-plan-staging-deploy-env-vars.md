@@ -205,7 +205,7 @@ The bug reproduces when the staging-deploy workflow runs:
 
 ```bash
 # Check workflow run from GitHub Actions
-# Visit: https://github.com/MLorneSmith/2025slideheroes/actions/runs/19972690271
+# Visit: https://github.com/slideheroes/2025slideheroes/actions/runs/19972690271
 # Expected: "Build application" step fails with ZodError for missing environment variables
 ```
 
@@ -223,7 +223,7 @@ git commit -m "fix(ci): add missing environment variables to staging deployment 
 git push origin staging
 
 # Monitor workflow execution
-# Visit: https://github.com/MLorneSmith/2025slideheroes/actions
+# Visit: https://github.com/slideheroes/2025slideheroes/actions
 # Expected: Full Test Suite job completes successfully with no environment variable errors
 ```
 

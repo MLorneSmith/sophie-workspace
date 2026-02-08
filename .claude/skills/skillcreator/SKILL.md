@@ -3,7 +3,7 @@ name: skillcreator
 description: "Ultimate meta-skill for creating production-ready Claude Code skills. Uses deep iterative analysis with 11 thinking models, regression questioning until exhausted, evolution and timelessness as core lens, and multi-agent synthesis panel for unanimous approval. Includes automation analysis for agentic scripts. Fully autonomous execution at maximum depth produces categorically the best possible skills."
 license: MIT
 metadata:
-  version: 3.2.0
+  version: 3.2.1
   model: opus
   subagent_model: opus
   domains: [meta-skill, automation, skill-creation, orchestration, agentic]
@@ -93,12 +93,33 @@ Production-Ready Agentic Skill
 | `SkillCreator: {goal}` | Full autonomous execution |
 | `SkillCreator --plan-only {goal}` | Generate specification only |
 | `SkillCreator --quick {goal}` | Reduced depth (not recommended) |
+| `python scripts/init_skill.py <name> --path <dir>` | Scaffold new skill directory |
 
 ---
 
-## Validation & Packaging
+## Scaffolding & Validation
 
-Before distribution, validate your skill:
+### Initialize a New Skill
+
+Use `init_skill.py` to scaffold a new skill directory:
+
+```bash
+python scripts/init_skill.py my-skill --path ~/.claude/skills
+```
+
+This creates:
+```
+my-skill/
+├── SKILL.md           # Template with TODOs
+├── scripts/
+│   └── example.py     # Script following Result pattern
+├── references/
+│   └── guide.md       # Reference doc placeholder
+└── assets/
+    └── README.md      # Asset placeholder
+```
+
+### Validate Before Distribution
 
 ```bash
 # Quick validation (required for packaging)
@@ -701,7 +722,11 @@ SKILLCREATOR_CONFIG:
 
 ## Changelog
 
-### v3.2.0 (Current)
+### v3.2.1 (Current)
+- Added `scripts/init_skill.py` for scaffolding new skills
+- Added "Scaffolding & Validation" section to documentation
+
+### v3.2.0
 - Added Script Integration Framework for agentic skills
 - Added 4th Script Agent to synthesis panel (conditional)
 - Added Phase 1D: Automation Analysis

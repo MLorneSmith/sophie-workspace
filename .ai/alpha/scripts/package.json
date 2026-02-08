@@ -5,12 +5,14 @@
 	"private": true,
 	"scripts": {
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run",
+		"test": "vitest run && pnpm --filter @slideheroes/orchestrator-ui test",
+		"test:lib": "vitest run",
+		"test:ui": "pnpm --filter @slideheroes/orchestrator-ui test",
 		"test:watch": "vitest",
 		"test:coverage": "vitest run --coverage"
 	},
 	"dependencies": {
-		"@e2b/code-interpreter": "^2.3.1",
+		"@e2b/code-interpreter": "^2.3.3",
 		"ink": "^6.6.0",
 		"react": "19.2.1"
 	},

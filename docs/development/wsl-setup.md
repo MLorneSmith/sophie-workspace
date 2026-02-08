@@ -205,11 +205,11 @@ cat /proc/sys/fs/inotify/max_user_watches  # Should show 1048576
 ```bash
 # ✅ CORRECT - WSL filesystem (fast)
 cd ~
-git clone https://github.com/MLorneSmith/2025slideheroes.git
+git clone https://github.com/slideheroes/2025slideheroes.git
 
 # ❌ WRONG - Windows filesystem (10-100x slower)
 cd /mnt/c/Users/YourName/Projects
-git clone https://github.com/MLorneSmith/2025slideheroes.git
+git clone https://github.com/slideheroes/2025slideheroes.git
 ```
 
 **Why?** Cross-filesystem access between Windows and WSL is extremely slow due to protocol translation overhead.
@@ -448,7 +448,7 @@ After configuring WSL, follow these steps for SlideHeroes development:
 
    ```bash
    cd ~
-   git clone https://github.com/MLorneSmith/2025slideheroes.git
+   git clone https://github.com/slideheroes/2025slideheroes.git
    cd 2025slideheroes
    ```
 

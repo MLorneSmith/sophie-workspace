@@ -42,37 +42,37 @@ parse_build_errors() {
     # ESBuild errors: "X errors"
     if [ "$error_count" -eq 0 ] && grep -qE "^[0-9]+ errors?" "$output_file" 2>/dev/null; then
         local esbuild_errors
-        esbuild_errors=$(grep -oE "^([0-9]+) errors?" "$output_file" | grep -oE "[0-9]+" | head -1 || echo "0")
+        esbuild_errors=$(grep -oE "^([0-9]+) errors?" "$output_file" | grep -oE "[0-9]+" | head -1) || esbuild_errors=0
         error_count=$((error_count + ${esbuild_errors:-0}))
     fi
 
     # Webpack errors: "ERROR in"
     if [ "$error_count" -eq 0 ]; then
         local webpack_errors
-        webpack_errors=$(grep -cE "^ERROR in" "$output_file" 2>/dev/null || echo "0")
+        webpack_errors=$(grep -cE "^ERROR in" "$output_file" 2>/dev/null) || webpack_errors=0
         error_count=$((error_count + ${webpack_errors:-0}))
     fi
 
     # Vite errors: "error:"
     if [ "$error_count" -eq 0 ]; then
         local vite_errors
-        vite_errors=$(grep -cE "error:" "$output_file" 2>/dev/null || echo "0")
+        vite_errors=$(grep -cE "error:" "$output_file" 2>/dev/null) || vite_errors=0
         error_count=$((error_count + ${vite_errors:-0}))
     fi
 
     # Next.js errors: "Failed to compile"
     if [ "$error_count" -eq 0 ] && grep -qE "Failed to compile" "$output_file" 2>/dev/null; then
-        error_count=$(grep -cE "^Error:" "$output_file" 2>/dev/null || echo "1")
+        error_count=$(grep -cE "^Error:" "$output_file" 2>/dev/null) || error_count=1
     fi
 
     # Turbo errors: Look for "command .* exited"
     if [ "$error_count" -eq 0 ] && grep -qE "command.*exited \([0-9]+\)" "$output_file" 2>/dev/null; then
-        error_count=$(grep -cE "command.*exited \([0-9]+\)" "$output_file" 2>/dev/null || echo "1")
+        error_count=$(grep -cE "command.*exited \([0-9]+\)" "$output_file" 2>/dev/null) || error_count=1
     fi
 
     # Generic fallback: count "error" occurrences (case insensitive, excluding warnings)
     if [ "$error_count" -eq 0 ]; then
-        error_count=$(grep -ciE "^[^w]*error[^s]" "$output_file" 2>/dev/null || echo "0")
+        error_count=$(grep -ciE "^[^w]*error[^s]" "$output_file" 2>/dev/null) || error_count=0
     fi
 
     # Sanitize output

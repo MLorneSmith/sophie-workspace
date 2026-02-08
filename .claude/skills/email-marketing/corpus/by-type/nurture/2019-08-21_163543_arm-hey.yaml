@@ -1,0 +1,177 @@
+# Email Export - [ARM] Hey :)
+# Exported from Gmail on 2026-01-24T18:15:26.017Z
+# Fill in the annotations section to capture writing style patterns
+---
+metadata:
+  id: "16cb5e474462d817"
+  exportedAt: "2026-01-24T18:15:26.017Z"
+  source: "gmail"
+  labels:
+    - "andre"
+    - "IMPORTANT"
+    - "Experts/Email marketing examples/Andre Chaperon"
+    - "CATEGORY_UPDATES"
+headers:
+  from: "\"Andre Chaperon\" <hello@tinylittlebusinesses.com>"
+  to: "Michael <msmith@slideheroes.com>"
+  subject: "[ARM] Hey :)"
+  date: "Wed, 21 Aug 2019 20:35:43 +0000 (UTC)"
+  messageId: "<nrHeFPChS_2J98utgiaePw@ismtpd0037p1mdw1.sendgrid.net>"
+thread:
+  threadId: "16cb5e474462d817"
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: "I'm going to keep this email short.
+
+
+    Firstly:
+
+
+    Real glad you've invested in ARM.
+
+
+    Smart move. (Will also make more sense when you read the next
+
+    email.)
+
+
+    It's going put a very positive \"dent\" in your world, that's for
+
+    damn sure.
+
+
+    Now go here and read Lesson #1 of ARM:
+
+
+    https://tinylittlebusinesses.com/academy/ (
+
+    https://el2.convertkit-mail2.com/c/o8uz40ov2nuwu804l8sv/n2hohvhx7exl5v/aHR0cHM6Ly90aW55bGl0dGxlYnVzaW5lc3Nlcy5jb20vYWNhZGVteS8= )
+
+
+    Let's continue this tomorrow.
+
+
+    Andre \"appreciate your business\" Chaperon
+
+
+    --
+
+    BACK MATTER:
+
+
+    This email has been lovingly handcrafted by yours truly and sent
+
+    with the awesome ConvertKit ( https://el2.convertkit-mail2.com/c/o8uz40ov2nuwu804l8sv/mvu7h5hq4wql0z/aHR0cHM6Ly90cnljb252ZXJ0a2l0LmNvbS8= )
+
+    service (full review here ( https://el2.convertkit-mail2.com/c/o8uz40ov2nuwu804l8sv/6xieh8h590536q/aHR0cHM6Ly90aW55bGl0dGxlYnVzaW5lc3Nlcy5jb20vc3dpdGNoaW5nLXRvLWNvbnZlcnRraXQv ): and
+
+    why I moved from Drip & ActiveCampaign).
+
+
+    Marketing Upgraded newsletter status:
+
+    Subscribed (or unsubscribe ( https://el2.convertkit-mail2.com/c/o8uz40ov2nuwu804l8sv/l8fwoxnwfmhnxwndol/aHR0cHM6Ly90aW55bGl0dGxlYnVzaW5lc3Nlcy5jb20vbmV3c2xldHRlci91bnN1YnNjcmliZWQv ) from it)
+
+
+    More Awesomeness: Blog ( https://el2.convertkit-mail2.com/c/o8uz40ov2nuwu804l8sv/3kcphkh2pv2k74/aHR0cHM6Ly90aW55bGl0dGxlYnVzaW5lc3Nlcy5jb20vYmxvZy8= ) / Products
+
+    ( https://el2.convertkit-mail2.com/c/o8uz40ov2nuwu804l8sv/47svhehpxkp7rg/aHR0cHM6Ly90aW55bGl0dGxlYnVzaW5lc3Nlcy5jb20vcHJvZHVjdHMv ) / Manifestos (
+
+    https://el2.convertkit-mail2.com/c/o8uz40ov2nuwu804l8sv/82aqhoh2rk27lz/aHR0cHM6Ly90aW55bGl0dGxlYnVzaW5lc3Nlcy5jb20vbWFuaWZlc3Rvcy8= )
+
+
+    By the way: It's an honor to have the opportunity to be in touch
+
+    with you, but if it's no longer of interest, no worries! Just
+
+    click the 'unsubscribe' link below:
+
+
+    UNSUBSCRIBE ( Unsubscribe ( https://el2.convertkit-mail2.com/u/o8uz40ov2nuwu804l8sv ) ) (deleted from our
+
+    email system) / or / update your profile (
+
+    Update your profile ( https://el2.convertkit-mail2.com/preferences/o8uz40ov2nuwu804l8sv ) ) (change your email address or
+
+    update your personilization if I have it incorrect)
+
+
+    Suite 23, Portland House, Gibraltar, Gibraltar GX11 1AA"
+  hasHtml: true
+annotations:
+  # === CAMPAIGN CONTEXT ===
+  campaign: "ARM"
+  campaign_full: "AutoResponder Madness Nurture Sequence"
+  position: 1
+  sequence_length: null
+  email_type: "nurture"
+
+  # === PURPOSE & AUDIENCE ===
+  purpose: |
+    First nurture email after purchase to validate buying decision, direct to
+    course content, and create anticipation for the ongoing email sequence.
+
+  audience: "New ARM purchasers on day one"
+
+  # === TECHNIQUES USED ===
+  techniques_used:
+    - technique: "Campaign Abbreviation in Subject"
+      location: "subject_line"
+      example: "[ARM] Hey :)"
+      notes: "Tags email as part of series, creates recognition"
+    - technique: "Promise of Brevity"
+      location: "opening"
+      example: "I'm going to keep this email short."
+      notes: "Sets expectations, reduces perceived effort to read"
+    - technique: "Short Line Rhythm"
+      location: "throughout"
+      example: "Firstly:\n\nReal glad you've invested in ARM.\n\nSmart move."
+      notes: "Single sentence paragraphs create easy reading flow"
+    - technique: "Validation"
+      location: "body"
+      example: "Smart move. (Will also make more sense when you read the next email.)"
+      notes: "Affirms purchase decision while teasing future content"
+    - technique: "Open Loop"
+      location: "body"
+      example: "(Will also make more sense when you read the next email.)"
+      notes: "Creates curiosity for tomorrow's email"
+    - technique: "Confidence Statement"
+      location: "body"
+      example: "It's going put a very positive 'dent' in your world, that's for damn sure."
+      notes: "Bold promise with casual profanity for emphasis"
+    - technique: "Clever Signature"
+      location: "sign-off"
+      example: "Andre \"appreciate your business\" Chaperon"
+      notes: "Signature phrase technique - different each email"
+    - technique: "Continuity Promise"
+      location: "closing"
+      example: "Let's continue this tomorrow."
+      notes: "Frames series as ongoing conversation"
+
+  # === HOOK ANALYSIS ===
+  hook:
+    type: "contrarian"
+    text: "I'm going to keep this email short."
+    effectiveness: "Unexpected meta-commentary creates immediate engagement"
+
+  # === STRUCTURAL NOTES ===
+  structure:
+    opening: "Brevity promise + appreciation"
+    body: "Validation + confidence + single CTA"
+    closing: "Continuity promise + clever signature + back matter"
+
+  # === WHAT MAKES THIS EMAIL EFFECTIVE ===
+  effectiveness_notes: |
+    - Ultra-short format (under 75 words main content)
+    - Open loop technique teases next email
+    - Clever signature phrase creates brand recognition
+    - Casual profanity ("damn sure") feels authentic
+    - Back matter creates trust with transparency
+
+  # === QUOTABLE LINES ===
+  quotable:
+    - "It's going put a very positive 'dent' in your world, that's for damn sure."
+    - "Let's continue this tomorrow."

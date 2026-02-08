@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
 	containsTemplateTags,
 	TemplateTagProcessor,
@@ -22,6 +23,26 @@ type ContentNode = {
 	toHTML?: () => string;
 	fields?: { htmlContent?: string; html?: string };
 };
+
+// Type for Payload upload nodes
+// - node.value = Media document (url, filename, alt, width, height)
+// - node.fields = custom UploadFeature fields (caption, altText from Posts.ts)
+interface UploadNode {
+	type: "upload";
+	value?: {
+		id?: string;
+		url?: string | null;
+		filename?: string | null;
+		alt?: string | null;
+		width?: number | null;
+		height?: number | null;
+	};
+	fields?: {
+		url?: string | null;
+		altText?: string | null;
+		caption?: string | null;
+	};
+}
 
 // Helper function to find HTML content in various locations
 function findHtmlContent(node: ContentNode): string | null {
@@ -973,6 +994,64 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 											</div>
 										);
 									}
+								}
+
+								// Handle upload (image) nodes
+								if (node.type === "upload") {
+									const uploadNode = node as UploadNode;
+
+									// Payload stores data in two places:
+									// - node.value = Media document (url, filename, alt, width, height)
+									// - node.fields = custom UploadFeature fields (caption, altText)
+									const mediaDoc = uploadNode.value ?? {};
+									const customFields = uploadNode.fields ?? {};
+
+									// Get the image URL from the media document
+									// Payload provides the full URL directly - no need to construct it
+									const imageUrl = mediaDoc.url ?? customFields.url ?? null;
+
+									// Alt text: prefer custom field, fallback to media doc, then filename
+									// Empty string marks image as decorative per WCAG guidelines
+									const altText =
+										customFields.altText ??
+										mediaDoc.alt ??
+										mediaDoc.filename ??
+										"";
+
+									// Caption comes from custom fields only
+									const caption = customFields.caption ?? null;
+
+									// Image dimensions for proper layout (prevents CLS)
+									// next/image requires dimensions - use defaults if not provided
+									const width = mediaDoc.width ?? 1200;
+									const height = mediaDoc.height ?? 800;
+
+									if (!imageUrl) {
+										// Debug: log the node structure if URL not found
+										if (DEBUG) debugLog("Upload node missing URL:", node);
+										return null;
+									}
+
+									return (
+										<figure
+											key={`upload-${i}-${mediaDoc.id ?? "img"}`}
+											className="my-6"
+										>
+											<Image
+												src={imageUrl}
+												alt={altText}
+												width={width}
+												height={height}
+												className="w-full rounded-lg"
+												sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
+											/>
+											{caption && (
+												<figcaption className="mt-2 text-center text-sm text-muted-foreground">
+													{caption}
+												</figcaption>
+											)}
+										</figure>
+									);
 								}
 
 								// For any unhandled node types, log them for debugging

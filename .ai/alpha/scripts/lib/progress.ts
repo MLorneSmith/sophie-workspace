@@ -221,13 +221,13 @@ export function writeUIProgress(
 * @param sandboxLabel - Label of the sandbox
 * @param instance - Sandbox instance
 * @param waitingReason - Human-readable reason for waiting
-* @param blockedBy - Feature IDs that are blocking
+* @param blockedBy - Feature IDs that are blocking (semantic or legacy string format)
  */
 export function writeIdleProgress(
 	sandboxLabel: string,
 	instance: SandboxInstance,
 	waitingReason?: string,
-	blockedBy?: number[],
+	blockedBy?: string[],
 ): void {
 	const progressDir = ensureUIProgressDir();
 	const filePath = path.join(progressDir, `${sandboxLabel}-progress.json`);
@@ -284,7 +284,7 @@ export function clearUIProgress(): void {
 // ============================================================================
 
 export interface ProgressPoller {
-	stop: () => void;
+	stop: () => Promise<void>;
 	getLastProgress: () => SandboxProgress | null;
 }
 
@@ -316,69 +316,87 @@ export function startProgressPolling(
 	let lastDisplayed = "";
 	let isPolling = true;
 	let lastProgress: SandboxProgress | null = null;
+	// Track current poll iteration to allow stop() to await completion
+	// This prevents race conditions where stale data overwrites new feature data
+	let currentPollPromise: Promise<void> | null = null;
 
 	const poll = async () => {
 		while (isPolling) {
-			try {
-				const result = await sandbox.commands.run(
-					`cat ${WORKSPACE_DIR}/${PROGRESS_FILE} 2>/dev/null`,
-					{ timeoutMs: 5000 },
-				);
+			// Wrap the poll iteration in a tracked promise
+			// This allows stop() to await any in-flight async operations
+			currentPollPromise = (async () => {
+				try {
+					const result = await sandbox.commands.run(
+						`cat ${WORKSPACE_DIR}/${PROGRESS_FILE} 2>/dev/null`,
+						{ timeoutMs: 5000 },
+					);
 
-				if (result.stdout?.trim()) {
-					const progress: SandboxProgress = JSON.parse(result.stdout);
+					// Early exit if stop() was called during the async operation
+					// This prevents writing stale data after a new poller has started
+					if (!isPolling) return;
 
-					// Handle stale progress data from previous sessions
-					if (progress.last_heartbeat) {
-						const heartbeatTime = new Date(progress.last_heartbeat).getTime();
-						const sessionStart = sessionStartTime.getTime() - 5 * 60 * 1000;
-						if (heartbeatTime < sessionStart) {
-							// Write recovery status to UI before skipping stale data
-							// This prevents UI from showing permanently stale information
-							if (uiEnabled && instance) {
-								writeUIProgress(
-									sandboxLabel,
-									{
-										...progress,
-										status: "recovering",
-										phase: "recovering",
-										last_heartbeat: new Date().toISOString(),
-									},
-									instance,
-									feature ?? null,
-									outputTracker,
-								);
+					if (result.stdout?.trim()) {
+						const progress: SandboxProgress = JSON.parse(result.stdout);
+
+						// Handle stale progress data from previous sessions
+						if (progress.last_heartbeat) {
+							const heartbeatTime = new Date(progress.last_heartbeat).getTime();
+							const sessionStart = sessionStartTime.getTime() - 5 * 60 * 1000;
+							if (heartbeatTime < sessionStart) {
+								// Write recovery status to UI before skipping stale data
+								// This prevents UI from showing permanently stale information
+								if (uiEnabled && instance) {
+									writeUIProgress(
+										sandboxLabel,
+										{
+											...progress,
+											status: "recovering",
+											phase: "recovering",
+											last_heartbeat: new Date().toISOString(),
+										},
+										instance,
+										feature ?? null,
+										outputTracker,
+									);
+								}
+								return;
 							}
-							continue;
+						}
+
+						// Another early exit check before writing progress
+						if (!isPolling) return;
+
+						lastProgress = progress;
+
+						// Write progress to UI files if enabled (includes recent output)
+						if (uiEnabled && instance) {
+							writeUIProgress(
+								sandboxLabel,
+								progress,
+								instance,
+								feature ?? null,
+								outputTracker,
+							);
+						}
+
+						// Only display console updates if UI is not enabled
+						if (!uiEnabled) {
+							lastDisplayed = displayProgressUpdate(
+								progress,
+								featureTaskCount,
+								lastDisplayed,
+								sandboxLabel,
+							);
 						}
 					}
-
-					lastProgress = progress;
-
-					// Write progress to UI files if enabled (includes recent output)
-					if (uiEnabled && instance) {
-						writeUIProgress(
-							sandboxLabel,
-							progress,
-							instance,
-							feature ?? null,
-							outputTracker,
-						);
-					}
-
-					// Only display console updates if UI is not enabled
-					if (!uiEnabled) {
-						lastDisplayed = displayProgressUpdate(
-							progress,
-							featureTaskCount,
-							lastDisplayed,
-							sandboxLabel,
-						);
-					}
+				} catch {
+					// Ignore polling errors - sandbox may be busy
 				}
-			} catch {
-				// Ignore polling errors - sandbox may be busy
-			}
+			})();
+
+			// Wait for the current poll iteration to complete
+			await currentPollPromise;
+			currentPollPromise = null;
 
 			if (isPolling) {
 				await sleep(PROGRESS_POLL_INTERVAL_MS);
@@ -390,8 +408,13 @@ export function startProgressPolling(
 	poll();
 
 	return {
-		stop: () => {
+		stop: async () => {
 			isPolling = false;
+			// Wait for any in-flight poll iteration to complete
+			// This ensures no stale writes occur after stop() returns
+			if (currentPollPromise) {
+				await currentPollPromise;
+			}
 		},
 		getLastProgress: () => lastProgress,
 	};

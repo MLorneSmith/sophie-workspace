@@ -11,7 +11,7 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 } from "@kit/ui/shadcn-sidebar";
-import { BarChart, LayoutDashboard, Users } from "lucide-react";
+import { BarChart, LayoutDashboard, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -76,6 +76,19 @@ export function AdminSidebar() {
 								>
 									<BarChart className={"h-4"} />
 									<span>API Usage</span>
+								</Link>
+							</SidebarMenuButton>
+
+							<SidebarMenuButton
+								isActive={path.includes("/admin/settings")}
+								asChild
+							>
+								<Link
+									className={"flex size-full gap-2.5"}
+									href={"/admin/settings"}
+								>
+									<Settings className={"h-4"} />
+									<span>Settings</span>
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenu>

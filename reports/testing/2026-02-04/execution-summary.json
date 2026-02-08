@@ -1,0 +1,29 @@
+{
+	"executionDate": "2026-02-04",
+	"lastUpdated": "2026-02-04T18:49:51.669Z",
+	"totalShards": 0,
+	"completedShards": 1,
+	"failedShards": 1,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 6,
+		"passed": 4,
+		"failed": 1,
+		"skipped": 1,
+		"intentionalFailures": 0
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Authentication",
+			"success": false,
+			"duration": "219s",
+			"tests": 6,
+			"passed": 4,
+			"failures": 1,
+			"skipped": 1,
+			"intentionalFailures": 0,
+			"timedOut": false
+		}
+	]
+}

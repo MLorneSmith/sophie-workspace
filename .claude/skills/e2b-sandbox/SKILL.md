@@ -63,6 +63,126 @@ Get your API key from: https://e2b.dev/dashboard
 
 ---
 
+## Scripts - Non-Interactive Automation
+
+The skill includes utility scripts for non-interactive automation, CI/CD pipelines, and background processes.
+
+### Available Scripts
+
+| Script | Language | Purpose | When to Use |
+|--------|----------|---------|-------------|
+| `sandbox` | Bash | Main CLI wrapper | Quick sandbox operations from terminal |
+| `e2b-wrapper` | Bash | CLI non-interactive wrapper | CI/CD pipelines using E2B CLI |
+| `e2b-sdk.py` | Python | SDK-based manager | Full automation, no CLI dependency |
+| `sandbox-cli.ts` | TypeScript | Full-featured CLI | Complex workflows with logging |
+| `sandbox_manager.py` | Python | Legacy SDK manager | Basic sandbox operations |
+
+### Quick Start
+
+```bash
+# Using the main sandbox wrapper (recommended)
+.claude/skills/e2b-sandbox/scripts/sandbox create
+.claude/skills/e2b-sandbox/scripts/sandbox list
+.claude/skills/e2b-sandbox/scripts/sandbox kill <id>
+
+# Using Python SDK directly (no CLI required)
+python .claude/skills/e2b-sandbox/scripts/e2b-sdk.py sandbox list --json
+python .claude/skills/e2b-sandbox/scripts/e2b-sdk.py sandbox create --template base
+python .claude/skills/e2b-sandbox/scripts/e2b-sdk.py sandbox exec <id> "ls -la"
+
+# Using CLI wrapper (wraps interactive CLI for automation)
+.claude/skills/e2b-sandbox/scripts/e2b-wrapper sandbox-list --json
+.claude/skills/e2b-sandbox/scripts/e2b-wrapper sandbox-kill-all --force
+```
+
+### e2b-sdk.py - Python SDK Manager
+
+**Best for:** Full automation, CI/CD, background processes, no CLI dependency
+
+```bash
+# Sandbox operations
+python e2b-sdk.py sandbox create --template base --timeout 300
+python e2b-sdk.py sandbox list --json
+python e2b-sdk.py sandbox status <sandbox-id>
+python e2b-sdk.py sandbox kill <sandbox-id>
+python e2b-sdk.py sandbox kill-all --confirm
+python e2b-sdk.py sandbox exec <sandbox-id> "git status"
+python e2b-sdk.py sandbox url <sandbox-id> --port 3000
+
+# File operations
+python e2b-sdk.py sandbox files-read <sandbox-id> /home/user/project/package.json
+python e2b-sdk.py sandbox files-write <sandbox-id> /tmp/test.txt "content"
+python e2b-sdk.py sandbox files-list <sandbox-id> /home/user/project
+
+# Auth check
+python e2b-sdk.py auth check
+```
+
+**Exit Codes:**
+| Code | Meaning |
+|------|---------|
+| 0 | Success |
+| 1 | General failure |
+| 2 | Invalid arguments |
+| 10 | Authentication failure |
+| 11 | Resource not found |
+| 12 | Execution timeout |
+
+### e2b-wrapper - CLI Wrapper
+
+**Best for:** Wrapping interactive CLI commands in automation scripts
+
+```bash
+# Auth
+./e2b-wrapper auth-check
+
+# Templates
+./e2b-wrapper template-list --json
+./e2b-wrapper template-build my-template --cpu 4 --memory 2048
+./e2b-wrapper template-delete <template-id> --force
+
+# Sandboxes
+./e2b-wrapper sandbox-list --json --state running
+./e2b-wrapper sandbox-kill <sandbox-id>
+./e2b-wrapper sandbox-kill-all --force
+```
+
+### sandbox - Main CLI
+
+**Best for:** Interactive use, complex workflows with VS Code Web integration
+
+```bash
+# Basic operations
+./sandbox create --timeout 600
+./sandbox list --json
+./sandbox kill <sandbox-id>
+
+# Run Claude Code
+./sandbox run-claude "/feature add auth" --sandbox <id>
+
+# Feature workflow with review gates
+./sandbox feature "#123 Add dark mode"    # Phase 1: Planning
+./sandbox continue <sandbox-id>            # Phase 2: Implementation
+./sandbox approve <sandbox-id>             # Phase 3: PR creation
+
+# Git operations
+./sandbox diff <sandbox-id>
+./sandbox pr <sandbox-id> "Fix auth bug"
+```
+
+### Environment Variables
+
+Scripts automatically load from `.env` and `apps/web/.env.local`:
+
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `E2B_API_KEY` | Yes | E2B authentication |
+| `GITHUB_TOKEN` | For git ops | GitHub authentication |
+| `ANTHROPIC_API_KEY` | For Claude | Claude Code API access |
+| `CLAUDE_CODE_OAUTH_TOKEN` | Alternative | Claude Code OAuth (Max plan) |
+
+---
+
 ## Creating Custom Templates for AI Agents
 
 ### Step 1: Initialize Template
@@ -174,8 +294,8 @@ The template definition in `packages/e2b/e2b-template/template.ts` uses conditio
 
 ```typescript
 const REPO_URL = GITHUB_TOKEN
-  ? `https://${GITHUB_TOKEN}@github.com/MLorneSmith/2025slideheroes.git`  // ← Authenticated
-  : "https://github.com/MLorneSmith/2025slideheroes.git";  // ← Fails for private repos
+  ? `https://${GITHUB_TOKEN}@github.com/slideheroes/2025slideheroes.git`  // ← Authenticated
+  : "https://github.com/slideheroes/2025slideheroes.git";  // ← Fails for private repos
 ```
 
 If `GITHUB_TOKEN` is not set during build, the unauthenticated URL is baked into the template, causing "fatal: not a git repository" errors when sandboxes are created.
@@ -185,7 +305,7 @@ If `GITHUB_TOKEN` is not set during build, the unauthenticated URL is baked into
 1. **E2B API Key**: Get from https://e2b.dev/dashboard
 2. **GitHub Token**: Create at https://github.com/settings/tokens
    - Needs `repo` scope for private repository access
-   - Can use a fine-grained token scoped to MLorneSmith/2025slideheroes
+   - Can use a fine-grained token scoped to slideheroes/2025slideheroes
 
 ### Rebuild Steps
 
@@ -530,7 +650,7 @@ start-dev       # Start pnpm dev on port 3000
 
 ### Accessing Services
 
-When using the `/sandbox feature` workflow, URLs are provided automatically:
+When using the `/alpha:sandbox feature` workflow, URLs are provided automatically:
 
 ```
 VS Code Web: https://{sandbox-id}-8080.e2b.app
@@ -553,12 +673,12 @@ dev_host = sandbox.get_host(3000)
 
 ## Sequential Feature Workflow
 
-The `/sandbox feature` command implements a human-in-the-loop workflow:
+The `/alpha:sandbox feature` command implements a human-in-the-loop workflow:
 
 ### Workflow Phases
 
 ```
-Phase 1: /sandbox feature "#123 Add dark mode"
+Phase 1: /alpha:sandbox feature "#123 Add dark mode"
   ├── Create sandbox
   ├── Sync with dev branch
   ├── Create branch: sandbox/issue123-add-dark-mode
@@ -566,13 +686,13 @@ Phase 1: /sandbox feature "#123 Add dark mode"
   ├── Start VS Code Web
   └── PAUSE for plan review
 
-Phase 2: /sandbox continue <sandbox-id>
+Phase 2: /alpha:sandbox continue <sandbox-id>
   ├── Run Claude Code: /implement (executes plan)
   ├── Start dev server
   ├── Run Claude Code: /review (AI reviews code)
   └── PAUSE for code review
 
-Phase 3: /sandbox approve <sandbox-id>
+Phase 3: /alpha:sandbox approve <sandbox-id>
   ├── Commit all changes
   ├── Push branch to origin
   └── Create PR → dev

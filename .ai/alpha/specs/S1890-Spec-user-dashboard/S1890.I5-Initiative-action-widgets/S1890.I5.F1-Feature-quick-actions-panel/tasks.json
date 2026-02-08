@@ -1,0 +1,456 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1890.I5.F1",
+    "feature_name": "Quick Actions Panel",
+    "feature_slug": "quick-actions-panel",
+    "initiative_id": "S1890.I5",
+    "spec_id": "1890",
+    "created_at": "2026-02-02T00:00:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1890.I5.F1.T1", "S1890.I5.F1.T5"]
+  },
+  "tasks": [
+    {
+      "id": "S1890.I5.F1.T1",
+      "type": "task",
+      "name": "Create QuickActionsPanel component skeleton",
+      "action": { "verb": "Create", "target": "QuickActionsPanel component file" },
+      "purpose": "Establish component structure with props interface and Card layout",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Quick Actions" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+          "Trans from @kit/ui/trans"
+        ],
+        "constraints": [
+          "Server component only (no 'use client' directive)",
+          "Must accept UserDashboardData type as props",
+          "Use semantic Tailwind classes for dark mode support"
+        ]
+      },
+      "input_state": "No QuickActionsPanel component exists. UserDashboardData type defined in S1890.I2.F1.",
+      "output_state": "QuickActionsPanel.tsx exists with Card structure, props interface, and placeholder content",
+      "acceptance_criterion": "Component renders with Card layout and title 'Quick Actions'",
+      "verification_command": "grep -q 'interface QuickActionsPanelProps' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && grep -q 'CardTitle.*Quick Actions' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1890.I5.F1.T2", "S1890.I5.F1.T3", "S1890.I5.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I5.F1.T2",
+      "type": "task",
+      "name": "Add action determination logic for course actions",
+      "action": { "verb": "Add", "target": "conditional logic for course-related actions" },
+      "purpose": "Determine whether to show 'Start Your Journey' or 'Continue Course' based on course progress",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx",
+          "apps/web/app/home/(user)/_lib/types/user-dashboard.types.ts"
+        ],
+        "dependencies": [
+          "UserDashboardData.courseProgress field",
+          "If component from @kit/ui/if",
+          "Link from next/link",
+          "buttonVariants from @kit/ui/button"
+        ],
+        "constraints": [
+          "Use If component for conditional rendering",
+          "Check courseProgress to determine state",
+          "Link to /home/course for both actions",
+          "Use Play icon from lucide-react"
+        ]
+      },
+      "input_state": "QuickActionsPanel skeleton exists. No action buttons rendered.",
+      "output_state": "Component conditionally renders course action button based on courseProgress data",
+      "acceptance_criterion": "Component shows 'Start Your Journey' if no course progress, 'Continue Course' if progress exists",
+      "verification_command": "grep -qE '(Start Your Journey|Continue Course)' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && grep -q 'courseProgress' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I5.F1.T1"],
+        "blocks": ["S1890.I5.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I5.F1.T3",
+      "type": "task",
+      "name": "Add action determination logic for assessment action",
+      "action": { "verb": "Add", "target": "conditional logic for skills assessment action" },
+      "purpose": "Determine whether to show 'Take Skills Assessment' based on assessment completion",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx",
+          "apps/web/app/home/(user)/_lib/types/user-dashboard.types.ts"
+        ],
+        "dependencies": [
+          "UserDashboardData.surveyScores field",
+          "If component from @kit/ui/if",
+          "Link from next/link",
+          "buttonVariants from @kit/ui/button"
+        ],
+        "constraints": [
+          "Use If component for conditional rendering",
+          "Check surveyScores to determine if assessment taken",
+          "Link to /home/assessment",
+          "Use Target icon from lucide-react"
+        ]
+      },
+      "input_state": "QuickActionsPanel has course action. No assessment action yet.",
+      "output_state": "Component conditionally renders assessment action button if no assessment taken",
+      "acceptance_criterion": "Component shows 'Take Skills Assessment' button only if surveyScores is null or empty",
+      "verification_command": "grep -q 'Take Skills Assessment' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && grep -q 'surveyScores' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I5.F1.T1"],
+        "blocks": ["S1890.I5.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I5.F1.T4",
+      "type": "task",
+      "name": "Add action determination logic for presentation actions",
+      "action": { "verb": "Add", "target": "conditional logic for presentation-related actions" },
+      "purpose": "Show 'Review Storyboard' if drafts exist, and always show 'New Presentation' action",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx",
+          "apps/web/app/home/(user)/_lib/types/user-dashboard.types.ts"
+        ],
+        "dependencies": [
+          "UserDashboardData.presentations field",
+          "If component from @kit/ui/if",
+          "Link from next/link",
+          "buttonVariants from @kit/ui/button"
+        ],
+        "constraints": [
+          "Use If component for conditional 'Review Storyboard' action",
+          "Check presentations for draft status",
+          "Link 'Review Storyboard' to /home/ai",
+          "Link 'New Presentation' to /home/ai/new",
+          "Use FileText icon for Review, Plus icon for New"
+        ]
+      },
+      "input_state": "QuickActionsPanel has course and assessment actions. No presentation actions yet.",
+      "output_state": "Component conditionally renders 'Review Storyboard' if drafts exist, and always renders 'New Presentation'",
+      "acceptance_criterion": "Component shows 'Review Storyboard' only if draft presentations exist, and always shows 'New Presentation'",
+      "verification_command": "grep -q 'Review Storyboard' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && grep -q 'New Presentation' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && grep -q 'presentations' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I5.F1.T1"],
+        "blocks": ["S1890.I5.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I5.F1.T5",
+      "type": "task",
+      "name": "Add responsive grid layout and hover animations",
+      "action": { "verb": "Add", "target": "responsive grid and hover styles to action buttons" },
+      "purpose": "Make actions display in a responsive grid (1 col mobile, 2 col desktop) with subtle hover effects",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "find role", "target": "link" },
+          { "command": "is visible", "target": "New Presentation" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        ],
+        "dependencies": [
+          "Tailwind grid classes",
+          "buttonVariants with outline variant"
+        ],
+        "constraints": [
+          "Grid: 1 column on mobile, 2 columns on md+",
+          "Use gap-3 for spacing between buttons",
+          "Add hover:bg-accent transition for buttons",
+          "Maintain semantic Tailwind classes for dark mode"
+        ]
+      },
+      "input_state": "QuickActionsPanel has all action buttons but no grid layout or hover styles",
+      "output_state": "Actions display in responsive grid with hover animations",
+      "acceptance_criterion": "Buttons render in grid layout with CSS class 'grid grid-cols-1 md:grid-cols-2 gap-3' and hover transitions",
+      "verification_command": "grep -qE 'grid.*grid-cols-1.*md:grid-cols-2' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I5.F1.T2", "S1890.I5.F1.T3", "S1890.I5.F1.T4"],
+        "blocks": ["S1890.I5.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I5.F1.T6",
+      "type": "task",
+      "name": "Add i18n translation keys for action labels",
+      "action": { "verb": "Add", "target": "translation keys to common.json" },
+      "purpose": "Enable internationalization for all action button labels and panel title",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/public/locales/en/common.json",
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        ],
+        "dependencies": [
+          "Trans component from @kit/ui/trans"
+        ],
+        "constraints": [
+          "Add keys under 'routes' object in common.json",
+          "Use Trans component in QuickActionsPanel for all labels",
+          "Keys: quickActions, startJourney, continueCourse, takeAssessment, reviewStoryboard, newPresentation"
+        ]
+      },
+      "input_state": "QuickActionsPanel has hardcoded English strings. common.json has no quickActions keys.",
+      "output_state": "All action labels use Trans component with i18n keys defined in common.json",
+      "acceptance_criterion": "common.json contains quickActions translation keys and component uses Trans for all labels",
+      "verification_command": "grep -q 'quickActions' apps/web/public/locales/en/common.json && grep -qE '<Trans.*i18nKey.*quickActions' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/public/locales/en/common.json" },
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I5.F1.T5"],
+        "blocks": ["S1890.I5.F1.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1890.I5.F1.T7",
+      "type": "task",
+      "name": "Integrate QuickActionsPanel into dashboard page",
+      "action": { "verb": "Add", "target": "QuickActionsPanel to dashboard grid" },
+      "purpose": "Place QuickActionsPanel in dashboard page at row 2, position 2",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        ],
+        "dependencies": [
+          "UserDashboardData from loader (S1890.I2.F2)",
+          "Dashboard grid layout from S1890.I1.F1"
+        ],
+        "constraints": [
+          "Import QuickActionsPanel component",
+          "Pass UserDashboardData as props",
+          "Place in correct grid position (row 2, position 2)",
+          "No 'use client' directive needed in page"
+        ]
+      },
+      "input_state": "Dashboard page exists with grid layout. QuickActionsPanel not imported or rendered.",
+      "output_state": "Dashboard page imports and renders QuickActionsPanel with data from loader",
+      "acceptance_criterion": "page.tsx imports QuickActionsPanel and renders it with UserDashboardData props",
+      "verification_command": "grep -q 'import.*QuickActionsPanel' apps/web/app/home/\\(user\\)/page.tsx && grep -q '<QuickActionsPanel' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1890.I5.F1.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Scaffold",
+        "task_ids": ["S1890.I5.F1.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Action Logic",
+        "task_ids": ["S1890.I5.F1.T2", "S1890.I5.F1.T3", "S1890.I5.F1.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 8,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Visual Polish",
+        "task_ids": ["S1890.I5.F1.T5"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Internationalization",
+        "task_ids": ["S1890.I5.F1.T6"],
+        "depends_on_groups": [3],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 5,
+        "name": "Integration",
+        "task_ids": ["S1890.I5.F1.T7"],
+        "depends_on_groups": [4],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1890.I5.F1.T1", "S1890.I5.F1.T2", "S1890.I5.F1.T5", "S1890.I5.F1.T6", "S1890.I5.F1.T7"],
+      "total_hours": 10
+    },
+    "duration": {
+      "sequential": 16,
+      "parallel": 11,
+      "time_saved_percent": 31
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

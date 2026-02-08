@@ -5,10 +5,10 @@ accelerating presentation creation with AI-powered tools.
 
 ## Build Status
 
-[![PR Validation](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/pr-validation.yml)
-[![Deploy to Dev](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/dev-deploy.yml/badge.svg?branch=dev)](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/dev-deploy.yml)
-[![Deploy to Staging](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/staging-deploy.yml/badge.svg?branch=staging)](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/staging-deploy.yml)
-[![Deploy to Production](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/production-deploy.yml/badge.svg?branch=main)](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/production-deploy.yml)
+[![PR Validation](https://github.com/slideheroes/2025slideheroes/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/slideheroes/2025slideheroes/actions/workflows/pr-validation.yml)
+[![Deploy to Dev](https://github.com/slideheroes/2025slideheroes/actions/workflows/dev-deploy.yml/badge.svg?branch=dev)](https://github.com/slideheroes/2025slideheroes/actions/workflows/dev-deploy.yml)
+[![Deploy to Staging](https://github.com/slideheroes/2025slideheroes/actions/workflows/staging-deploy.yml/badge.svg?branch=staging)](https://github.com/slideheroes/2025slideheroes/actions/workflows/staging-deploy.yml)
+[![Deploy to Production](https://github.com/slideheroes/2025slideheroes/actions/workflows/production-deploy.yml/badge.svg?branch=main)](https://github.com/slideheroes/2025slideheroes/actions/workflows/production-deploy.yml)
 
 ## Current Status
 

@@ -241,7 +241,7 @@ fetch_issue_data() {
   # Run API calls in parallel
   (gh issue view $issue_number --json number,title,body > /tmp/issue.json) &
   (gh issue view $issue_number --comments > /tmp/comments.txt) &
-  (gh api repos/MLorneSmith/2025slideheroes/issues/$issue_number/timeline > /tmp/timeline.json) &
+  (gh api repos/slideheroes/2025slideheroes/issues/$issue_number/timeline > /tmp/timeline.json) &
   
   # Wait for all background jobs
   wait

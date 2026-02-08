@@ -2,7 +2,7 @@
 
 **Generated:** 2025-09-26  
 **Investigation Status:** ✅ Complete  
-**GitHub Issue:** [#417](https://github.com/MLorneSmith/2025slideheroes/issues/417)
+**GitHub Issue:** [#417](https://github.com/slideheroes/2025slideheroes/issues/417)
 
 ## 🚨 Critical Alert Status
 
@@ -88,7 +88,7 @@ Expected improvements after Priority 1 fixes:
 
 ## 🔗 Resources
 
-- **GitHub Issue**: [#417 - CI/CD Critical Failures](https://github.com/MLorneSmith/2025slideheroes/issues/417)
+- **GitHub Issue**: [#417 - CI/CD Critical Failures](https://github.com/slideheroes/2025slideheroes/issues/417)
 - **Investigation Reports**: `/reports/2025-09-26/`
 - **Fixed Workflows**: 4 files modified in `.github/workflows/`
 

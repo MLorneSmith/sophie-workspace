@@ -1,0 +1,409 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1936.I4.F3",
+    "feature_name": "Bento Grid Layout",
+    "feature_slug": "bento-grid-layout",
+    "initiative_id": "S1936.I4",
+    "spec_id": 1936,
+    "created_at": "2026-02-04T00:00:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1936.I4.F3.T6", "S1936.I4.F3.T7"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1936.I4.F3.T1",
+      "type": "task",
+      "name": "Install Aceternity bento-grid component via shadcn CLI",
+      "action": { "verb": "Configure", "target": "Aceternity bento-grid component" },
+      "purpose": "Add the bento-grid component from Aceternity registry to the UI package",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["packages/ui/package.json", "packages/ui/components.json"],
+        "dependencies": ["shadcn CLI", "Aceternity registry"],
+        "constraints": [
+          "Must run from packages/ui directory",
+          "Use exact command: npx shadcn@latest add @aceternity/bento-grid -y",
+          "Component will be installed to packages/ui/src/aceternity/"
+        ]
+      },
+      "input_state": "No bento-grid component exists in packages/ui/src/aceternity/",
+      "output_state": "bento-grid.tsx exists in packages/ui/src/aceternity/ with BentoGrid and BentoGridItem components",
+      "acceptance_criterion": "File packages/ui/src/aceternity/bento-grid.tsx exists and exports BentoGrid and BentoGridItem",
+      "verification_command": "test -f packages/ui/src/aceternity/bento-grid.tsx && grep -q 'export.*BentoGrid' packages/ui/src/aceternity/bento-grid.tsx",
+      "outputs": [
+        { "type": "new", "path": "packages/ui/src/aceternity/bento-grid.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1936.I4.F3.T2", "S1936.I4.F3.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I4.F3.T2",
+      "type": "task",
+      "name": "Add bento-grid export to package.json",
+      "action": { "verb": "Add", "target": "bento-grid export to package.json" },
+      "purpose": "Enable import of bento-grid component from @kit/ui",
+      "status": "draft",
+      "estimated_hours": 0.5,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["packages/ui/package.json"],
+        "dependencies": ["packages/ui/src/aceternity/bento-grid.tsx"],
+        "constraints": [
+          "Follow existing export pattern",
+          "Add to exports section alphabetically",
+          "Export path: './bento-grid': './src/aceternity/bento-grid.tsx'"
+        ]
+      },
+      "input_state": "packages/ui/package.json exists with exports section but no bento-grid export",
+      "output_state": "packages/ui/package.json includes './bento-grid': './src/aceternity/bento-grid.tsx' in exports",
+      "acceptance_criterion": "grep shows bento-grid export in package.json exports section",
+      "verification_command": "grep -q '\"./bento-grid\".*\"./src/aceternity/bento-grid.tsx\"' packages/ui/package.json && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "packages/ui/package.json" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I4.F3.T1"],
+        "blocks": ["S1936.I4.F3.T3", "S1936.I4.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I4.F3.T3",
+      "type": "task",
+      "name": "Customize bento-grid styling for dark theme",
+      "action": { "verb": "Update", "target": "bento-grid component styling" },
+      "purpose": "Match SlideHeroes dark theme with glass card aesthetic",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["packages/ui/src/aceternity/bento-grid.tsx"],
+        "dependencies": [
+          "CardSpotlight component (reference for glass card styling)",
+          "Tailwind dark mode classes",
+          "Existing design tokens from shadcn-ui.css"
+        ],
+        "constraints": [
+          "Use semantic color classes: bg-background, border-border, text-foreground",
+          "Match CardSpotlight glass card aesthetic (semi-transparent bg, backdrop blur)",
+          "Support both light and dark modes",
+          "Maintain existing Aceternity grid structure"
+        ]
+      },
+      "input_state": "bento-grid.tsx exists with default Aceternity styling",
+      "output_state": "bento-grid.tsx uses SlideHeroes design tokens with glass card styling",
+      "acceptance_criterion": "BentoGridItem uses bg-background/border-border classes and backdrop-blur effect",
+      "verification_command": "grep -q 'bg-background' packages/ui/src/aceternity/bento-grid.tsx && grep -q 'backdrop-blur' packages/ui/src/aceternity/bento-grid.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "packages/ui/src/aceternity/bento-grid.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I4.F3.T1", "S1936.I4.F3.T2"],
+        "blocks": ["S1936.I4.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I4.F3.T4",
+      "type": "task",
+      "name": "Update homepage content config with bento grid feature data",
+      "action": { "verb": "Update", "target": "features configuration" },
+      "purpose": "Add grid span metadata to feature cards for asymmetric layout",
+      "status": "draft",
+      "estimated_hours": 1.5,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["apps/web/config/homepage-content.config.ts"],
+        "dependencies": ["Existing featureCards array"],
+        "constraints": [
+          "Fine-tuned AI and Private Coaching are hero cards (span 2 columns)",
+          "Other cards are standard size (span 1 column)",
+          "Add className property to each card for Tailwind grid spans",
+          "Maintain existing card data (title, description, iconName)"
+        ]
+      },
+      "input_state": "featureCards array has 6 items with title, description, iconName",
+      "output_state": "featureCards array includes className property with col-span-X values for each card",
+      "acceptance_criterion": "featureCards includes className with col-span-2 for Fine-tuned AI and Private Coaching",
+      "verification_command": "grep -q 'col-span-2' apps/web/config/homepage-content.config.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/config/homepage-content.config.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I4.F3.T2", "S1936.I4.F3.T3"],
+        "blocks": ["S1936.I4.F3.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I4.F3.T5",
+      "type": "task",
+      "name": "Create bento grid features wrapper component",
+      "action": { "verb": "Create", "target": "bento grid features wrapper component" },
+      "purpose": "Wrap BentoGrid with SlideHeroes-specific configuration and styling",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "BentoGrid from @kit/ui/bento-grid",
+          "homepageContentConfig.features",
+          "Lucide React icons"
+        ],
+        "constraints": [
+          "Create client component (uses framer-motion animations)",
+          "Map featureCards to BentoGridItem components",
+          "Apply className from config for column spans",
+          "Support responsive breakpoints: 4-col desktop, 2-col tablet, 1-col mobile"
+        ]
+      },
+      "input_state": "No bento grid wrapper component exists",
+      "output_state": "home-bento-features.tsx exists with BentoFeaturesGrid client component",
+      "acceptance_criterion": "Component renders BentoGrid with mapped feature cards and responsive grid",
+      "verification_command": "test -f apps/web/app/(marketing)/_components/home-bento-features.tsx && grep -q 'BentoGrid' apps/web/app/(marketing)/_components/home-bento-features.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/home-bento-features.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I4.F3.T4"],
+        "blocks": ["S1936.I4.F3.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I4.F3.T6",
+      "type": "task",
+      "name": "Replace features grid with BentoGrid in homepage",
+      "action": { "verb": "Update", "target": "features section in homepage" },
+      "purpose": "Replace existing 3-column CardSpotlight grid with asymmetric bento layout",
+      "status": "draft",
+      "estimated_hours": 1.5,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "How we are different" },
+          { "command": "is visible", "target": "Fine-tuned AI" },
+          { "command": "is visible", "target": "Private Coaching" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["apps/web/app/(marketing)/page.tsx"],
+        "dependencies": ["BentoFeaturesGrid from _components/home-bento-features"],
+        "constraints": [
+          "Replace lines 179-194 (current features grid)",
+          "Keep section header and subtitle",
+          "Wrap in Suspense with appropriate fallback",
+          "Maintain section spacing and background classes"
+        ]
+      },
+      "input_state": "Features section uses 3-column grid with CardSpotlight components",
+      "output_state": "Features section uses BentoFeaturesGrid component with asymmetric layout",
+      "acceptance_criterion": "Homepage renders BentoFeaturesGrid instead of CardSpotlight grid",
+      "verification_command": "grep -q 'BentoFeaturesGrid' apps/web/app/(marketing)/page.tsx && ! grep -q 'CardSpotlight.*feature-' apps/web/app/(marketing)/page.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I4.F3.T5"],
+        "blocks": ["S1936.I4.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1936.I4.F3.T7",
+      "type": "task",
+      "name": "Add responsive grid breakpoints to bento layout",
+      "action": { "verb": "Add", "target": "responsive breakpoints to grid" },
+      "purpose": "Ensure bento grid adapts correctly on tablet and mobile devices",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "How we are different" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["apps/web/app/(marketing)/_components/home-bento-features.tsx"],
+        "dependencies": ["Tailwind responsive classes"],
+        "constraints": [
+          "Desktop (lg:): 4 columns with asymmetric spans",
+          "Tablet (md:): 2 columns, hero cards still span 2",
+          "Mobile (<md): 1 column, all cards full width",
+          "Test on browser resize to verify breakpoints"
+        ]
+      },
+      "input_state": "BentoGrid has desktop 4-column layout only",
+      "output_state": "BentoGrid responds to viewport: 4-col desktop, 2-col tablet, 1-col mobile",
+      "acceptance_criterion": "Grid className includes responsive breakpoints (grid-cols-1 md:grid-cols-2 lg:grid-cols-4)",
+      "verification_command": "grep -q 'grid-cols-1.*md:grid-cols-2.*lg:grid-cols-4' apps/web/app/(marketing)/_components/home-bento-features.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/_components/home-bento-features.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1936.I4.F3.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Installation",
+        "task_ids": ["S1936.I4.F3.T1", "S1936.I4.F3.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 1.5,
+        "parallel_hours": 1
+      },
+      {
+        "id": 2,
+        "name": "Component Customization",
+        "task_ids": ["S1936.I4.F3.T3", "S1936.I4.F3.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 3.5,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Homepage Integration",
+        "task_ids": ["S1936.I4.F3.T5", "S1936.I4.F3.T6"],
+        "depends_on_groups": [2],
+        "estimated_hours": 3.5,
+        "parallel_hours": 3.5
+      },
+      {
+        "id": 4,
+        "name": "Responsive Polish",
+        "task_ids": ["S1936.I4.F3.T7"],
+        "depends_on_groups": [3],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1936.I4.F3.T1", "S1936.I4.F3.T2", "S1936.I4.F3.T3", "S1936.I4.F3.T4", "S1936.I4.F3.T5", "S1936.I4.F3.T6", "S1936.I4.F3.T7"],
+      "total_hours": 10.5
+    },
+    "duration": {
+      "sequential": 10.5,
+      "parallel": 10.5,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

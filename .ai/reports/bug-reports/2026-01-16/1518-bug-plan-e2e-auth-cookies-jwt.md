@@ -399,7 +399,7 @@ pnpm test
 # 3. Missing environment variables (should fail with clear error)
 
 # Verify CI workflow
-gh workflow view dev-integration-tests --repo MLorneSmith/2025slideheroes
+gh workflow view dev-integration-tests --repo slideheroes/2025slideheroes
 # Should show green checkmarks for all jobs
 ```
 

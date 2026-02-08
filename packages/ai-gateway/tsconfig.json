@@ -3,7 +3,8 @@
 	"compilerOptions": {
 		"baseUrl": ".",
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"@kit/shared/logger": ["../shared/src/logger"]
 		},
 		"noEmit": false,
 		"outDir": "./dist",

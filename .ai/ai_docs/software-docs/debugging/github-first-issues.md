@@ -30,7 +30,7 @@ SlideHeroes now uses a **GitHub-first** approach for issue management:
 /debug-issue 30                    # GitHub issue number
 /debug-issue ISSUE-30              # ISSUE format
 /debug-issue "#30"                 # Hash format
-/debug-issue "https://github.com/MLorneSmith/2025slideheroes/issues/30"  # URL format
+/debug-issue "https://github.com/slideheroes/2025slideheroes/issues/30"  # URL format
 
 # Legacy local files still work:
 /debug-issue 2025-06-13-ISSUE-30.md

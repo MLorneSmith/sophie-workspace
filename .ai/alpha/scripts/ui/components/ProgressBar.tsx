@@ -1,17 +1,19 @@
 import { Box, Text } from "ink";
 import type { FC } from "react";
-// biome-ignore lint/correctness/noUnusedImports: React must be in scope at runtime for Ink/react-reconciler
 import React from "react";
 import type { ProgressBarProps } from "../types.js";
 
 /**
  * Reusable progress bar component for displaying completion status
  *
+ * Memoized to prevent unnecessary re-renders when parent state changes
+ * but progress values remain the same.
+ *
  * @example
  * <ProgressBar current={5} total={10} width={20} />
  * // Renders: [██████████░░░░░░░░░░] 5/10 (50%)
  */
-export const ProgressBar: FC<ProgressBarProps> = ({
+const ProgressBarImpl: FC<ProgressBarProps> = ({
 	current,
 	total,
 	width = 20,
@@ -55,6 +57,22 @@ export const ProgressBar: FC<ProgressBarProps> = ({
 		</Box>
 	);
 };
+
+/**
+ * Memoized ProgressBar that only re-renders when values actually change.
+ * This prevents flicker from parent re-renders when progress hasn't changed.
+ */
+export const ProgressBar = React.memo(ProgressBarImpl, (prev, next) => {
+	return (
+		prev.current === next.current &&
+		prev.total === next.total &&
+		prev.width === next.width &&
+		prev.showPercentage === next.showPercentage &&
+		prev.showCount === next.showCount &&
+		prev.filledColor === next.filledColor &&
+		prev.emptyColor === next.emptyColor
+	);
+});
 
 /**
  * Compact progress bar without count/percentage for tight spaces

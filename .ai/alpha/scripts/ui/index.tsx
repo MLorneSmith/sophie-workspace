@@ -1,6 +1,7 @@
 import { render } from "ink";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
+	CompletingUI,
 	CompletionUI,
 	ErrorUI,
 	LoadingUI,
@@ -27,8 +28,8 @@ import { EVENT_SERVER_PORT, MAX_EVENTS } from "./types.js";
  * UI Manager configuration
  */
 export interface UIManagerConfig {
-	/** Spec ID being orchestrated */
-	specId: number;
+	/** Spec ID being orchestrated (semantic S1362 or legacy 1362) */
+	specId: string;
 	/** Spec name for display */
 	specName: string;
 	/** Directory containing sandbox progress files */
@@ -51,8 +52,9 @@ export interface UIManagerConfig {
 
 /**
  * UI phase for rendering appropriate screen
+ * Bug fix #1754: Added "completing" phase for intermediate state during review sandbox setup
  */
-type UIPhase = "loading" | "running" | "completed" | "error";
+type UIPhase = "loading" | "running" | "completing" | "completed" | "error";
 
 /**
  * Main orchestrator UI app component
@@ -164,6 +166,21 @@ const OrchestratorApp: React.FC<{
 				"db_seed_start",
 				"db_seed_complete",
 				"db_verify",
+				// Completion phase event types
+				"completion_phase_start",
+				"sandbox_killing",
+				"review_sandbox_creating",
+				"review_sandbox_failed", // Bug fix #1883
+				"dev_server_starting",
+				"dev_server_ready",
+				"dev_server_failed",
+				// Orphaned feature detection event types (Bug fix #1948)
+				"orphaned_feature_reset",
+				"orphaned_feature_failed",
+				// Documentation generation event types (Bug fix: missing from validTypes)
+				"documentation_start",
+				"documentation_complete",
+				"documentation_failed",
 			];
 
 			if (validTypes.includes(eventType as OrchestratorEventType)) {
@@ -205,6 +222,21 @@ const OrchestratorApp: React.FC<{
 				db_seed_start: "Running database seeding...",
 				db_seed_complete: "Database seeding complete",
 				db_verify: "Verified database state",
+				// Completion phase messages
+				completion_phase_start: "Starting completion phase",
+				sandbox_killing: "Terminating sandbox",
+				review_sandbox_creating: "Creating review sandbox",
+				review_sandbox_failed: "Review sandbox creation failed", // Bug fix #1883
+				dev_server_starting: "Starting dev server",
+				dev_server_ready: "Dev server ready",
+				dev_server_failed: "Dev server failed",
+				// Orphaned feature detection messages (Bug fix #1948)
+				orphaned_feature_reset: "Orphaned feature reset to pending",
+				orphaned_feature_failed: "Orphaned feature max retries exceeded",
+				// Documentation generation messages
+				documentation_start: "Generating spec documentation",
+				documentation_complete: "Documentation generated",
+				documentation_failed: "Documentation generation failed",
 			};
 			return messages[eventType] || "Unknown event";
 		},
@@ -266,8 +298,16 @@ const OrchestratorApp: React.FC<{
 			setRealtimeOutput((prev) => {
 				const newMap = new Map(prev);
 				const existing = newMap.get(sandboxId) || [];
-				// Keep last 10 items for rolling buffer
-				const updated = [...existing, displayText].slice(-10);
+
+				// Prepend new event to maintain newest-first ordering
+				// Skip if duplicate of most recent event
+				if (existing.length > 0 && existing[0] === displayText) {
+					return prev;
+				}
+
+				// Prepend new event and keep first 10 items (newest first)
+				const updated = [displayText, ...existing].slice(0, 10);
+
 				newMap.set(sandboxId, updated);
 				return newMap;
 			});
@@ -306,8 +346,11 @@ const OrchestratorApp: React.FC<{
 		pollInterval,
 		onStateChange: (state) => {
 			// Update phase based on state
+			// Bug fix #1754: Handle "completing" status for intermediate state during review sandbox setup
 			if (state.overallProgress.status === "completed") {
 				setPhase("completed");
+			} else if (state.overallProgress.status === "completing") {
+				setPhase("completing");
 			} else if (state.overallProgress.status === "failed") {
 				setPhase("error");
 				setErrorMessage("One or more sandboxes failed");
@@ -336,10 +379,23 @@ const OrchestratorApp: React.FC<{
 
 	// Track sandbox_id to label mapping when progress files are read
 	// This allows us to route WebSocket events to the correct sandbox column
+	// Also clean up stale IDs when sandbox changes (restart/recovery)
 	useEffect(() => {
+		// Collect current sandbox IDs
+		const currentIds = new Set<string>();
 		for (const [label, sandbox] of state.sandboxes) {
 			if (sandbox.sandboxId) {
+				currentIds.add(sandbox.sandboxId);
 				sandboxIdToLabelRef.current.set(sandbox.sandboxId, label);
+			}
+		}
+
+		// Remove stale IDs that are no longer in current sandboxes
+		// This ensures restarted sandboxes don't keep stale mapping entries
+		// that could cause WebSocket events to be misrouted
+		for (const [existingId] of sandboxIdToLabelRef.current) {
+			if (!currentIds.has(existingId)) {
+				sandboxIdToLabelRef.current.delete(existingId);
 			}
 		}
 	}, [state.sandboxes]);
@@ -410,6 +466,17 @@ const OrchestratorApp: React.FC<{
 				<ErrorUI
 					error={errorMessage ?? "Unknown error"}
 					details={error?.message}
+				/>
+			);
+
+		case "completing":
+			// Bug fix #1754: Show intermediate UI during review sandbox setup
+			return (
+				<CompletingUI
+					specId={specId}
+					progress={enhancedState.overallProgress}
+					events={enhancedState.events}
+					elapsed={getElapsedTime()}
 				/>
 			);
 

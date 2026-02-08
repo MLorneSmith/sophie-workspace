@@ -36,7 +36,8 @@ const OverallProgressImpl: React.FC<OverallProgressProps> = ({ progress }) => {
 			</Box>
 
 			{/* Initiatives row */}
-			{progress.initiativesTotal > 0 && (
+			{/* Bug fix #1923: Use ternary to prevent rendering raw "0" in Ink */}
+			{progress.initiativesTotal > 0 ? (
 				<Box marginTop={1}>
 					<Box width={12}>
 						<Text color="magenta">Initiatives:</Text>
@@ -49,7 +50,7 @@ const OverallProgressImpl: React.FC<OverallProgressProps> = ({ progress }) => {
 						showPercentage={false}
 					/>
 				</Box>
-			)}
+			) : null}
 
 			{/* Features row */}
 			<Box marginTop={progress.initiativesTotal > 0 ? 0 : 1}>

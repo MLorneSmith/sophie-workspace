@@ -20,6 +20,7 @@ import {
 	WORKSPACE_DIR,
 } from "../config/index.js";
 import type {
+	AgentProvider,
 	FeatureEntry,
 	FeatureImplementationResult,
 	SandboxInstance,
@@ -27,10 +28,19 @@ import type {
 	StartupAttemptRecord,
 } from "../types/index.js";
 import { syncFeatureMigrations } from "./database.js";
-import { getAllEnvVars, getAuthMethod } from "./environment.js";
+import {
+	getAllEnvVars,
+	getAuthMethod,
+	getOpenAIAuthMethod,
+} from "./environment.js";
 import { killClaudeProcess } from "./health.js";
 import { getProjectRoot } from "./lock.js";
 import { saveManifest } from "./manifest.js";
+import {
+	buildImplementationPrompt,
+	buildProviderCommand,
+	getProviderDisplayName,
+} from "./provider.js";
 import {
 	checkForStall,
 	type OutputTracker,
@@ -38,12 +48,18 @@ import {
 	writeUIProgress,
 } from "./progress.js";
 import {
+	PTYTimeoutError,
+	type WaitWithTimeoutResult,
+	waitWithTimeout,
+} from "./pty-wrapper.js";
+import {
 	createStartupOutputTracker,
 	formatStartupFailureLog,
 	formatStartupSuccessLog,
 	getRetryDelay,
 	updateOutputTracker,
 } from "./startup-monitor.js";
+import { stripAnsiCodes } from "./utils.js";
 import { updateNextFeatureId } from "./work-queue.js";
 
 // ============================================================================
@@ -87,13 +103,13 @@ function ensureLogsDir(runId?: string): string {
  *
  * @param sandboxLabel - The sandbox label (e.g., "sbx-a")
  * @param runId - Optional run ID for organizing logs by run
- * @param specId - Optional spec ID for session header
+ * @param specId - Optional spec ID for session header (semantic or legacy string format)
  * @returns Object with stream and file path
  */
 function createLogStream(
 	sandboxLabel: string,
 	runId?: string,
-	specId?: number,
+	specId?: string,
 ): {
 	stream: fs.WriteStream;
 	filePath: string;
@@ -146,6 +162,7 @@ export async function runFeatureImplementation(
 	manifest: SpecManifest,
 	feature: FeatureEntry,
 	uiEnabled: boolean = false,
+	provider: AgentProvider = "claude",
 ): Promise<FeatureImplementationResult> {
 	// Create conditional logger
 	const { log } = createLogger(uiEnabled);
@@ -211,12 +228,39 @@ export async function runFeatureImplementation(
 	} catch {
 		// Ignore - file may not exist
 	}
+	// Initialize progress file immediately to avoid PTY recovery failures
+	try {
+		await instance.sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && python3 - <<'PY'\n` +
+				"import json\n" +
+				"from datetime import datetime, timezone\n" +
+				"progress = {\n" +
+				`  "status": "in_progress",\n` +
+				`  "phase": "starting",\n` +
+				`  "completed_tasks": [],\n` +
+				`  "failed_tasks": [],\n` +
+				`  "context_usage_percent": 0,\n` +
+				`  "last_heartbeat": datetime.now(timezone.utc).isoformat().replace("+00:00","Z")\n` +
+				"}\n" +
+				`with open("${PROGRESS_FILE}", "w", encoding="utf-8") as f:\n` +
+				"  json.dump(progress, f, indent=2)\n" +
+				"PY",
+			{ timeoutMs: 5000 },
+		);
+	} catch {
+		// Ignore - progress file creation is best effort
+	}
 
-	const prompt = `/alpha:implement ${feature.id}`;
-	const authMethod = getAuthMethod();
-	log(`│   Running: ${prompt}`);
+	const prompt = buildImplementationPrompt(provider, feature.id);
+	const authMethod =
+		provider === "gpt" ? getOpenAIAuthMethod() : getAuthMethod();
+	const providerLabel = getProviderDisplayName(provider);
+
 	log(
-		`│   Auth: ${authMethod === "api_key" ? "API key (preferred)" : authMethod === "oauth" ? "OAuth" : "none"}`,
+		`│   Running (${providerLabel}): ${provider === "gpt" ? "codex exec" : prompt}`,
+	);
+	log(
+		`│   Auth: ${authMethod === "api_key" ? "API key" : authMethod === "oauth" ? "OAuth" : "none"}`,
 	);
 
 	let capturedStdout = "";
@@ -277,10 +321,10 @@ export async function runFeatureImplementation(
 			stallDetected = true;
 			stallRecoveryInProgress = true;
 			log(`│   ⚠️ STALL DETECTED: ${stallCheck.reason}`);
-			log("│   🔪 Killing Claude process for recovery...");
+			log(`│   🔪 Killing ${providerLabel} process for recovery...`);
 
-			// Kill the Claude process to trigger early exit
-			await killClaudeProcess(instance, uiEnabled);
+			// Kill the agent process to trigger early exit
+			await killClaudeProcess(instance, uiEnabled, provider);
 		}
 	}, 60000);
 
@@ -341,15 +385,15 @@ export async function runFeatureImplementation(
 				);
 			}
 
-			// Kill the Claude process to trigger retry
-			await killClaudeProcess(instance, uiEnabled);
+			// Kill the agent process to trigger retry
+			await killClaudeProcess(instance, uiEnabled, provider);
 		}
 	}, 10000); // Check every 10 seconds during startup
 
 	// ============================================================================
 	// Retry Loop for Startup Hang Recovery
 	// ============================================================================
-	// When Claude CLI hangs during startup (no output within 60s), the startup
+	// When the agent CLI hangs during startup (no output within 60s), the startup
 	// check interval detects it, sets startupHangDetected=true, and kills the process.
 	// This retry loop catches that error and retries with exponential backoff.
 	// CommandResult type from E2B SDK - compatible with both commands.run() and pty.wait()
@@ -384,7 +428,7 @@ export async function runFeatureImplementation(
 			instance.outputLineCount = 0;
 			instance.hasReceivedOutput = false;
 			log(
-				`   │   🔄 [STARTUP_ATTEMPT_${attemptNumber}] ${instance.label}: Retrying Claude CLI (attempt ${attemptNumber}/${MAX_STARTUP_RETRIES})`,
+				`   │   🔄 [STARTUP_ATTEMPT_${attemptNumber}] ${instance.label}: Retrying agent CLI (attempt ${attemptNumber}/${MAX_STARTUP_RETRIES})`,
 			);
 			logStream.write(
 				`\n=== RETRY ATTEMPT ${attemptNumber}/${MAX_STARTUP_RETRIES} ===\n`,
@@ -396,6 +440,14 @@ export async function runFeatureImplementation(
 			// PTY allocates a real TTY, forcing Node.js CLI tools to use line-buffering
 			// instead of block-buffering, enabling real-time output streaming.
 			// See: #1472, #1469 for diagnosis and fix details
+			//
+			// CRITICAL: E2B PTY Timeout Configuration (Issue #1699, #1701)
+			// The E2B SDK has a default PTY timeout of 60 seconds (timeoutMs: 60_000).
+			// This causes the PTY stream to silently disconnect after 60 seconds without
+			// firing error events, resulting in UI hangs during long-running features.
+			// Setting timeoutMs to FEATURE_TIMEOUT_MS ensures PTY stays alive for the
+			// entire feature execution duration.
+			// See: E2B GitHub issues #727, #879, #921 for upstream documentation.
 			log(
 				`   │   🖥️  [PTY_CREATE] ${instance.label}: Creating PTY (cols=120, rows=40, timeout=${FEATURE_TIMEOUT_MS}ms)`,
 			);
@@ -406,6 +458,10 @@ export async function runFeatureImplementation(
 			const ptyHandle = await instance.sandbox.pty.create({
 				cols: 120,
 				rows: 40,
+				// CRITICAL: Set timeoutMs to feature timeout to prevent default 60-second disconnect
+				// E2B SDK default is 60_000ms (60s), which causes silent PTY stream stoppage
+				// See: #1699, #1701 - Alpha Orchestrator Progress Count Mismatch & UI Hang
+				timeoutMs: FEATURE_TIMEOUT_MS,
 				onData: (output: Uint8Array) => {
 					// Decode output data from Uint8Array to string
 					const data = new TextDecoder().decode(output);
@@ -413,7 +469,10 @@ export async function runFeatureImplementation(
 					capturedStdout += data;
 
 					// Always write to log file (persisted on orchestrator machine)
-					logStream.write(data);
+					// Guard against writing to closed stream (race condition with cleanup)
+					if (!logStream.writableEnded) {
+						logStream.write(data);
+					}
 
 					// Track output in startup tracker for early hang detection
 					updateOutputTracker(startupTracker, data);
@@ -422,7 +481,9 @@ export async function runFeatureImplementation(
 					const lines = data.split("\n");
 					for (const line of lines) {
 						if (line.trim()) {
-							recentOutput.push(line);
+							// Strip ANSI escape codes before storing for clean UI display
+							const cleanLine = stripAnsiCodes(line);
+							recentOutput.push(cleanLine);
 							// Keep only last N lines
 							if (recentOutput.length > RECENT_OUTPUT_LINES) {
 								recentOutput.shift();
@@ -454,7 +515,6 @@ export async function runFeatureImplementation(
 					FORCE_COLOR: "1",
 					CI: "false",
 				},
-				timeoutMs: FEATURE_TIMEOUT_MS,
 			});
 
 			log(
@@ -465,7 +525,7 @@ export async function runFeatureImplementation(
 			// Send the command to the PTY shell
 			// PTY creates an interactive shell, so we send the command followed by exit
 			// to ensure the shell exits when the command completes (preserving exit code)
-			const command = `run-claude "${prompt.replace(/"/g, '\\"')}"\nexit $?\n`;
+			const command = buildProviderCommand(provider, prompt);
 
 			log(`   │   📤 [PTY_INPUT] ${instance.label}: Sending command to PTY`);
 			logStream.write(`[PTY] Sending command: ${command.split("\n")[0]}\n`);
@@ -476,13 +536,79 @@ export async function runFeatureImplementation(
 			);
 
 			// Wait for PTY command to complete
+			// Bug fix #1767: Use timeout wrapper with progress file fallback
+			// If PTY disconnects silently, the wrapper checks progress file for completion
+			// Bug fix #1786: Loop while feature is still running (has recent heartbeat)
 			log(
 				`   │   ⏳ [PTY_WAIT] ${instance.label}: Waiting for PTY to complete...`,
 			);
-			executionResult = await ptyHandle.wait();
+
+			let ptyWaitResult: WaitWithTimeoutResult;
+			let stillRunningIterations = 0;
+			const MAX_STILL_RUNNING_ITERATIONS = 120; // 120 * 30s = 60 minutes max
+
+			try {
+				// Loop while feature is still running (heartbeat is recent)
+				// This prevents killing healthy features due to PTY timeout
+				do {
+					ptyWaitResult = await waitWithTimeout(ptyHandle, instance.sandbox);
+
+					if (ptyWaitResult.stillRunning) {
+						stillRunningIterations++;
+						// Feature is still running with recent heartbeat - continue waiting
+						log(
+							`   │   ⏳ [PTY_STILL_RUNNING] ${instance.label}: Feature still running (heartbeat recent), continuing wait... (iteration ${stillRunningIterations})`,
+						);
+						logStream.write(
+							`[PTY] Feature still running with recent heartbeat, continuing wait (iteration ${stillRunningIterations})\n`,
+						);
+
+						// Safety: prevent infinite loop
+						if (stillRunningIterations >= MAX_STILL_RUNNING_ITERATIONS) {
+							log(
+								`   │   ⚠️ [PTY_MAX_ITERATIONS] ${instance.label}: Max wait iterations reached (${MAX_STILL_RUNNING_ITERATIONS})`,
+							);
+							logStream.write(
+								`[PTY] Max wait iterations reached (${MAX_STILL_RUNNING_ITERATIONS}), treating as stuck\n`,
+							);
+							throw new PTYTimeoutError(
+								instance.sandbox.sandboxId,
+								ptyWaitResult.progressData ?? null,
+								FEATURE_TIMEOUT_MS,
+								`Feature exceeded max wait time (${MAX_STILL_RUNNING_ITERATIONS} iterations)`,
+							);
+						}
+					}
+				} while (ptyWaitResult.stillRunning);
+
+				if (ptyWaitResult.recoveredViaProgressFile) {
+					log(
+						`   │   🔄 [PTY_RECOVERED] ${instance.label}: PTY timeout but recovered via progress file`,
+					);
+					logStream.write(
+						"[PTY] PTY timeout - recovered via progress file (status: completed)\n",
+					);
+				}
+			} catch (ptyError) {
+				// Handle PTY timeout errors specifically
+				if (ptyError instanceof PTYTimeoutError) {
+					log(`   │   ⚠️ [PTY_TIMEOUT] ${instance.label}: ${ptyError.message}`);
+					logStream.write(`[PTY] PTY timeout error: ${ptyError.message}\n`);
+					// Re-throw to be handled by outer error handler
+					throw ptyError;
+				}
+				throw ptyError;
+			}
+
+			executionResult = {
+				exitCode: ptyWaitResult.exitCode,
+				stdout: capturedStdout,
+				stderr: "",
+				error: undefined,
+			};
 
 			log(
-				`   │   ✅ [PTY_DONE] ${instance.label}: PTY completed (exitCode=${executionResult.exitCode})`,
+				`   │   ✅ [PTY_DONE] ${instance.label}: PTY completed (exitCode=${executionResult.exitCode}${ptyWaitResult.recoveredViaProgressFile ? ", recovered" : ""})`,
 			);
 			logStream.write(
 				`[PTY] PTY completed with exit code ${executionResult.exitCode}\n`,
@@ -492,13 +618,25 @@ export async function runFeatureImplementation(
 			startupAttemptRecord.succeededOnAttempt = attemptNumber;
 			if (attemptNumber > 1) {
 				log(
-					`   │   ✅ [STARTUP_SUCCESS] ${instance.label}: Claude CLI started successfully on attempt ${attemptNumber}`,
+					`   │   ✅ [STARTUP_SUCCESS] ${instance.label}: Agent CLI started successfully on attempt ${attemptNumber}`,
 				);
 			}
 			break; // Exit retry loop on success
 		} catch (retryError) {
 			// Check if this was a startup hang that we should retry
 			if (startupHangDetected && attemptNumber < MAX_STARTUP_RETRIES) {
+				// Bug fix #1786: CRITICAL - Kill ALL agent processes before retry
+				// This prevents zombie processes from accumulating when retrying
+				log(
+					`   │   🔪 [RETRY_CLEANUP] ${instance.label}: Killing agent processes before retry...`,
+				);
+				logStream.write("\n=== CLEANUP BEFORE RETRY ===\n");
+				await killClaudeProcess(instance, uiEnabled, provider);
+				log(`   │   ✓ [RETRY_CLEANUP] ${instance.label}: Cleanup complete`);
+				logStream.write(
+					"[CLEANUP] Processes killed and progress file cleared\n",
+				);
+
 				// Startup hang detected - wait with exponential backoff then retry
 				const retryDelay = getRetryDelay(attemptNumber);
 				if (retryDelay !== null) {
@@ -510,7 +648,7 @@ export async function runFeatureImplementation(
 					);
 					await new Promise((resolve) => setTimeout(resolve, retryDelay));
 				}
-				continue; // Retry
+				continue; // Retry with clean slate
 			}
 
 			// Max retries exceeded OR different error - propagate to outer catch
@@ -527,7 +665,8 @@ export async function runFeatureImplementation(
 
 	try {
 		// Stop polling, stall detection, startup monitoring, and UI progress updates
-		progressPoller.stop();
+		// Await stop() to ensure no stale poll writes occur after new features start
+		await progressPoller.stop();
 		clearInterval(stallCheckInterval);
 		clearInterval(startupCheckInterval);
 		if (uiProgressInterval) clearInterval(uiProgressInterval);
@@ -545,21 +684,31 @@ export async function runFeatureImplementation(
 		);
 
 		let tasksCompleted = 0;
-		let status: FeatureEntry["status"] = "completed";
+		// Bug fix #1938: Don't default to "completed" - require evidence
+		let status: FeatureEntry["status"] = "pending";
+		let progressFileStatus: string | undefined;
 
 		try {
 			const parsed = JSON.parse(progressResult.stdout || "{}");
 			tasksCompleted = parsed.completed_tasks?.length || 0;
+			progressFileStatus = parsed.status;
 
-			if (parsed.status === "completed" || result.exitCode === 0) {
+			// Bug fix #1938: Only trust explicit "completed" status from progress file
+			// Exit code 0 alone is NOT sufficient evidence of completion
+			if (parsed.status === "completed") {
 				status = "completed";
 			} else if (parsed.status === "blocked") {
 				status = "blocked";
-			} else {
+			} else if (parsed.status === "failed" || result.exitCode !== 0) {
 				status = "failed";
+			} else {
+				// Progress file exists but status is not "completed"
+				// Keep as pending for retry
+				status = "pending";
 			}
 		} catch {
-			status = result.exitCode === 0 ? "completed" : "failed";
+			// No valid progress file - check exit code but be conservative
+			status = result.exitCode === 0 ? "pending" : "failed";
 		}
 
 		// Fallback: Use last polled progress if available
@@ -567,21 +716,45 @@ export async function runFeatureImplementation(
 			tasksCompleted = lastPolledProgress.completed_tasks.length;
 		}
 
-		// Fallback: If completed, try to extract from output or assume all tasks done
-		if (
-			status === "completed" &&
-			result.exitCode === 0 &&
-			tasksCompleted === 0
-		) {
+		// Bug fix #1938: Try to extract task count from output, but NEVER assume all tasks done
+		// The previous code would set tasksCompleted = feature.task_count which caused
+		// features to be marked "completed" with inflated task counts
+		if (tasksCompleted === 0) {
 			const taskMatch = capturedStdout.match(
 				/Tasks?:?\s*(\d+)\s*\/\s*(\d+)\s*(?:completed|complete|\(100%\))/i,
 			);
 			const taskCountStr = taskMatch?.[1];
 			if (taskCountStr) {
 				tasksCompleted = parseInt(taskCountStr, 10);
-			} else {
-				tasksCompleted = feature.task_count;
 			}
+			// DO NOT fallback to feature.task_count - that's the bug we're fixing
+		}
+
+		// Bug fix #1938: Require meaningful evidence before marking completed
+		// A feature is only "completed" if:
+		// 1. Progress file explicitly says status: "completed", OR
+		// 2. At least 50% of tasks were completed (indicates real progress)
+		const completionThreshold = Math.ceil(feature.task_count * 0.5);
+		if (status === "completed" && tasksCompleted < completionThreshold) {
+			// Progress file said completed but we have no evidence of task completion
+			// This likely means the agent exited without doing the work
+			log(
+				`   │   ⚠️ [COMPLETION_VALIDATION] Progress file claimed completed but only ${tasksCompleted}/${feature.task_count} tasks verified`,
+			);
+			if (progressFileStatus === "completed" && tasksCompleted === 0) {
+				// Explicit completion claim with zero tasks - suspicious, mark for retry
+				status = "pending";
+				log(
+					"   │   ⚠️ [COMPLETION_VALIDATION] Marking as pending for retry (zero tasks completed)",
+				);
+			}
+		}
+
+		// If we're marking as pending (for retry), add a note about why
+		if (status === "pending" && result.exitCode === 0) {
+			log(
+				"   │   ℹ️ [COMPLETION_VALIDATION] Exit code 0 but insufficient completion evidence - will retry",
+			);
 		}
 
 		// Update feature
@@ -673,8 +846,15 @@ export async function runFeatureImplementation(
 			);
 		}
 
+		// Bug fix #1938: Add icon for pending status (retry)
 		const icon =
-			status === "completed" ? "✅" : status === "blocked" ? "🚫" : "❌";
+			status === "completed"
+				? "✅"
+				: status === "blocked"
+					? "🚫"
+					: status === "pending"
+						? "🔄"
+						: "❌";
 		log(
 			`   └── ${icon} ${status} (${tasksCompleted}/${feature.task_count} tasks)`,
 		);
@@ -686,7 +866,8 @@ export async function runFeatureImplementation(
 		};
 	} catch (error) {
 		// Stop polling, stall detection, startup monitoring, and UI progress updates on error
-		progressPoller.stop();
+		// Await stop() to ensure no stale poll writes occur after new features start
+		await progressPoller.stop();
 		clearInterval(stallCheckInterval);
 		clearInterval(startupCheckInterval);
 		if (uiProgressInterval) clearInterval(uiProgressInterval);

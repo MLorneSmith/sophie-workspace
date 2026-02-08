@@ -1,6 +1,6 @@
 {
 	"name": "@kit/payload",
-	"version": "3.70.0",
+	"version": "3.75.0",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
@@ -13,12 +13,16 @@
 		"@kit/shared": "workspace:*",
 		"@kit/supabase": "workspace:*",
 		"@supabase/supabase-js": "2.86.2",
-		"payload": "3.70.0",
+		"payload": "3.75.0",
 		"react": "19.2.1"
+	},
+	"peerDependencies": {
+		"next": ">=14.0.0"
 	},
 	"devDependencies": {
 		"@types/node": "^24.10.1",
 		"@types/react": "19.2.7",
+		"next": "15.4.0-canary.109",
 		"typescript": "^5.9.3"
 	},
 	"exports": {

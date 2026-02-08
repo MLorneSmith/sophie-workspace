@@ -43,7 +43,7 @@ jobs:
           echo "store-path=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       - name: Setup pnpm cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.pnpm-cache.outputs.store-path }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -96,7 +96,7 @@ jobs:
           echo "store-path=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       - name: Setup pnpm cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.pnpm-cache.outputs.store-path }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -216,7 +216,7 @@ jobs:
     name: Maintenance Report
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [dependency-updates, security-audit, cleanup]
-    if: always() && github.event_name == 'schedule'
+    if: ${{ always() && !cancelled() && github.event_name == 'schedule' }}
     steps:
       - name: Generate report
         uses: actions/github-script@v8

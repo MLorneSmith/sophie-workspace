@@ -340,7 +340,7 @@ pnpm lint
 pnpm format
 
 # Run workflow and monitor execution
-# Via GitHub Actions UI: https://github.com/MLorneSmith/2025slideheroes/actions
+# Via GitHub Actions UI: https://github.com/slideheroes/2025slideheroes/actions
 # Monitor: Integration Tests job execution time should be 5-7 minutes
 ```
 
@@ -363,7 +363,7 @@ pnpm format
 # 4. No increase in flaky test count
 
 # Commands:
-# 1. Trigger workflow manually: https://github.com/MLorneSmith/2025slideheroes/actions/workflows/dev-integration-tests.yml
+# 1. Trigger workflow manually: https://github.com/slideheroes/2025slideheroes/actions/workflows/dev-integration-tests.yml
 # 2. Check logs for performance metrics and errors
 # 3. Monitor every run for 1 week
 ```

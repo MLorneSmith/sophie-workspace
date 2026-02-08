@@ -1186,7 +1186,7 @@ After creating the report, create a GitHub issue:
 ```bash
 # Create refactoring analysis issue
 gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "Refactor: [target-name]" \
   --body-file .ai/reports/chore-reports/<date>/pending-refactor-analysis-<slug>.md \
   --label "type:chore" \

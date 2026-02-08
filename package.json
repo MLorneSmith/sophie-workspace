@@ -37,8 +37,8 @@
 		"env:validate": "turbo gen validate-env",
 		"build:raw": "turbo build --cache-dir=.turbo",
 		"lint:yaml": "npx yaml-lint '**/*.{yml,yaml}' --ignore='**/node_modules/**' --ignore='**/.next/**' --ignore='**/dist/**'",
-		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!.ai/**' '!.old.claude/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!temp/**' '!**/playwright-report/**' '!**/reports/**' '!**/.reports/**' '!**/test-results/**' '!CLAUDE.md'",
-		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!.ai/**' '!.old.claude/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!temp/**' '!**/playwright-report/**' '!**/reports/**' '!**/.reports/**' '!**/test-results/**' '!CLAUDE.md'",
+		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!.ai/**' '!.old.claude/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!.agents/**' '!temp/**' '!**/playwright-report/**' '!**/reports/**' '!**/.reports/**' '!**/test-results/**' '!.vercel/**' '!CLAUDE.md'",
+		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!.ai/**' '!.old.claude/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!.agents/**' '!temp/**' '!**/playwright-report/**' '!**/reports/**' '!**/.reports/**' '!**/test-results/**' '!.vercel/**' '!CLAUDE.md'",
 		"codecheck": "./.claude/statusline/codecheck-wrapper.sh \"pnpm typecheck && pnpm lint && pnpm format\"",
 		"typecheck:raw": "turbo typecheck --affected --cache-dir=.turbo",
 		"test:unit": "turbo test --cache-dir=.turbo --filter=!web-e2e --continue",
@@ -72,10 +72,10 @@
 			"bash -c 'package_dir=$(dirname \"$0\" | cut -d/ -f1-2); if [ -f \"$package_dir/package.json\" ] && grep -q \"\\\"lint\\\"\" \"$package_dir/package.json\"; then cd \"$package_dir\" && pnpm lint; fi'"
 		],
 		"*.{js,jsx,ts,tsx,json,css}": [
-			"bash -c 'if [[ \"$0\" != */apps/payload/* ]] && [[ \"$0\" != */packages/* ]] && [[ \"$0\" != */.ai/alpha/progress/* ]] && [[ \"$0\" != */.initiative-progress.json ]] && [[ \"$0\" != */spec-manifest.json ]]; then biome format --write \"$0\" && biome lint --write \"$0\"; fi'"
+			"bash -c 'if [[ \"$0\" != */apps/payload/* ]] && [[ \"$0\" != */packages/* ]] && [[ \"$0\" != */.ai/alpha/progress/* ]] && [[ \"$0\" != */.ai/alpha/specs/* ]] && [[ \"$0\" != */.initiative-progress.json ]] && [[ \"$0\" != */spec-manifest.json ]]; then biome format --write \"$0\" && biome lint --write \"$0\"; fi'"
 		],
 		"**/*.{md,mdx}": [
-			"bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo|\\.ai)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
+			"bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo|\\.ai|\\.agents)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
 		],
 		"**/*.{yaml,yml}": [
 			"bash -c 'if [[ \"$0\" != *\"pnpm-lock.yaml\"* ]]; then npx yamllint \"$0\"; fi'"
@@ -87,6 +87,10 @@
 	"packageManager": "pnpm@10.14.0",
 	"pnpm": {
 		"overrides": {
+			"diff": ">=8.0.3",
+			"undici": ">=7.18.2",
+			"preact": ">=10.27.3",
+			"qs": ">=6.14.1",
 			"baseline-browser-mapping": "2.8.32",
 			"react-is": "19.0.0",
 			"require-in-the-middle": "7.5.2",
@@ -119,7 +123,7 @@
 			"nodemailer": "^7.0.11"
 		},
 		"patchedDependencies": {
-			"payload@3.70.0": "patches/payload@3.70.0.patch"
+			"payload@3.75.0": "patches/payload@3.75.0.patch"
 		}
 	},
 	"devDependencies": {
@@ -127,7 +131,7 @@
 		"@biomejs/biome": "2.3.8",
 		"@commitlint/cli": "^20.2.0",
 		"@commitlint/config-conventional": "^20.2.0",
-		"@e2b/code-interpreter": "^2.3.1",
+		"@e2b/code-interpreter": "^2.3.3",
 		"@manypkg/cli": "^0.25.1",
 		"@playwright/test": "^1.57.0",
 		"@turbo/gen": "^2.6.3",

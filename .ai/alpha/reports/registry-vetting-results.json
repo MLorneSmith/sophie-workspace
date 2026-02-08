@@ -1,0 +1,2206 @@
+{
+	"runDate": "2026-01-19",
+	"totalRegistries": 113,
+	"successfulScans": 94,
+	"failedScans": 19,
+	"deadRegistries": 4,
+	"nicheRegistries": 11,
+	"shortlist": [
+		{
+			"name": "@diceui",
+			"url": "https://www.diceui.com",
+			"description": "Accessible shadcn/ui components with React and Tailwind",
+			"totalScore": 100,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 15,
+				"relevance": 25
+			},
+			"highlights": [
+				"editable",
+				"relative-time-card",
+				"sortable",
+				"angle-slider-form-demo",
+				"checkbox-group-animated-demo"
+			],
+			"specialty": "AI/Chat",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@limeplay",
+			"url": "https://limeplay.dev",
+			"description": "Modern UI Library for media players in React",
+			"totalScore": 100,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 15,
+				"relevance": 25
+			},
+			"highlights": [
+				"index",
+				"fallback-poster",
+				"mute-control",
+				"media-provider",
+				"player-layout"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 45,
+			"status": "scored"
+		},
+		{
+			"name": "@asanshay",
+			"url": "https://asanshay.dev",
+			"description": "Clean, beautiful, simple UI primitives and AI elements",
+			"totalScore": 100,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 15,
+				"relevance": 25
+			},
+			"highlights": ["button", "card", "command-prompt", "pointer", "chat"],
+			"specialty": "AI/Chat",
+			"componentCount": 24,
+			"status": "scored"
+		},
+		{
+			"name": "@cult-ui",
+			"url": "https://www.cult-ui.com",
+			"description": "Curated shadcn-compatible components with Framer Motion",
+			"totalScore": 95,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 15,
+				"relevance": 25
+			},
+			"highlights": [
+				"texture-button",
+				"texture-card",
+				"shift-card",
+				"minimal-card",
+				"bg-animate-button"
+			],
+			"specialty": "Animation",
+			"componentCount": 98,
+			"status": "scored"
+		},
+		{
+			"name": "@moleculeui",
+			"url": "https://moleculeui.dev",
+			"description": "Modern React library for intuitive interactions",
+			"totalScore": 95,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 15,
+				"relevance": 20
+			},
+			"highlights": [
+				"expandable-button",
+				"liquid-glass-button",
+				"warp-dialog",
+				"dialog",
+				"liquid-glass-button-demo"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 49,
+			"status": "scored"
+		},
+		{
+			"name": "@wigggle-ui",
+			"url": "https://wigggle-ui.dev",
+			"description": "Beautiful copy-and-paste widgets",
+			"totalScore": 93,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": ["button", "dialog", "widget", "icons", "avatar"],
+			"specialty": "Dashboard",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@gaia",
+			"url": "https://gaia-ui.dev",
+			"description": "Production-ready UI components for AI assistants",
+			"totalScore": 88,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"holo-card",
+				"raised-button",
+				"navbar-menu",
+				"github-stars-button",
+				"email-compose-card"
+			],
+			"specialty": "AI/Chat",
+			"componentCount": 16,
+			"status": "scored"
+		},
+		{
+			"name": "@hextaui",
+			"url": "https://hextaui.com",
+			"description": "Ready-to-use foundation components and blocks",
+			"totalScore": 88,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"alert-dialog",
+				"button",
+				"button-group",
+				"card",
+				"dialog"
+			],
+			"specialty": "Marketing Blocks",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@glass-ui",
+			"url": "https://glass-ui.dev",
+			"description": "40+ glassmorphic React/TypeScript components",
+			"totalScore": 85,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": ["button", "card", "dialog", "alert-dialog", "chart"],
+			"specialty": "Dashboard",
+			"componentCount": 49,
+			"status": "scored"
+		},
+		{
+			"name": "@scrollxui",
+			"url": "https://scrollxui.dev",
+			"description": "Motion-driven animated React components",
+			"totalScore": 85,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"alert-dialog",
+				"animated-button",
+				"animated-tabs",
+				"animated-testimonials",
+				"animated-textgenerate"
+			],
+			"specialty": "Animation",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@einui",
+			"url": "https://einui.com",
+			"description": "Beautiful Shadcn components with frosted glass morphism",
+			"totalScore": 80,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"glass-button",
+				"glass-card",
+				"glass-dialog",
+				"glass-morph-card",
+				"glass-table"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 42,
+			"status": "scored"
+		},
+		{
+			"name": "@phucbm",
+			"url": "https://phucbm.dev",
+			"description": "Modern React UI components with GSAP animations",
+			"totalScore": 80,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 15,
+				"relevance": 25
+			},
+			"highlights": [
+				"nextra-search-dialog",
+				"draw-svg",
+				"draw-svg-example",
+				"draw-svg-example-02",
+				"infinite-grid"
+			],
+			"specialty": "Animation",
+			"componentCount": 27,
+			"status": "scored"
+		},
+		{
+			"name": "@tokenui",
+			"url": "https://tokenui.dev",
+			"description": "Interactive documentation components",
+			"totalScore": 80,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 15,
+				"relevance": 5
+			},
+			"highlights": ["button", "tooltip", "token", "icon-token", "color-token"],
+			"specialty": "Charts",
+			"componentCount": 15,
+			"status": "scored"
+		},
+		{
+			"name": "@8bitcn",
+			"url": "https://www.8bitcn.com",
+			"description": "8-bit styled retro components",
+			"totalScore": 78,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": ["button", "card", "dialog", "hover-card", "alert-dialog"],
+			"specialty": "Dashboard",
+			"componentCount": 80,
+			"status": "scored"
+		},
+		{
+			"name": "@kanpeki",
+			"url": "https://kanpeki.dev",
+			"description": "Perfect-designed components with React Aria and Motion",
+			"totalScore": 78,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": ["button", "button-group", "card", "chart", "dialog"],
+			"specialty": "Animation",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@reui",
+			"url": "https://reui.io",
+			"description": "Open-source collection of UI components",
+			"totalScore": 78,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"list-card-1",
+				"statistic-card-1",
+				"statistic-card-10",
+				"statistic-card-11",
+				"statistic-card-12"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@shadcnui-blocks",
+			"url": "https://shadcnui-blocks.com",
+			"description": "Premium, production-ready blocks",
+			"totalScore": 78,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"animated-grid-pattern",
+				"hero-01",
+				"hero-02",
+				"hero-03",
+				"hero-04"
+			],
+			"specialty": "Marketing Blocks",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@aliimam",
+			"url": "https://aliimam.dev",
+			"description": "Digital experiences and product development components",
+			"totalScore": 75,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": ["alert-dialog", "button", "card", "chart", "dialog"],
+			"specialty": "Dashboard",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@kibo-ui",
+			"url": "https://kibo-ui.com",
+			"description": "Composable, accessible open source components",
+			"totalScore": 75,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"credit-card",
+				"dialog-stack",
+				"table",
+				"announcement",
+				"avatar-stack"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 41,
+			"status": "scored"
+		},
+		{
+			"name": "@react-aria",
+			"url": "https://react-spectrum.adobe.com/react-aria",
+			"description": "Customizable components with adaptive interactions",
+			"totalScore": 75,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 15,
+				"relevance": 25
+			},
+			"highlights": [
+				"tailwind-alertdialog",
+				"tailwind-button",
+				"tailwind-dialog",
+				"tailwind-fieldbutton",
+				"tailwind-form"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@smoothui",
+			"url": "https://smoothui.dev",
+			"description": "Motion components with React, Framer Motion",
+			"totalScore": 75,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 15,
+				"relevance": 25
+			},
+			"highlights": [
+				"animated-input",
+				"animated-o-t-p-input",
+				"animated-progress-bar",
+				"animated-tags",
+				"basic-modal"
+			],
+			"specialty": "Animation",
+			"componentCount": 66,
+			"status": "scored"
+		},
+		{
+			"name": "@wandry-ui",
+			"url": "https://wandry-ui.dev",
+			"description": "Fully controlled React Inertia form elements",
+			"totalScore": 75,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 15
+			},
+			"highlights": [
+				"submit-button",
+				"update-button",
+				"text-field",
+				"select-field",
+				"checkbox-field"
+			],
+			"specialty": "Forms",
+			"componentCount": 37,
+			"status": "scored"
+		},
+		{
+			"name": "@agents-ui",
+			"url": "https://agents.livekit.io",
+			"description": "Components for LiveKit AI Agent interfaces",
+			"totalScore": 73,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 20
+			},
+			"highlights": [
+				"agent-disconnect-button",
+				"start-audio-button",
+				"agent-track-toggle",
+				"agent-track-control",
+				"agent-control-bar"
+			],
+			"specialty": "AI/Chat",
+			"componentCount": 11,
+			"status": "scored"
+		},
+		{
+			"name": "@coss",
+			"url": "https://coss.dev",
+			"description": "Modern UI component library built on Base UI",
+			"totalScore": 73,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": ["alert-dialog", "button", "card", "dialog", "form"],
+			"specialty": "Dashboard",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@kokonutui",
+			"url": "https://kokonutui.com",
+			"description": "Stunning components with Tailwind, shadcn/ui, Motion",
+			"totalScore": 73,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"command-button",
+				"card-flip",
+				"shape-hero",
+				"carousel-cards",
+				"apple-activity-card"
+			],
+			"specialty": "Animation",
+			"componentCount": 40,
+			"status": "scored"
+		},
+		{
+			"name": "@manifest",
+			"url": "https://manifest.dev",
+			"description": "Agentic UI toolkit for MCP Apps",
+			"totalScore": 73,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"contact-form",
+				"issue-report-form",
+				"card-form",
+				"saved-cards",
+				"bank-card-form"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 37,
+			"status": "scored"
+		},
+		{
+			"name": "@motion-primitives",
+			"url": "https://www.motion-primitives.com",
+			"description": "Beautifully designed motion components",
+			"totalScore": 73,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"animated-background",
+				"animated-group",
+				"animated-number",
+				"dialog",
+				"morphing-dialog"
+			],
+			"specialty": "Animation",
+			"componentCount": 33,
+			"status": "scored"
+		},
+		{
+			"name": "@plate",
+			"url": "https://platejs.org",
+			"description": "AI-powered rich text editor for React",
+			"totalScore": 73,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"ai-toolbar-button",
+				"align-toolbar-button",
+				"import-toolbar-button",
+				"export-toolbar-button",
+				"font-color-toolbar-button"
+			],
+			"specialty": "AI/Chat",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@shadcn-map",
+			"url": "https://shadcn-map.dev",
+			"description": "Map component built with Leaflet",
+			"totalScore": 73,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 5
+			},
+			"highlights": [
+				"map",
+				"basic-map",
+				"map-with-custom-tiles",
+				"map-with-markers",
+				"map-with-marker-cluster-group"
+			],
+			"specialty": "Forms",
+			"componentCount": 32,
+			"status": "scored"
+		},
+		{
+			"name": "@taki",
+			"url": "https://taki.dev",
+			"description": "Accessible components with React Aria Components",
+			"totalScore": 73,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": ["button", "button-group", "card", "chart", "dialog"],
+			"specialty": "Dashboard",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@gooseui",
+			"url": "https://gooseui.dev",
+			"description": "Open source animated components and beautiful effects",
+			"totalScore": 73,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"animated-timer",
+				"button",
+				"card",
+				"morphing-dialog",
+				"theme-customizer"
+			],
+			"specialty": "Animation",
+			"componentCount": 19,
+			"status": "scored"
+		},
+		{
+			"name": "@jolyui",
+			"url": "https://jolyui.dev",
+			"description": "Modern React library with TypeScript and Tailwind",
+			"totalScore": 73,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"animated-beam",
+				"animated-theme-toggle",
+				"animated-table",
+				"button",
+				"animated-tooltip"
+			],
+			"specialty": "AI/Chat",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@ai-elements",
+			"url": "https://ai-elements.dev",
+			"description": "Pre-built components for AI-native applications",
+			"totalScore": 70,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 20
+			},
+			"highlights": [
+				"artifact",
+				"canvas",
+				"chain-of-thought",
+				"checkpoint",
+				"code-block"
+			],
+			"specialty": "AI/Chat",
+			"componentCount": 77,
+			"status": "scored"
+		},
+		{
+			"name": "@animate-ui",
+			"url": "https://animate-ui.com",
+			"description": "Fully animated React component distribution",
+			"totalScore": 70,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"components-base-alert-dialog",
+				"components-base-dialog",
+				"components-base-preview-card",
+				"components-base-preview-link-card",
+				"components-buttons-button"
+			],
+			"specialty": "Animation",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@retroui",
+			"url": "https://retroui.dev",
+			"description": "Neobrutalism styled React and TailwindCSS library",
+			"totalScore": 70,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 5,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": ["button", "card", "dialog", "table", "area-chart"],
+			"specialty": "AI/Chat",
+			"componentCount": 95,
+			"status": "scored"
+		},
+		{
+			"name": "@roiui",
+			"url": "https://roiui.dev",
+			"description": "UI components with Base UI primitives and Framer motion",
+			"totalScore": 70,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 5,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 15,
+				"relevance": 25
+			},
+			"highlights": ["alert-dialog", "button", "card", "copy-button", "dialog"],
+			"specialty": "Animation",
+			"componentCount": 99,
+			"status": "scored"
+		},
+		{
+			"name": "@shadcraft",
+			"url": "https://shadcraft.dev",
+			"description": "Polished shadcn/ui components and marketing blocks",
+			"totalScore": 70,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"profile-card",
+				"top-navigation-5",
+				"index",
+				"avatar-stack",
+				"page-heading"
+			],
+			"specialty": "Marketing Blocks",
+			"componentCount": 22,
+			"status": "scored"
+		},
+		{
+			"name": "@oui",
+			"url": "https://oui.dev",
+			"description": "React Aria Components with shadcn characteristics",
+			"totalScore": 68,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"oui-button",
+				"oui-button-demo",
+				"oui-button-demo-outline",
+				"oui-button-demo-destructive",
+				"oui-button-demo-disabled"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@blocks",
+			"url": "https://blocks.so",
+			"description": "Clean, modern application building blocks",
+			"totalScore": 65,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"dialog-01",
+				"dialog-02",
+				"dialog-03",
+				"dialog-04",
+				"dialog-05"
+			],
+			"specialty": "Marketing Blocks",
+			"componentCount": 69,
+			"status": "scored"
+		},
+		{
+			"name": "@lucide-animated",
+			"url": "https://lucide-animated.dev",
+			"description": "Smooth animated lucide icons",
+			"totalScore": 65,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"chart-bar-decreasing",
+				"chart-bar-increasing",
+				"chart-column-decreasing",
+				"chart-column-increasing",
+				"chart-line"
+			],
+			"specialty": "Animation",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@magicui",
+			"url": "https://magicui.design",
+			"description": "150+ free animated components for Design Engineers",
+			"totalScore": 65,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"magic-card",
+				"neon-gradient-card",
+				"hero-video-dialog",
+				"shimmer-button",
+				"tweet-card"
+			],
+			"specialty": "Animation",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@systaliko-ui",
+			"url": "https://systaliko-ui.dev",
+			"description": "UI component library for flexibility",
+			"totalScore": 65,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"animated-menu",
+				"distributed-cards",
+				"card",
+				"card-curtain-reveal",
+				"card-flip"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 99,
+			"status": "scored"
+		},
+		{
+			"name": "@heroicons-animated",
+			"url": "https://heroicons-animated.dev",
+			"description": "316 beautifully animated heroicons",
+			"totalScore": 65,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"chart-bar-square",
+				"chart-bar",
+				"chart-pie",
+				"academic-cap",
+				"adjustments-horizontal"
+			],
+			"specialty": "Animation",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@uselayouts",
+			"url": "https://uselayouts.com",
+			"description": "Premium animated React components and micro-interactions",
+			"totalScore": 65,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"animated-collection",
+				"delete-button",
+				"discover-button",
+				"multi-step-form",
+				"pricing-card"
+			],
+			"specialty": "Animation",
+			"componentCount": 25,
+			"status": "scored"
+		},
+		{
+			"name": "@fab-ui",
+			"url": "https://fab-ui.dev",
+			"description": "Beautifully designed UI components for modern web apps",
+			"totalScore": 65,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": ["alert-dialog", "button", "card", "dialog", "form"],
+			"specialty": "Dashboard",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@bundui",
+			"url": "https://bundui.io",
+			"description": "Collection of 150+ handcrafted UI components",
+			"totalScore": 63,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 0,
+				"radixPrimitives": 15,
+				"cssVariables": 0,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"alert-with-action-button",
+				"alert-dialog",
+				"button-default",
+				"button-secondary",
+				"button-destructive"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@mui-treasury",
+			"url": "https://mui-treasury.com",
+			"description": "Hand-crafted interfaces on MUI components",
+			"totalScore": 63,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"card-action-01",
+				"card-action-02",
+				"card-blog",
+				"card-engagement",
+				"card-galaxy"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@8starlabs-ui",
+			"url": "https://8starlabs.dev",
+			"description": "High-utility UI elements for developers",
+			"totalScore": 60,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 15,
+				"relevance": 10
+			},
+			"highlights": [
+				"timeline-nocards-demo",
+				"heatmap",
+				"heatmap-demo",
+				"heatmap-interpolate-demo",
+				"heatmap-display-style-demo"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 39,
+			"status": "scored"
+		},
+		{
+			"name": "@aceternity",
+			"url": "https://ui.aceternity.com",
+			"description": "Modern components with Tailwind CSS and Motion",
+			"totalScore": 60,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"text-reveal-card",
+				"animated-tooltip",
+				"infinite-moving-cards",
+				"evervault-card",
+				"card-stack"
+			],
+			"specialty": "Animation",
+			"componentCount": 95,
+			"status": "scored"
+		},
+		{
+			"name": "@chamaac",
+			"url": "https://chamaac.dev",
+			"description": "Beautiful, animated components for web projects",
+			"totalScore": 60,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"stats-cards",
+				"premium-button",
+				"shimmer-button",
+				"slideup-button",
+				"hover-arrow-button"
+			],
+			"specialty": "Animation",
+			"componentCount": 80,
+			"status": "scored"
+		},
+		{
+			"name": "@eldoraui",
+			"url": "https://www.eldoraui.site",
+			"description": "Open-source modern UI with TypeScript, Tailwind, Framer Motion",
+			"totalScore": 60,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"animated-badge",
+				"animated-frameworks",
+				"card-flip-hover",
+				"animated-grid-pattern",
+				"live-button"
+			],
+			"specialty": "Animation",
+			"componentCount": 93,
+			"status": "scored"
+		},
+		{
+			"name": "@solaceui",
+			"url": "https://solaceui.com",
+			"description": "Production-ready sections and templates for Next.js",
+			"totalScore": 60,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"hero-video",
+				"hero-video-default",
+				"hero-video-sound",
+				"hero-section-1",
+				"hero-section-2"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 15,
+			"status": "scored"
+		},
+		{
+			"name": "@spectrumui",
+			"url": "https://spectrumui.dev",
+			"description": "Modern component library with shadcn/ui and Tailwind",
+			"totalScore": 60,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"animated-card",
+				"animated-SVG-chart",
+				"animated-testimonials",
+				"autosize-textarea-form",
+				"datetime-picker-display-format"
+			],
+			"specialty": "AI/Chat",
+			"componentCount": 99,
+			"status": "scored"
+		},
+		{
+			"name": "@supabase",
+			"url": "https://supabase.com/ui",
+			"description": "React components connecting to Supabase back-end",
+			"totalScore": 60,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 15
+			},
+			"highlights": [
+				"platform-kit-nextjs",
+				"password-based-auth-nextjs",
+				"password-based-auth-react",
+				"password-based-auth-react-router",
+				"password-based-auth-tanstack"
+			],
+			"specialty": "Forms",
+			"componentCount": 41,
+			"status": "scored"
+		},
+		{
+			"name": "@zippystarter",
+			"url": "https://zippystarter.com",
+			"description": "Expertly crafted blocks and themes for shadcn/ui",
+			"totalScore": 60,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 10
+			},
+			"highlights": ["index", "avatars", "avatar", "image", "link"],
+			"specialty": "Marketing Blocks",
+			"componentCount": 35,
+			"status": "scored"
+		},
+		{
+			"name": "@intentui",
+			"url": "https://intentui.com",
+			"description": "Accessible React component library",
+			"totalScore": 58,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 0,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"area-chart",
+				"bar-chart",
+				"button-group",
+				"button",
+				"card"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@optics",
+			"url": "https://optics.dev",
+			"description": "Design system with re-styled components and utilities",
+			"totalScore": 58,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 0,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": ["alert-dialog", "button-group", "button", "card", "chart"],
+			"specialty": "Dashboard",
+			"componentCount": 79,
+			"status": "scored"
+		},
+		{
+			"name": "@shadcn-editor",
+			"url": "https://shadcn-editor.dev",
+			"description": "Rich text editor with Lexical and Shadcn/UI",
+			"totalScore": 58,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 8,
+				"relevance": 20
+			},
+			"highlights": [
+				"block-format-toolbar-plugin",
+				"font-format-toolbar-plugin",
+				"element-format-toolbar-plugin",
+				"clear-formatting-toolbar-plugin",
+				"floating-text-format-plugin"
+			],
+			"specialty": "Rich Text Editor",
+			"componentCount": 89,
+			"status": "scored"
+		},
+		{
+			"name": "@tailark",
+			"url": "https://tailark.dev",
+			"description": "Shadcn blocks for modern marketing websites",
+			"totalScore": 58,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 0,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": [
+				"hero-section-1",
+				"hero-section-2",
+				"hero-section-3",
+				"hero-section-4",
+				"hero-section-5"
+			],
+			"specialty": "Marketing Blocks",
+			"componentCount": 99,
+			"status": "scored"
+		},
+		{
+			"name": "@baselayer",
+			"url": "https://baselayer.dev",
+			"description": "Components with React Aria, Tailwind, tailwind-variants",
+			"totalScore": 58,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 0,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 25
+			},
+			"highlights": ["button", "card", "modal", "table", "accordion"],
+			"specialty": "AI/Chat",
+			"componentCount": 26,
+			"status": "scored"
+		},
+		{
+			"name": "@elevenlabs-ui",
+			"url": "https://elevenlabs.io",
+			"description": "Open source agent and audio components",
+			"totalScore": 55,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 15
+			},
+			"highlights": [
+				"waveform",
+				"live-waveform",
+				"voice-button",
+				"voice-form-01",
+				"voice-nav-01"
+			],
+			"specialty": "Forms",
+			"componentCount": 50,
+			"status": "scored"
+		},
+		{
+			"name": "@ncdai",
+			"url": "https://ncdai.dev",
+			"description": "Collection of reusable components",
+			"totalScore": 55,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 15
+			},
+			"highlights": [
+				"utils",
+				"use-controllable-state",
+				"use-sound",
+				"theme-switcher",
+				"flip-sentences"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 28,
+			"status": "scored"
+		},
+		{
+			"name": "@react-bits",
+			"url": "https://reactbits.dev",
+			"description": "Large collection of animated, interactive React components",
+			"totalScore": 55,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 10
+			},
+			"highlights": [
+				"AnimatedContent-JS-CSS",
+				"AnimatedContent-JS-TW",
+				"AnimatedContent-TS-CSS",
+				"AnimatedContent-TS-TW",
+				"BlobCursor-JS-CSS"
+			],
+			"specialty": "Animation",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@shadcndesign",
+			"url": "https://shadcndesign.com",
+			"description": "High-quality blocks and themes",
+			"totalScore": 55,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 0,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 15,
+				"relevance": 25
+			},
+			"highlights": [
+				"hero-section-1",
+				"lp-navbar-1",
+				"404-section-1",
+				"banner-1",
+				"bento-grid-1"
+			],
+			"specialty": "Marketing Blocks",
+			"componentCount": 37,
+			"status": "scored"
+		},
+		{
+			"name": "@ha-components",
+			"url": "https://ha-components.dev",
+			"description": "Customizable components for Home Assistant",
+			"totalScore": 50,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 15
+			},
+			"highlights": ["type-generator", "auth", "camera", "trigger", "toggle"],
+			"specialty": "AI/Chat",
+			"componentCount": 12,
+			"status": "scored"
+		},
+		{
+			"name": "@lens-blocks",
+			"url": "https://lens-blocks.dev",
+			"description": "Social media components for Lens Protocol",
+			"totalScore": 50,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"login-button",
+				"follow-button",
+				"account-hover-card",
+				"tip-dialog",
+				"quote-dialog"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 24,
+			"status": "scored"
+		},
+		{
+			"name": "@paceui",
+			"url": "https://paceui.com",
+			"description": "Animated components with smooth interactions",
+			"totalScore": 50,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"text-fall-button",
+				"tilt-card",
+				"spring-button",
+				"modal-selector",
+				"modal-ability-selector"
+			],
+			"specialty": "Animation",
+			"componentCount": 38,
+			"status": "scored"
+		},
+		{
+			"name": "@uicapsule",
+			"url": "https://uicapsule.dev",
+			"description": "Curated components with AI/UI experiments",
+			"totalScore": 50,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 20
+			},
+			"highlights": [
+				"card-stack",
+				"like-button",
+				"ascii-renderer",
+				"background-pixel-stars",
+				"background-shapes"
+			],
+			"specialty": "AI/Chat",
+			"componentCount": 21,
+			"status": "scored"
+		},
+		{
+			"name": "@tailwind-admin",
+			"url": "https://tailwind-admin.dev",
+			"description": "Free tailwind admin dashboard templates",
+			"totalScore": 50,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 0,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"top-cards",
+				"blog-cards",
+				"feed-cards",
+				"gift-cards",
+				"music-cards"
+			],
+			"specialty": "AI/Chat",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@animbits",
+			"url": "https://animbits.dev",
+			"description": "Animated UI components using Framer Motion",
+			"totalScore": 50,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"specials-animated-toast",
+				"spotlight-card",
+				"reaction-button",
+				"buttons-press",
+				"buttons-glow"
+			],
+			"specialty": "Animation",
+			"componentCount": 98,
+			"status": "scored"
+		},
+		{
+			"name": "@joyco",
+			"url": "https://joyco.dev",
+			"description": "MobileMenu, ScrollArea, Chat UI, HLSVideoPlayer",
+			"totalScore": 50,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 20,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 15
+			},
+			"highlights": [
+				"file-button",
+				"infinite-list",
+				"marquee",
+				"file-dropzone",
+				"mobile-menu"
+			],
+			"specialty": "AI/Chat",
+			"componentCount": 11,
+			"status": "scored"
+		},
+		{
+			"name": "@billingsdk",
+			"url": "https://billingsdk.com",
+			"description": "SaaS billing components for Dodo Payments and Stripe",
+			"totalScore": 45,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 20
+			},
+			"highlights": [
+				"pricing-table-one",
+				"pricing-table-two",
+				"pricing-table-three",
+				"pricing-table-four",
+				"pricing-table-five"
+			],
+			"specialty": "Payments",
+			"componentCount": 35,
+			"status": "scored"
+		},
+		{
+			"name": "@ui-layouts",
+			"url": "https://ui-layouts.dev",
+			"description": "Components, effects, and ready-made blocks",
+			"totalScore": 45,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 5,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 25
+			},
+			"highlights": [
+				"btn-animated-gradient",
+				"button-active",
+				"button-hover-right",
+				"card-globe",
+				"card-globe-white"
+			],
+			"specialty": "Marketing Blocks",
+			"componentCount": 98,
+			"status": "scored"
+		},
+		{
+			"name": "@skiper-ui",
+			"url": "https://skiper-ui.dev",
+			"description": "Uncommon components for Next.js projects",
+			"totalScore": 43,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 0
+			},
+			"highlights": ["skiper3", "skiper4", "skiper16", "skiper17", "skiper19"],
+			"specialty": "General UI",
+			"componentCount": 36,
+			"status": "scored"
+		},
+		{
+			"name": "@abui",
+			"url": "https://abui.dev",
+			"description": "Shadcn-compatible registry with reusable components and blocks",
+			"totalScore": 40,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 5,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 20
+			},
+			"highlights": [
+				"animated-chart",
+				"design-system",
+				"orientation-media-queries",
+				"extra-breakpoints",
+				"debug-utils"
+			],
+			"specialty": "Marketing Blocks",
+			"componentCount": 20,
+			"status": "scored"
+		},
+		{
+			"name": "@assistant-ui",
+			"url": "https://www.assistant-ui.com",
+			"description": "Radix-style primitives for AI chat",
+			"totalScore": 40,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 0,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 15
+			},
+			"highlights": [
+				"tooltip-icon-button",
+				"assistant-modal",
+				"shimmer-style",
+				"chat",
+				"ai-sdk-backend"
+			],
+			"specialty": "AI/Chat",
+			"componentCount": 19,
+			"status": "scored"
+		},
+		{
+			"name": "@prosekit",
+			"url": "https://prosekit.dev",
+			"description": "Powerful, flexible rich text editor",
+			"totalScore": 40,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 5,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 20
+			},
+			"highlights": [
+				"react-example-table",
+				"react-sample-sample-doc-table",
+				"react-ui-button",
+				"react-ui-table-handle",
+				"react-example-block-handle"
+			],
+			"specialty": "Rich Text Editor",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@cardcn",
+			"url": "https://cardcn.dev",
+			"description": "Beautifully-designed shadcn card components",
+			"totalScore": 30,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 0,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 5
+			},
+			"highlights": ["card-1", "card-2", "card-3", "card-4", "card-5"],
+			"specialty": "Dashboard",
+			"componentCount": 27,
+			"status": "scored"
+		},
+		{
+			"name": "@svgl",
+			"url": "https://svgl.app",
+			"description": "Beautiful library with SVG logos",
+			"totalScore": 25,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 5,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 5
+			},
+			"highlights": [
+				"nvidia",
+				"proton-mail",
+				"google-classroom",
+				"google-antigravity",
+				"kimi"
+			],
+			"specialty": "Animation",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@utilcn",
+			"url": "https://utilcn.dev",
+			"description": "Fullstack registry for ChatGPT apps, file uploading",
+			"totalScore": 25,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 5,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 5
+			},
+			"highlights": [
+				"capitalize-all",
+				"capitalize",
+				"repeat-pad",
+				"reverse-string",
+				"to-camel-case"
+			],
+			"specialty": "AI/Chat",
+			"componentCount": 17,
+			"status": "scored"
+		},
+		{
+			"name": "@paykit-sdk",
+			"url": "https://paykit.dev",
+			"description": "Unified payments SDK for checkout and billing",
+			"totalScore": 20,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 0,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 5
+			},
+			"highlights": [
+				"stripe-nextjs",
+				"stripe-hono",
+				"stripe-express",
+				"stripe-nextjs-hooks",
+				"stripe-nextjs-prisma"
+			],
+			"specialty": "Payments",
+			"componentCount": 19,
+			"status": "scored"
+		},
+		{
+			"name": "@shadcn-studio",
+			"url": "https://shadcn.studio",
+			"description": "Components, blocks, and templates with theme generator",
+			"totalScore": 20,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 0,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 5
+			},
+			"highlights": [
+				"button-01",
+				"accordion-01",
+				"accordion-02",
+				"accordion-03",
+				"accordion-04"
+			],
+			"specialty": "Marketing Blocks",
+			"componentCount": 100,
+			"status": "scored"
+		},
+		{
+			"name": "@shadcnblocks",
+			"url": "https://shadcnblocks.com",
+			"description": "Hundreds of extra blocks for shadcn ui",
+			"totalScore": 15,
+			"breakdown": {
+				"componentCount": 15,
+				"typescriptQuality": 0,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 0
+			},
+			"highlights": ["about1", "about10", "about13", "about14", "about15"],
+			"specialty": "Marketing Blocks",
+			"componentCount": 100,
+			"status": "scored"
+		}
+	],
+	"nicheList": [
+		{
+			"name": "@formcn",
+			"url": "https://formcn.dev",
+			"description": "Production-ready forms built with shadcn components",
+			"totalScore": 60,
+			"breakdown": {
+				"componentCount": 10,
+				"typescriptQuality": 20,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 15,
+				"relevance": 5
+			},
+			"highlights": [
+				"tag-input",
+				"password",
+				"multi-select",
+				"rating",
+				"file-upload"
+			],
+			"specialty": "Forms",
+			"componentCount": 9,
+			"status": "niche"
+		},
+		{
+			"name": "@aevr",
+			"url": "https://aevr.vercel.app",
+			"description": "Production-ready components for React/Next.js",
+			"totalScore": 73,
+			"breakdown": {
+				"componentCount": 10,
+				"typescriptQuality": 20,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 10
+			},
+			"highlights": [
+				"button",
+				"summary-card",
+				"card",
+				"number-formatter",
+				"info-box"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 6,
+			"status": "niche"
+		},
+		{
+			"name": "@clerk",
+			"url": "https://clerk.com",
+			"description": "Authentication and user management components",
+			"totalScore": 53,
+			"breakdown": {
+				"componentCount": 10,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 8,
+				"relevance": 10
+			},
+			"highlights": [
+				"nextjs-quickstart",
+				"nextjs-clerk-provider",
+				"nextjs-sign-in-page",
+				"nextjs-sign-up-page",
+				"nextjs-waitlist-page"
+			],
+			"specialty": "Authentication",
+			"componentCount": 6,
+			"status": "niche"
+		},
+		{
+			"name": "@algolia",
+			"url": "https://www.algolia.com",
+			"description": "AI search infrastructure and components",
+			"totalScore": 80,
+			"breakdown": {
+				"componentCount": 10,
+				"typescriptQuality": 20,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 15,
+				"relevance": 10
+			},
+			"highlights": [
+				"dropdown-search",
+				"search",
+				"search-ai",
+				"highlight-to-askai",
+				"sidepanel-askai"
+			],
+			"specialty": "AI/Chat",
+			"componentCount": 5,
+			"status": "niche"
+		},
+		{
+			"name": "@nuqs",
+			"url": "https://nuqs.47ng.com",
+			"description": "Type-safe URL state management utilities",
+			"totalScore": 20,
+			"breakdown": {
+				"componentCount": 10,
+				"typescriptQuality": 5,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 5
+			},
+			"highlights": [
+				"adapter-inertia",
+				"adapter-onejs",
+				"adapter-react-router-v5",
+				"adapter-waku",
+				"next-typed-links"
+			],
+			"specialty": "Dashboard",
+			"componentCount": 5,
+			"status": "niche"
+		},
+		{
+			"name": "@better-upload",
+			"url": "https://better-upload.dev",
+			"description": "File upload components for S3-compatible services",
+			"totalScore": 35,
+			"breakdown": {
+				"componentCount": 10,
+				"typescriptQuality": 10,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 5
+			},
+			"highlights": [
+				"upload-button",
+				"upload-dropzone",
+				"upload-dropzone-progress",
+				"paste-upload-area"
+			],
+			"specialty": "Charts",
+			"componentCount": 4,
+			"status": "niche"
+		},
+		{
+			"name": "@typedora-ui",
+			"url": "https://typedora-ui.dev",
+			"description": "Extension layer for shadcn/ui with full type-safety",
+			"totalScore": 58,
+			"breakdown": {
+				"componentCount": 10,
+				"typescriptQuality": 20,
+				"radixPrimitives": 15,
+				"cssVariables": 0,
+				"accessibility": 8,
+				"relevance": 5
+			},
+			"highlights": [
+				"typed-utils",
+				"typed-select",
+				"typed-radio-group",
+				"typed-combobox"
+			],
+			"specialty": "Forms",
+			"componentCount": 4,
+			"status": "niche"
+		},
+		{
+			"name": "@lytenyte",
+			"url": "https://lytenyte.dev",
+			"description": "High-performance React data grid with Tailwind theming",
+			"totalScore": 25,
+			"breakdown": {
+				"componentCount": 5,
+				"typescriptQuality": 5,
+				"radixPrimitives": 0,
+				"cssVariables": 0,
+				"accessibility": 0,
+				"relevance": 15
+			},
+			"highlights": ["lytenyte-core", "lytenyte-pro"],
+			"specialty": "AI/Chat",
+			"componentCount": 2,
+			"status": "niche"
+		},
+		{
+			"name": "@tour",
+			"url": "https://tour.dev",
+			"description": "Onboarding tour component for shadcn/ui",
+			"totalScore": 50,
+			"breakdown": {
+				"componentCount": 5,
+				"typescriptQuality": 20,
+				"radixPrimitives": 15,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 0
+			},
+			"highlights": ["tour"],
+			"specialty": "General UI",
+			"componentCount": 1,
+			"status": "niche"
+		},
+		{
+			"name": "@darx",
+			"url": "https://darx.dev",
+			"description": "Magic 3D Tabs with mouse-interactive rotation",
+			"totalScore": 30,
+			"breakdown": {
+				"componentCount": 5,
+				"typescriptQuality": 15,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 0,
+				"relevance": 0
+			},
+			"highlights": ["magic-genie-tabs"],
+			"specialty": "General UI",
+			"componentCount": 1,
+			"status": "niche"
+		},
+		{
+			"name": "@headcodecms",
+			"url": "https://headcodecms.com",
+			"description": "Minimalistic Web CMS for Next.js",
+			"totalScore": 55,
+			"breakdown": {
+				"componentCount": 5,
+				"typescriptQuality": 20,
+				"radixPrimitives": 0,
+				"cssVariables": 10,
+				"accessibility": 15,
+				"relevance": 5
+			},
+			"highlights": ["starter"],
+			"specialty": "Tables",
+			"componentCount": 1,
+			"status": "niche"
+		}
+	],
+	"failedList": [
+		{
+			"name": "@abstract",
+			"error": "Search failed: Command failed: npx shadcn@latest search @abstract 2>&1"
+		},
+		{
+			"name": "@ai-blocks",
+			"error": "Search failed: Command failed: npx shadcn@latest search @ai-blocks 2>&1"
+		},
+		{
+			"name": "@basecn",
+			"error": "Search failed: Command failed: npx shadcn@latest search @basecn 2>&1"
+		},
+		{
+			"name": "@creative-tim",
+			"error": "Search failed: Command failed: npx shadcn@latest search @creative-tim 2>&1"
+		},
+		{
+			"name": "@doras-ui",
+			"error": "Search failed: Command failed: npx shadcn@latest search @doras-ui 2>&1"
+		},
+		{
+			"name": "@elements",
+			"error": "Search failed: Command failed: npx shadcn@latest search @elements 2>&1"
+		},
+		{
+			"name": "@efferd",
+			"error": "Search failed: Command failed: npx shadcn@latest search @efferd 2>&1"
+		},
+		{
+			"name": "@hooks",
+			"error": "Search failed: Command failed: npx shadcn@latest search @hooks 2>&1"
+		},
+		{
+			"name": "@neobrutalism",
+			"error": "Search failed: Command failed: npx shadcn@latest search @neobrutalism 2>&1"
+		},
+		{
+			"name": "@nexus-elements",
+			"error": "Search failed: Command failed: npx shadcn@latest search @nexus-elements 2>&1"
+		},
+		{
+			"name": "@prompt-kit",
+			"error": "Search failed: Command failed: npx shadcn@latest search @prompt-kit 2>&1"
+		},
+		{
+			"name": "@square-ui",
+			"error": "Search failed: Command failed: npx shadcn@latest search @square-ui 2>&1"
+		},
+		{
+			"name": "@uitripled",
+			"error": "Search failed: Command failed: npx shadcn@latest search @uitripled 2>&1"
+		},
+		{
+			"name": "@pureui",
+			"error": "Search failed: spawnSync /bin/sh ETIMEDOUT"
+		},
+		{
+			"name": "@tailwind-builder",
+			"error": "Search failed: Command failed: npx shadcn@latest search @tailwind-builder 2>&1"
+		},
+		{
+			"name": "@forgeui",
+			"error": "Search failed: Command failed: npx shadcn@latest search @forgeui 2>&1"
+		},
+		{
+			"name": "@icons-animated",
+			"error": "Search failed: Command failed: npx shadcn@latest search @icons-animated 2>&1"
+		},
+		{
+			"name": "@beste-ui",
+			"error": "Search failed: Command failed: npx shadcn@latest search @beste-ui 2>&1"
+		},
+		{
+			"name": "@lumiui",
+			"error": "Search failed: Command failed: npx shadcn@latest search @lumiui 2>&1"
+		}
+	]
+}

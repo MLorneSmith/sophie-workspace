@@ -1,0 +1,165 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://slideheroes.com/schemas/alpha/visual-verification.schema.json",
+	"title": "Visual Verification Configuration",
+	"description": "Schema for visual verification configuration in Alpha workflow tasks. Used by agent-browser to validate UI implementations.",
+	"type": "object",
+	"required": ["route"],
+	"properties": {
+		"enabled": {
+			"type": "boolean",
+			"default": true,
+			"description": "Whether visual verification is enabled for this task"
+		},
+		"route": {
+			"type": "string",
+			"description": "Route to navigate to for verification (e.g., '/home/dashboard')",
+			"pattern": "^/"
+		},
+		"base_url": {
+			"type": "string",
+			"format": "uri",
+			"default": "http://localhost:3000",
+			"description": "Base URL for the dev server"
+		},
+		"wait_ms": {
+			"type": "integer",
+			"default": 3000,
+			"minimum": 0,
+			"maximum": 30000,
+			"description": "Milliseconds to wait after page load before running checks"
+		},
+		"timeout_ms": {
+			"type": "integer",
+			"default": 30000,
+			"minimum": 5000,
+			"maximum": 60000,
+			"description": "Maximum time in milliseconds for the entire verification"
+		},
+		"checks": {
+			"type": "array",
+			"description": "Visual checks to perform on the page",
+			"items": {
+				"type": "object",
+				"required": ["command"],
+				"properties": {
+					"command": {
+						"type": "string",
+						"enum": [
+							"is visible",
+							"find role",
+							"find label",
+							"find text",
+							"snapshot"
+						],
+						"description": "The type of check to perform"
+					},
+					"target": {
+						"type": "string",
+						"description": "Target element text, role name, or label to find"
+					},
+					"flags": {
+						"type": "string",
+						"description": "Additional flags to pass to the agent-browser command"
+					}
+				}
+			}
+		},
+		"expected_elements": {
+			"type": "array",
+			"description": "List of element texts that should be visible on the page (shorthand for 'is visible' checks)",
+			"items": {
+				"type": "string"
+			}
+		},
+		"expected_roles": {
+			"type": "array",
+			"description": "List of ARIA roles that should exist on the page",
+			"items": {
+				"type": "string",
+				"enum": [
+					"alert",
+					"alertdialog",
+					"button",
+					"checkbox",
+					"combobox",
+					"dialog",
+					"grid",
+					"gridcell",
+					"heading",
+					"img",
+					"link",
+					"listbox",
+					"listitem",
+					"main",
+					"menu",
+					"menubar",
+					"menuitem",
+					"navigation",
+					"option",
+					"progressbar",
+					"radio",
+					"radiogroup",
+					"row",
+					"searchbox",
+					"slider",
+					"spinbutton",
+					"status",
+					"switch",
+					"tab",
+					"tablist",
+					"tabpanel",
+					"textbox",
+					"toolbar",
+					"tooltip",
+					"tree",
+					"treeitem"
+				]
+			}
+		},
+		"screenshot": {
+			"type": "boolean",
+			"default": true,
+			"description": "Whether to capture a screenshot after verification"
+		},
+		"snapshot": {
+			"type": "boolean",
+			"default": false,
+			"description": "Whether to capture an accessibility tree snapshot"
+		},
+		"fail_on_console_errors": {
+			"type": "boolean",
+			"default": false,
+			"description": "Whether to fail verification if console errors are detected"
+		}
+	},
+	"examples": [
+		{
+			"route": "/home/dashboard",
+			"wait_ms": 3000,
+			"checks": [
+				{ "command": "is visible", "target": "Dashboard" },
+				{ "command": "find role", "target": "heading" }
+			],
+			"screenshot": true
+		},
+		{
+			"route": "/auth/login",
+			"wait_ms": 2000,
+			"expected_elements": ["Sign in", "Email", "Password"],
+			"expected_roles": ["textbox", "button"],
+			"screenshot": true
+		},
+		{
+			"route": "/courses",
+			"wait_ms": 5000,
+			"checks": [
+				{ "command": "find role", "target": "grid" },
+				{ "command": "is visible", "target": "Courses" }
+			],
+			"expected_roles": ["link", "heading"],
+			"screenshot": true,
+			"snapshot": true
+		}
+	]
+}

@@ -84,7 +84,7 @@ export const template = Template()
 
   // Clone repository during build (this bakes it into the template image)
   .runCmd(
-    `git clone https://github.com/MLorneSmith/2025slideheroes.git /home/user/project`,
+    `git clone https://github.com/slideheroes/2025slideheroes.git /home/user/project`,
     { user: "user" }
   )
 
@@ -123,12 +123,12 @@ Add a startup script that clones on first run:
 set -e
 
 PROJECT_DIR="/home/user/project"
-REPO_URL="https://github.com/MLorneSmith/2025slideheroes.git"
+REPO_URL="https://github.com/slideheroes/2025slideheroes.git"
 
 if [ ! -d "$PROJECT_DIR/.git" ]; then
   echo "Cloning repository..."
   if [ -n "$GITHUB_TOKEN" ]; then
-    git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/MLorneSmith/2025slideheroes.git" "$PROJECT_DIR"
+    git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/slideheroes/2025slideheroes.git" "$PROJECT_DIR"
   else
     git clone "$REPO_URL" "$PROJECT_DIR"
   fi
@@ -222,8 +222,8 @@ async function initializeSandbox(sandboxId: string, branch: string): Promise<voi
   if (repoCheck.exitCode !== 0) {
     console.log("Cloning repository...");
     const cloneUrl = GITHUB_TOKEN
-      ? `https://x-access-token:${GITHUB_TOKEN}@github.com/MLorneSmith/2025slideheroes.git`
-      : "https://github.com/MLorneSmith/2025slideheroes.git";
+      ? `https://x-access-token:${GITHUB_TOKEN}@github.com/slideheroes/2025slideheroes.git`
+      : "https://github.com/slideheroes/2025slideheroes.git";
 
     await sandbox.commands.run(
       `git clone ${cloneUrl} ${WORKSPACE_DIR}`,

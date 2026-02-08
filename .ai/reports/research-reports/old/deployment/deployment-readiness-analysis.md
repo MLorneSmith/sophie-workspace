@@ -1,7 +1,7 @@
 # Dev Integration Tests - Deployment Readiness Analysis
 
 **Date**: 2025-11-12  
-**Repository**: MLorneSmith/2025slideheroes  
+**Repository**: slideheroes/2025slideheroes  
 **Workflow**: dev-integration-tests.yml  
 **Status**: COMPREHENSIVE ANALYSIS COMPLETE  
 

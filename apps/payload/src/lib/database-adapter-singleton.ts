@@ -46,7 +46,12 @@ class DatabaseAdapterManager {
 	private readonly logger = _getLogger();
 
 	constructor() {
-		this.environment = process.env.NODE_ENV || "development";
+		// Read PAYLOAD_ENV first (custom var that Next.js won't override)
+		// Fallback to NODE_ENV for backward compatibility
+		// Note: We use PAYLOAD_ENV because Next.js `next start` forcibly sets NODE_ENV=production
+		// See: https://github.com/vercel/next.js/discussions/48914
+		this.environment =
+			process.env.PAYLOAD_ENV || process.env.NODE_ENV || "development";
 		this.metrics = {
 			totalConnections: 0,
 			activeConnections: 0,
@@ -177,6 +182,13 @@ class DatabaseAdapterManager {
 
 	/**
 	 * Determine if SSL should be enabled based on environment and connection
+	 *
+	 * NOTE: We use `PAYLOAD_ENV` environment variable instead of `NODE_ENV` because:
+	 * - Next.js `next start` forcibly sets NODE_ENV=production internally
+	 * - This breaks test/development configurations where SSL should be disabled
+	 * - Custom environment variables like PAYLOAD_ENV are not overridden by Next.js
+	 *
+	 * See diagnosis: https://github.com/slideheroes/2025slideheroes/issues/1791
 	 */
 	private shouldEnableSSL(connectionString?: string): boolean {
 		// Check for explicit SSL configuration first

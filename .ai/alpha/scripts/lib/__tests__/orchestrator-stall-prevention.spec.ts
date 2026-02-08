@@ -27,7 +27,7 @@ function createTestManifest(
 ): SpecManifest {
 	return {
 		metadata: {
-			spec_id: 1362,
+			spec_id: "1362",
 			spec_name: "Test Spec",
 			generated_at: new Date().toISOString(),
 			spec_dir: "/test/spec",
@@ -35,8 +35,8 @@ function createTestManifest(
 		},
 		initiatives: [],
 		feature_queue: features.map((f, i) => ({
-			id: f.id ?? 1000 + i,
-			initiative_id: f.initiative_id ?? 1,
+			id: f.id ?? String(1000 + i),
+			initiative_id: f.initiative_id ?? "1",
 			title: f.title ?? `Test Feature ${i}`,
 			priority: f.priority ?? 1,
 			global_priority: f.global_priority ?? 1,
@@ -89,7 +89,7 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "failed",
 				error: "PTY SIGTERM - sandbox was killed",
 				// After the fix, these should be undefined:
@@ -102,7 +102,7 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 
 		// Feature should be returned for retry
 		expect(feature).not.toBeNull();
-		expect(feature?.id).toBe(1367);
+		expect(feature?.id).toBe("1367");
 		expect(feature?.status).toBe("failed");
 	});
 
@@ -112,7 +112,7 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "failed",
 				error: "PTY SIGTERM",
 				// Bug scenario: assigned_sandbox is still set
@@ -120,7 +120,7 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 				assigned_at: Date.now() - 10_000, // 10 seconds ago
 			},
 			{
-				id: 1368,
+				id: "1368",
 				status: "pending",
 			},
 		]);
@@ -128,7 +128,7 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 		const feature = getNextAvailableFeature(manifest);
 
 		// Should skip 1367 (has assigned_sandbox) and return 1368
-		expect(feature?.id).toBe(1368);
+		expect(feature?.id).toBe("1368");
 	});
 
 	it("complete failure cycle: feature fails, gets cleaned up, can be retried", () => {
@@ -136,7 +136,7 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "pending",
 			},
 		]);
@@ -161,7 +161,7 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 		// Step 3: Feature should now be available for retry
 		const retryFeature = getNextAvailableFeature(manifest);
 		expect(retryFeature).not.toBeNull();
-		expect(retryFeature?.id).toBe(1367);
+		expect(retryFeature?.id).toBe("1367");
 
 		// Step 4: Can be assigned to a new sandbox
 		const retryAssigned = assignFeatureToSandbox(feature, "sbx-b", manifest);
@@ -174,9 +174,9 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 		// Test scenario: All features fail in first pass, should all be retryable
 
 		const manifest = createTestManifest([
-			{ id: 1367, status: "pending" },
-			{ id: 1368, status: "pending" },
-			{ id: 1369, status: "pending" },
+			{ id: "1367", status: "pending" },
+			{ id: "1368", status: "pending" },
+			{ id: "1369", status: "pending" },
 		]);
 
 		// Assign all features
@@ -219,18 +219,18 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 	it("no stall when mixing failed and pending features", () => {
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "failed",
 				error: "Previous failure",
 				assigned_sandbox: undefined, // Properly cleaned up
 				assigned_at: undefined,
 			},
 			{
-				id: 1368,
+				id: "1368",
 				status: "pending",
 			},
 			{
-				id: 1369,
+				id: "1369",
 				status: "completed",
 			},
 		]);
@@ -255,7 +255,7 @@ describe("Stall Prevention - Bug Regression Tests", () => {
 
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "failed",
 				error: "PTY SIGTERM",
 				// BUG: This should have been cleared!
@@ -264,7 +264,7 @@ describe("Stall Prevention - Bug Regression Tests", () => {
 				assigned_at: Date.now() - 120_000, // 2 minutes ago (stale)
 			},
 			{
-				id: 1368,
+				id: "1368",
 				status: "pending",
 			},
 		]);
@@ -277,7 +277,7 @@ describe("Stall Prevention - Bug Regression Tests", () => {
 		// Without the fix, the failed feature is skipped (stall scenario)
 		// and only the pending feature is returned
 		expect(feature).not.toBeNull();
-		expect(feature?.id).toBe(1368); // Returns 1368, skipping 1367
+		expect(feature?.id).toBe("1368"); // Returns 1368, skipping 1367
 
 		// The failed feature with assigned_sandbox would be stuck forever
 		// This is the bug that the fix prevents
@@ -292,7 +292,7 @@ describe("Stall Prevention - Bug Regression Tests", () => {
 
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "failed",
 				error: "PTY SIGTERM",
 				// FIXED: These are now cleared by the error handler
@@ -305,7 +305,7 @@ describe("Stall Prevention - Bug Regression Tests", () => {
 
 		// Feature should immediately be available without relying on stale detection
 		expect(feature).not.toBeNull();
-		expect(feature?.id).toBe(1367);
+		expect(feature?.id).toBe("1367");
 		expect(feature?.status).toBe("failed");
 		expect(feature?.assigned_sandbox).toBeUndefined();
 	});

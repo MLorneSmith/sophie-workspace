@@ -19,8 +19,9 @@
 			],
 			"properties": {
 				"feature_id": {
-					"type": "integer",
-					"description": "GitHub issue number for the feature"
+					"type": "string",
+					"pattern": "^S\\d+\\.I\\d+\\.F\\d+$",
+					"description": "Semantic feature ID (e.g., S1362.I1.F1)"
 				},
 				"feature_name": {
 					"type": "string",
@@ -32,12 +33,14 @@
 					"description": "URL-safe feature identifier"
 				},
 				"initiative_id": {
-					"type": "integer",
-					"description": "GitHub issue number for parent initiative"
+					"type": "string",
+					"pattern": "^S\\d+\\.I\\d+$",
+					"description": "Semantic initiative ID (e.g., S1362.I1)"
 				},
 				"spec_id": {
-					"type": "integer",
-					"description": "GitHub issue number for parent spec"
+					"type": "string",
+					"pattern": "^S?\\d+$",
+					"description": "Spec ID with optional S prefix (e.g., S1362 or 1362)"
 				},
 				"created_at": {
 					"type": "string",
@@ -81,6 +84,49 @@
 					"type": "array",
 					"items": { "type": "string" },
 					"description": "List of task IDs that require database access (e.g., ['T3', 'T5'])"
+				},
+				"requires_ui": {
+					"type": "boolean",
+					"default": false,
+					"description": "True if any task in this feature creates/modifies UI components"
+				},
+				"ui_tasks": {
+					"type": "array",
+					"items": { "type": "string" },
+					"description": "List of task IDs that require UI verification (e.g., ['T4', 'T5', 'T8'])"
+				},
+				"required_env_vars": {
+					"type": "array",
+					"description": "Environment variables/credentials this feature requires at runtime",
+					"items": {
+						"type": "object",
+						"required": ["name", "description", "source"],
+						"properties": {
+							"name": {
+								"type": "string",
+								"pattern": "^[A-Z][A-Z0-9_]*$",
+								"description": "Environment variable name (e.g., CAL_OAUTH_CLIENT_ID)"
+							},
+							"description": {
+								"type": "string",
+								"description": "What this credential is used for"
+							},
+							"source": {
+								"type": "string",
+								"description": "Where to obtain this credential (URL or instructions)"
+							},
+							"required": {
+								"type": "boolean",
+								"default": true,
+								"description": "If false, feature can degrade gracefully without this"
+							},
+							"scope": {
+								"type": "string",
+								"enum": ["client", "server", "both"],
+								"description": "Where variable is used (affects NEXT_PUBLIC_ prefix)"
+							}
+						}
+					}
 				}
 			}
 		},
@@ -292,8 +338,8 @@
 			"properties": {
 				"id": {
 					"type": "string",
-					"pattern": "^(S|T)\\d+$",
-					"description": "Task ID: S1, S2 for spikes; T1, T2, etc. for tasks"
+					"pattern": "^(S\\d+\\.I\\d+\\.F\\d+\\.)?(S|T)\\d+$",
+					"description": "Task ID: Fully qualified (S1362.I1.F1.T1) or shorthand (T1) within feature context"
 				},
 				"type": {
 					"type": "string",
@@ -482,8 +528,8 @@
 					}
 				},
 				"github_issue": {
-					"type": "integer",
-					"description": "GitHub issue number (populated after creation)"
+					"type": ["integer", "null"],
+					"description": "GitHub issue number (deprecated - only Spec has GitHub issue)"
 				},
 				"requires_database": {
 					"type": "boolean",
@@ -494,6 +540,241 @@
 					"type": "string",
 					"pattern": "^\\d+_[A-Za-z0-9]+$",
 					"description": "Prefix for migration filename (e.g., '1367_T3') to ensure uniqueness across parallel features"
+				},
+				"requires_dependency_install": {
+					"type": "boolean",
+					"default": false,
+					"description": "True if this task adds/modifies npm dependencies (package.json changes)"
+				},
+				"packages_added": {
+					"type": "array",
+					"items": { "type": "string" },
+					"description": "List of npm packages added by this task (e.g., ['@example/package', 'lodash'])"
+				},
+				"requires_ui": {
+					"type": "boolean",
+					"default": false,
+					"description": "True if task creates/modifies UI components that should be visually verified"
+				},
+				"ui_task": {
+					"type": "boolean",
+					"default": false,
+					"description": "Alias for requires_ui. True if task creates/modifies UI components that benefit from frontend skill invocation"
+				},
+				"skill_hints": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"enum": ["frontend-design", "react-best-practices"]
+					},
+					"description": "Suggested skills to invoke during implementation: 'frontend-design' for visual components, 'react-best-practices' for performance/patterns"
+				},
+				"visual_verification": {
+					"$ref": "#/definitions/visual_verification",
+					"description": "Configuration for visual verification using agent-browser"
+				},
+				"behavioral_verification": {
+					"$ref": "#/definitions/behavioral_verification",
+					"description": "Configuration for behavioral verification patterns that validate functional completeness"
+				}
+			}
+		},
+		"visual_verification": {
+			"type": "object",
+			"description": "Configuration for visual verification of UI tasks using agent-browser",
+			"required": ["route"],
+			"properties": {
+				"enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Whether visual verification is enabled for this task"
+				},
+				"route": {
+					"type": "string",
+					"description": "Route to navigate to for verification (e.g., '/home/dashboard')",
+					"pattern": "^/"
+				},
+				"wait_ms": {
+					"type": "integer",
+					"default": 3000,
+					"minimum": 0,
+					"maximum": 30000,
+					"description": "Milliseconds to wait after page load before running checks"
+				},
+				"checks": {
+					"type": "array",
+					"description": "Visual checks to perform on the page",
+					"items": {
+						"type": "object",
+						"required": ["command"],
+						"properties": {
+							"command": {
+								"type": "string",
+								"enum": [
+									"is visible",
+									"find role",
+									"find label",
+									"find text",
+									"snapshot"
+								],
+								"description": "The type of check to perform"
+							},
+							"target": {
+								"type": "string",
+								"description": "Target element text, role name, or label to find"
+							},
+							"flags": {
+								"type": "string",
+								"description": "Additional flags to pass to the agent-browser command"
+							}
+						}
+					}
+				},
+				"expected_elements": {
+					"type": "array",
+					"description": "List of element texts that should be visible on the page",
+					"items": {
+						"type": "string"
+					}
+				},
+				"screenshot": {
+					"type": "boolean",
+					"default": true,
+					"description": "Whether to capture a screenshot after verification"
+				}
+			}
+		},
+		"behavioral_verification": {
+			"type": "object",
+			"description": "Configuration for behavioral verification patterns that validate functional completeness",
+			"properties": {
+				"patterns": {
+					"type": "array",
+					"description": "List of behavioral verification patterns to apply",
+					"items": {
+						"type": "object",
+						"required": ["type"],
+						"properties": {
+							"type": {
+								"type": "string",
+								"enum": [
+									"button_handler",
+									"env_var_graceful",
+									"form_submission",
+									"link_navigation",
+									"modal_trigger"
+								],
+								"description": "Type of behavioral pattern to verify"
+							},
+							"target": {
+								"type": "string",
+								"description": "Target element or identifier (button text, env var name, form name)"
+							},
+							"expected_action": {
+								"type": "string",
+								"description": "Expected behavior when pattern triggers (navigate, open modal, submit)"
+							},
+							"file_path": {
+								"type": "string",
+								"description": "File path to check for pattern compliance"
+							}
+						}
+					}
+				},
+				"validation_command": {
+					"type": "string",
+					"description": "Optional bash command for pattern validation (uses grep-based checks)"
+				}
+			}
+		},
+		"verification_pattern_types": {
+			"type": "object",
+			"description": "Reference definitions for behavioral verification pattern types",
+			"properties": {
+				"button_handler": {
+					"type": "object",
+					"description": "Validates that Button components have non-empty onClick handlers",
+					"properties": {
+						"pattern_regex": {
+							"type": "string",
+							"default": "Button[^>]*onClick=\\{[^}]+\\}",
+							"description": "Regex pattern to match Button with onClick"
+						},
+						"failure_message": {
+							"type": "string",
+							"default": "Button lacks onClick handler - interactive elements must have handlers",
+							"description": "Message when pattern fails"
+						}
+					}
+				},
+				"env_var_graceful": {
+					"type": "object",
+					"description": "Validates that optional env vars use warn/silent degradation, not error",
+					"properties": {
+						"pattern_regex": {
+							"type": "string",
+							"default": "console\\.warn|return null|return \\[\\]",
+							"description": "Regex pattern for graceful handling"
+						},
+						"anti_pattern_regex": {
+							"type": "string",
+							"default": "console\\.error.*[A-Z_]+.*not set|throw.*[A-Z_]+.*missing",
+							"description": "Regex pattern for non-graceful handling to reject"
+						},
+						"failure_message": {
+							"type": "string",
+							"default": "Env var uses error logging instead of graceful degradation",
+							"description": "Message when pattern fails"
+						}
+					}
+				},
+				"form_submission": {
+					"type": "object",
+					"description": "Validates that form components have proper onSubmit handlers",
+					"properties": {
+						"pattern_regex": {
+							"type": "string",
+							"default": "form[^>]*onSubmit=\\{[^}]+\\}|handleSubmit\\(",
+							"description": "Regex pattern to match form submission handling"
+						},
+						"failure_message": {
+							"type": "string",
+							"default": "Form lacks onSubmit handler - forms must handle submission",
+							"description": "Message when pattern fails"
+						}
+					}
+				},
+				"link_navigation": {
+					"type": "object",
+					"description": "Validates that navigation links have proper href or onClick",
+					"properties": {
+						"pattern_regex": {
+							"type": "string",
+							"default": "Link[^>]*href=|onClick=.*navigate|router\\.push",
+							"description": "Regex pattern to match navigation handling"
+						},
+						"failure_message": {
+							"type": "string",
+							"default": "Navigation element lacks href or navigation handler",
+							"description": "Message when pattern fails"
+						}
+					}
+				},
+				"modal_trigger": {
+					"type": "object",
+					"description": "Validates that modal trigger elements have proper open handlers",
+					"properties": {
+						"pattern_regex": {
+							"type": "string",
+							"default": "onClick=.*setOpen|onClick=.*setIsOpen|DialogTrigger",
+							"description": "Regex pattern to match modal trigger handling"
+						},
+						"failure_message": {
+							"type": "string",
+							"default": "Modal trigger lacks open state handler",
+							"description": "Message when pattern fails"
+						}
+					}
 				}
 			}
 		}

@@ -14,7 +14,7 @@
 		"resolveJsonModule": true,
 		"noUncheckedIndexedAccess": true,
 		"noImplicitOverride": true,
-		"types": ["node"]
+		"types": ["node", "vitest/globals"]
 	},
 	"include": [
 		"*.ts",

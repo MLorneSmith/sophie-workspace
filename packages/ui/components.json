@@ -16,5 +16,15 @@
 		"lib": "~/lib",
 		"hooks": "~/hooks",
 		"ui": "~/shadcn"
+	},
+	"registries": {
+		"@magicui": "https://magicui.design/r/{name}.json",
+		"@aceternity": "https://ui.aceternity.com/registry/{name}.json",
+		"@kibo-ui": "https://www.kibo-ui.com/r/{name}.json",
+		"@reui": "https://reui.io/r/{name}.json",
+		"@phucbm": "https://phucbm.com/r/{name}.json",
+		"@scrollxui": "https://scrollxui.dev/registry/{name}.json",
+		"@gaia": "https://ui.heygaia.io/r/{name}.json",
+		"@moleculeui": "https://www.moleculeui.design/r/{name}.json"
 	}
 }

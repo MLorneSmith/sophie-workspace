@@ -223,10 +223,10 @@ No code changes required for rollback.
 # gh workflow run dev-integration-tests.yml --ref dev
 
 # Monitor the workflow run
-gh run list --workflow dev-integration-tests.yml --limit 1 --repo MLorneSmith/2025slideheroes
+gh run list --workflow dev-integration-tests.yml --limit 1 --repo slideheroes/2025slideheroes
 
 # Check specific run output
-gh run view <RUN_ID> --repo MLorneSmith/2025slideheroes
+gh run view <RUN_ID> --repo slideheroes/2025slideheroes
 ```
 
 **Expected Result**: Workflow completes successfully with E2E tests executing and no "Invalid supabaseUrl" errors.

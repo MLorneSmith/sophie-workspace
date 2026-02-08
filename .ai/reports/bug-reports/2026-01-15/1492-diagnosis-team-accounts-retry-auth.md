@@ -15,7 +15,7 @@ The `dev-integration-tests.yml` workflow fails because team-accounts integration
 
 - **Application Version**: dev branch (commit 29c8de371)
 - **Environment**: dev (Vercel preview deployment)
-- **Workflow Run**: [21042853497](https://github.com/MLorneSmith/2025slideheroes/actions/runs/21042853497)
+- **Workflow Run**: [21042853497](https://github.com/slideheroes/2025slideheroes/actions/runs/21042853497)
 - **Deployment URL**: https://2025slideheroes-ih8jk7pco-slideheroes.vercel.app
 - **Node Version**: v20.10.0
 - **Browser**: Chromium (Playwright)

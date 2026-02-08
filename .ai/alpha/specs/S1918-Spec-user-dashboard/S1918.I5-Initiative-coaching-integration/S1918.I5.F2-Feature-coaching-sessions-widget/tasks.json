@@ -1,0 +1,692 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1918.I5.F2",
+    "feature_name": "Coaching Sessions Widget",
+    "feature_slug": "coaching-sessions-widget",
+    "initiative_id": "S1918.I5",
+    "spec_id": "S1918",
+    "created_at": "2026-02-03T14:30:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1918.I5.F2.T3", "S1918.I5.F2.T4", "S1918.I5.F2.T5", "S1918.I5.F2.T6"],
+    "required_env_vars": [
+      {
+        "name": "NEXT_PUBLIC_CALCOM_COACH_USERNAME",
+        "description": "Cal.com username for booking page URL construction",
+        "source": "Cal.com profile settings",
+        "required": true,
+        "scope": "client"
+      },
+      {
+        "name": "NEXT_PUBLIC_CALCOM_EVENT_SLUG",
+        "description": "Event type slug (e.g., 60min) for booking page URL",
+        "source": "Cal.com event types settings",
+        "required": true,
+        "scope": "client"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1918.I5.F2.T1",
+      "type": "task",
+      "name": "Create widget component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "coaching-sessions-widget.tsx skeleton"
+      },
+      "purpose": "Establish basic Card structure with empty content area for coaching sessions widget",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Coaching Sessions" },
+          { "command": "find role", "target": "article" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "packages/ui/src/shadcn/card.tsx",
+          "apps/web/app/home/(user)/_components/home-page-header.tsx"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+          "PageBody from @kit/ui/page"
+        ],
+        "constraints": [
+          "Component must be async server component",
+          "Must follow existing dashboard widget pattern",
+          "Use CSS variables for dark mode support"
+        ]
+      },
+      "input_state": "Dashboard page exists with empty PageBody at apps/web/app/home/(user)/page.tsx",
+      "output_state": "Widget file exists with Card structure and 'Coaching Sessions' title; not yet integrated into dashboard",
+      "acceptance_criterion": "Widget file exists with Card wrapper, CardHeader with title 'Coaching Sessions', and empty CardContent",
+      "verification_command": "grep -q 'export async function CoachingSessionsWidget' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep -q 'Coaching Sessions' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1918.I5.F2.T2", "S1918.I5.F2.T3", "S1918.I5.F2.T4", "S1918.I5.F2.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I5.F2.T2",
+      "type": "task",
+      "name": "Add environment variables to .env.local.example",
+      "action": {
+        "verb": "Add",
+        "target": "NEXT_PUBLIC_CALCOM_* variables to .env.local.example"
+      },
+      "purpose": "Document required Cal.com configuration for booking page URL construction",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/.env.local.example"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Must include descriptive comments",
+          "Variables must be prefixed with NEXT_PUBLIC_ (client-side)",
+          "Follow existing .env.local.example format"
+        ]
+      },
+      "input_state": ".env.local.example exists without Cal.com widget variables",
+      "output_state": ".env.local.example contains NEXT_PUBLIC_CALCOM_COACH_USERNAME and NEXT_PUBLIC_CALCOM_EVENT_SLUG with documentation",
+      "acceptance_criterion": "Both environment variables documented with comments explaining their purpose",
+      "verification_command": "grep -q 'NEXT_PUBLIC_CALCOM_COACH_USERNAME' apps/web/.env.local.example && grep -q 'NEXT_PUBLIC_CALCOM_EVENT_SLUG' apps/web/.env.local.example",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/.env.local.example"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1918.I5.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I5.F2.T3",
+      "type": "task",
+      "name": "Create loading skeleton state",
+      "action": {
+        "verb": "Create",
+        "target": "loading skeleton for coaching sessions"
+      },
+      "purpose": "Provide visual feedback while fetching Cal.com bookings data",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 1000,
+        "checks": [
+          { "command": "find role", "target": "status" },
+          { "command": "is visible", "target": "Coaching Sessions" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+          "packages/ui/src/shadcn/skeleton.tsx"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton"
+        ],
+        "constraints": [
+          "Skeleton dimensions should match populated state",
+          "Use Skeleton component from UI library",
+          "Show 1-2 session card skeletons"
+        ]
+      },
+      "input_state": "Widget skeleton exists with empty CardContent",
+      "output_state": "Widget displays Skeleton components matching session card layout when loading",
+      "acceptance_criterion": "Loading skeleton renders with Skeleton components for session cards",
+      "verification_command": "grep -q 'Skeleton' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep -q 'from.*@kit/ui/skeleton' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1918.I5.F2.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I5.F2.T4",
+      "type": "task",
+      "name": "Create empty state with Book CTA",
+      "action": {
+        "verb": "Create",
+        "target": "empty state for no scheduled sessions"
+      },
+      "purpose": "Provide clear guidance and booking CTA when user has no upcoming sessions",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "No sessions scheduled" },
+          { "command": "is visible", "target": "Book a Session" },
+          { "command": "find role", "target": "link" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+          "packages/ui/src/shadcn/button.tsx",
+          ".ai/alpha/specs/S1918-Spec-user-dashboard/research-library/perplexity-dashboard-ux.md"
+        ],
+        "dependencies": [
+          "Button from @kit/ui/button"
+        ],
+        "constraints": [
+          "Message should be encouraging, not alarming",
+          "Single clear CTA button",
+          "Use environment variables to construct booking page URL",
+          "Follow empty state best practices from research"
+        ]
+      },
+      "input_state": "Widget skeleton exists; environment variables documented",
+      "output_state": "Widget displays centered message 'No sessions scheduled' with 'Book a Session' button linking to Cal.com booking page when sessions array is empty",
+      "acceptance_criterion": "Empty state renders with message and button; button href uses process.env.NEXT_PUBLIC_CALCOM_* variables",
+      "verification_command": "grep -q 'No sessions scheduled' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep -q 'Book a Session' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep -q 'NEXT_PUBLIC_CALCOM' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1918.I5.F2.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I5.F2.T5",
+      "type": "task",
+      "name": "Create session card layout",
+      "action": {
+        "verb": "Create",
+        "target": "session card with session details"
+      },
+      "purpose": "Display session date, time, coach name in a structured card format",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "find role", "target": "article" },
+          { "command": "is visible", "target": "Join" },
+          { "command": "is visible", "target": "Reschedule" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+          "apps/web/app/home/(user)/_lib/server/calcom-api.ts",
+          "packages/ui/src/shadcn/badge.tsx",
+          "packages/ui/src/shadcn/button.tsx"
+        ],
+        "dependencies": [
+          "fetchUpcomingBookings from F1 Cal.com API client",
+          "Badge from @kit/ui/badge",
+          "Button from @kit/ui/button",
+          "CoachingSession type from F1 schemas"
+        ],
+        "constraints": [
+          "Display 1-2 upcoming sessions",
+          "Format date/time for readability",
+          "Show coach name",
+          "Include placeholder Join and Reschedule buttons (not wired yet)",
+          "Responsive design (stacks on mobile)"
+        ]
+      },
+      "input_state": "Widget has skeleton, empty state; Cal.com API client available from F1",
+      "output_state": "Widget displays session cards with date, time, coach name, and placeholder Join/Reschedule buttons when sessions exist",
+      "acceptance_criterion": "Session card renders with all session details; buttons exist but are not yet functional",
+      "verification_command": "grep -q 'fetchUpcomingBookings' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep -Pzo 'Join[^<]*<\\/Button>' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep -Pzo 'Reschedule[^<]*<\\/Button>' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1918.I5.F2.T1"],
+        "blocks": ["S1918.I5.F2.T6", "S1918.I5.F2.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I5.F2.T6",
+      "type": "task",
+      "name": "Wire Join button to meeting URL",
+      "action": {
+        "verb": "Wire",
+        "target": "Join button to session join URL"
+      },
+      "purpose": "Enable users to open session meeting link in new tab",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Join",
+            "expected_action": "navigate to session meeting URL",
+            "file_path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+          }
+        ],
+        "validation_command": "grep -Pzo 'Join[^<]*href=\\{[^}]+\\}' apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+      },
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "find role", "target": "link" },
+          { "command": "is visible", "target": "Join" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        ],
+        "dependencies": [
+          "CoachingSession type with meetingUrl field"
+        ],
+        "constraints": [
+          "Button must be a link (Button asChild with Link component)",
+          "Open in new tab (target='_blank' rel='noopener noreferrer')",
+          "Use meetingUrl from CoachingSession object"
+        ]
+      },
+      "input_state": "Session cards exist with placeholder Join button; CoachingSession objects have meetingUrl field",
+      "output_state": "Join button is a functional link opening session meeting URL in new tab",
+      "acceptance_criterion": "Join button has href attribute with session.meetingUrl and target='_blank'",
+      "verification_command": "grep -Pzo 'Join.*href=\\{session\\.meetingUrl\\}' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep -q 'target=\"_blank\"' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1918.I5.F2.T5", "S1918.I5.F2.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I5.F2.T7",
+      "type": "task",
+      "name": "Wire Reschedule button to Cal.com reschedule page",
+      "action": {
+        "verb": "Wire",
+        "target": "Reschedule button to reschedule page"
+      },
+      "purpose": "Enable users to reschedule session via Cal.com interface",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Reschedule",
+            "expected_action": "navigate to Cal.com reschedule page",
+            "file_path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+          }
+        ],
+        "validation_command": "grep -Pzo 'Reschedule[^<]*href=\\{[^}]+\\}' apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+      },
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "find role", "target": "link" },
+          { "command": "is visible", "target": "Reschedule" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+          ".ai/alpha/specs/S1918-Spec-user-dashboard/research-library/perplexity-calcom-nextjs-integration-post-platform.md"
+        ],
+        "dependencies": [
+          "CoachingSession type with rescheduleUrl or bookingUid field"
+        ],
+        "constraints": [
+          "Button must be a link",
+          "Construct reschedule URL from Cal.com booking UID",
+          "Open in new tab (target='_blank' rel='noopener noreferrer')"
+        ]
+      },
+      "input_state": "Session cards exist with placeholder Reschedule button; CoachingSession objects have bookingUid field",
+      "output_state": "Reschedule button is a functional link opening Cal.com reschedule page in new tab",
+      "acceptance_criterion": "Reschedule button has href attribute with Cal.com reschedule URL and target='_blank'",
+      "verification_command": "grep -Pzo 'Reschedule.*href=' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep -q 'reschedule' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1918.I5.F2.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I5.F2.T8",
+      "type": "task",
+      "name": "Add error state with fallback message",
+      "action": {
+        "verb": "Add",
+        "target": "error state with fallback message"
+      },
+      "purpose": "Gracefully handle API failures with user-friendly message and booking page link",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": true,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "env_var_graceful",
+            "target": "CALCOM_API_KEY",
+            "expected_action": "log warning and show empty state, not error",
+            "file_path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+          }
+        ],
+        "validation_command": "grep -E 'console\\.(warn|info)|return.*\\[\\]' apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx | grep -v 'console\\.error'"
+      },
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Unable to load" },
+          { "command": "find role", "target": "link" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        ],
+        "dependencies": [
+          "Button from @kit/ui/button"
+        ],
+        "constraints": [
+          "Use try/catch around fetchUpcomingBookings call",
+          "Show friendly error message (not technical details)",
+          "Provide 'Check booking page' link as fallback",
+          "Log error silently for debugging",
+          "If CALCOM_API_KEY missing, log warning and return empty array (graceful degradation)"
+        ]
+      },
+      "input_state": "Widget fetches data without error handling; API might fail",
+      "output_state": "Widget catches errors, displays 'Unable to load sessions' message with 'Check booking page' link, and logs error for debugging",
+      "acceptance_criterion": "Try/catch wraps fetchUpcomingBookings; error state renders with message and fallback link; console.warn for missing API key",
+      "verification_command": "grep -q 'try' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep -q 'catch' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep -q 'Unable to load' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep -E 'console\\.(warn|info)' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1918.I5.F2.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I5.F2.T9",
+      "type": "task",
+      "name": "Integrate widget into dashboard page",
+      "action": {
+        "verb": "Add",
+        "target": "widget import and render in dashboard"
+      },
+      "purpose": "Display coaching sessions widget in user dashboard grid layout",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 6,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Coaching Sessions" },
+          { "command": "find role", "target": "main" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        ],
+        "dependencies": [
+          "CoachingSessionsWidget component",
+          "PageBody from @kit/ui/page"
+        ],
+        "constraints": [
+          "Import widget into page.tsx",
+          "Render within PageBody",
+          "Follow existing dashboard layout patterns",
+          "Widget should be part of grid layout (placeholder for now, real grid in F1.F1)"
+        ]
+      },
+      "input_state": "Dashboard page has empty PageBody; widget component is complete",
+      "output_state": "Dashboard page imports and renders CoachingSessionsWidget within PageBody",
+      "acceptance_criterion": "Dashboard page imports widget and renders it; widget appears on /home route",
+      "verification_command": "grep -q 'CoachingSessionsWidget' apps/web/app/home/\\(user\\)/page.tsx && grep -q 'from.*coaching-sessions-widget' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1918.I5.F2.T5", "S1918.I5.F2.T8"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation",
+        "task_ids": ["S1918.I5.F2.T1", "S1918.I5.F2.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "States and Populated View",
+        "task_ids": ["S1918.I5.F2.T3", "S1918.I5.F2.T4", "S1918.I5.F2.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 7,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Button Wiring and Error Handling",
+        "task_ids": ["S1918.I5.F2.T6", "S1918.I5.F2.T7", "S1918.I5.F2.T8"],
+        "depends_on_groups": [2],
+        "estimated_hours": 6,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Integration",
+        "task_ids": ["S1918.I5.F2.T9"],
+        "depends_on_groups": [3],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1918.I5.F2.T1", "S1918.I5.F2.T5", "S1918.I5.F2.T8", "S1918.I5.F2.T9"],
+      "total_hours": 9
+    },
+    "duration": {
+      "sequential": 18,
+      "parallel": 9,
+      "time_saved_percent": 50.0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

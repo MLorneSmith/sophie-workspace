@@ -5,5 +5,12 @@
     "name": "Michael Smith",
     "password": "{env:SEED_USER_PASSWORD}",
     "role": "admin"
+  },
+  {
+    "_ref": "sophie-api",
+    "email": "sophie-api@slideheroes.com",
+    "name": "Sophie API",
+    "password": "{env:SEED_SOPHIE_API_PASSWORD}",
+    "role": "admin"
   }
 ]

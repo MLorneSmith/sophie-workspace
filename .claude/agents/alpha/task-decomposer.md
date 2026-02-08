@@ -19,10 +19,10 @@ Given a feature issue number:
 3. Detect unknowns → flag spikes needed (DO NOT run spikes)
 4. Decompose feature → create atomic tasks
 5. Validate decomposition → ensure MAKER compliance
-6. Create artifacts → tasks.json + GitHub issue
+6. Create artifacts → tasks.json + Spec issue comment
 7. Return summary → for orchestrator
 
-**Output**: `tasks.json` file + GitHub issue + structured summary
+**Output**: `tasks.json` file + Spec issue comment + structured summary
 **NOT Output**: Running spikes, implementing code, or spawning sub-agents
 
 ---
@@ -48,7 +48,7 @@ RESEARCH_DIR: [Path to research library]
 ### Step 1.1: Fetch Feature Issue
 
 ```bash
-gh issue view <FEATURE_ID> --repo MLorneSmith/2025slideheroes
+gh issue view <FEATURE_ID> --repo slideheroes/2025slideheroes
 ```
 
 ### Step 1.2: Read Feature Document
@@ -119,6 +119,68 @@ Proceed with manual decomposition using the appropriate pattern from Phase 5.
 **Update Pattern After Success:**
 
 After successful feature implementation, consider creating or updating patterns in `.ai/alpha/cache/decomposition-patterns/`. See `SCHEMA.md` for structure.
+
+### Step 1.6: Extract Environment Requirements
+
+Scan research files for external service credentials that will be needed at runtime.
+
+**Search for "Environment Variables Required" sections:**
+
+```bash
+# For each research file in RESEARCH_DIR
+for file in ${RESEARCH_DIR}/*.md; do
+  echo "=== $file ==="
+  grep -A 30 "## Environment Variables Required" "$file" | head -35
+done
+```
+
+**Parse Environment Variable Blocks:**
+
+Look for blocks formatted like:
+
+```env
+CAL_OAUTH_CLIENT_ID=your_oauth_client_id
+CAL_API_URL=https://api.cal.com/v2
+```
+
+For each variable found:
+- Extract the name (e.g., `CAL_OAUTH_CLIENT_ID`)
+- Infer description from context or research section
+- Record the source (e.g., "Cal.com settings → Developer apps")
+- Note if it's optional (has default value) or required
+- Track which research file documented it
+
+**Store in tasks.json metadata:**
+
+```json
+{
+  "metadata": {
+    "required_env_vars": [
+      {
+        "name": "CAL_OAUTH_CLIENT_ID",
+        "description": "Cal.com OAuth client identifier for booking widget",
+        "source": "https://cal.com/settings/developer → OAuth apps",
+        "required": true,
+        "scope": "server"
+      },
+      {
+        "name": "CAL_API_URL",
+        "description": "Cal.com API endpoint URL",
+        "source": "Default: https://api.cal.com/v2",
+        "required": false,
+        "scope": "server"
+      }
+    ]
+  }
+}
+```
+
+**Environment Variable Scope:**
+- `"server"` - Server-side only (default for most credentials)
+- `"client"` - Client-side accessible (variables starting with `NEXT_PUBLIC_`)
+- `"both"` - Needed in both environments
+
+This enables the orchestrator to perform pre-flight checks before implementation and prompt the user for any missing credentials.
 
 ---
 
@@ -401,6 +463,157 @@ For each task, verify:
 □ Max 3 files? (touches 1-3 files)
 □ Clear outcome? (binary done/not-done state)
 □ Database flag set? (if task requires DB access)
+□ Interactive elements split? (render vs wire tasks)
+```
+
+### Interactive Element Rule (CRITICAL)
+
+**Purpose**: Prevent non-functional UI by splitting interactive element tasks into separate rendering and wiring tasks.
+
+**When to Apply**: Apply this rule when a task involves ANY of these interactive elements:
+- Buttons with click actions
+- Forms with submission
+- Links with navigation
+- Modal/dialog triggers
+- Dropdown selections
+- Toggles/switches
+- Any element requiring an onClick, onSubmit, or onChange handler
+
+**The Split Pattern**:
+
+For each interactive element, create TWO separate tasks:
+
+1. **Render Task**: Create the visual component/element
+   - Verb: `Create` or `Add`
+   - Focus: Structure, styling, accessibility
+   - Verification: Element exists and is visible
+
+2. **Wire Task**: Connect the element to its action
+   - Verb: `Wire`
+   - Focus: Event handlers, state updates, navigation
+   - Verification: Handler exists and triggers expected behavior
+
+**Example - Incorrect (Single Task)**:
+
+```json
+{
+  "id": "T5",
+  "name": "Create session card with join and reschedule buttons",
+  "action": { "verb": "Create", "target": "session card" }
+}
+```
+❌ Problem: Buttons may render but have no handlers (this happened in S1823!)
+
+**Example - Correct (Split Tasks)**:
+
+```json
+{
+  "id": "T5",
+  "name": "Create coaching session card layout",
+  "action": { "verb": "Create", "target": "session card layout" },
+  "verification_command": "grep -q 'CoachingSessionCard' file.tsx",
+  "purpose": "Render session card with placeholder buttons"
+},
+{
+  "id": "T6",
+  "name": "Wire Join button to meeting URL navigation",
+  "action": { "verb": "Wire", "target": "Join button to meeting" },
+  "behavioral_verification": {
+    "patterns": [
+      {
+        "type": "button_handler",
+        "target": "Join",
+        "expected_action": "navigate to meeting URL",
+        "file_path": "apps/web/...session-card.tsx"
+      }
+    ]
+  },
+  "verification_command": "grep -Pzo 'Join[^<]*onClick=\\{[^}]+\\}' file.tsx",
+  "dependencies": { "blocked_by": ["T5"] }
+},
+{
+  "id": "T7",
+  "name": "Wire Reschedule button to reschedule page",
+  "action": { "verb": "Wire", "target": "Reschedule button to page" },
+  "behavioral_verification": {
+    "patterns": [
+      {
+        "type": "button_handler",
+        "target": "Reschedule",
+        "expected_action": "navigate to reschedule page"
+      }
+    ]
+  },
+  "verification_command": "grep -Pzo 'Reschedule[^<]*onClick=\\{[^}]+\\}' file.tsx",
+  "dependencies": { "blocked_by": ["T5"] }
+}
+```
+✅ Each button has its own wiring task with explicit verification
+
+**Behavioral Verification Integration**:
+
+Wiring tasks MUST include `behavioral_verification` with patterns that validate functional completeness:
+
+```json
+"behavioral_verification": {
+  "patterns": [
+    {
+      "type": "button_handler",
+      "target": "Button Text",
+      "expected_action": "what happens on click",
+      "file_path": "path/to/component.tsx"
+    }
+  ],
+  "validation_command": "grep -Pzo 'ButtonText[^<]*onClick=\\{[^}]+\\}' path/to/file.tsx"
+}
+```
+
+**Pattern Types**:
+
+| Type | Use Case | Validation |
+|------|----------|------------|
+| `button_handler` | Buttons with onClick | Verify onClick is non-empty |
+| `form_submission` | Forms with submit | Verify onSubmit handler exists |
+| `link_navigation` | Links/navigation | Verify href or onClick navigation |
+| `modal_trigger` | Modal open buttons | Verify setOpen/setIsOpen handler |
+| `env_var_graceful` | Env var handling | Verify warn/null fallback, not error |
+
+**Exception - Simple Non-Interactive Elements**:
+
+You do NOT need to split tasks for elements that are truly non-interactive:
+- Display-only cards
+- Static text/headings
+- Images without click actions
+- Read-only data displays
+
+### Environment Variable Handling Rule
+
+When a task involves environment variables (especially for external services), ensure graceful degradation:
+
+**Pattern**: `env_var_graceful`
+
+**Correct Handling**:
+```typescript
+// ✅ Graceful - logs warning, returns empty
+if (!process.env.CALCOM_API_KEY) {
+  console.warn('CALCOM_API_KEY not set, coaching sessions disabled');
+  return [];
+}
+```
+
+**Incorrect Handling**:
+```typescript
+// ❌ Non-graceful - logs error, causes console pollution
+if (!process.env.CALCOM_API_KEY) {
+  console.error('CALCOM_API_KEY is not set!');
+  throw new Error('Missing CALCOM_API_KEY');
+}
+```
+
+**Verification Command**:
+```bash
+# Verify graceful degradation (warn or return null/empty)
+grep -E 'console\.(warn|info)|return (null|\[\]|undefined)' file.ts | grep -v 'console\.error'
 ```
 
 ### Database Task Detection
@@ -454,6 +667,113 @@ After creating all tasks, update the metadata:
 
 Set `metadata.requires_database = true` if ANY task has `requires_database: true`.
 List all DB task IDs in `metadata.database_tasks` array.
+
+### UI Task Detection & Visual Verification
+
+Tasks that create or modify UI components should be flagged with `requires_ui: true` and include a `visual_verification` configuration. This enables agent-browser to validate the UI renders correctly during implementation.
+
+**Detection Criteria - Mark `requires_ui: true` if ANY of these apply:**
+
+| Indicator | Examples |
+|-----------|----------|
+| **Task outputs include** | `*.tsx` files in `apps/web/app/` routes |
+| **Task name mentions** | component, page, layout, form, modal, dialog, card, button, header, footer |
+| **Action verb + target** | Create/Add/Wire + "component", "page", "layout", "form" |
+| **Task type is** | UI component creation or modification |
+
+**Adding Visual Verification:**
+
+For tasks with `requires_ui: true`, also add a `visual_verification` configuration:
+
+```json
+{
+  "id": "T5",
+  "name": "Create dashboard page layout",
+  "requires_ui": true,
+  "visual_verification": {
+    "route": "/home/dashboard",
+    "wait_ms": 3000,
+    "checks": [
+      { "command": "is visible", "target": "Dashboard" },
+      { "command": "find role", "target": "heading" }
+    ],
+    "screenshot": true
+  },
+  "action": { "verb": "Create", "target": "dashboard page layout" },
+  "outputs": [
+    { "type": "new", "path": "apps/web/app/home/[account]/dashboard/page.tsx" }
+  ]
+}
+```
+
+**Visual Verification Fields:**
+
+| Field | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `route` | Yes | - | Route to navigate to (e.g., `/home/dashboard`) |
+| `wait_ms` | No | 3000 | Milliseconds to wait after page load |
+| `checks` | No | [] | Array of visual checks to perform |
+| `screenshot` | No | true | Whether to capture a screenshot |
+
+**Check Commands:**
+
+| Command | Target | Example Use Case |
+|---------|--------|------------------|
+| `is visible` | Text content | Verify heading or label appears |
+| `find role` | ARIA role | Verify interactive elements exist |
+| `find label` | Form label | Verify form fields are accessible |
+| `snapshot` | - | Capture accessibility tree for debugging |
+
+**Route Derivation:**
+
+Derive the route from the task's output file paths:
+- `apps/web/app/home/[account]/dashboard/page.tsx` → `/home/dashboard` (use placeholder for dynamic segments)
+- `apps/web/app/auth/login/page.tsx` → `/auth/login`
+- For components not directly routable, use the parent page route
+
+**Common Check Patterns:**
+
+```json
+// For page tasks
+"checks": [
+  { "command": "is visible", "target": "Page Title" },
+  { "command": "find role", "target": "main" }
+]
+
+// For form tasks
+"checks": [
+  { "command": "find role", "target": "textbox" },
+  { "command": "find role", "target": "button" }
+]
+
+// For navigation tasks
+"checks": [
+  { "command": "find role", "target": "navigation" },
+  { "command": "find role", "target": "link" }
+]
+
+// For data display tasks
+"checks": [
+  { "command": "find role", "target": "grid" },
+  { "command": "find role", "target": "row" }
+]
+```
+
+**Aggregating UI Tasks:**
+
+After creating all tasks, update the metadata:
+
+```json
+{
+  "metadata": {
+    "requires_ui": true,
+    "ui_tasks": ["T4", "T5", "T8"]
+  }
+}
+```
+
+Set `metadata.requires_ui = true` if ANY task has `requires_ui: true`.
+List all UI task IDs in `metadata.ui_tasks` array.
 
 ### Task Context Template
 
@@ -667,7 +987,16 @@ Write to `${FEAT_DIR}/tasks.json`:
       "pattern_matched": "<pattern or null>"
     },
     "requires_database": <true|false>,
-    "database_tasks": ["<task IDs with requires_database: true>"]
+    "database_tasks": ["<task IDs with requires_database: true>"],
+    "required_env_vars": [
+      {
+        "name": "<ENV_VAR_NAME>",
+        "description": "<what it's used for>",
+        "source": "<where to obtain>",
+        "required": <true|false>,
+        "scope": "<server|client|both>"
+      }
+    ]
   },
   "tasks": [
     {
@@ -748,7 +1077,7 @@ Write to `${FEAT_DIR}/tasks.json`:
   },
   "github": {
     "issues_created": false,
-    "feature_tasks_issue": null
+    "spec_issue_commented": true
   }
 }
 ```
@@ -763,15 +1092,38 @@ Run the validation script:
 
 If validation fails, fix issues and re-run.
 
-### Step 7.3: Create GitHub Issue
+### Step 7.3: Update Spec Issue with Tasks Comment
 
-Run the issue creation script:
+**No GitHub issues are created for tasks.** Instead, post a decomposition summary to the Spec's GitHub issue:
 
 ```bash
-.ai/alpha/scripts/create-feature-tasks-issue.sh ${FEAT_DIR}/tasks.json
-```
+TASK_COUNT=$(jq '.tasks | length' ${FEAT_DIR}/tasks.json)
+SPIKE_COUNT=$(jq '[.tasks[] | select(.type == "spike")] | length' ${FEAT_DIR}/tasks.json)
+SEQ_HOURS=$(jq '.execution.duration.sequential' ${FEAT_DIR}/tasks.json)
+PAR_HOURS=$(jq '.execution.duration.parallel' ${FEAT_DIR}/tasks.json)
+TIME_SAVED=$(jq '.execution.duration.time_saved_percent' ${FEAT_DIR}/tasks.json)
 
-This creates a single GitHub issue with all tasks as checkboxes.
+gh issue comment ${SPEC_ID} --repo "slideheroes/2025slideheroes" --body "## [Decomposition Update] Tasks for S${SPEC_ID}.I${INIT_NUM}.F${FEAT_NUM}
+
+This feature has been decomposed into atomic tasks:
+
+| ID | Task Name | Type | Hours | Dependencies |
+|----|-----------|------|-------|--------------|
+$(jq -r '.tasks[] | "| \(.id) | \(.name) | \(.type // "task") | \(.estimated_hours) | \(.dependencies.blocked_by | if length == 0 then "None" else join(", ") end) |"' ${FEAT_DIR}/tasks.json)
+
+### Execution Summary
+- Total Tasks: ${TASK_COUNT}
+- Spikes: ${SPIKE_COUNT}
+- Sequential: ${SEQ_HOURS} hours
+- Parallel: ${PAR_HOURS} hours (${TIME_SAVED}% time saved)
+
+### Critical Path
+$(jq -r '.execution.critical_path.task_ids | join(" → ")' ${FEAT_DIR}/tasks.json)
+
+**Next Step**: Run \`/alpha:implement S${SPEC_ID}.I${INIT_NUM}.F${FEAT_NUM}\` to begin implementation.
+
+_Decomposed on $(date +%Y-%m-%d) by /alpha:task-decompose_"
+```
 
 ### Step 7.4: Create README (Optional)
 
@@ -785,29 +1137,6 @@ This can be auto-generated from `tasks.json` or skipped since JSON is source of 
 - Task summary table
 - Mermaid execution graph
 - Duration analysis
-
-### Step 7.5: Link to Parent Feature Issue (Optional)
-
-Add a reference comment to the original Feature issue:
-
-```bash
-FEATURE_ISSUE="${FEATURE_ID}"
-TASKS_ISSUE=$(jq -r '.github.feature_tasks_issue' ${FEAT_DIR}/tasks.json)
-
-gh issue comment ${FEATURE_ISSUE} --repo MLorneSmith/2025slideheroes --body "## Task Decomposition Complete
-
-Tasks have been decomposed and tracked in issue #${TASKS_ISSUE}
-
-**Summary:**
-- Total Tasks: $(jq '.tasks | length' ${FEAT_DIR}/tasks.json)
-- Spikes: $(jq '[.tasks[] | select(.type == \"spike\")] | length' ${FEAT_DIR}/tasks.json)
-
-**Next Step:** Begin implementation with Group 0 tasks (spikes) if any, otherwise Group 1.
-
-See #${TASKS_ISSUE} for the full task list with checkboxes."
-```
-
-This step is optional since the tasks issue already has the `parent:$FEATURE_ID` label.
 
 ---
 
@@ -857,11 +1186,8 @@ jq '.tasks | length' ${FEAT_DIR}/tasks.json
 # Count spikes
 jq '[.tasks[] | select(.type == "spike")] | length' ${FEAT_DIR}/tasks.json
 
-# Check GitHub issue created
-jq '.github.issues_created' ${FEAT_DIR}/tasks.json
-
-# Get feature tasks issue number
-jq '.github.feature_tasks_issue' ${FEAT_DIR}/tasks.json
+# Check Spec issue was commented
+jq '.github.spec_issue_commented' ${FEAT_DIR}/tasks.json
 
 # Check validation verdict
 jq '.validation.discriminator_verdict' ${FEAT_DIR}/tasks.json
@@ -911,7 +1237,7 @@ After completing all phases, return a structured summary for the orchestrator:
     "time_saved_percent": <N>,
     "critical_path": "<T1 → T3 → T5>"
   },
-  "github_issue": <issue number or null>,
+  "spec_issue_commented": <true|false>,
   "rejection_reason": "<reason if rejected, else null>"
 }
 ```
@@ -920,7 +1246,7 @@ After completing all phases, return a structured summary for the orchestrator:
 
 | Status | Meaning | Orchestrator Action |
 |--------|---------|---------------------|
-| `completed` | Decomposition done, issue created | Proceed to next feature |
+| `completed` | Decomposition done, Spec issue commented | Proceed to next feature |
 | `needs_spikes` | Unknowns detected | Run spike-researcher, then re-run decomposer |
 | `rejected` | Fundamental issues | Report to user, skip feature |
 
@@ -960,16 +1286,14 @@ Before returning, verify all categories:
 ### Artifact Validation
 - [ ] `tasks.json` created in feature directory with valid schema
 - [ ] All required JSON fields present (metadata, tasks, execution, validation)
-- [ ] Feature tasks issue created with all tasks as checkboxes
-- [ ] Issue has proper labels (type:feature-tasks, alpha:tasks, parent:$FEATURE_ID)
-- [ ] `tasks.json` updated with `github.feature_tasks_issue` number
-- [ ] `github.issues_created` set to `true` in JSON
+- [ ] Comment posted to parent Spec issue with task decomposition summary
+- [ ] `github.spec_issue_commented` set to `true` in JSON
 
 ### Decomposition Validation
 - [ ] Complexity assessment completed (Phase 2)
 - [ ] Pattern cache checked for matches (Phase 1.5)
 - [ ] Validation scores meet thresholds (Phase 6)
-- [ ] Verdict is APPROVED before creating GitHub issue
+- [ ] Verdict is APPROVED before posting Spec issue comment
 - [ ] Summary JSON structure is correct
 
 ---
@@ -1081,7 +1405,7 @@ After decomposition, the orchestrator reports these metrics:
     "time_saved_percent": 20,
     "critical_path": "T1 → T3 → T4 → T5"
   },
-  "github_issue": 1357,
+  "spec_issue_commented": true,
   "rejection_reason": null
 }
 ```

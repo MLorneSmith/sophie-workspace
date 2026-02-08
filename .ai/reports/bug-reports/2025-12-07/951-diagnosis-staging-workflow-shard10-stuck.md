@@ -79,7 +79,7 @@ N/A - Job never started
 ```
 
 ### Screenshots
-- Workflow run: https://github.com/MLorneSmith/2025slideheroes/actions/runs/19997869115
+- Workflow run: https://github.com/slideheroes/2025slideheroes/actions/runs/19997869115
 
 ## Error Stack Traces
 ```

@@ -1,0 +1,64 @@
+{
+	"metadata": {
+		"spec_id": "S0",
+		"spec_name": "debug completion",
+		"generated_at": "2026-01-24T17:53:08.591Z",
+		"spec_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S0000-Spec-debug-completion",
+		"research_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S0000-Spec-debug-completion/research-library"
+	},
+	"initiatives": [
+		{
+			"id": "S0000.I1",
+			"name": "debug",
+			"slug": "debug",
+			"priority": 1,
+			"status": "completed",
+			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S0000-Spec-debug-completion/S0000.I1-Initiative-debug",
+			"feature_count": 1,
+			"features_completed": 1,
+			"dependencies": []
+		}
+	],
+	"feature_queue": [
+		{
+			"id": "S0000.I1.F1",
+			"initiative_id": "S0000.I1",
+			"title": "Trivial Task for Debug",
+			"slug": "trivial-task",
+			"priority": 1,
+			"global_priority": 1,
+			"status": "completed",
+			"tasks_file": "S0000.I1-Initiative-debug/S0000.I1.F1-Feature-trivial-task/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S0000-Spec-debug-completion/S0000.I1-Initiative-debug/S0000.I1.F1-Feature-trivial-task",
+			"task_count": 2,
+			"tasks_completed": 2,
+			"sequential_hours": 0.2,
+			"parallel_hours": 0.2,
+			"dependencies": [],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		}
+	],
+	"progress": {
+		"status": "completed",
+		"initiatives_completed": 1,
+		"initiatives_total": 1,
+		"features_completed": 1,
+		"features_total": 1,
+		"tasks_completed": 2,
+		"tasks_total": 2,
+		"next_feature_id": null,
+		"last_completed_feature_id": "S0000.I1.F1",
+		"started_at": "2026-01-24T17:56:19.688Z",
+		"completed_at": "2026-01-24T17:57:24.832Z",
+		"last_checkpoint": "2026-01-24T17:58:09.202Z"
+	},
+	"sandbox": {
+		"sandbox_ids": [
+			"ikkpjr3vi2drvj0qpnmfs"
+		],
+		"branch_name": "alpha/spec-S0",
+		"created_at": "2026-01-24T17:53:30.313Z"
+	}
+}

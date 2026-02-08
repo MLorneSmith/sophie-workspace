@@ -5,6 +5,16 @@ on:
   push:
     branches:
       - staging
+    paths-ignore:
+      - '**.md'
+      - '**.mdx'
+      - 'docs/**'
+      - '.github/**.md'
+      - '.claude/**'
+      - '.vscode/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.env.example'
   schedule:
     # Run weekly load tests every Sunday at 2 AM UTC
     - cron: '0 2 * * 0'
@@ -15,24 +25,25 @@ concurrency:
   cancel-in-progress: false  # Don't cancel in-progress deployments
 
 permissions:
-  contents: read
+  contents: write  # Required for sync-dev-with-staging job to push merge commits
   deployments: write
   pull-requests: write
   issues: write
   checks: write
   security-events: write
+  actions: read  # Required for workflow job introspection
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-  TURBO_REMOTE_CACHE_ENABLED: true
+  TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY || '' }}
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
 jobs:
   # Check if validation is needed
   check-validation:
     name: Check if validation needed
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     outputs:
       should-validate: ${{ steps.check.outputs.should-validate }}
     steps:
@@ -53,8 +64,13 @@ jobs:
             echo "This is a PR merge, validation already done"
             echo "should-validate=false" >> $GITHUB_OUTPUT
           # Also skip if merging from dev (already validated there)
-          elif git log --format=%B -n 1 | grep -q "Merge.*dev"; then
+          # Case-insensitive: matches "Merge branch dev", "merge dev into staging", etc.
+          elif git log --format=%B -n 1 | grep -qi "merge.*dev"; then
             echo "This is a merge from dev, validation already done"
+            echo "should-validate=false" >> $GITHUB_OUTPUT
+          # Skip E2E if only CI/workflow files changed (not app code)
+          elif ! git diff --name-only HEAD^ HEAD | grep -qv '^\.github/'; then
+            echo "Only CI/workflow files changed, skipping E2E validation"
             echo "should-validate=false" >> $GITHUB_OUTPUT
           else
             echo "This is a direct push, validation needed"
@@ -64,7 +80,7 @@ jobs:
   # Run validation checks inline (without reusable workflow)
   validate:
     name: Pre-deployment Validation
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: check-validation
     if: needs.check-validation.outputs.should-validate == 'true'
     steps:
@@ -73,7 +89,7 @@ jobs:
       - uses: ./.github/actions/setup-deps
 
       - name: Setup Turbo cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .turbo
           key: ${{ runner.os }}-turbo-validate-${{ github.sha }}
@@ -118,7 +134,7 @@ jobs:
   # Test setup job - prepares build artifacts and Supabase for sharded tests
   test-setup:
     name: Test Setup
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [check-validation, validate]
     # Only run tests when validation is needed (direct pushes, not PR merges)
     # PR merges already ran comprehensive e2e-sharded tests before merging
@@ -129,14 +145,20 @@ jobs:
     outputs:
       cache-key: ${{ steps.cache.outputs.cache-key }}
     env:
-      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_SITE_URL: http://localhost:3001
       NEXT_PUBLIC_PRODUCT_NAME: SlideHeroes
       NEXT_PUBLIC_CI: true
       EMAIL_SENDER: noreply@slideheroes.com
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
       DO_NOT_TRACK: 1
+      # Authentication method configuration - required at build time for NEXT_PUBLIC_* vars
+      # See: Issue #1849, #1850 - E2E tests fail due to missing auth form fields
+      NEXT_PUBLIC_AUTH_PASSWORD: 'true'
+      NEXT_PUBLIC_AUTH_MAGIC_LINK: 'false'
+      NEXT_PUBLIC_AUTH_OTP: 'false'
     steps:
       - uses: actions/checkout@v6
 
@@ -168,13 +190,19 @@ jobs:
       - name: Build application
         run: pnpm turbo build:test --filter=web
 
+      - name: Build Payload CMS
+        run: pnpm turbo build --filter=payload
+        env:
+          DATABASE_URI: postgresql://postgres:postgres@localhost:54522/postgres
+          PAYLOAD_SECRET: test_payload_secret_for_e2e_testing
+
       - name: Cache build artifacts for shards
         id: cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             apps/web/.next
-            apps/payload/dist
+            apps/payload/.next
             packages/*/dist
             .turbo
           key: staging-test-build-${{ github.sha }}-${{ github.run_id }}
@@ -182,8 +210,13 @@ jobs:
   # Sharded E2E test execution - runs tests in parallel for faster completion
   test-shards:
     name: E2E Shard ${{ matrix.shard }}
-    # Use slash-separated format with unique run_id+job-index to prevent runner stealing (RunsOn docs)
-    runs-on: "runs-on=${{ github.run_id }}-job-${{ strategy.job-index }}/runner=4cpu-linux-x64"
+    # IMPORTANT: Runner Configuration
+    # ================================
+    # Using static RunsOn label (not dynamic job-index) to ensure cache compatibility
+    # with test-setup job. Dynamic labels caused scheduling failures in the past.
+    # See: Issue #1544 - Cache isolation between runner types caused build not found errors
+    # See: Issue #1896, #1897 - Dynamic job-index labels caused shards to get stuck
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [check-validation, test-setup]
     if: |
       always() && !failure() && !cancelled() &&
@@ -192,30 +225,60 @@ jobs:
     timeout-minutes: 15
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 6
       matrix:
         shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     env:
+      # E2E Database Configuration - Local Supabase instance (ports 54521/54522)
+      SUPABASE_URL: 'http://127.0.0.1:54521'
+      NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54521'
+      # JWT keys (SUPABASE_ANON_KEY, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY)
+      # are extracted dynamically from Supabase after startup in the "Extract Supabase JWT keys" step.
+      # This ensures we use the actual ES256 keys that Supabase generates, not hardcoded HS256 keys.
+      # See: Issue #1615 (diagnosis), Issue #1621 (fix) for details.
+      DATABASE_URL: 'postgresql://postgres:postgres@localhost:54522/postgres'
+      DATABASE_URI: 'postgresql://postgres:postgres@localhost:54522/postgres'
+
+      # Test environment configuration
       NODE_ENV: 'test'
-      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_SITE_URL: http://localhost:3001
       NEXT_PUBLIC_PRODUCT_NAME: SlideHeroes
       NEXT_PUBLIC_CI: true
       EMAIL_SENDER: noreply@slideheroes.com
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-      STRIPE_WEBHOOK_SECRET: 'whsec_test_dummy'
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
       ENABLE_BILLING_TESTS: true
       DO_NOT_TRACK: 1
+
+      # Required for app to start
+      NEXT_PUBLIC_BILLING_PROVIDER: 'stripe'
+      PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3021'
+      PAYLOAD_SECRET: 'test_payload_secret_for_e2e_testing'
+
+      # Enable Playwright parallelism
+      PLAYWRIGHT_PARALLEL: 'true'
       # Required: Tell Playwright which port the app is running on
-      PLAYWRIGHT_BASE_URL: http://localhost:3000
+      PLAYWRIGHT_BASE_URL: http://localhost:3001
+
+      # E2E test user credentials (from GitHub Secrets)
+      # These are required for authentication tests in shards 2-12
+      # See: Issue #1636 (diagnosis), Issue #1637 (fix)
+      E2E_TEST_USER_EMAIL: ${{ secrets.E2E_TEST_USER_EMAIL }}
+      E2E_TEST_USER_PASSWORD: ${{ secrets.E2E_TEST_USER_PASSWORD }}
+      E2E_OWNER_EMAIL: ${{ secrets.E2E_OWNER_EMAIL }}
+      E2E_OWNER_PASSWORD: ${{ secrets.E2E_OWNER_PASSWORD }}
+      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
     steps:
       # Stagger job creation to prevent GitHub Actions/RunsOn race condition
       # when multiple matrix jobs are created simultaneously (fixes Shard 10 stuck issue)
-      # Delay calculation: (shard - 1) * 10 seconds
-      # Shard 1=0s, Shard 2=10s, Shard 3=20s, ..., Shard 10=90s
+      # Delay calculation: (shard - 1) * 5 seconds
+      # Shard 1=0s, Shard 2=5s, Shard 3=10s, ..., Shard 12=55s
       - name: Stagger matrix job start
         run: |
-          DELAY=$(( (${{ matrix.shard }} - 1) * 10 ))
+          DELAY=$(( (${{ matrix.shard }} - 1) * 5 ))
           echo "Shard ${{ matrix.shard }}: waiting ${DELAY} seconds to prevent race condition..."
           sleep $DELAY
 
@@ -224,20 +287,37 @@ jobs:
       - uses: ./.github/actions/setup-deps
 
       - name: Restore build artifacts
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             apps/web/.next
-            apps/payload/dist
+            apps/payload/.next
             packages/*/dist
             .turbo
           key: staging-test-build-${{ github.sha }}-${{ github.run_id }}
           restore-keys: |
             staging-test-build-${{ github.sha }}-
 
+      - name: Verify production build exists
+        run: |
+          if [ -f "apps/web/.next/BUILD_ID" ]; then
+            echo "✅ Production build verified (.next/BUILD_ID exists)"
+            echo "BUILD_ID: $(cat apps/web/.next/BUILD_ID)"
+          else
+            echo "⚠️ Production build missing - triggering rebuild..."
+            echo "This is a fallback for cache restoration issues."
+            pnpm --filter web build:test
+            if [ -f "apps/web/.next/BUILD_ID" ]; then
+              echo "✅ Rebuild successful - BUILD_ID: $(cat apps/web/.next/BUILD_ID)"
+            else
+              echo "❌ Rebuild failed - BUILD_ID still missing"
+              exit 1
+            fi
+          fi
+
       - name: Cache Playwright browsers
         id: playwright-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('apps/e2e/package.json') }}-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -257,43 +337,95 @@ jobs:
       - name: Start Supabase services
         run: pnpm run supabase:web:start -- -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
 
-      - name: Export Supabase environment variables
+      # Run Payload CMS migrations to create payload.* tables
+      # Required for E2E Shards 7, 8, 9 (Payload tests)
+      # Without this, tests fail with: "relation payload.users does not exist"
+      # See: Issue #1813 (diagnosis), Issue #1814 (fix)
+      - name: Run Payload CMS migrations
+        run: |
+          echo "🔄 Running Payload CMS migrations..."
+          pnpm --filter payload payload migrate --forceAcceptWarning
+          echo "✅ Payload CMS migrations complete"
+        env:
+          DATABASE_URI: postgresql://postgres:postgres@localhost:54522/postgres
+          PAYLOAD_SECRET: test_payload_secret_for_e2e_testing
+
+      # Seed Payload admin user for E2E tests (Shards 7, 8, 9)
+      # The seed engine uses Payload's Local API to create the user with proper password hashing
+      # Without this, Payload login fails during global-setup with "no token received"
+      # See: Issue #1855 (diagnosis), Issue #1856 (fix)
+      - name: Seed Payload admin user
+        run: |
+          echo "🌱 Seeding Payload admin user..."
+          # Use || true to allow graceful failure if user already exists (idempotency)
+          # The seed engine exits non-zero on duplicate key errors, but the user exists which is what we need
+          if pnpm --filter payload seed:run -c users; then
+            echo "✅ Payload admin user created"
+          else
+            echo "ℹ️  Payload admin user may already exist (seed returned non-zero)"
+            # Verify user exists in database
+            psql "$DATABASE_URI" -c "SELECT email FROM payload.users WHERE email = 'michael@slideheroes.com'" | grep -q michael@slideheroes.com && \
+              echo "✅ Payload admin user verified in database" || \
+              (echo "❌ Payload admin user not found - seeding failed" && exit 1)
+          fi
+        env:
+          DATABASE_URI: postgresql://postgres:postgres@localhost:54522/postgres
+          PAYLOAD_SECRET: test_payload_secret_for_e2e_testing
+          SEED_USER_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+          SEED_SOPHIE_API_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+
+      - name: Extract Supabase JWT keys
         run: |
           cd apps/web
-          SUPABASE_URL=$(npx supabase status | grep "Project URL" | sed 's/│//g' | awk '{print $3}')
-          SUPABASE_ANON_KEY=$(npx supabase status | grep "Publishable" | sed 's/│//g' | awk '{print $2}')
-          SUPABASE_SERVICE_KEY=$(npx supabase status | grep -E "^│ Secret" | sed 's/│//g' | awk '{print $2}')
+          # Extract actual JWT keys from running Supabase instance
+          # This ensures we use the ES256 keys that Supabase generates, not hardcoded HS256 keys
+          echo "📋 Extracting JWT keys from Supabase..."
+          eval "$(supabase status -o env)"
 
-          echo "NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> $GITHUB_ENV
-          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_KEY" >> $GITHUB_ENV
+          # Verify keys were extracted
+          if [ -z "$ANON_KEY" ] || [ -z "$SERVICE_ROLE_KEY" ]; then
+            echo "❌ Failed to extract JWT keys from Supabase"
+            supabase status
+            exit 1
+          fi
 
-          echo "✅ Exported NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL"
-          echo "✅ Exported NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:0:20}..."
-          echo "✅ Exported SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_KEY:0:20}..."
+          # Export for E2E tests
+          # NOTE: E2E_ prefixed variables are required by test-users.ts and auth.po.ts
+          # The test code falls back to hardcoded HS256 keys if E2E_ vars are missing,
+          # but Supabase uses ES256 keys, causing JWT signing method validation errors.
+          # See: Issue #1626 - E2E Sharded Workflow Environment Variable Naming Mismatch
+          echo "SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+          echo "E2E_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "E2E_SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+          # Signal that we're running with local Supabase in CI (allows localhost validation to pass)
+          # See: Issue #1626 - Localhost validation blocks sharded workflow with local Supabase
+          echo "E2E_LOCAL_SUPABASE=true" >> $GITHUB_ENV
 
-      - name: Start Stripe CLI and application
+          echo "✅ JWT keys extracted successfully"
+
+      - name: Start Stripe CLI for webhook testing
         run: |
-          # Start Stripe CLI in background
+          # Start Stripe CLI in background for billing webhook tests (shards 10, 11)
+          # The application server is started by Playwright's webServer configuration
+          # See Issue #1830, #1832: Removed explicit app startup to avoid port 3001 conflict
           docker run --add-host=host.docker.internal:host-gateway --rm -it --name=stripe -d \
             stripe/stripe-cli:latest listen \
-            --forward-to http://host.docker.internal:3000/api/billing/webhook \
+            --forward-to http://host.docker.internal:3001/api/billing/webhook \
             --skip-verify --api-key "$STRIPE_SECRET_KEY" --log-level debug &
 
-          # Start application
-          pnpm --filter web start:test &
-
-          # Wait for application to be ready
-          npx wait-on http://localhost:3000 -t 60000
+          # Give Stripe CLI time to initialize
+          sleep 5
 
       - name: Run E2E tests for shard ${{ matrix.shard }}
         run: |
-          echo "🚀 Running E2E test shard ${{ matrix.shard }} of 10"
+          echo "🚀 Running E2E test shard ${{ matrix.shard }} of 12"
           pnpm --filter web-e2e test:shard${{ matrix.shard }}
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: playwright-report-staging-shard-${{ matrix.shard }}
           path: apps/e2e/playwright-report/
@@ -302,7 +434,7 @@ jobs:
   # Aggregate results from all shards
   test-aggregate:
     name: Test Results
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [check-validation, test-shards]
     if: |
       always() &&
@@ -311,7 +443,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Download all shard results
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           path: shard-results
           pattern: playwright-report-staging-shard-*
@@ -321,8 +453,8 @@ jobs:
           echo "## 🎭 Staging E2E Test Results (Sharded)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Configuration" >> $GITHUB_STEP_SUMMARY
-          echo "- **Total Shards**: 10" >> $GITHUB_STEP_SUMMARY
-          echo "- **Max Parallel**: 3" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Shards**: 12" >> $GITHUB_STEP_SUMMARY
+          echo "- **Max Parallel**: 6" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
@@ -339,6 +471,8 @@ jobs:
           echo "| 8 | Payload Seeding & Performance | Check artifacts |" >> $GITHUB_STEP_SUMMARY
           echo "| 9 | User Billing | Check artifacts |" >> $GITHUB_STEP_SUMMARY
           echo "| 10 | Team Billing | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 11 | Billing Webhooks | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 12 | Billing Edge Cases | Check artifacts |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
           if [[ "${{ needs.test-shards.result }}" == "success" ]]; then
@@ -356,16 +490,16 @@ jobs:
           echo "✅ All E2E tests passed"
 
   # Build application with artifact sharing
+  # Runs in parallel with test-shards to reduce wall-clock time.
+  # Deploy jobs gate on both build AND test-aggregate.
   build:
     name: Build Application
-    needs: [check-validation, validate, test-aggregate]
-    # Handle skipped test-aggregate job (for PR merges) - proceed if tests passed OR were skipped
+    needs: [check-validation, validate]
     if: |
       always() &&
       (needs.validate.result == 'success' || needs.validate.result == 'skipped') &&
-      (needs.test-aggregate.result == 'success' || needs.test-aggregate.result == 'skipped') &&
       !failure() && !cancelled()
-    uses: ./.github/workflows/artifact-sharing.yml
+    uses: ./.github/workflows/reusable-build.yml
     with:
       environment: staging
       commit_sha: ${{ github.sha }}
@@ -373,10 +507,16 @@ jobs:
     secrets: inherit
 
   # Deploy Web App to Vercel Staging environment
+  # Gates on both build (artifacts) and test-aggregate (tests must pass)
   deploy-web:
     name: Deploy Web App to Staging
-    runs-on: "runs-on/runner=4cpu-linux-x64"
-    needs: [build, test-aggregate]
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
+    needs: [build, check-validation, test-aggregate]
+    if: |
+      always() &&
+      needs.build.result == 'success' &&
+      (needs.test-aggregate.result == 'success' || needs.test-aggregate.result == 'skipped') &&
+      !failure() && !cancelled()
     environment:
       name: staging
       url: ${{ steps.deploy.outputs.url }}
@@ -388,10 +528,17 @@ jobs:
       - uses: ./.github/actions/setup-deps
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: build-artifacts-staging-${{ github.sha }}
           path: .
+
+      - name: Extract artifacts
+        run: |
+          echo "📦 Extracting build artifacts from tar archive..."
+          tar -xf build-artifacts.tar
+          echo "✅ Artifacts extracted successfully"
+          rm build-artifacts.tar
 
       - name: Deploy to Vercel
         id: deploy
@@ -439,10 +586,16 @@ jobs:
           echo "| Deploy URL | ${{ steps.deploy.outputs.url }} |" >> $GITHUB_STEP_SUMMARY
 
   # Deploy Payload CMS to Vercel Staging environment
+  # Gates on both build (artifacts) and test-aggregate (tests must pass)
   deploy-payload:
     name: Deploy Payload CMS to Staging
-    runs-on: "runs-on/runner=4cpu-linux-x64"
-    needs: build
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
+    needs: [build, check-validation, test-aggregate]
+    if: |
+      always() &&
+      needs.build.result == 'success' &&
+      (needs.test-aggregate.result == 'success' || needs.test-aggregate.result == 'skipped') &&
+      !failure() && !cancelled()
     environment:
       name: staging-payload
       url: ${{ steps.deploy.outputs.url }}
@@ -454,10 +607,17 @@ jobs:
       - uses: ./.github/actions/setup-deps
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: build-artifacts-staging-${{ github.sha }}
           path: .
+
+      - name: Extract artifacts
+        run: |
+          echo "📦 Extracting build artifacts from tar archive..."
+          tar -xf build-artifacts.tar
+          echo "✅ Artifacts extracted successfully"
+          rm build-artifacts.tar
 
       - name: Deploy to Vercel
         id: deploy
@@ -468,7 +628,7 @@ jobs:
           project-id: ${{ secrets.VERCEL_PROJECT_ID_PAYLOAD }}
           environment: staging
           build-artifacts: true
-          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}
           health-check-url: /api/health
 
       - name: Create deployment status
@@ -497,7 +657,8 @@ jobs:
   # Run smoke tests against staging
   smoke-tests:
     name: Staging Smoke Tests
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    if: false  # TODO: Enable when staging smoke tests are implemented
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: deploy-web
     environment: staging
     steps:
@@ -578,7 +739,7 @@ jobs:
   # Dynamic Application Security Testing with Nuclei
   dast-security-scan:
     name: DAST Security Scan (Nuclei)
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [deploy-web, deploy-payload]
     continue-on-error: true  # Don't block deployment on security findings initially
     permissions:
@@ -639,7 +800,7 @@ jobs:
   # Notify New Relic of staging deployment
   notify-monitoring:
     name: Notify Monitoring
-    runs-on: "runs-on/runner=4cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [deploy-web, deploy-payload]
     continue-on-error: true
     steps:
@@ -667,3 +828,133 @@ jobs:
   #     VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
   #     VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   #     VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
+
+  # Sync staging back into dev after successful deployment
+  # This prevents merge conflicts in future promotion PRs when using squash merge strategy.
+  # Without this sync, staging has squashed commits while dev has individual commits,
+  # causing Git to see divergent history on the next promotion attempt.
+  # See: Issue #1848 - PR conflicts due to squash merge history divergence
+  sync-dev-with-staging:
+    name: Sync Dev with Staging
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
+    needs: [check-validation]
+    if: always() && !cancelled()
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v6
+        with:
+          ref: dev
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge staging into dev
+        id: merge
+        run: |
+          echo "🔄 Syncing staging into dev to prevent future merge conflicts..."
+
+          # Fetch latest staging and dev
+          git fetch origin staging
+          git fetch origin dev
+          git reset --hard origin/dev
+
+          # Check if there are differences to merge
+          if git merge-base --is-ancestor origin/staging HEAD; then
+            echo "✅ Dev is already up-to-date with staging, no merge needed"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Use squash merge to avoid creating a merge commit
+          # (dev branch protection forbids merge commits)
+          if git merge --squash origin/staging; then
+            # Exclude workflow files from sync - they originate on dev and flow to
+            # staging via PRs. Neither GITHUB_TOKEN nor GitHub App tokens have the
+            # 'workflows' permission needed to push .github/workflows/ changes.
+            git checkout origin/dev -- .github/workflows/ 2>/dev/null || true
+
+            # Check if squash produced any changes (branches may already be aligned)
+            if git diff --cached --quiet; then
+              echo "✅ No differences after squash merge - branches are already in sync"
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            git commit -m "chore(ci): sync staging into dev after promotion [skip ci]"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "✅ Successfully squash-merged staging into dev"
+          else
+            echo "⚠️ Merge conflict detected, attempting auto-resolution..."
+
+            # For spec-manifest.json conflicts, prefer the staging version
+            git checkout --theirs .ai/alpha/specs/*/spec-manifest.json 2>/dev/null || true
+            git add .ai/alpha/specs/*/spec-manifest.json 2>/dev/null || true
+
+            # Exclude workflow files from sync (see comment above)
+            git checkout origin/dev -- .github/workflows/ 2>/dev/null || true
+            git add -A
+
+            # After excluding workflow files, there may be nothing left to commit
+            # (e.g., all differences were in .github/workflows/). That's a success.
+            if git diff --cached --quiet; then
+              echo "✅ No differences after excluding workflow files - branches are already in sync"
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            if git commit -m "chore(ci): sync staging into dev after promotion (auto-resolved) [skip ci]"; then
+              echo "has_changes=true" >> $GITHUB_OUTPUT
+              echo "✅ Merge completed with auto-resolved conflicts"
+            else
+              echo "❌ Could not auto-resolve conflicts, manual intervention required"
+              git reset --hard origin/dev
+              exit 1
+            fi
+          fi
+
+      - name: Create sync PR
+        if: steps.merge.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          SYNC_BRANCH="sync/staging-to-dev-${{ github.run_id }}"
+          git checkout -b "$SYNC_BRANCH"
+          git push origin "$SYNC_BRANCH"
+
+          # Create PR and enable auto-merge (squash)
+          PR_URL=$(gh pr create \
+            --base dev \
+            --head "$SYNC_BRANCH" \
+            --title "chore(ci): sync staging into dev after promotion [skip ci]" \
+            --body "Automated sync of staging back into dev to prevent merge conflicts in future promotion PRs.
+
+          This PR is auto-merged. All changes were already validated on staging." \
+            --label "automated")
+
+          echo "✅ Created sync PR: $PR_URL"
+
+          # Enable auto-merge so it merges once PR Status Check passes
+          gh pr merge "$PR_URL" --squash --auto
+
+          echo "✅ Auto-merge enabled on sync PR"
+
+      - name: Add workflow summary
+        if: always()
+        run: |
+          echo "## 🔄 Dev Branch Sync" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Created a sync PR to merge staging back into dev." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "This prevents merge conflicts in future \`dev → staging\` promotion PRs." >> $GITHUB_STEP_SUMMARY

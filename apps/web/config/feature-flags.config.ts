@@ -31,6 +31,14 @@ const FeatureFlagsSchema = z.object({
 		.boolean()
 		.describe("Enable realtime for the notifications functionality"),
 	enableVersionUpdater: z.boolean().describe("Enable version updater"),
+	/**
+	 * Enable Course and Assessment features.
+	 * Defaults to false for alpha testing - explicitly set to true to show courses.
+	 * Can be overridden at runtime via database (public.config.enable_courses).
+	 */
+	enableCourses: z
+		.boolean()
+		.describe("Enable Course and Assessment features in the UI."),
 });
 
 const featuresFlagConfig = FeatureFlagsSchema.parse({
@@ -76,6 +84,7 @@ const featuresFlagConfig = FeatureFlagsSchema.parse({
 		process.env.NEXT_PUBLIC_ENABLE_VERSION_UPDATER,
 		false,
 	),
+	enableCourses: getBoolean(process.env.NEXT_PUBLIC_ENABLE_COURSES, false),
 } satisfies z.infer<typeof FeatureFlagsSchema>);
 
 export default featuresFlagConfig;

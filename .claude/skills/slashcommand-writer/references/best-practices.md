@@ -228,7 +228,7 @@ Standard patterns for GitHub integration:
 ### Create Issue
 ```bash
 gh issue create \
-  --repo MLorneSmith/2025slideheroes \
+  --repo slideheroes/2025slideheroes \
   --title "<Type>: <title>" \
   --body "<content>" \
   --label "type:<type>,status:ready"

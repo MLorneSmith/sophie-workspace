@@ -8,13 +8,77 @@
 
 import type { Sandbox } from "@e2b/code-interpreter";
 
+import type { RefinementEntry } from "./refine.types.js";
+
+// ============================================================================
+// Provider-Specific Install Configuration (Bug fix #1924)
+// ============================================================================
+
+/**
+ * Configuration for provider-specific pnpm install behavior.
+ *
+ * Different E2B templates may have different cached states, requiring
+ * different install strategies. GPT templates may timeout with --frozen-lockfile
+ * due to missing dependency cache.
+ */
+export interface ProviderInstallConfig {
+	/** pnpm install flags for this provider */
+	installFlags: string[];
+	/** Timeout for install command in milliseconds */
+	timeoutMs: number;
+	/** Maximum retry attempts for install */
+	maxRetries: number;
+	/** Base delay for exponential backoff in milliseconds */
+	retryBaseDelayMs: number;
+	/** Whether to skip --frozen-lockfile validation */
+	skipFrozenLockfile: boolean;
+}
+
+/**
+ * Result of sandbox environment validation.
+ */
+export interface SandboxValidationResult {
+	/** Whether the environment is valid for install */
+	valid: boolean;
+	/** List of validation errors encountered */
+	errors: string[];
+	/** Node.js version found (if available) */
+	nodeVersion?: string;
+	/** Whether package.json was found */
+	hasPackageJson: boolean;
+	/** Whether pnpm-lock.yaml was found */
+	hasLockfile: boolean;
+}
+
+/**
+ * Result of an install attempt with retry logic.
+ */
+export interface InstallAttemptResult {
+	/** Whether the install succeeded */
+	success: boolean;
+	/** Number of attempts made */
+	attemptsMade: number;
+	/** Total duration in milliseconds */
+	durationMs: number;
+	/** Error message if failed */
+	error?: string;
+	/** Detailed error for diagnostics */
+	diagnosticInfo?: {
+		provider: AgentProvider;
+		flags: string[];
+		timeoutMs: number;
+		lastExitCode?: number;
+		lastStderr?: string;
+	};
+}
+
 // ============================================================================
 // Feature & Initiative Types
 // ============================================================================
 
 export interface FeatureEntry {
-	id: number;
-	initiative_id: number;
+	id: string; // Semantic ID: S1362.I1.F1 or legacy: 1367
+	initiative_id: string; // Semantic ID: S1362.I1 or legacy: 1365
 	title: string;
 	slug?: string;
 	priority: number;
@@ -26,7 +90,7 @@ export interface FeatureEntry {
 	tasks_completed: number;
 	sequential_hours: number;
 	parallel_hours: number;
-	dependencies: number[];
+	dependencies: string[]; // Feature IDs this is blocked by (semantic or legacy)
 	github_issue: number | null;
 	assigned_sandbox?: string;
 	/** Timestamp when feature was assigned to a sandbox (for race condition detection) */
@@ -34,10 +98,12 @@ export interface FeatureEntry {
 	error?: string;
 	requires_database: boolean;
 	database_task_count: number;
+	/** Number of retry attempts for deadlock recovery (Bug fix #1777) */
+	retry_count?: number;
 }
 
 export interface InitiativeEntry {
-	id: number;
+	id: string; // Semantic ID: S1362.I1 or legacy: 1365
 	name: string;
 	slug: string;
 	priority: number;
@@ -45,42 +111,86 @@ export interface InitiativeEntry {
 	initiative_dir: string;
 	feature_count: number;
 	features_completed: number;
-	dependencies: number[];
+	dependencies: string[]; // Initiative IDs this is blocked by (semantic or legacy)
 }
 
 // ============================================================================
 // Manifest Types
 // ============================================================================
 
+/**
+ * Required environment variable specification.
+ * Used to track external service credentials needed by features.
+ */
+export interface RequiredEnvVar {
+	/** Environment variable name (e.g., CAL_OAUTH_CLIENT_ID) */
+	name: string;
+	/** What this credential is used for */
+	description: string;
+	/** Where to obtain this credential (URL or instructions) */
+	source: string;
+	/** If false, feature can degrade gracefully without this */
+	required: boolean;
+	/** Where variable is used (affects NEXT_PUBLIC_ prefix) */
+	scope: "client" | "server" | "both";
+	/** Which features need this variable */
+	features: string[];
+}
+
 export interface SpecManifest {
 	metadata: {
-		spec_id: number;
+		spec_id: string; // Semantic ID: S1362 or legacy: 1362
 		spec_name: string;
 		generated_at: string;
 		spec_dir: string;
 		research_dir: string;
+		/** Aggregated environment variables required by all features in this spec */
+		required_env_vars?: RequiredEnvVar[];
 	};
 	initiatives: InitiativeEntry[];
 	feature_queue: FeatureEntry[];
 	progress: {
-		status: "pending" | "in_progress" | "completed" | "failed" | "partial";
+		status:
+			| "pending"
+			| "in_progress"
+			| "completing"
+			| "completed"
+			| "failed"
+			| "partial";
+		/**
+		 * Completion status indicating the final state of the orchestration.
+		 * Bug fix #1930: Track review sandbox creation success/failure separately.
+		 * - "completed": All features completed AND review sandbox created
+		 * - "partial_completion": All features completed but review sandbox failed
+		 * - "failed": Features failed during implementation
+		 */
+		completion_status?: "completed" | "partial_completion" | "failed";
 		initiatives_completed: number;
 		initiatives_total: number;
 		features_completed: number;
 		features_total: number;
 		tasks_completed: number;
 		tasks_total: number;
-		next_feature_id: number | null;
-		last_completed_feature_id: number | null;
+		next_feature_id: string | null; // Semantic ID: S1362.I1.F1 or legacy: 1367
+		last_completed_feature_id: string | null;
 		started_at: string | null;
 		completed_at: string | null;
 		last_checkpoint: string | null;
+		/**
+		 * Error message if review sandbox creation failed.
+		 * Bug fix #1931: Persist error details so they survive beyond UI session.
+		 */
+		review_error?: string;
 	};
 	sandbox: {
 		sandbox_ids: string[];
 		branch_name: string | null;
 		created_at: string | null;
+		/** Count of sandbox restarts during orchestration (for diagnostics) */
+		restart_count?: number;
 	};
+	/** History of refinements applied to this spec (optional) */
+	refinements?: RefinementEntry[];
 }
 
 // ============================================================================
@@ -97,7 +207,19 @@ export interface OrchestratorOptions {
 	skipDbSeed: boolean;
 	ui: boolean;
 	minimalUi: boolean;
+	/** Which coding agent to run inside sandboxes */
+	provider: AgentProvider;
+	/** Reset manifest state (delete and regenerate) before running */
+	reset: boolean;
+	/** Skip work loop and jump to completion sequence (for debugging) */
+	skipToCompletion: boolean;
+	/** Skip interactive pre-flight environment variable check */
+	skipPreFlight: boolean;
+	/** Generate spec-level documentation after completion using /alpha:document */
+	document: boolean;
 }
+
+export type AgentProvider = "claude" | "gpt";
 
 export interface OrchestratorLock {
 	spec_id: number;
@@ -117,7 +239,7 @@ export interface SandboxInstance {
 	id: string;
 	label: string;
 	status: "ready" | "busy" | "completed" | "failed";
-	currentFeature: number | null;
+	currentFeature: string | null; // Semantic ID: S1362.I1.F1 or legacy: 1367
 	featureStartedAt?: Date;
 	lastProgressSeen?: Date;
 	lastHeartbeat?: Date;
@@ -137,7 +259,7 @@ export interface SandboxInstance {
 
 export interface SandboxProgress {
 	feature?: {
-		issue_number: number;
+		issue_number: string; // Semantic ID: S1362.I1.F1 or legacy: 1367
 		title: string;
 	};
 	current_task?: {

@@ -1,6 +1,6 @@
 ---
-description: Decompose features into atomic tasks using MAKER framework. Accepts initiative-# (all features) or feature-# (single feature). Fourth step in Alpha autonomous coding process.
-argument-hint: [initiative-# or feature-#]
+description: Decompose features into atomic tasks using MAKER framework. Accepts semantic IDs (S#.I# or S#.I#.F#) or legacy issue numbers. Fourth step in Alpha autonomous coding process.
+argument-hint: <S#.I#.F#|S#.I#|feature-#|initiative-#> (e.g., S1362.I1.F1, S1362.I1, 1367)
 model: opus
 allowed-tools: [Read, Write, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion]
 ---
@@ -8,6 +8,18 @@ allowed-tools: [Read, Write, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion]
 # Alpha: Task Decomposition Orchestrator
 
 Orchestrate the decomposition of features into MAKER-compliant atomic tasks.
+
+## Quick Reference
+
+```
+ID Formats:
+- S1362.I1.F1 - Single feature (semantic)
+- S1362.I1    - All features in initiative (semantic)
+- 1367        - Single feature (legacy issue number)
+- 1363        - Initiative (legacy issue number)
+
+Task IDs: S1362.I1.F1.T1, S1362.I1.F1.T2, etc.
+```
 
 ## Overview
 
@@ -54,12 +66,43 @@ Alpha Workflow: 1. Spec → 2. Initiatives → 3. Features → 4. Tasks (this) �
 
 ## Instructions
 
-### Step 1: Detect Input Type
+### Step 1: Parse Input and Detect Type
 
-Fetch the issue to determine if it's an initiative or single feature:
+**Accepted formats:**
+- `S1362.I1.F1` - Semantic feature ID → **Mode A** (single feature)
+- `S1362.I1` - Semantic initiative ID → **Mode B** (all features in initiative)
+- `1367` - Legacy feature issue number → **Mode A** (requires GitHub lookup)
+- `1363` - Legacy initiative issue number → **Mode B** (requires GitHub lookup)
 
+**Parse the input:**
+```typescript
+const input = '$ARGUMENTS';
+let mode, specNum, initPriority, featPriority, semanticId;
+
+if (input.match(/^S\d+\.I\d+\.F\d+$/)) {
+  // Semantic feature: S1362.I1.F1
+  mode = 'A';
+  const match = input.match(/S(\d+)\.I(\d+)\.F(\d+)/);
+  specNum = match[1];
+  initPriority = match[2];
+  featPriority = match[3];
+  semanticId = input;
+} else if (input.match(/^S\d+\.I\d+$/)) {
+  // Semantic initiative: S1362.I1
+  mode = 'B';
+  const match = input.match(/S(\d+)\.I(\d+)/);
+  specNum = match[1];
+  initPriority = match[2];
+  semanticId = input;
+} else {
+  // Legacy issue number - need GitHub lookup
+  // (See legacy detection below)
+}
+```
+
+**For legacy issue numbers**, fetch from GitHub to determine type:
 ```bash
-gh issue view $ARGUMENTS --repo MLorneSmith/2025slideheroes --json labels,title
+gh issue view $ARGUMENTS --repo slideheroes/2025slideheroes --json labels,title
 ```
 
 - `alpha:initiative` or `type:initiative` → Execute **Mode B** (loop through all features)
@@ -69,11 +112,19 @@ gh issue view $ARGUMENTS --repo MLorneSmith/2025slideheroes --json labels,title
 
 #### 2A.1: Resolve Paths
 
+**For semantic IDs (S#.I#.F#):**
+Use Glob to find the feature directory:
+```
+Glob tool:
+  pattern: .ai/alpha/specs/**/S[specNum].I[initPriority].F[featPriority]-Feature-*
+```
+
+**For legacy IDs:**
 ```bash
 PATHS=$(.ai/alpha/scripts/resolve-feature-paths.sh $ARGUMENTS)
 ```
 
-Extract from JSON: `FEATURE_ID`, `INITIATIVE_ID`, `SPEC_ID`, `SPEC_DIR`, `INIT_DIR`, `FEAT_DIR`, `RESEARCH_DIR`
+Extract from result: `FEATURE_ID` (semantic), `INITIATIVE_ID` (semantic), `SPEC_ID`, `SPEC_DIR`, `INIT_DIR`, `FEAT_DIR`, `RESEARCH_DIR`
 
 #### 2A.2: Delegate to Task Decomposer
 
@@ -81,17 +132,18 @@ Extract from JSON: `FEATURE_ID`, `INITIATIVE_ID`, `SPEC_ID`, `SPEC_DIR`, `INIT_D
 
 ```
 subagent_type: alpha-task-decomposer
-description: "Decompose feature #<FEATURE_ID>"
+description: "Decompose feature <FEATURE_ID>"
 prompt: |
-  FEATURE_ID: <value>
-  INITIATIVE_ID: <value>
-  SPEC_ID: <value>
+  FEATURE_ID: <semantic ID, e.g., S1362.I1.F1>
+  INITIATIVE_ID: <semantic ID, e.g., S1362.I1>
+  SPEC_ID: <spec number, e.g., 1362>
   SPEC_DIR: <path>
   INIT_DIR: <path>
   FEAT_DIR: <path>
   RESEARCH_DIR: <path>
 
   Decompose this feature into MAKER-compliant atomic tasks.
+  Tasks should use semantic IDs: S1362.I1.F1.T1, S1362.I1.F1.T2, etc.
   Return a structured JSON summary when complete.
 ```
 
@@ -101,7 +153,7 @@ Handle based on returned `status` field:
 
 | Status | Action |
 |--------|--------|
-| `completed` | Report success with task count, hours, GitHub issue |
+| `completed` | Report success with task count and hours |
 | `needs_spikes` | Delegate each spike to `spike-researcher`, then re-invoke decomposer |
 | `rejected` | Report failure with `rejection_reason`, suggest manual review |
 
@@ -109,15 +161,30 @@ Handle based on returned `status` field:
 
 #### 2B.1: Resolve Initiative Paths
 
-```bash
-gh issue view $ARGUMENTS --repo MLorneSmith/2025slideheroes
-INIT_DIR=$(find .ai/alpha/specs -type d -name "$ARGUMENTS-*" | head -1)
+**For semantic IDs (S#.I#):**
+Use Glob to find the initiative directory:
+```
+Glob tool:
+  pattern: .ai/alpha/specs/**/S[specNum].I[initPriority]-Initiative-*
 ```
 
-Record: `INITIATIVE_ID`, `SPEC_DIR`, `RESEARCH_DIR`, `STATE_FILE=${INIT_DIR}/decomposition-state.json`
+**For legacy IDs:**
+```bash
+gh issue view $ARGUMENTS --repo slideheroes/2025slideheroes
+INIT_DIR=$(find .ai/alpha/specs -type d -name "$ARGUMENTS-*" -o -name "S*.I*-*" | head -1)
+```
+
+Record: `INITIATIVE_ID` (semantic, e.g., S1362.I1), `SPEC_DIR`, `RESEARCH_DIR`, `STATE_FILE=${INIT_DIR}/decomposition-state.json`
 
 #### 2B.2: List Features
 
+For semantic IDs, use Glob to find feature directories:
+```
+Glob tool:
+  pattern: [INIT_DIR]/S*.I*.F*-Feature-*
+```
+
+For legacy IDs:
 ```bash
 FEATURES=$(.ai/alpha/scripts/list-initiative-features.sh $INITIATIVE_ID --paths)
 ```
@@ -136,7 +203,7 @@ Check if `decomposition-state.json` exists:
 2. **Update state** - Set `features[ID].status = "in_progress"`
 3. **Invoke Task tool** with `subagent_type=alpha-task-decomposer` (same prompt as Step 2A.2)
 4. **Process result**:
-   - `completed`: Update state, increment counters, record `task_count`, `github_issue`
+   - `completed`: Update state, increment counters, record `task_count`
    - `needs_spikes`: Append to `spikes_pending`, increment `total_spikes`
    - `rejected`: Mark as `failed`, record error
 5. **Save state** after each feature
@@ -178,6 +245,515 @@ Enables:
 
 ---
 
+## UI Component Task Handling
+
+**Identifying Component Tasks**:
+Tasks that create or integrate UI components should check shadcn availability before creating custom implementations.
+
+**Before Creating a UI Component Task**:
+1. Check if component exists in `packages/ui/src/shadcn/`
+2. Search shadcn CLI: `npx shadcn@latest search -q "[component]"`
+3. Search configured registries if official component not found
+4. If found, create installation task as prerequisite
+
+**Component Installation Task Template**:
+```json
+{
+  "id": "T2",
+  "name": "Install [component] from shadcn",
+  "requires_ui_component": true,
+  "component_source": "shadcn/ui | @magicui | @aceternity | etc",
+  "installation_command": "cd packages/ui && npx shadcn@latest add [component] -y",
+  "action": { "verb": "Install", "target": "[component] component" },
+  "outputs": [
+    { "type": "new", "path": "packages/ui/src/shadcn/[component].tsx" }
+  ],
+  "verification_command": "test -f packages/ui/src/shadcn/[component].tsx && grep -q './[component]' packages/ui/package.json",
+  "post_install_steps": [
+    "Update packages/ui/package.json exports if not auto-added",
+    "Run pnpm typecheck to verify"
+  ]
+}
+```
+
+**Component Task Best Practices**:
+- Always install components before tasks that use them
+- Verify exports are added to packages/ui/package.json
+- Run typecheck after installation to catch import issues
+- Document component choice rationale in task context
+
+**Configured Registries Reference**:
+| Registry | Namespace | Specialty |
+|----------|-----------|-----------|
+| Official | (none) | Core UI components |
+| MagicUI | @magicui | Animated components |
+| Aceternity | @aceternity | Modern UI effects |
+| Kibo UI | @kibo-ui | Component library |
+| ReUI | @reui | Component library |
+| ScrollX UI | @scrollxui | Scroll effects |
+| Molecule UI | @moleculeui | Component library |
+| Gaia | @gaia | Component library |
+| PhucBM | @phucbm | Component library |
+
+---
+
+## UI Task Flagging
+
+**Purpose**: Flag tasks that create UI components so the `/alpha:implement` command can invoke specialized frontend skills for improved code quality.
+
+**When to Flag a Task as UI**:
+Add `ui_task: true` when the task:
+- Creates or modifies React components (`.tsx` files)
+- Works with pages, layouts, panels, cards, forms, modals, or dialogs
+- Involves styling, design, or visual presentation
+- Outputs files in `_components/` directories
+
+**Metadata Fields**:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `ui_task` | `boolean` | True if task creates/modifies UI components |
+| `skill_hints` | `string[]` | Suggested skills: `frontend-design`, `react-best-practices` |
+
+**Skill Hint Selection Guide**:
+
+| Task Pattern | Recommended Skill Hints |
+|--------------|------------------------|
+| Create new visual component | `["frontend-design"]` |
+| Create page layout | `["frontend-design"]` |
+| Create data-fetching component | `["react-best-practices"]` |
+| Create form with validation | `["frontend-design", "react-best-practices"]` |
+| Create dashboard/visualization | `["frontend-design", "react-best-practices"]` |
+| Optimize component performance | `["react-best-practices"]` |
+| Style existing component | `["frontend-design"]` |
+
+**Example Task with UI Flagging**:
+```json
+{
+  "id": "T4",
+  "name": "Create project card component",
+  "type": "task",
+  "ui_task": true,
+  "skill_hints": ["frontend-design"],
+  "action": { "verb": "Create", "target": "project card component" },
+  "outputs": [
+    { "type": "new", "path": "apps/web/app/home/(user)/_components/project-card.tsx" }
+  ],
+  "acceptance_criterion": "ProjectCard component renders with title, description, and status badge",
+  "verification_command": "pnpm typecheck && test -f apps/web/app/home/(user)/_components/project-card.tsx"
+}
+```
+
+**Example with Multiple Skills**:
+```json
+{
+  "id": "T6",
+  "name": "Create analytics dashboard panel",
+  "type": "task",
+  "ui_task": true,
+  "skill_hints": ["frontend-design", "react-best-practices"],
+  "action": { "verb": "Create", "target": "analytics dashboard panel" },
+  "purpose": "Display real-time analytics with charts and metrics",
+  "context": {
+    "patterns": [
+      { "file": "apps/web/app/home/(user)/_components/metrics-card.tsx", "description": "Card layout pattern" }
+    ],
+    "constraints": [
+      "Must use Server Components where possible",
+      "Implement loading skeleton for data fetching"
+    ]
+  }
+}
+```
+
+**Important Notes**:
+- `ui_task` and `skill_hints` are optional fields - tasks work without them
+- If not specified, the implement command can still detect frontend tasks from output paths
+- Explicit hints provide better guidance than auto-detection
+- Adding hints during decomposition saves time during implementation
+
+---
+
+## Dependency Installation Task Pattern
+
+**Purpose**: Ensure tasks that add npm packages are properly verified and don't cause environment drift issues.
+
+### Identifying Dependency Tasks
+
+A task is a dependency task when it:
+- Adds, updates, or removes entries in `package.json`
+- Modifies `pnpm-lock.yaml`
+- Installs packages via CLI (`pnpm add`, `npx`, etc.)
+
+### Required Task Fields
+
+For dependency tasks, always include:
+
+1. **Both package.json AND lockfile in outputs**:
+   ```json
+   "outputs": [
+     { "type": "modified", "path": "apps/web/package.json" },
+     { "type": "modified", "path": "pnpm-lock.yaml" }
+   ]
+   ```
+
+2. **Verification that includes install check**:
+   ```json
+   "verification_command": "pnpm install --frozen-lockfile --dry-run && grep -q '<package>' apps/web/package.json && pnpm typecheck"
+   ```
+
+   The `--frozen-lockfile --dry-run` verifies lockfile consistency without actually installing.
+
+3. **Clear acceptance criterion**:
+   ```json
+   "acceptance_criterion": "<package> appears in package.json AND pnpm-lock.yaml is updated AND pnpm typecheck passes"
+   ```
+
+### Example Dependency Task
+
+```json
+{
+  "id": "S1234.I1.F1.T1",
+  "name": "Add @example/package dependency",
+  "action": {
+    "verb": "Add",
+    "target": "@example/package dependency"
+  },
+  "purpose": "Install the package to enable feature X",
+  "requires_dependency_install": true,
+  "packages_added": ["@example/package"],
+  "outputs": [
+    { "type": "modified", "path": "apps/web/package.json" },
+    { "type": "modified", "path": "pnpm-lock.yaml" }
+  ],
+  "acceptance_criterion": "@example/package in package.json, lockfile updated, typecheck passes",
+  "verification_command": "pnpm install && grep -q '@example/package' apps/web/package.json && test -d apps/web/node_modules/@example/package && pnpm typecheck",
+  "context": {
+    "constraints": [
+      "Add to dependencies (not devDependencies)",
+      "Must run pnpm install after adding to package.json",
+      "Commit both package.json AND pnpm-lock.yaml"
+    ]
+  }
+}
+```
+
+### Common Mistakes to Avoid
+
+1. **Missing lockfile in outputs** - Causes lockfile to not be committed
+2. **Using `--frozen-lockfile` during implementation** - Fails when adding new packages
+3. **Not running `pnpm install` after edit** - Package not actually installed
+4. **Only checking package.json** - Doesn't verify package installs correctly
+
+### Dependent Tasks
+
+Tasks that USE the new package must have `blocked_by` pointing to the installation task:
+
+```json
+{
+  "id": "S1234.I1.F1.T2",
+  "name": "Create component using @example/package",
+  "dependencies": {
+    "blocked_by": ["S1234.I1.F1.T1"]
+  }
+}
+```
+
+This ensures the package is installed before any task tries to import it.
+
+---
+
+## Mandatory Database Task Validation
+
+Before finalizing `tasks.json` for any feature, validate database task consistency:
+
+### Step 1: Detect Database References
+
+Search task outputs and context for table names:
+
+```bash
+# Scan feature artifacts for table references
+grep -r "table\|schema\|migration\|database" tasks.json feature.md 2>/dev/null || true
+
+# Common table patterns to detect
+grep -E "activity_logs|user_activities|CREATE TABLE|insert into|from.*where" tasks.json feature.md 2>/dev/null || true
+```
+
+Capture any table name references (e.g., `activity_logs`, `user_activities`, `presentations`).
+
+### Step 2: Verify `requires_database: true` Tasks Exist
+
+For EACH detected table name that is NEW (not existing in current schema):
+
+- **MUST have a corresponding task** with `requires_database: true`
+- That task MUST create the schema file AND generate types
+
+**Example Required Task Structure**:
+```json
+{
+  "id": "S1864.I3.F2.T1",
+  "name": "Create activity_logs schema and types",
+  "requires_database": true,
+  "action": {
+    "verb": "Create",
+    "target": "activity_logs table schema"
+  },
+  "outputs": [
+    { "type": "new", "path": "apps/web/supabase/schemas/XX-activity-logs.sql" }
+  ],
+  "verification_command": "pnpm --filter web supabase migration up && pnpm supabase:web:typegen && grep 'activity_logs' apps/web/lib/database.types.ts"
+}
+```
+
+### Step 3: Validate Verification Commands
+
+For ALL tasks with `requires_database: true`, the `verification_command` MUST include:
+
+1. **Migration application**: `pnpm --filter web supabase migration up`
+2. **Type generation**: `pnpm supabase:web:typegen`
+3. **Type verification**: `grep '[table_name]' apps/web/lib/database.types.ts`
+
+**Valid verification_command pattern**:
+```json
+{
+  "verification_command": "pnpm --filter web supabase migration up && pnpm supabase:web:typegen && grep 'activity_logs' apps/web/lib/database.types.ts"
+}
+```
+
+**Invalid patterns** (will cause downstream failures):
+```json
+// ❌ Missing typegen - types won't exist for dependent tasks
+{ "verification_command": "test -f apps/web/supabase/schemas/XX-activity.sql" }
+
+// ❌ Missing grep - can't verify types actually generated
+{ "verification_command": "pnpm supabase:web:typegen" }
+```
+
+### Step 4: Enforce Type-Dependent Task Blocking
+
+For any task that imports from `database.types.ts`:
+
+- **MUST have a `blockedBy` dependency**
+- That dependency must be a `requires_database: true` task that generates the types
+- Cannot execute until types are generated
+
+**Example**:
+```json
+{
+  "id": "S1864.I3.F2.T2",
+  "name": "Implement Activity Logger Service",
+  "blockedBy": ["S1864.I3.F2.T1"],
+  "context": {
+    "constraints": [
+      "Import activity_logs types from database.types.ts"
+    ]
+  },
+  "action": {
+    "verb": "Create",
+    "target": "activity logger service"
+  }
+}
+```
+
+### Step 5: Validate Imports Match Types
+
+For any task importing database types:
+
+```bash
+# Extract tasks that reference database types
+grep -r "import.*from.*database.types\|from '~/lib/database.types" tasks.json
+
+# For each match, verify the corresponding schema task exists
+# and is in the blockedBy chain
+```
+
+### Validation Failure Handling
+
+**If validation fails** (missing tasks, broken dependencies):
+
+1. **DO NOT finalize tasks.json**
+2. **Return validation errors** to orchestrator with specific issues
+3. **Require fixes** before proceeding
+
+**Error Report Format**:
+```json
+{
+  "validation": "failed",
+  "errors": [
+    {
+      "type": "missing_schema_task",
+      "table": "activity_logs",
+      "referenced_by": ["T3", "T5"],
+      "fix": "Add task with requires_database: true that creates activity_logs schema"
+    },
+    {
+      "type": "invalid_verification_command",
+      "task": "T2",
+      "issue": "Missing pnpm supabase:web:typegen",
+      "fix": "Add typegen to verification_command"
+    },
+    {
+      "type": "missing_blockedBy",
+      "task": "T5",
+      "imports_type": "activity_logs",
+      "depends_on": "T2",
+      "fix": "Add T2 to blockedBy array"
+    }
+  ]
+}
+```
+
+---
+
+### CRITICAL: Database Task Decomposition Rules
+
+**IF the feature involves creating or using database tables**:
+
+1. **MUST have a schema creation task** (requires_database: true)
+   - Create/modify schema file
+   - Generate migration
+   - Push migration to database
+   - Generate TypeScript types
+
+2. **Table references in other tasks MUST be in blockedBy**
+   - Feature F2 uses table X
+   - Feature F3 uses results from F2
+   - F3 cannot start until F2's type generation completes
+
+3. **All verification_commands for database tasks MUST include**:
+   - `pnpm --filter web supabase migration up`
+   - `pnpm supabase:web:typegen`
+   - Grep verification that types exist
+
+4. **Fail the entire decomposition** if:
+   - Table references found with no `requires_database` task
+   - Tasks import from `database.types.ts` without `blockedBy`
+   - Verification commands don't include type generation
+
+---
+
+## Pre-Finalization: Validate Environment Variables in tasks.json
+
+**Verify all `required_env_vars` against feature-decompose research**:
+
+For each task with `required_env_vars`:
+
+```bash
+# Extract variables from tasks.json
+grep -o '"[A-Z_]*": true' tasks.json | cut -d'"' -f2 | sort -u
+
+# Cross-reference against feature-decompose credential mapping
+# Ensure each variable name matches the actual .env variable (not the proposed one)
+```
+
+**Validation checklist**:
+- [ ] All `required_env_vars` match actual environment variables from feature research
+- [ ] No proposed/intermediate variable names in tasks.json
+- [ ] Variable names follow project naming conventions
+- [ ] Feature-level validation was completed (Step 1.7 in feature-decompose.md)
+
+---
+
+## Step 3: Commit Spec Files to Git (CRITICAL)
+
+**⚠️ MANDATORY**: After decomposition completes (either Mode A or Mode B), commit the spec files to git. Without this step, the orchestrator's sandboxes cannot access the spec files.
+
+### Why This Is Critical
+
+The Alpha orchestrator:
+1. Creates E2B sandboxes that clone from GitHub
+2. Sandboxes check out the `alpha/spec-S<num>` branch
+3. If spec files aren't committed and pushed, sandboxes can't find them
+4. This causes sandboxes to fail or implement wrong features
+
+### Git Commit Steps
+
+```bash
+# 1. Stage the entire spec directory (includes all decomposed files)
+git add .ai/alpha/specs/S<spec-num>-Spec-*/
+
+# 2. Commit with descriptive message
+git commit -m "feat(alpha): decompose S<spec-num> tasks for <initiative-or-feature>
+
+Initiative: <initiative-id> - <initiative-name>
+Features decomposed: <count>
+Total tasks: <count>
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+
+# 3. Push to dev branch
+git push origin dev
+```
+
+### Example for Mode B (Initiative)
+
+```bash
+git add .ai/alpha/specs/S1656-Spec-user-dashboard/
+git commit -m "feat(alpha): decompose S1656.I1 dashboard foundation tasks
+
+Initiative: S1656.I1 - Dashboard Foundation
+Features decomposed: 4
+Total tasks: 28
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+git push origin dev
+```
+
+### Example for Mode A (Single Feature)
+
+```bash
+git add .ai/alpha/specs/S1656-Spec-user-dashboard/
+git commit -m "feat(alpha): decompose S1656.I1.F1 dashboard page tasks
+
+Feature: S1656.I1.F1 - Dashboard Page & Grid Layout
+Tasks: 6
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+git push origin dev
+```
+
+### Verification
+
+```bash
+# Verify spec files are committed
+git log --oneline -1 -- .ai/alpha/specs/S<spec-num>-Spec-*/
+
+# Verify pushed to remote
+git fetch origin && git diff origin/dev --stat -- .ai/alpha/specs/S<spec-num>-Spec-*/
+# Should show no differences if push succeeded
+```
+
+### Notes
+
+- **Commit after each initiative** - Don't wait until all initiatives are done
+- **Multiple commits are fine** - Each initiative gets its own commit
+- **If push fails** - Check for merge conflicts, resolve, and retry
+- **This step is idempotent** - Running again after changes will create a new commit
+
+---
+
+## Pre-Completion Checklist
+
+Before finalizing task decomposition:
+
+### Environment Variables
+- [ ] All `required_env_vars` in tasks.json match actual `.env` files
+- [ ] No proposed/placeholder variable names remain
+- [ ] Variables validated at feature-decompose level (Step 1.7)
+- [ ] Implementation agents will receive correct variable names
+
+### Database Tasks
+- [ ] All database-referencing tasks have `requires_database: true`
+- [ ] Verification commands include typegen steps
+- [ ] Type-dependent tasks have proper `blockedBy` dependencies
+
+### Git Commit
+- [ ] Spec files staged and committed
+- [ ] Pushed to `origin/dev`
+- [ ] No uncommitted changes in spec directory
+
+---
+
 ## Report
 
 ### Single Feature (Mode A)
@@ -185,13 +761,23 @@ Enables:
 ```markdown
 ## Feature Decomposition Complete
 
-**Feature**: #<ID> - <Name>
+**Feature**: <FEATURE_ID> - <Name>  (e.g., S1362.I1.F1 - Dashboard Page)
 **Tasks**: <count>
+**Task IDs**: <FEATURE_ID>.T1 through <FEATURE_ID>.T<count>
 **Estimated Hours**: <sequential>h (parallel: <parallel>h)
-**GitHub Issue**: #<task-issue>
+
+### tasks.json Location
+`<FEAT_DIR>/tasks.json`
+
+### Git Status
+✅ Spec files committed and pushed to `origin/dev`
+   Commit: <commit-hash>
 
 ### Next Step
-Run `/alpha:implement <FEATURE_ID>` to begin implementation.
+After decomposing ALL features in the initiative, run the spec orchestrator from the command line:
+```bash
+tsx .ai/alpha/scripts/spec-orchestrator.ts <SPEC_NUM>
+```
 ```
 
 ### Initiative (Mode B)
@@ -199,14 +785,14 @@ Run `/alpha:implement <FEATURE_ID>` to begin implementation.
 ```markdown
 ## Initiative Decomposition Complete
 
-**Initiative**: #<ID> - <Name>
+**Initiative**: <INITIATIVE_ID> - <Name>  (e.g., S1362.I1 - Dashboard Foundation)
 
 ### Features Decomposed
 
-| Feature | Status | Tasks | Spikes | Issue | Hours |
-|---------|--------|-------|--------|-------|-------|
-| #1354 Dashboard Page | ✅ | 5 | 0 | #1357 | 8h |
-| #1355 Data Loading | ✅ | 8 | 1 | #1360 | 12h |
+| Feature ID | Name | Status | Tasks | Spikes | Hours |
+|------------|------|--------|-------|--------|-------|
+| S1362.I1.F1 | Dashboard Page | ✅ | 5 | 0 | 8h |
+| S1362.I1.F2 | Data Loading | ✅ | 8 | 1 | 12h |
 
 ### Summary
 
@@ -219,8 +805,27 @@ Run `/alpha:implement <FEATURE_ID>` to begin implementation.
 ### State File
 `${INIT_DIR}/decomposition-state.json`
 
+### Git Status
+✅ Spec files committed and pushed to `origin/dev`
+   Commit: <commit-hash>
+
 ### Next Step
-Run `/alpha:implement <INITIATIVE_ID>` to begin implementation.
+After decomposing ALL initiatives, run the spec orchestrator from the command line:
+```bash
+tsx .ai/alpha/scripts/spec-orchestrator.ts <SPEC_NUM>
+```
+
+Example:
+```bash
+tsx .ai/alpha/scripts/spec-orchestrator.ts 1362
+```
+
+**Pre-flight Check** (run before orchestrator):
+```bash
+# Verify all spec files are pushed
+git fetch origin && git diff origin/dev --stat -- .ai/alpha/specs/S<SPEC_NUM>-Spec-*/
+# Should show: "0 files changed" if everything is pushed
+```
 ```
 
 ---

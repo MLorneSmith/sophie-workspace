@@ -37,6 +37,21 @@ const EVENT_ICONS: Record<OrchestratorEventType, string> = {
 	db_seed_start: "🌱",
 	db_seed_complete: "✅",
 	db_verify: "🔍",
+	// Completion phase icons
+	completion_phase_start: "🏁",
+	sandbox_killing: "🗑️",
+	review_sandbox_creating: "📦",
+	review_sandbox_failed: "❌", // Bug fix #1883
+	dev_server_starting: "🚀",
+	dev_server_ready: "✅",
+	dev_server_failed: "❌",
+	// Orphaned feature detection icons (Bug fix #1948)
+	orphaned_feature_reset: "🔮",
+	orphaned_feature_failed: "❌",
+	// Documentation generation icons
+	documentation_start: "📚",
+	documentation_complete: "✅",
+	documentation_failed: "⚠️",
 };
 
 /**
@@ -69,6 +84,21 @@ const EVENT_COLORS: Record<OrchestratorEventType, string> = {
 	db_seed_start: "green",
 	db_seed_complete: "green",
 	db_verify: "cyan",
+	// Completion phase colors
+	completion_phase_start: "yellow",
+	sandbox_killing: "red",
+	review_sandbox_creating: "blue",
+	review_sandbox_failed: "red", // Bug fix #1883
+	dev_server_starting: "yellow",
+	dev_server_ready: "green",
+	dev_server_failed: "red",
+	// Orphaned feature detection colors (Bug fix #1948)
+	orphaned_feature_reset: "yellow",
+	orphaned_feature_failed: "red",
+	// Documentation generation colors
+	documentation_start: "blue",
+	documentation_complete: "green",
+	documentation_failed: "yellow",
 };
 
 /**

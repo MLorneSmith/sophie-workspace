@@ -4,7 +4,7 @@
 
 * Alpha Spec Orchestrator
 *
-* Manages E2B sandboxes and Claude Code sessions to implement all features
+* Manages E2B sandboxes and agent sessions (Claude by default, GPT via Codex optional) to implement all features
 * across all initiatives in a spec.
 *
 * Key features:
@@ -35,43 +35,73 @@ import process from "node:process";
 // Load .env file (before any other imports that use env vars)
 // ============================================================================
 
+/**
+ * Parse a single env file and set environment variables.
+ * Skips gracefully if file doesn't exist.
+ * Preserves existing env vars (doesn't override).
+ */
+function parseEnvFile(filePath: string): void {
+	if (!fs.existsSync(filePath)) {
+		return;
+	}
+
+	const content = fs.readFileSync(filePath, "utf-8");
+	for (const line of content.split("\n")) {
+		const trimmed = line.trim();
+		// Skip comments and empty lines
+		if (!trimmed || trimmed.startsWith("#")) continue;
+		// Parse KEY=VALUE (handle values with = in them)
+		const eqIndex = trimmed.indexOf("=");
+		if (eqIndex > 0) {
+			const key = trimmed.slice(0, eqIndex).trim();
+			let value = trimmed.slice(eqIndex + 1).trim();
+			// Remove surrounding quotes if present
+			if (
+				(value.startsWith('"') && value.endsWith('"')) ||
+				(value.startsWith("'") && value.endsWith("'"))
+			) {
+				value = value.slice(1, -1);
+			}
+			// Only set if not already defined (env vars take precedence)
+			if (process.env[key] === undefined) {
+				process.env[key] = value;
+			}
+		}
+	}
+}
+
+/**
+ * Load environment variables from multiple env files in priority order.
+ * Files loaded later can only set NEW vars (won't override earlier values).
+ * Shell-set env vars always take precedence over all file values.
+ */
 function loadEnvFile(): void {
 	// Find project root by looking for .git directory (the actual repo root)
-	// This ensures we load from the main project root, not subdirectories with their own package.json
 	let currentDir = import.meta.dirname;
+	let projectRoot: string | null = null;
+
 	while (currentDir !== "/") {
-		// Look for .git to identify the actual project root
 		const gitPath = path.join(currentDir, ".git");
 		if (fs.existsSync(gitPath)) {
-			const envPath = path.join(currentDir, ".env");
-			if (fs.existsSync(envPath)) {
-				const content = fs.readFileSync(envPath, "utf-8");
-				for (const line of content.split("\n")) {
-					const trimmed = line.trim();
-					// Skip comments and empty lines
-					if (!trimmed || trimmed.startsWith("#")) continue;
-					// Parse KEY=VALUE (handle values with = in them)
-					const eqIndex = trimmed.indexOf("=");
-					if (eqIndex > 0) {
-						const key = trimmed.slice(0, eqIndex).trim();
-						let value = trimmed.slice(eqIndex + 1).trim();
-						// Remove surrounding quotes if present
-						if (
-							(value.startsWith('"') && value.endsWith('"')) ||
-							(value.startsWith("'") && value.endsWith("'"))
-						) {
-							value = value.slice(1, -1);
-						}
-						// Only set if not already defined (env vars take precedence)
-						if (process.env[key] === undefined) {
-							process.env[key] = value;
-						}
-					}
-				}
-			}
-			return;
+			projectRoot = currentDir;
+			break;
 		}
 		currentDir = path.dirname(currentDir);
+	}
+
+	if (!projectRoot) {
+		return;
+	}
+
+	// Load env files in priority order (first file's values take precedence)
+	const envFiles = [
+		path.join(projectRoot, ".env"),
+		path.join(projectRoot, "apps/e2e/.env.local"),
+		path.join(projectRoot, "apps/web/.env.local"),
+	];
+
+	for (const envFile of envFiles) {
+		parseEnvFile(envFile);
 	}
 }
 
@@ -110,7 +140,8 @@ process.on("unhandledRejection", (reason, promise) => {
 async function main(): Promise<void> {
 	const options = parseArgs();
 
-	if (!options.specId) {
+	// -1 means no spec ID provided (allows spec ID 0 for debug spec)
+	if (options.specId === -1 || Number.isNaN(options.specId)) {
 		showHelp();
 		process.exit(1);
 	}

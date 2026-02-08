@@ -61,6 +61,7 @@ jobs:
                 ],
                 "numberOfRuns": 3,
                 "settings": {
+                  "chromeFlags": "--no-sandbox --disable-gpu --no-zygote --disable-dev-shm-usage",
                   "preset": "desktop",
                   "throttling": {
                     "cpuSlowdownMultiplier": 1
@@ -120,7 +121,7 @@ jobs:
 
       - name: Upload Lighthouse reports
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: lighthouse-reports-${{ inputs.environment }}
           path: .lighthouseci/

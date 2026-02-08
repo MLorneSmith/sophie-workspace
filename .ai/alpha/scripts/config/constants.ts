@@ -12,6 +12,12 @@
 /** E2B sandbox template alias for SlideHeroes Claude agent */
 export const TEMPLATE_ALIAS = "slideheroes-claude-agent-dev";
 
+/** Optional E2B sandbox template alias for GPT/Codex agent */
+export const GPT_TEMPLATE_ALIAS =
+	process.env.ALPHA_GPT_TEMPLATE_ALIAS || "slideheroes-gpt-agent-dev";
+
+export const DEFAULT_PROVIDER = "claude";
+
 /** Workspace directory inside the E2B sandbox */
 export const WORKSPACE_DIR = "/home/user/project";
 
@@ -119,10 +125,14 @@ export const SANDBOX_KEEPALIVE_INTERVAL_MS = 15 * 60 * 1000;
 /** Stagger delay between sandbox keepalive calls (ms) - 2 minutes per sandbox */
 export const SANDBOX_KEEPALIVE_STAGGER_MS = 2 * 60 * 1000;
 
-/** Maximum sandbox age before forced restart (ms) - 50 minutes
- * This triggers a preemptive restart 10 minutes before the 1-hour E2B timeout
+/** Maximum sandbox age before forced restart (ms) - 60 minutes
+ * Increased from 50 to 60 minutes to allow long-running features to complete.
+ * The E2B sandbox timeout is 1 hour, so this gives features the full hour.
+ * If a sandbox expires at exactly 60 min, the keepalive mechanism will handle
+ * the restart gracefully.
+ * See diagnosis #1567 for rationale.
  */
-export const SANDBOX_MAX_AGE_MS = 50 * 60 * 1000;
+export const SANDBOX_MAX_AGE_MS = 60 * 60 * 1000;
 
 // ============================================================================
 // Startup Retry Configuration
@@ -152,3 +162,68 @@ export const MIN_STARTUP_OUTPUT_BYTES = 100;
  * If fewer than this, startup may be hung.
  */
 export const MIN_STARTUP_OUTPUT_LINES = 5;
+
+// ============================================================================
+// PTY Timeout & Recovery Configuration
+// ============================================================================
+
+/** Timeout for ptyHandle.wait() before checking progress file fallback (ms)
+ * When PTY disconnects silently, this timeout triggers the fallback mechanism
+ * that checks the sandbox's progress file for completion status.
+ * Default: 30 seconds - long enough for normal operations, short enough for quick recovery.
+ * Can be overridden via PTY_TIMEOUT_MS environment variable.
+ * See bug fix #1767 for rationale.
+ */
+export const PTY_WAIT_TIMEOUT_MS = Number.parseInt(
+	process.env.PTY_TIMEOUT_MS ?? "30000",
+	10,
+);
+
+/** Interval for polling progress file during PTY timeout recovery (ms)
+ * When PTY times out, we poll the progress file at this interval
+ * to check if the sandbox completed successfully.
+ */
+export const PTY_RECOVERY_POLL_INTERVAL_MS = 500;
+
+/** Maximum age for progress file heartbeat to be considered valid (ms)
+ * If the progress file's last_heartbeat is older than this, the file
+ * is considered stale and recovery will not succeed.
+ * Default: 5 minutes
+ */
+export const PROGRESS_FILE_STALE_THRESHOLD_MS = 5 * 60 * 1000;
+
+// ============================================================================
+// Promise Timeout Monitor Configuration (Bug fix #1841)
+// ============================================================================
+
+/**
+ * Maximum age for a work loop promise before it's considered timed out (ms).
+ * When a promise exceeds this threshold AND the heartbeat is stale,
+ * the promise will be forcibly rejected and the feature reset to pending.
+ *
+ * Default: 10 minutes - generous for slow features.
+ * Rationale: Most features complete in 5-10 minutes. PTY disconnects from
+ * previous issues (#1767, #1786) occur within this window. This threshold
+ * ensures we catch hung promises without killing healthy slow work.
+ *
+ * Can be overridden via PROMISE_TIMEOUT_MS environment variable.
+ */
+export const PROMISE_TIMEOUT_MS = Number.parseInt(
+	process.env.PROMISE_TIMEOUT_MS ?? String(10 * 60 * 1000),
+	10,
+);
+
+/**
+ * Maximum age for sandbox heartbeat before promise is considered stale (ms).
+ * Used in conjunction with PROMISE_TIMEOUT_MS - both conditions must be met.
+ *
+ * Default: 5 minutes - matches PROGRESS_FILE_STALE_THRESHOLD_MS.
+ * A healthy sandbox updates its progress file heartbeat every few seconds.
+ * If heartbeat is older than this AND promise is old, the sandbox is stuck.
+ *
+ * Can be overridden via HEARTBEAT_TIMEOUT_MS environment variable.
+ */
+export const HEARTBEAT_TIMEOUT_MS = Number.parseInt(
+	process.env.HEARTBEAT_TIMEOUT_MS ?? String(5 * 60 * 1000),
+	10,
+);

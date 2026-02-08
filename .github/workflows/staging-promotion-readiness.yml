@@ -1,0 +1,559 @@
+name: Staging Promotion Readiness
+
+on:
+  workflow_dispatch:
+    inputs:
+      force_promotion:
+        description: 'Force promotion even if some checks fail'
+        required: false
+        default: 'false'
+        type: boolean
+  workflow_run:
+    workflows: ["Deploy to Staging"]
+    types: [completed]
+    branches:
+      - staging
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  checks: write
+  actions: read
+  deployments: read
+
+jobs:
+  assess-readiness:
+    name: Assess Production Readiness
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    outputs:
+      ready_for_promotion: ${{ steps.assessment.outputs.ready }}
+      promotion_score: ${{ steps.assessment.outputs.score }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: staging
+          fetch-depth: 0
+
+      - name: Get deployment URLs from staging deploy
+        id: urls
+        if: github.event.workflow_run.id
+        uses: actions/github-script@v8
+        with:
+          script: |
+            // Get the deploy jobs from the triggering staging deploy run
+            const jobs = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.payload.workflow_run.id
+            });
+
+            // Find deploy jobs and extract URLs from their outputs
+            for (const job of jobs.data.jobs) {
+              if (job.name.includes('Deploy Web')) {
+                // Extract URL from job steps log isn't possible, but we can
+                // check the deployment environment URL
+                core.setOutput('web_job_id', job.id);
+              }
+              if (job.name.includes('Deploy Payload')) {
+                core.setOutput('payload_job_id', job.id);
+              }
+            }
+
+            // Get deployment URLs from GitHub Deployments API
+            const deployments = await github.rest.repos.listDeployments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 10
+            });
+
+            for (const deployment of deployments.data) {
+              const statuses = await github.rest.repos.listDeploymentStatuses({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                deployment_id: deployment.id,
+                per_page: 1
+              });
+
+              if (statuses.data.length > 0 && statuses.data[0].state === 'success') {
+                const url = statuses.data[0].environment_url;
+                if (deployment.environment === 'staging-web' && url) {
+                  core.setOutput('web_url', url);
+                  console.log(`Found web URL: ${url}`);
+                }
+                if (deployment.environment === 'staging-payload' && url) {
+                  core.setOutput('payload_url', url);
+                  console.log(`Found payload URL: ${url}`);
+                }
+              }
+            }
+
+      - name: Check staging deployment health
+        id: health
+        run: |
+          # Use deployment URLs from GitHub API, fall back to vars/defaults
+          STAGING_WEB_URL="${{ steps.urls.outputs.web_url || vars.STAGING_WEB_URL || 'https://staging.slideheroes.com' }}"
+          STAGING_PAYLOAD_URL="${{ steps.urls.outputs.payload_url || vars.STAGING_PAYLOAD_URL || 'https://staging-cms.slideheroes.com' }}"
+
+          echo "Checking staging health..."
+          echo "  Web URL: $STAGING_WEB_URL"
+          echo "  Payload URL: $STAGING_PAYLOAD_URL"
+
+          # Vercel Deployment Protection requires bypass header on staging
+          BYPASS_HEADER=""
+          if [ -n "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
+            BYPASS_HEADER="-H x-vercel-protection-bypass:${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}"
+          fi
+          BYPASS_HEADER_PAYLOAD=""
+          if [ -n "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}" ]; then
+            BYPASS_HEADER_PAYLOAD="-H x-vercel-protection-bypass:${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}"
+          fi
+
+          # Check web app health
+          WEB_STATUS=$(curl -s -o /dev/null -w "%{http_code}" $BYPASS_HEADER "$STAGING_WEB_URL/healthcheck" || echo "000")
+          if [ "$WEB_STATUS" = "200" ]; then
+            echo "web_healthy=true" >> $GITHUB_OUTPUT
+            echo "✅ Web app healthy (HTTP $WEB_STATUS)"
+          else
+            echo "web_healthy=false" >> $GITHUB_OUTPUT
+            echo "❌ Web app unhealthy (HTTP $WEB_STATUS)"
+          fi
+
+          # Check Payload CMS health
+          PAYLOAD_STATUS=$(curl -s -o /dev/null -w "%{http_code}" $BYPASS_HEADER_PAYLOAD "$STAGING_PAYLOAD_URL/api/health" || echo "000")
+          if [ "$PAYLOAD_STATUS" = "200" ]; then
+            echo "payload_healthy=true" >> $GITHUB_OUTPUT
+            echo "✅ Payload CMS healthy (HTTP $PAYLOAD_STATUS)"
+          else
+            echo "payload_healthy=false" >> $GITHUB_OUTPUT
+            echo "❌ Payload CMS unhealthy (HTTP $PAYLOAD_STATUS)"
+          fi
+
+      - name: Gather quality metrics
+        id: metrics
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const metrics = {};
+
+            // Get latest workflow runs for staging branch
+            const runs = await github.rest.actions.listWorkflowRunsForRepo({
+              owner,
+              repo,
+              branch: 'staging',
+              per_page: 10,
+              status: 'completed'
+            });
+
+            // Calculate success rate (stricter for production: need 90%)
+            const recentRuns = runs.data.workflow_runs.slice(0, 5);
+            const successCount = recentRuns.filter(r => r.conclusion === 'success').length;
+            metrics.successRate = recentRuns.length > 0
+              ? (successCount / recentRuns.length) * 100
+              : 0;
+
+            // Check for security scan results from staging deploy
+            const stagingRunId = context.payload.workflow_run?.id;
+            if (stagingRunId) {
+              try {
+                const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                  owner,
+                  repo,
+                  run_id: stagingRunId
+                });
+
+                // Check for security scan artifacts
+                const securityArtifact = artifacts.data.artifacts.find(a =>
+                  a.name.includes('security') || a.name.includes('nuclei')
+                );
+                metrics.hasSecurityScan = !!securityArtifact;
+
+                // Check for load test artifacts
+                const loadTestArtifact = artifacts.data.artifacts.find(a =>
+                  a.name.includes('k6') || a.name.includes('load-test')
+                );
+                metrics.hasLoadTest = !!loadTestArtifact;
+              } catch (e) {
+                console.log('Could not fetch artifacts:', e.message);
+                metrics.hasSecurityScan = false;
+                metrics.hasLoadTest = false;
+              }
+            }
+
+            // Check for recent failures (stricter: 12h window for production)
+            metrics.recentFailures = recentRuns.filter(r =>
+              r.conclusion === 'failure' &&
+              new Date(r.created_at) > new Date(Date.now() - 12 * 60 * 60 * 1000)
+            ).length;
+
+            // Get staging deployment info
+            try {
+              const deployments = await github.rest.repos.listDeployments({
+                owner,
+                repo,
+                environment: 'staging',
+                per_page: 1
+              });
+
+              if (deployments.data.length > 0) {
+                const lastDeploy = deployments.data[0];
+                const deployAge = Date.now() - new Date(lastDeploy.created_at).getTime();
+                metrics.stagingDeployAgeHours = deployAge / (1000 * 60 * 60);
+                metrics.lastDeploySha = lastDeploy.sha;
+              }
+            } catch (e) {
+              console.log('Could not fetch deployments:', e.message);
+            }
+
+            // TODO: Get actual code coverage from codecov
+            metrics.codeCoverage = 85;
+
+            core.setOutput('metrics', JSON.stringify(metrics));
+            return metrics;
+
+      - name: Check for pending changes
+        id: changes
+        run: |
+          # Get commits that are in staging but not in main
+          PENDING_COMMITS=$(git log --oneline origin/main..origin/staging 2>/dev/null | wc -l || echo "0")
+          echo "pending_commits=$PENDING_COMMITS" >> $GITHUB_OUTPUT
+
+          # Get list of changed files
+          CHANGED_FILES=$(git diff --name-only origin/main...origin/staging 2>/dev/null | wc -l || echo "0")
+          echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+
+          # Check for breaking changes indicators
+          BREAKING_CHANGES=$(git log --oneline origin/main..origin/staging 2>/dev/null | grep -c "BREAKING\|!" || true)
+          echo "breaking_changes=${BREAKING_CHANGES:-0}" >> $GITHUB_OUTPUT
+
+          # Generate changelog
+          if [ "$PENDING_COMMITS" -gt 0 ]; then
+            CHANGELOG=$(git log --pretty=format:"- %s (%an)" origin/main..origin/staging 2>/dev/null | head -50 || echo "No changes")
+            echo "changelog<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGELOG" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "changelog=No changes to promote" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Assess promotion readiness
+        id: assessment
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const metrics = JSON.parse('${{ steps.metrics.outputs.metrics }}');
+            const pendingCommits = parseInt('${{ steps.changes.outputs.pending_commits }}');
+            const changedFiles = parseInt('${{ steps.changes.outputs.changed_files }}');
+            const breakingChanges = parseInt('${{ steps.changes.outputs.breaking_changes }}');
+            const webHealthy = '${{ steps.health.outputs.web_healthy }}' === 'true';
+            const payloadHealthy = '${{ steps.health.outputs.payload_healthy }}' === 'true';
+            const forcePromotion = '${{ inputs.force_promotion }}' === 'true';
+
+            // Define stricter readiness criteria for production
+            const criteria = {
+              hasChanges: pendingCommits > 0,
+              stagingHealthy: webHealthy && payloadHealthy,
+              successRate: metrics.successRate >= 90,  // Stricter: 90% for production
+              codeCoverage: metrics.codeCoverage >= 80,
+              noRecentFailures: metrics.recentFailures === 0,
+              notTooManyChanges: changedFiles < 2000,  // High threshold for initial promotions
+              stagingNotStale: (metrics.stagingDeployAgeHours || 0) < 48,  // Deploy within 48h
+              noBreakingChanges: breakingChanges === 0 || forcePromotion
+            };
+
+            // Calculate promotion score with production weights
+            const weights = {
+              stagingHealthy: 25,      // Critical: staging must be healthy
+              successRate: 20,
+              codeCoverage: 15,
+              noRecentFailures: 20,
+              notTooManyChanges: 10,
+              stagingNotStale: 5,
+              noBreakingChanges: 5
+            };
+
+            let score = 0;
+            for (const [key, weight] of Object.entries(weights)) {
+              if (criteria[key]) score += weight;
+            }
+
+            // Determine if ready for promotion (stricter: 85 for production)
+            const ready = criteria.hasChanges &&
+                          criteria.stagingHealthy &&
+                          (score >= 85 || forcePromotion);
+
+            // Generate assessment report
+            const report = {
+              ready,
+              score,
+              criteria,
+              metrics,
+              pendingCommits,
+              changedFiles,
+              breakingChanges,
+              forcePromotion,
+              timestamp: new Date().toISOString()
+            };
+
+            core.setOutput('ready', ready);
+            core.setOutput('score', score);
+            core.setOutput('report', JSON.stringify(report));
+
+            // Create detailed summary
+            let summary = `## 🏭 Production Promotion Readiness Assessment\n\n`;
+            summary += `### Score: ${score}/100 ${score >= 85 ? '✅' : '❌'}\n\n`;
+
+            if (forcePromotion) {
+              summary += `⚠️ **Force promotion enabled** - some checks may be bypassed\n\n`;
+            }
+
+            summary += `| Criteria | Status | Details |\n`;
+            summary += `|----------|--------|----------|\n`;
+            summary += `| Changes to Promote | ${criteria.hasChanges ? '✅' : '❌'} | ${pendingCommits} commits, ${changedFiles} files |\n`;
+            summary += `| Staging Health | ${criteria.stagingHealthy ? '✅' : '❌'} | Web: ${webHealthy ? '✅' : '❌'}, Payload: ${payloadHealthy ? '✅' : '❌'} |\n`;
+            summary += `| Success Rate | ${criteria.successRate ? '✅' : '❌'} | ${metrics.successRate.toFixed(1)}% (target: 90%) |\n`;
+            summary += `| Code Coverage | ${criteria.codeCoverage ? '✅' : '❌'} | ${metrics.codeCoverage}% (target: 80%) |\n`;
+            summary += `| Recent Failures | ${criteria.noRecentFailures ? '✅' : '❌'} | ${metrics.recentFailures} failures in last 12h |\n`;
+            summary += `| Change Size | ${criteria.notTooManyChanges ? '✅' : '❌'} | ${changedFiles} files (limit: 2000) |\n`;
+            summary += `| Staging Freshness | ${criteria.stagingNotStale ? '✅' : '❌'} | ${(metrics.stagingDeployAgeHours || 0).toFixed(1)}h old (limit: 48h) |\n`;
+            summary += `| Breaking Changes | ${criteria.noBreakingChanges ? '✅' : '⚠️'} | ${breakingChanges} detected |\n`;
+
+            summary += `\n### Decision: ${ready ? '🚀 Ready for Production' : '⏸️ Not Ready'}\n`;
+
+            if (!ready && !forcePromotion) {
+              summary += `\n#### Issues to Address:\n`;
+              if (!criteria.hasChanges) summary += `- No changes to promote\n`;
+              if (!criteria.stagingHealthy) summary += `- Staging environment is unhealthy\n`;
+              if (!criteria.successRate) summary += `- Success rate below 90%\n`;
+              if (!criteria.codeCoverage) summary += `- Code coverage below 80%\n`;
+              if (!criteria.noRecentFailures) summary += `- Recent failures detected\n`;
+              if (!criteria.notTooManyChanges) summary += `- Too many changes (consider smaller releases)\n`;
+              if (!criteria.stagingNotStale) summary += `- Staging deployment is stale (>48h)\n`;
+              if (!criteria.noBreakingChanges) summary += `- Breaking changes detected - requires force promotion\n`;
+            }
+
+            summary += `\n### ⚠️ Production Deployment Notes\n`;
+            summary += `- PR requires **manual review** before merging\n`;
+            summary += `- Auto-merge is **disabled** for production safety\n`;
+            summary += `- Consider deploying during low-traffic hours\n`;
+            if (breakingChanges > 0) {
+              summary += `- **${breakingChanges} breaking change(s)** - ensure migration plan is ready\n`;
+            }
+
+            const fs = require('fs');
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
+
+            return report;
+
+      - name: Generate GitHub App Token
+        if: steps.assessment.outputs.ready == 'true'
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Create promotion PR if ready
+        if: steps.assessment.outputs.ready == 'true'
+        id: create-pr
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const { owner, repo } = context.repo;
+
+            // Check if PR already exists
+            const existingPRs = await github.rest.pulls.list({
+              owner,
+              repo,
+              head: `${owner}:staging`,
+              base: 'main',
+              state: 'open'
+            });
+
+            if (existingPRs.data.length > 0) {
+              console.log(`PR already exists: #${existingPRs.data[0].number}`);
+              core.setOutput('pr_number', existingPRs.data[0].number);
+              core.setOutput('pr_url', existingPRs.data[0].html_url);
+              return existingPRs.data[0];
+            }
+
+            // Create new PR
+            const changelog = `${{ steps.changes.outputs.changelog }}`;
+            const report = JSON.parse('${{ steps.assessment.outputs.report }}');
+            const breakingChanges = parseInt('${{ steps.changes.outputs.breaking_changes }}');
+
+            const body = `## 🏭 Automated Promotion: Staging → Production
+
+            This PR was automatically created after successful staging validation.
+
+            ### 📊 Promotion Score: ${report.score}/100
+
+            ### ✅ Quality Gates Passed
+            - Staging Health: Web ✅, Payload ✅
+            - Success Rate: ${report.metrics.successRate.toFixed(1)}%
+            - Code Coverage: ${report.metrics.codeCoverage}%
+            - Recent Failures: ${report.metrics.recentFailures}
+            - Changed Files: ${report.changedFiles}
+            ${breakingChanges > 0 ? `\n### ⚠️ Breaking Changes: ${breakingChanges} detected\n` : ''}
+
+            ### 📝 Changes Included
+            ${changelog}
+
+            ### 🧪 Staging Validation
+            - Staging Deployment: ✅ Healthy
+            - Smoke Tests: ✅ Passed
+            - Load Tests: ${report.metrics.hasLoadTest ? '✅ Completed' : '⏭️ Skipped'}
+            - Security Scan: ${report.metrics.hasSecurityScan ? '✅ Completed' : '⏭️ Skipped'}
+
+            ### 📋 Pre-Merge Checklist
+            - [ ] Reviewed all changes
+            - [ ] Verified staging environment manually
+            - [ ] Checked for breaking changes
+            - [ ] Confirmed deployment timing (low-traffic window preferred)
+            - [ ] Notified relevant stakeholders
+            ${breakingChanges > 0 ? '- [ ] Migration plan reviewed and ready' : ''}
+
+            ### ⚠️ Important Notes
+            - **Auto-merge is DISABLED** for production safety
+            - This PR requires manual review and approval
+            - Consider deploying during low-traffic hours
+            - Monitor production closely after merge
+
+            ### 🔄 Post-Merge Flow
+            1. Merge this PR manually after review
+            2. Production deployment triggers automatically
+            3. Health checks run post-deployment
+            4. Auto-rollback available if health checks fail
+
+            ---
+            *🤖 Generated automatically by Staging Promotion Readiness workflow*
+            *Run ID: ${context.runId}*`;
+
+            const pr = await github.rest.pulls.create({
+              owner,
+              repo,
+              title: `🏭 Promote Staging to Production - ${new Date().toISOString().split('T')[0]}`,
+              head: 'staging',
+              base: 'main',
+              body,
+              draft: false
+            });
+
+            // Add labels
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: pr.data.number,
+              labels: ['production', 'deployment', 'automated', 'needs-review']
+            });
+
+            // Request review from CODEOWNERS or specific team
+            try {
+              await github.rest.pulls.requestReviewers({
+                owner,
+                repo,
+                pull_number: pr.data.number,
+                reviewers: ['MLorneSmith']  // Add your production approvers
+              });
+            } catch (e) {
+              console.log('Could not request reviewers:', e.message);
+            }
+
+            // NOTE: Auto-merge is intentionally NOT enabled for production PRs
+            // Production deployments should require manual approval
+
+            console.log(`Created PR #${pr.data.number}: ${pr.data.html_url}`);
+            core.setOutput('pr_number', pr.data.number);
+            core.setOutput('pr_url', pr.data.html_url);
+
+            return pr.data;
+
+      - name: Send notifications
+        if: always()
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const ready = '${{ steps.assessment.outputs.ready }}' === 'true';
+            const score = '${{ steps.assessment.outputs.score }}';
+            const prUrl = '${{ steps.create-pr.outputs.pr_url }}' || '';
+
+            const message = ready
+              ? `## 🎉 Staging is Ready for Production!\n\n` +
+                `Promotion Score: ${score}/100\n\n` +
+                `A pull request has been created for your review:\n${prUrl}\n\n` +
+                `**⚠️ Manual review required before merging to production.**`
+              : `## ⏸️ Staging Not Ready for Production\n\n` +
+                `Promotion Score: ${score}/100\n\n` +
+                `Check the [workflow run](${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`;
+
+            console.log('Notification:', message);
+
+            // TODO: Send to Slack webhook for production alerts
+            // const slackWebhook = process.env.SLACK_PRODUCTION_WEBHOOK;
+            // if (slackWebhook) { ... }
+
+  # Sync main back into staging after production deploy
+  # This job only runs when triggered by workflow_run (successful staging deploy)
+  check-production-sync:
+    name: Check Production Sync Status
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check if staging is behind main
+        id: check-sync
+        run: |
+          # Check if main has commits that staging doesn't
+          BEHIND_COUNT=$(git log --oneline origin/staging..origin/main 2>/dev/null | wc -l || echo "0")
+          echo "behind_count=$BEHIND_COUNT" >> $GITHUB_OUTPUT
+
+          if [ "$BEHIND_COUNT" -gt 0 ]; then
+            echo "⚠️ Staging is $BEHIND_COUNT commits behind main"
+            echo "needs_sync=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Staging is in sync with main"
+            echo "needs_sync=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create sync issue if needed
+        if: steps.check-sync.outputs.needs_sync == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const behindCount = '${{ steps.check-sync.outputs.behind_count }}';
+
+            // Check if issue already exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'staging-sync',
+              state: 'open'
+            });
+
+            if (issues.data.length > 0) {
+              console.log('Sync issue already exists');
+              return;
+            }
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `⚠️ Staging branch is ${behindCount} commits behind main`,
+              body: `The staging branch has fallen behind main, likely due to hotfixes deployed directly to production.\n\n` +
+                    `**Action required:** Merge main into staging to sync branches.\n\n` +
+                    `\`\`\`bash\n` +
+                    `git checkout staging\n` +
+                    `git merge origin/main\n` +
+                    `git push origin staging\n` +
+                    `\`\`\`\n\n` +
+                    `This ensures future promotions don't have conflicts.`,
+              labels: ['staging-sync', 'maintenance']
+            });

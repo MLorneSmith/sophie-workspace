@@ -83,8 +83,8 @@ Security updates bypass the weekly schedule and are created immediately when vul
 
 ### 1. Monitoring Updates
 
-- Check the [Dependency Graph](https://github.com/MLorneSmith/2025slideheroes/network/dependencies) regularly
-- Review [Security Advisories](https://github.com/MLorneSmith/2025slideheroes/security/advisories)
+- Check the [Dependency Graph](https://github.com/slideheroes/2025slideheroes/network/dependencies) regularly
+- Review [Security Advisories](https://github.com/slideheroes/2025slideheroes/security/advisories)
 - Monitor failed PR checks for breaking changes
 
 ### 2. Handling Breaking Changes

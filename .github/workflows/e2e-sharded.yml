@@ -1,6 +1,25 @@
+# E2E Tests (Sharded) Workflow
+#
+# This workflow runs E2E tests across multiple parallel shards for faster feedback.
+#
+# IMPORTANT: Dependabot PRs are excluded from this workflow to save CI resources.
+# Dependency updates rarely break E2E tests, and any issues will be caught when
+# the dependabot PR is merged and tested via dev-integration-tests.
+# See: CI/CD assessment 2026-01-21
+#
+# Runner Configuration
+# ================================
+# Using RunsOn self-hosted runners (more disk space than ubuntu-latest).
+# Previously used ubuntu-latest to work around matrix/workflow_dispatch issues
+# (Issue #1709, #1710), but this workflow is now manual-dispatch-only so that
+# issue no longer applies. ubuntu-latest runners ran out of disk space loading
+# Supabase Docker images (~14GB limit).
+
 name: E2E Tests (Sharded)
 
 on:
+  # Manual dispatch only — E2E Smart Tests handles PR testing.
+  # Staging-deploy has its own inline sharded E2E suite.
   workflow_dispatch:
     inputs:
       max_parallel:
@@ -14,13 +33,6 @@ on:
           - '4'
           - '5'
           - '6'
-  pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - 'apps/web/**'
-      - 'apps/e2e/**'
-      - 'packages/**'
-      - '.github/workflows/e2e-sharded.yml'
 
 permissions:
   contents: read
@@ -37,57 +49,168 @@ env:
 
 jobs:
   # Single server setup job that runs once
+  # NOTE: No job-level if: condition here - this is intentional!
+  # Job-level if: conditions prevent matrix job creation for workflow_dispatch triggers.
+  # Instead, we use step-level conditions and outputs to skip dependabot PRs.
+  # See: Issue #1698, #1700 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
   setup-server:
     name: Setup Test Server
-    runs-on: "runs-on/runner=2cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     outputs:
-      cache-key: ${{ steps.cache.outputs.cache-key }}
+      cache-key: ${{ steps.docker-cache.outputs.cache-key }}
+      # Output whether to skip E2E tests (for dependabot PRs)
+      # Downstream jobs check this to determine if they should run
+      should-skip: ${{ steps.check-actor.outputs.should-skip }}
     steps:
+      # First step: Check if we should skip E2E tests for dependabot PRs
+      # This replaces the job-level if: condition to allow matrix job creation
+      - name: Check if should skip (dependabot)
+        id: check-actor
+        run: |
+          if [[ "${{ github.actor }}" == "dependabot[bot]" ]]; then
+            echo "🤖 Dependabot PR detected - skipping E2E tests"
+            echo "should-skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Non-dependabot actor - running E2E tests"
+            echo "should-skip=false" >> $GITHUB_OUTPUT
+          fi
+
       - uses: actions/checkout@v6
+        if: steps.check-actor.outputs.should-skip != 'true'
 
       - uses: ./.github/actions/setup-deps
+        if: steps.check-actor.outputs.should-skip != 'true'
 
       - name: Setup Supabase CLI
+        if: steps.check-actor.outputs.should-skip != 'true'
         uses: supabase/setup-cli@v1
         with:
           version: latest
 
-      - name: Cache Supabase Docker images
-        id: cache
-        uses: actions/cache@v4
+      - name: Restore Docker image cache
+        if: steps.check-actor.outputs.should-skip != 'true'
+        id: docker-cache
+        uses: actions/cache/restore@v5
         with:
-          path: |
-            ~/.docker
-            ~/Library/Containers/com.docker.docker/Data
-          key: ${{ runner.os }}-supabase-docker-${{ hashFiles('apps/e2e/supabase/config.toml') }}-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-supabase-docker-
+          path: /tmp/supabase-images.tar.gz
+          key: ${{ runner.os }}-supabase-images-${{ hashFiles('apps/web/supabase/config.toml') }}
+
+      - name: Load cached Docker images
+        if: steps.check-actor.outputs.should-skip != 'true' && steps.docker-cache.outputs.cache-hit == 'true'
+        run: |
+          echo "📦 Loading cached Docker images..."
+          docker load < /tmp/supabase-images.tar.gz
+          echo "✅ Docker images loaded from cache"
 
       - name: Start E2E Supabase
+        if: steps.check-actor.outputs.should-skip != 'true'
         run: |
-          cd apps/e2e
+          # Start Supabase from apps/web where config.toml defines ports 54521/54522
+          # Exclude services not needed for E2E tests to reduce Docker pull time
+          cd apps/web
           echo "Starting Supabase for E2E tests..."
-          supabase start --ignore-health-check
-          
+          supabase start --ignore-health-check -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
+
           # Verify it's running
           supabase status
-          
+
           echo "✅ Supabase E2E environment ready"
 
-      - name: Build application
+      - name: Wait for Supabase health
+        if: steps.check-actor.outputs.should-skip != 'true'
         run: |
-          # Build with Turbo cache
-          pnpm build --cache-dir=.turbo
+          echo "🏥 Running enhanced Supabase health checks with exponential backoff..."
+          echo "See: Issue #1641, #1642 - E2E Sharded Workflow Dual Failure Modes"
+          # Use tsx to run the TypeScript health check script (faster than ts-node, no tsconfig needed)
+          # This provides multi-stage verification: PostgreSQL -> PostgREST -> Kong API
+          pnpm --filter web-e2e exec tsx tests/setup/supabase-health.ts
+        timeout-minutes: 3
+        env:
+          E2E_SUPABASE_URL: 'http://127.0.0.1:54521'
+          E2E_POSTGRES_HOST: 'localhost'
+          E2E_POSTGRES_PORT: '54522'
+          DEBUG: 'supabase:*'
+
+      - name: Save Docker images for shard cache
+        if: steps.check-actor.outputs.should-skip != 'true' && steps.docker-cache.outputs.cache-hit != 'true'
+        run: |
+          echo "📦 Saving Docker images for shard reuse..."
+          IMAGES=$(docker images --format '{{.Repository}}:{{.Tag}}' | grep -v '<none>')
+          echo "Images to save: $(echo "$IMAGES" | wc -l)"
+          docker save $IMAGES | gzip > /tmp/supabase-images.tar.gz
+          SIZE=$(ls -lh /tmp/supabase-images.tar.gz | awk '{print $5}')
+          echo "✅ Docker images saved ($SIZE compressed)"
+
+      - name: Upload Docker image cache
+        if: steps.check-actor.outputs.should-skip != 'true' && steps.docker-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: /tmp/supabase-images.tar.gz
+          key: ${{ runner.os }}-supabase-images-${{ hashFiles('apps/web/supabase/config.toml') }}
+
+      - name: Extract Supabase JWT keys
+        if: steps.check-actor.outputs.should-skip != 'true'
+        id: supabase-keys
+        run: |
+          cd apps/web
+          # Extract actual JWT keys from running Supabase instance
+          # This ensures we use the ES256 keys that Supabase generates, not hardcoded HS256 keys
+          echo "📋 Extracting JWT keys from Supabase..."
+          eval "$(supabase status -o env)"
+
+          # Verify keys were extracted
+          if [ -z "$ANON_KEY" ] || [ -z "$SERVICE_ROLE_KEY" ]; then
+            echo "❌ Failed to extract JWT keys from Supabase"
+            supabase status
+            exit 1
+          fi
+
+          # Export for subsequent steps
+          # NOTE: E2E_ prefixed variables are required by test-users.ts and auth.po.ts
+          # The test code falls back to hardcoded HS256 keys if E2E_ vars are missing,
+          # but Supabase uses ES256 keys, causing JWT signing method validation errors.
+          # See: Issue #1626 - E2E Sharded Workflow Environment Variable Naming Mismatch
+          echo "SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+          echo "E2E_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "E2E_SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+
+          echo "✅ JWT keys extracted successfully"
+
+      - name: Build application
+        if: steps.check-actor.outputs.should-skip != 'true'
+        run: |
+          # Build with Turbo cache (cache-dir already configured in package.json)
+          pnpm build
+        env:
+          # Payload CMS requires these environment variables at build time
+          PAYLOAD_SECRET: 'test_payload_secret_for_e2e_testing'
+          DATABASE_URL: 'postgresql://postgres:postgres@localhost:54522/postgres'
+          DATABASE_URI: 'postgresql://postgres:postgres@localhost:54522/postgres'
+          PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3021'
+          NODE_ENV: 'production'
+          # Supabase env vars must be present at build time for Next.js production builds
+          # NEXT_PUBLIC_* vars are baked into the client bundle at build time
+          # NEXT_PUBLIC_SUPABASE_ANON_KEY is set by the "Extract Supabase JWT keys" step above
+          # which exports it to $GITHUB_ENV, making it available here
+          NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54521'
+          # Authentication method configuration - required at build time for NEXT_PUBLIC_* vars
+          # See: Issue #1849, #1850 - E2E tests fail due to missing auth form fields
+          NEXT_PUBLIC_AUTH_PASSWORD: 'true'
+          NEXT_PUBLIC_AUTH_MAGIC_LINK: 'false'
+          NEXT_PUBLIC_AUTH_OTP: 'false'
 
       - name: Cache build and server state
-        uses: actions/cache@v4
+        if: steps.check-actor.outputs.should-skip != 'true'
+        uses: actions/cache@v5
         with:
           path: |
             apps/web/.next
-            apps/payload/dist
+            apps/payload/.next
             packages/*/dist
             .turbo
-            apps/e2e/supabase/.tmp
+            apps/web/supabase/.tmp
           key: e2e-build-${{ github.sha }}-${{ github.run_id }}
 
   # Sharded E2E test execution with matrix
@@ -99,21 +222,26 @@ jobs:
   e2e-shards:
     name: E2E Shard ${{ matrix.shard }}
     needs: setup-server
-    # Use slash-separated format with unique run_id+job-index to prevent runner stealing (RunsOn docs)
-    runs-on: "runs-on=${{ github.run_id }}-job-${{ strategy.job-index }}/runner=2cpu-linux-x64"
+    # NOTE: No job-level if: condition here - this is intentional!
+    # Job-level if: conditions (even ones checking outputs) prevent matrix job creation
+    # for workflow_dispatch triggers. Instead, we use step-level conditions.
+    # See: Issue #1698, #1700 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
+    # Switched back to RunsOn now that this workflow is manual-dispatch-only
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     strategy:
       fail-fast: false
       # Control concurrency with max-parallel - reduced from 6 to 3 for better stability
-      max-parallel: ${{ github.event.inputs.max_parallel || 3 }}
+      max-parallel: ${{ github.event.inputs.max_parallel || 6 }}
       matrix:
         shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     env:
       # E2E Database Configuration - Local Supabase instance (ports 54521/54522)
       SUPABASE_URL: 'http://127.0.0.1:54521'
       NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54521'
-      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
-      SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+      # JWT keys (SUPABASE_ANON_KEY, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY)
+      # are extracted dynamically from Supabase after startup in the "Extract Supabase JWT keys" step.
+      # This ensures we use the actual ES256 keys that Supabase generates, not hardcoded HS256 keys.
+      # See: Issue #1615 (diagnosis), Issue #1621 (fix) for details.
       DATABASE_URL: 'postgresql://postgres:postgres@localhost:54522/postgres'
       DATABASE_URI: 'postgresql://postgres:postgres@localhost:54522/postgres'
       
@@ -122,73 +250,287 @@ jobs:
       STRIPE_SECRET_KEY: 'sk_test_dummy'
       STRIPE_WEBHOOK_SECRET: 'whsec_test_dummy'
       DO_NOT_TRACK: 1
-      PLAYWRIGHT_WEB_COMMAND: 'pnpm --filter=web dev:test'
-      PLAYWRIGHT_PAYLOAD_COMMAND: 'pnpm --filter=payload dev:test'
+      # Note: PLAYWRIGHT_WEB_COMMAND and PLAYWRIGHT_PAYLOAD_COMMAND are no longer needed
+      # Server startup is now handled by Playwright's webServer config in each config file
+      # The webServer uses production server (next start) instead of dev server (next dev)
+      # to avoid conflicts with cached production build artifacts from Setup Test Server job.
+      # Production server starts instantly (1-2s) vs dev server which may hang indefinitely.
+      # See Issue #1583 (diagnosis), #1584 (fix) for details.
+      # See: apps/e2e/playwright.config.ts (and other config files)
       
       # Required for app to start
       NEXT_PUBLIC_BILLING_PROVIDER: 'stripe'
-      PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
+      PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3021'
       PAYLOAD_SECRET: 'test_payload_secret_for_e2e_testing'
       NODE_ENV: 'test'
+      # Email configuration - required by Zod schema validation
+      # See: Issue #1796, #1797 - Shard 4 timeout due to missing emailSender
+      EMAIL_SENDER: 'noreply@slideheroes.com'
       
       # Enable Playwright parallelism
       PLAYWRIGHT_PARALLEL: 'true'
+
+      # E2E test user credentials (from GitHub Secrets)
+      # These are required for authentication tests in shards 2-12
+      # See: Issue #1636 (diagnosis), Issue #1637 (fix)
+      E2E_TEST_USER_EMAIL: ${{ secrets.E2E_TEST_USER_EMAIL }}
+      E2E_TEST_USER_PASSWORD: ${{ secrets.E2E_TEST_USER_PASSWORD }}
+      E2E_OWNER_EMAIL: ${{ secrets.E2E_OWNER_EMAIL }}
+      E2E_OWNER_PASSWORD: ${{ secrets.E2E_OWNER_PASSWORD }}
+      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
     steps:
+      # Check if we should skip (dependabot PRs)
+      # This replaces job-level if: condition to allow matrix job creation
+      - name: Check if should skip
+        id: check-skip
+        run: |
+          if [[ "${{ needs.setup-server.outputs.should-skip }}" == "true" ]]; then
+            echo "🤖 Dependabot PR - skipping E2E shard ${{ matrix.shard }}"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Running E2E shard ${{ matrix.shard }}"
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Free disk space on ubuntu-latest runners (~8GB recovered)
+      # Supabase Docker images (Postgres, Kong, GoTrue, Storage) need significant disk
+      # See: Run 21762910131 - all shards failed with "no space left on device"
+      - name: Free disk space
+        if: steps.check-skip.outputs.skip != 'true'
+        run: |
+          echo "🧹 Freeing disk space on ubuntu-latest runner..."
+          echo "Before cleanup: $(df -h / | tail -1 | awk '{print $4}') free"
+
+          # Remove large pre-installed toolchains not needed for E2E tests
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /opt/hostedtoolcache/CodeQL || true
+          sudo rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/share/swift || true
+          sudo rm -rf /usr/local/.ghcup || true
+
+          # Clean apt cache
+          sudo apt-get clean || true
+
+          echo "After cleanup: $(df -h / | tail -1 | awk '{print $4}') free"
+
+      # Determine what infrastructure each shard needs
+      # Shards 1-10: Real tests requiring Supabase database
+      # Shards 11-12: Config verification (no database/server needed)
+      # Shards 7-9: Payload CMS tests requiring migrations and seeding
+      - name: Determine shard requirements
+        id: shard-reqs
+        if: steps.check-skip.outputs.skip != 'true'
+        run: |
+          SHARD=${{ matrix.shard }}
+          if [[ $SHARD -le 10 ]]; then
+            echo "needs-supabase=true" >> $GITHUB_OUTPUT
+          else
+            echo "needs-supabase=false" >> $GITHUB_OUTPUT
+            echo "⏭️ Shard $SHARD: skipping Supabase (config verification only)"
+          fi
+          if [[ $SHARD -ge 7 && $SHARD -le 9 ]]; then
+            echo "needs-payload=true" >> $GITHUB_OUTPUT
+          else
+            echo "needs-payload=false" >> $GITHUB_OUTPUT
+          fi
+
       # Stagger job creation to prevent GitHub Actions/RunsOn race condition
       # when multiple matrix jobs are created simultaneously (fixes Shard 10 stuck issue)
-      # Delay calculation: (shard - 1) * 10 seconds
-      # Shard 1=0s, Shard 2=10s, Shard 3=20s, ..., Shard 10=90s
+      # Delay calculation: (shard - 1) * 5 seconds
+      # Shard 1=0s, Shard 2=5s, Shard 3=10s, ..., Shard 12=55s
       - name: Stagger matrix job start
+        if: steps.check-skip.outputs.skip != 'true'
         run: |
-          DELAY=$(( (${{ matrix.shard }} - 1) * 10 ))
+          DELAY=$(( (${{ matrix.shard }} - 1) * 5 ))
           echo "Shard ${{ matrix.shard }}: waiting ${DELAY} seconds to prevent race condition..."
           sleep $DELAY
 
       - uses: actions/checkout@v6
+        if: steps.check-skip.outputs.skip != 'true'
 
       - uses: ./.github/actions/setup-deps
+        if: steps.check-skip.outputs.skip != 'true'
 
       - name: Setup Supabase CLI
+        if: steps.check-skip.outputs.skip != 'true' && steps.shard-reqs.outputs.needs-supabase == 'true'
         uses: supabase/setup-cli@v1
         with:
           version: latest
 
       - name: Restore build and server state
-        uses: actions/cache@v4
+        if: steps.check-skip.outputs.skip != 'true'
+        uses: actions/cache@v5
         with:
           path: |
             apps/web/.next
-            apps/payload/dist
+            apps/payload/.next
             packages/*/dist
             .turbo
-            apps/e2e/supabase/.tmp
+            apps/web/supabase/.tmp
           key: e2e-build-${{ github.sha }}-${{ github.run_id }}
           restore-keys: |
             e2e-build-${{ github.sha }}-
 
       - name: Install Playwright browsers
+        if: steps.check-skip.outputs.skip != 'true'
         run: |
           pnpm --filter web-e2e exec playwright install chromium --with-deps
 
-      - name: Start local Supabase
+      - name: Restore Docker image cache
+        if: steps.check-skip.outputs.skip != 'true' && steps.shard-reqs.outputs.needs-supabase == 'true'
+        id: shard-docker-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: /tmp/supabase-images.tar.gz
+          key: ${{ runner.os }}-supabase-images-${{ hashFiles('apps/web/supabase/config.toml') }}
+
+      - name: Load cached Docker images
+        if: steps.check-skip.outputs.skip != 'true' && steps.shard-reqs.outputs.needs-supabase == 'true' && steps.shard-docker-cache.outputs.cache-hit == 'true'
         run: |
-          cd apps/e2e
-          # Start Supabase (will reuse existing if setup-server ran on same runner)
-          supabase start --ignore-health-check || true
-          
-          # Quick health check (uses "Project URL" as of Supabase CLI v1+ table format)
-          for i in {1..10}; do
-            if supabase status 2>/dev/null | grep -q "Project URL"; then
-              echo "✓ Supabase ready after $i checks"
+          echo "📦 Loading cached Docker images..."
+          docker load < /tmp/supabase-images.tar.gz
+          echo "✅ Docker images loaded from cache"
+
+      - name: Start local Supabase
+        if: steps.check-skip.outputs.skip != 'true' && steps.shard-reqs.outputs.needs-supabase == 'true'
+        run: |
+          # Start Supabase from apps/web where config.toml defines ports 54521/54522
+          cd apps/web
+          # No error masking - fail fast if Supabase cannot start
+          # Exclude services not needed for E2E tests to reduce Docker pull time
+          supabase start --ignore-health-check -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
+
+          # Extract JWT keys IMMEDIATELY after start for health check
+          # This MUST happen before the health check curl command below
+          # See: Issue #1631, #1632 - Health check was using undefined SUPABASE_ANON_KEY
+          echo "📋 Extracting JWT keys for health check..."
+          eval "$(supabase status -o env)"
+          if [ -z "$ANON_KEY" ]; then
+            echo "❌ Failed to extract ANON_KEY from Supabase"
+            supabase status
+            exit 1
+          fi
+          echo "✅ ANON_KEY extracted for health check"
+
+          # Wait for Supabase API to be responsive
+          echo "⏳ Waiting for Supabase API to become responsive..."
+          for i in {1..30}; do
+            if curl -sf http://127.0.0.1:54521/rest/v1/ \
+              -H "apikey: ${ANON_KEY}" \
+              -H "Authorization: Bearer ${ANON_KEY}" > /dev/null 2>&1; then
+              echo "✅ Supabase API responding (attempt $i/30)"
               break
             fi
+
+            if [ $i -eq 30 ]; then
+              echo "❌ Supabase API failed to respond after 30 attempts (60 seconds)"
+              echo "Last status output:"
+              supabase status || true
+              echo "Docker containers:"
+              docker ps -a | grep supabase || true
+              exit 1
+            fi
+
+            echo "⏳ Waiting for Supabase API... (attempt $i/30)"
             sleep 2
           done
-          
-          # Run migrations
+
+          # Verify database is also accessible
+          echo "⏳ Verifying PostgreSQL database connectivity..."
+          if command -v pg_isready > /dev/null 2>&1; then
+            if pg_isready -h localhost -p 54522 -U postgres -t 10; then
+              echo "✅ PostgreSQL database is ready"
+            else
+              echo "❌ PostgreSQL database is not responding"
+              exit 1
+            fi
+          else
+            echo "⚠️  pg_isready not available, skipping database connectivity check"
+          fi
+
+          echo "✅ Supabase stack is fully operational"
+
+          # Run Supabase migrations
           supabase db reset --no-seed || true
 
+      # Run Payload CMS migrations to create payload.* tables
+      # Required for E2E Shards 7, 8, 9 (Payload tests)
+      # Without this, tests fail with: "relation payload.users does not exist"
+      # See: Issue #1813 (diagnosis), Issue #1814 (fix)
+      - name: Run Payload CMS migrations
+        if: steps.check-skip.outputs.skip != 'true' && steps.shard-reqs.outputs.needs-payload == 'true'
+        run: |
+          echo "🔄 Running Payload CMS migrations..."
+          pnpm --filter payload payload migrate --forceAcceptWarning
+          echo "✅ Payload CMS migrations complete"
+        env:
+          DATABASE_URI: postgresql://postgres:postgres@localhost:54522/postgres
+          PAYLOAD_SECRET: test_payload_secret_for_e2e_testing
+
+      # Seed Payload admin user for E2E tests (Shards 7, 8, 9)
+      # The seed engine uses Payload's Local API to create the user with proper password hashing
+      # Without this, Payload login fails during global-setup with "no token received"
+      # See: Issue #1855 (diagnosis), Issue #1856 (fix)
+      - name: Seed Payload admin user
+        if: steps.check-skip.outputs.skip != 'true' && steps.shard-reqs.outputs.needs-payload == 'true'
+        run: |
+          echo "🌱 Seeding Payload admin user..."
+          # Use || true to allow graceful failure if user already exists (idempotency)
+          # The seed engine exits non-zero on duplicate key errors, but the user exists which is what we need
+          if pnpm --filter payload seed:run -c users; then
+            echo "✅ Payload admin user created"
+          else
+            echo "ℹ️  Payload admin user may already exist (seed returned non-zero)"
+            # Verify user exists in database
+            psql "$DATABASE_URI" -c "SELECT email FROM payload.users WHERE email = 'michael@slideheroes.com'" | grep -q michael@slideheroes.com && \
+              echo "✅ Payload admin user verified in database" || \
+              (echo "❌ Payload admin user not found - seeding failed" && exit 1)
+          fi
+        env:
+          DATABASE_URI: postgresql://postgres:postgres@localhost:54522/postgres
+          PAYLOAD_SECRET: test_payload_secret_for_e2e_testing
+          SEED_USER_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+          SEED_SOPHIE_API_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+
+      - name: Extract Supabase JWT keys
+        if: steps.check-skip.outputs.skip != 'true' && steps.shard-reqs.outputs.needs-supabase == 'true'
+        run: |
+          cd apps/web
+          # Extract actual JWT keys from running Supabase instance
+          # This ensures we use the ES256 keys that Supabase generates, not hardcoded HS256 keys
+          # NOTE: Keys are also extracted inline in "Start local Supabase" step for health check
+          # This step exports them to $GITHUB_ENV for use in subsequent steps (E2E tests)
+          echo "📋 Extracting JWT keys from Supabase..."
+          eval "$(supabase status -o env)"
+
+          # Verify keys were extracted
+          if [ -z "$ANON_KEY" ] || [ -z "$SERVICE_ROLE_KEY" ]; then
+            echo "❌ Failed to extract JWT keys from Supabase"
+            supabase status
+            exit 1
+          fi
+
+          # Export for E2E tests
+          # NOTE: E2E_ prefixed variables are required by test-users.ts and auth.po.ts
+          # The test code falls back to hardcoded HS256 keys if E2E_ vars are missing,
+          # but Supabase uses ES256 keys, causing JWT signing method validation errors.
+          # See: Issue #1626 - E2E Sharded Workflow Environment Variable Naming Mismatch
+          echo "SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+          echo "E2E_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "E2E_SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+          # Signal that we're running with local Supabase in CI (allows localhost validation to pass)
+          # See: Issue #1626 - Localhost validation blocks sharded workflow with local Supabase
+          echo "E2E_LOCAL_SUPABASE=true" >> $GITHUB_ENV
+
+          echo "✅ JWT keys extracted successfully"
+
       - name: Run E2E tests for shard ${{ matrix.shard }}
+        if: steps.check-skip.outputs.skip != 'true'
         run: |
           echo "🚀 Running E2E test shard ${{ matrix.shard }} of 10 (real tests - configuration tests run locally only)"
 
@@ -199,8 +541,8 @@ jobs:
         continue-on-error: false
 
       - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v5
+        if: ${{ always() && steps.check-skip.outputs.skip != 'true' }}
+        uses: actions/upload-artifact@v6
         with:
           name: e2e-results-shard-${{ matrix.shard }}-${{ github.run_id }}
           path: |
@@ -211,16 +553,19 @@ jobs:
   # Aggregate results from all shards
   e2e-report:
     name: E2E Test Report
-    needs: e2e-shards
-    if: always()
-    runs-on: "runs-on/runner=2cpu-linux-x64"
+    needs: [e2e-shards, setup-server]
+    # Run report if shards ran (skip if dependabot PR)
+    # Use setup-server's should-skip output for consistency with other jobs
+    # See: Issue #1698, #1700 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
+    if: ${{ always() && needs.setup-server.outputs.should-skip != 'true' }}
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     steps:
       - uses: actions/checkout@v6
 
       - uses: ./.github/actions/setup-deps
 
       - name: Download all shard results
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           path: shard-results
           pattern: e2e-results-shard-*-${{ github.run_id }}

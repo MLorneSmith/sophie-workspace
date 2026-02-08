@@ -1,0 +1,90 @@
+{
+  "name": "Design System 2026",
+  "created_at": "2026-01-28T12:00:00Z",
+  "variation_type": "theme",
+  "status": "specs_created",
+  "base_requirements": ".ai/alpha/specs/variations/design-system-2026/base-requirements.md",
+  "evaluation_pages": [
+    { "name": "Home Page", "path": "/" },
+    { "name": "Dashboard", "path": "/home/[account]" }
+  ],
+  "variations": [
+    {
+      "id": "v1",
+      "name": "Modern Vibrant",
+      "spec_id": "S1879",
+      "spec_dir": ".ai/alpha/specs/S1879-Spec-design-system-v1-modern-vibrant",
+      "github_issue": 1879,
+      "branch": "alpha/S1879",
+      "status": "ready_for_decomposition",
+      "tokens": {
+        "primary_color": "#24a9e0",
+        "accent_color": "#f59e0b",
+        "heading_font": "Outfit",
+        "body_font": "Nunito Sans",
+        "shadow": "elevated",
+        "radius": "12px",
+        "spacing": "spacious"
+      }
+    },
+    {
+      "id": "v2",
+      "name": "Clean Professional",
+      "spec_id": "S1880",
+      "spec_dir": ".ai/alpha/specs/S1880-Spec-design-system-v2-clean-professional",
+      "github_issue": 1880,
+      "branch": "alpha/S1880",
+      "status": "ready_for_decomposition",
+      "tokens": {
+        "primary_color": "#24a9e0",
+        "accent_color": "#8b5cf6",
+        "heading_font": "Inter",
+        "body_font": "Inter",
+        "shadow": "balanced",
+        "radius": "8px",
+        "spacing": "standard"
+      }
+    },
+    {
+      "id": "v3",
+      "name": "Soft Approachable",
+      "spec_id": "S1881",
+      "spec_dir": ".ai/alpha/specs/S1881-Spec-design-system-v3-soft-approachable",
+      "github_issue": 1881,
+      "branch": "alpha/S1881",
+      "status": "ready_for_decomposition",
+      "tokens": {
+        "primary_color": "#24a9e0",
+        "accent_color": "#f97316",
+        "heading_font": "Manrope",
+        "body_font": "Source Sans Pro",
+        "shadow": "subtle",
+        "radius": "16px",
+        "spacing": "spacious"
+      }
+    },
+    {
+      "id": "v4",
+      "name": "Bold Geometric",
+      "spec_id": "S1882",
+      "spec_dir": ".ai/alpha/specs/S1882-Spec-design-system-v4-bold-geometric",
+      "github_issue": 1882,
+      "branch": "alpha/S1882",
+      "status": "ready_for_decomposition",
+      "tokens": {
+        "primary_color": "#24a9e0",
+        "accent_color": "#d97706",
+        "heading_font": "Plus Jakarta Sans",
+        "body_font": "DM Sans",
+        "shadow": "elevated",
+        "radius": "4px",
+        "spacing": "compact"
+      }
+    }
+  ],
+  "comparison": {
+    "status": "pending_implementation",
+    "winner": null,
+    "merge_notes": null
+  }
+}

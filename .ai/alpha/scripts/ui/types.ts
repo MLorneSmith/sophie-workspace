@@ -54,8 +54,8 @@ export type SandboxStatus = "ready" | "busy" | "completed" | "failed";
 * Information about the feature being implemented
  */
 export interface FeatureInfo {
-	/**GitHub issue number */
-	id: number;
+	/** Feature ID (semantic: S1362.I1.F1 or legacy: 1367) */
+	id: string;
 	/** Feature title */
 	title: string;
 }
@@ -159,12 +159,11 @@ export interface ReviewUrl {
 }
 
 /**
-
-* Overall spec-level progress
+ * Overall spec-level progress
  */
 export interface OverallProgress {
-	/**Spec ID (GitHub issue number) */
-	specId: number;
+	/**Spec ID (semantic S1362 or legacy 1362) */
+	specId: string;
 	/** Spec name/title */
 	specName: string;
 	/**Completed initiatives count */
@@ -180,7 +179,13 @@ export interface OverallProgress {
 	/** Total tasks count (across all features) */
 	tasksTotal: number;
 	/**Overall status*/
-	status: "pending" | "in_progress" | "completed" | "partial" | "failed";
+	status:
+		| "pending"
+		| "in_progress"
+		| "completing"
+		| "completed"
+		| "partial"
+		| "failed";
 	/** Git branch name for the spec */
 	branchName?: string;
 	/** Review URLs for accessing completed sandboxes*/
@@ -223,7 +228,22 @@ export type OrchestratorEventType =
 	| "db_migration_complete"
 	| "db_seed_start"
 	| "db_seed_complete"
-	| "db_verify";
+	| "db_verify"
+	// Completion phase event types (from orchestrator)
+	| "completion_phase_start"
+	| "sandbox_killing"
+	| "review_sandbox_creating"
+	| "review_sandbox_failed" // Bug fix #1883: Emit when review sandbox creation fails
+	| "dev_server_starting"
+	| "dev_server_ready"
+	| "dev_server_failed"
+	// Orphaned feature detection event types (Bug fix #1948)
+	| "orphaned_feature_reset"
+	| "orphaned_feature_failed"
+	// Documentation generation event types (from orchestrator)
+	| "documentation_start"
+	| "documentation_complete"
+	| "documentation_failed";
 
 /**
 
@@ -283,7 +303,7 @@ export interface UIState {
 export interface SandboxProgressFile {
 	/**Feature being implemented */
 	feature?: {
-		issue_number: number;
+		issue_number: string;
 		title: string;
 	};
 	/** Current task information */
@@ -542,12 +562,11 @@ export interface SandboxInstance {
 }
 
 /**
-
-* Options for starting the UI
+ * Options for starting the UI
  */
 export interface StartUIOptions {
-	/**Spec ID */
-	specId: number;
+	/**Spec ID (semantic S1362 or legacy 1362) */
+	specId: string;
 	/** Spec name */
 	specName: string;
 	/**Sandbox instances to monitor */
@@ -612,10 +631,10 @@ export const PROGRESS_FILE = ".initiative-progress.json";
 export const MAX_EVENTS = 100;
 
 /**
-
-* Maximum events to display in UI
+ * Maximum events to display in UI
+ * Kept intentionally small to prevent visual clutter in sandbox columns
  */
-export const MAX_DISPLAY_EVENTS = 8;
+export const MAX_DISPLAY_EVENTS = 6;
 
 // =============================================================================
 // Event Streaming Types

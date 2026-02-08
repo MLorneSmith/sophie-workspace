@@ -1,0 +1,1114 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1918.I1.F3",
+    "feature_name": "Widget Placeholder Slots",
+    "feature_slug": "widget-placeholder-slots",
+    "initiative_id": "S1918.I1",
+    "spec_id": "S1918",
+    "created_at": "2026-02-03T14:00:00Z",
+    "complexity": {
+      "score": 68.75,
+      "level": "HIGH",
+      "target_steps": {
+        "min": 12,
+        "max": 20
+      },
+      "pattern_matched": "Layer Decomposition"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S1918.I1.F3.T16"
+    ],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1918.I1.F3.T1",
+      "type": "task",
+      "name": "Create base WidgetPlaceholder component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "WidgetPlaceholder component file"
+      },
+      "purpose": "Establish reusable base placeholder component with TypeScript interface for title and description props",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx (Card components)",
+          "packages/ui/src/makerkit/empty-state.tsx (pattern reference)"
+        ],
+        "dependencies": [
+          "Card from @kit/ui/card",
+          "cn from @kit/ui/cn",
+          "React"
+        ],
+        "constraints": [
+          "Component must accept title and description props",
+          "Use Card as wrapper component",
+          "Export TypeScript interface WidgetPlaceholderProps",
+          "Component should be client-side ('use client')"
+        ]
+      },
+      "input_state": "No widget-placeholder.tsx file exists",
+      "output_state": "WidgetPlaceholder component exists with TypeScript interface and Card wrapper",
+      "acceptance_criterion": "File exists with exported WidgetPlaceholder component accepting title and description props, renders Card wrapper",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/widgets/widget-placeholder.tsx && grep -q \"export.*WidgetPlaceholder\" apps/web/app/home/\\(user\\)/_components/widgets/widget-placeholder.tsx && grep -q \"Card\" apps/web/app/home/\\(user\\)/_components/widgets/widget-placeholder.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/widget-placeholder.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1918.I1.F3.T2",
+          "S1918.I1.F3.T3",
+          "S1918.I1.F3.T4",
+          "S1918.I1.F3.T5",
+          "S1918.I1.F3.T6",
+          "S1918.I1.F3.T7",
+          "S1918.I1.F3.T8",
+          "S1918.I1.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T2",
+      "type": "task",
+      "name": "Add placeholder styling to WidgetPlaceholder",
+      "action": {
+        "verb": "Add",
+        "target": "dashed border and muted styling"
+      },
+      "purpose": "Style the placeholder with dashed border, muted colors, minimum height, and dark mode compatibility",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/widgets/widget-placeholder.tsx",
+          ".ai/alpha/specs/S1918-Spec-user-dashboard/research-library/perplexity-dashboard-ux.md (lines 42-46: dashed border pattern)"
+        ],
+        "dependencies": [
+          "Tailwind CSS classes",
+          "cn utility"
+        ],
+        "constraints": [
+          "Use border-dashed for placeholder indication",
+          "Use text-muted-foreground for muted text",
+          "Add min-h-[200px] or similar for layout demonstration",
+          "Use semantic Tailwind colors (bg-background, text-foreground) for dark mode support"
+        ]
+      },
+      "input_state": "WidgetPlaceholder exists but has no styling",
+      "output_state": "WidgetPlaceholder has dashed border, muted colors, minimum height, and dark mode compatibility",
+      "acceptance_criterion": "Component uses border-dashed, text-muted-foreground, min-h-[200px], and semantic color classes",
+      "verification_command": "grep -q \"border-dashed\" apps/web/app/home/\\(user\\)/_components/widgets/widget-placeholder.tsx && grep -q \"text-muted-foreground\" apps/web/app/home/\\(user\\)/_components/widgets/widget-placeholder.tsx && grep -E \"min-h-\\[\\d+\" apps/web/app/home/\\(user\\)/_components/widgets/widget-placeholder.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/widgets/widget-placeholder.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T1"
+        ],
+        "blocks": [
+          "S1918.I1.F3.T3",
+          "S1918.I1.F3.T4",
+          "S1918.I1.F3.T5",
+          "S1918.I1.F3.T6",
+          "S1918.I1.F3.T7",
+          "S1918.I1.F3.T8",
+          "S1918.I1.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T3",
+      "type": "task",
+      "name": "Create CourseProgressPlaceholder component",
+      "action": {
+        "verb": "Create",
+        "target": "CourseProgressPlaceholder file"
+      },
+      "purpose": "Create Row 1, Slot 1 placeholder showing 'Course Progress' widget label",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/widgets/widget-placeholder.tsx"
+        ],
+        "dependencies": [
+          "WidgetPlaceholder component"
+        ],
+        "constraints": [
+          "Export named component CourseProgressPlaceholder",
+          "Pass title='Course Progress' to WidgetPlaceholder",
+          "Pass description explaining radial progress chart purpose"
+        ]
+      },
+      "input_state": "No CourseProgressPlaceholder file exists",
+      "output_state": "CourseProgressPlaceholder component file exists rendering WidgetPlaceholder with 'Course Progress' title",
+      "acceptance_criterion": "File exists exporting CourseProgressPlaceholder component that renders WidgetPlaceholder",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/widgets/course-progress-placeholder.tsx && grep -q \"export.*CourseProgressPlaceholder\" apps/web/app/home/\\(user\\)/_components/widgets/course-progress-placeholder.tsx && grep -q \"Course Progress\" apps/web/app/home/\\(user\\)/_components/widgets/course-progress-placeholder.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/course-progress-placeholder.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T2"
+        ],
+        "blocks": [
+          "S1918.I1.F3.T10",
+          "S1918.I1.F3.T12"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T4",
+      "type": "task",
+      "name": "Create SkillsAssessmentPlaceholder component",
+      "action": {
+        "verb": "Create",
+        "target": "SkillsAssessmentPlaceholder file"
+      },
+      "purpose": "Create Row 1, Slot 2 placeholder showing 'Skills Assessment' widget label",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/widgets/widget-placeholder.tsx"
+        ],
+        "dependencies": [
+          "WidgetPlaceholder component"
+        ],
+        "constraints": [
+          "Export named component SkillsAssessmentPlaceholder",
+          "Pass title='Skills Assessment' to WidgetPlaceholder",
+          "Pass description explaining spider diagram purpose"
+        ]
+      },
+      "input_state": "No SkillsAssessmentPlaceholder file exists",
+      "output_state": "SkillsAssessmentPlaceholder component file exists rendering WidgetPlaceholder with 'Skills Assessment' title",
+      "acceptance_criterion": "File exists exporting SkillsAssessmentPlaceholder component that renders WidgetPlaceholder",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/widgets/skills-assessment-placeholder.tsx && grep -q \"export.*SkillsAssessmentPlaceholder\" apps/web/app/home/\\(user\\)/_components/widgets/skills-assessment-placeholder.tsx && grep -q \"Skills Assessment\" apps/web/app/home/\\(user\\)/_components/widgets/skills-assessment-placeholder.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/skills-assessment-placeholder.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T2"
+        ],
+        "blocks": [
+          "S1918.I1.F3.T10",
+          "S1918.I1.F3.T12"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T5",
+      "type": "task",
+      "name": "Create KanbanSummaryPlaceholder component",
+      "action": {
+        "verb": "Create",
+        "target": "KanbanSummaryPlaceholder file"
+      },
+      "purpose": "Create Row 1, Slot 3 placeholder showing 'Kanban Summary' widget label",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/widgets/widget-placeholder.tsx"
+        ],
+        "dependencies": [
+          "WidgetPlaceholder component"
+        ],
+        "constraints": [
+          "Export named component KanbanSummaryPlaceholder",
+          "Pass title='Kanban Summary' to WidgetPlaceholder",
+          "Pass description explaining task counts purpose"
+        ]
+      },
+      "input_state": "No KanbanSummaryPlaceholder file exists",
+      "output_state": "KanbanSummaryPlaceholder component file exists rendering WidgetPlaceholder with 'Kanban Summary' title",
+      "acceptance_criterion": "File exists exporting KanbanSummaryPlaceholder component that renders WidgetPlaceholder",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/widgets/kanban-summary-placeholder.tsx && grep -q \"export.*KanbanSummaryPlaceholder\" apps/web/app/home/\\(user\\)/_components/widgets/kanban-summary-placeholder.tsx && grep -q \"Kanban Summary\" apps/web/app/home/\\(user\\)/_components/widgets/kanban-summary-placeholder.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/kanban-summary-placeholder.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T2"
+        ],
+        "blocks": [
+          "S1918.I1.F3.T10",
+          "S1918.I1.F3.T12"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T6",
+      "type": "task",
+      "name": "Create RecentActivityPlaceholder component",
+      "action": {
+        "verb": "Create",
+        "target": "RecentActivityPlaceholder file"
+      },
+      "purpose": "Create Row 2, Slot 1 placeholder showing 'Recent Activity' widget label",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/widgets/widget-placeholder.tsx"
+        ],
+        "dependencies": [
+          "WidgetPlaceholder component"
+        ],
+        "constraints": [
+          "Export named component RecentActivityPlaceholder",
+          "Pass title='Recent Activity' to WidgetPlaceholder",
+          "Pass description explaining activity feed purpose"
+        ]
+      },
+      "input_state": "No RecentActivityPlaceholder file exists",
+      "output_state": "RecentActivityPlaceholder component file exists rendering WidgetPlaceholder with 'Recent Activity' title",
+      "acceptance_criterion": "File exists exporting RecentActivityPlaceholder component that renders WidgetPlaceholder",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/widgets/recent-activity-placeholder.tsx && grep -q \"export.*RecentActivityPlaceholder\" apps/web/app/home/\\(user\\)/_components/widgets/recent-activity-placeholder.tsx && grep -q \"Recent Activity\" apps/web/app/home/\\(user\\)/_components/widgets/recent-activity-placeholder.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/recent-activity-placeholder.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T2"
+        ],
+        "blocks": [
+          "S1918.I1.F3.T10",
+          "S1918.I1.F3.T13"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T7",
+      "type": "task",
+      "name": "Create QuickActionsPlaceholder component",
+      "action": {
+        "verb": "Create",
+        "target": "QuickActionsPlaceholder file"
+      },
+      "purpose": "Create Row 2, Slot 2 placeholder showing 'Quick Actions' widget label",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/widgets/widget-placeholder.tsx"
+        ],
+        "dependencies": [
+          "WidgetPlaceholder component"
+        ],
+        "constraints": [
+          "Export named component QuickActionsPlaceholder",
+          "Pass title='Quick Actions' to WidgetPlaceholder",
+          "Pass description explaining contextual CTAs purpose"
+        ]
+      },
+      "input_state": "No QuickActionsPlaceholder file exists",
+      "output_state": "QuickActionsPlaceholder component file exists rendering WidgetPlaceholder with 'Quick Actions' title",
+      "acceptance_criterion": "File exists exporting QuickActionsPlaceholder component that renders WidgetPlaceholder",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/widgets/quick-actions-placeholder.tsx && grep -q \"export.*QuickActionsPlaceholder\" apps/web/app/home/\\(user\\)/_components/widgets/quick-actions-placeholder.tsx && grep -q \"Quick Actions\" apps/web/app/home/\\(user\\)/_components/widgets/quick-actions-placeholder.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/quick-actions-placeholder.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T2"
+        ],
+        "blocks": [
+          "S1918.I1.F3.T10",
+          "S1918.I1.F3.T13"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T8",
+      "type": "task",
+      "name": "Create CoachingSessionsPlaceholder component",
+      "action": {
+        "verb": "Create",
+        "target": "CoachingSessionsPlaceholder file"
+      },
+      "purpose": "Create Row 2, Slot 3 placeholder showing 'Coaching Sessions' widget label",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/widgets/widget-placeholder.tsx"
+        ],
+        "dependencies": [
+          "WidgetPlaceholder component"
+        ],
+        "constraints": [
+          "Export named component CoachingSessionsPlaceholder",
+          "Pass title='Coaching Sessions' to WidgetPlaceholder",
+          "Pass description explaining upcoming sessions purpose"
+        ]
+      },
+      "input_state": "No CoachingSessionsPlaceholder file exists",
+      "output_state": "CoachingSessionsPlaceholder component file exists rendering WidgetPlaceholder with 'Coaching Sessions' title",
+      "acceptance_criterion": "File exists exporting CoachingSessionsPlaceholder component that renders WidgetPlaceholder",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/widgets/coaching-sessions-placeholder.tsx && grep -q \"export.*CoachingSessionsPlaceholder\" apps/web/app/home/\\(user\\)/_components/widgets/coaching-sessions-placeholder.tsx && grep -q \"Coaching Sessions\" apps/web/app/home/\\(user\\)/_components/widgets/coaching-sessions-placeholder.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/coaching-sessions-placeholder.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T2"
+        ],
+        "blocks": [
+          "S1918.I1.F3.T10",
+          "S1918.I1.F3.T13"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T9",
+      "type": "task",
+      "name": "Create PresentationsTablePlaceholder component",
+      "action": {
+        "verb": "Create",
+        "target": "PresentationsTablePlaceholder file"
+      },
+      "purpose": "Create Row 3 full-width placeholder showing 'Presentations Table' widget label",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 9,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/widgets/widget-placeholder.tsx"
+        ],
+        "dependencies": [
+          "WidgetPlaceholder component"
+        ],
+        "constraints": [
+          "Export named component PresentationsTablePlaceholder",
+          "Pass title='Presentations Table' to WidgetPlaceholder",
+          "Pass description explaining table purpose",
+          "May need custom className for full-width styling if different from other placeholders"
+        ]
+      },
+      "input_state": "No PresentationsTablePlaceholder file exists",
+      "output_state": "PresentationsTablePlaceholder component file exists rendering WidgetPlaceholder with 'Presentations Table' title",
+      "acceptance_criterion": "File exists exporting PresentationsTablePlaceholder component that renders WidgetPlaceholder",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/widgets/presentations-table-placeholder.tsx && grep -q \"export.*PresentationsTablePlaceholder\" apps/web/app/home/\\(user\\)/_components/widgets/presentations-table-placeholder.tsx && grep -q \"Presentations Table\" apps/web/app/home/\\(user\\)/_components/widgets/presentations-table-placeholder.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/presentations-table-placeholder.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T2"
+        ],
+        "blocks": [
+          "S1918.I1.F3.T10",
+          "S1918.I1.F3.T14"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T10",
+      "type": "task",
+      "name": "Add data-testid attributes to all placeholders",
+      "action": {
+        "verb": "Add",
+        "target": "data-testid attributes"
+      },
+      "purpose": "Enable E2E testing by adding test IDs to all 7 placeholder components",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 10,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/widgets/course-progress-placeholder.tsx",
+          "apps/web/app/home/(user)/_components/widgets/skills-assessment-placeholder.tsx",
+          "apps/web/app/home/(user)/_components/widgets/kanban-summary-placeholder.tsx",
+          "apps/web/app/home/(user)/_components/widgets/recent-activity-placeholder.tsx",
+          "apps/web/app/home/(user)/_components/widgets/quick-actions-placeholder.tsx",
+          "apps/web/app/home/(user)/_components/widgets/coaching-sessions-placeholder.tsx",
+          "apps/web/app/home/(user)/_components/widgets/presentations-table-placeholder.tsx"
+        ],
+        "dependencies": [
+          "All 7 placeholder components"
+        ],
+        "constraints": [
+          "Use pattern: data-testid='widget-placeholder-{name}' (e.g., 'widget-placeholder-course-progress')",
+          "Add to outermost element of each placeholder component",
+          "Use kebab-case for testid values"
+        ]
+      },
+      "input_state": "7 placeholder components exist without data-testid attributes",
+      "output_state": "All 7 placeholders have data-testid attributes for E2E testing",
+      "acceptance_criterion": "Each of 7 placeholder files contains data-testid attribute with consistent naming pattern",
+      "verification_command": "grep -l \"data-testid\" apps/web/app/home/\\(user\\)/_components/widgets/*-placeholder.tsx | wc -l | grep -q \"7\" && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/widgets/course-progress-placeholder.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/widgets/skills-assessment-placeholder.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/widgets/kanban-summary-placeholder.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/widgets/recent-activity-placeholder.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/widgets/quick-actions-placeholder.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/widgets/coaching-sessions-placeholder.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/widgets/presentations-table-placeholder.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T3",
+          "S1918.I1.F3.T4",
+          "S1918.I1.F3.T5",
+          "S1918.I1.F3.T6",
+          "S1918.I1.F3.T7",
+          "S1918.I1.F3.T8",
+          "S1918.I1.F3.T9"
+        ],
+        "blocks": [
+          "S1918.I1.F3.T11"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T11",
+      "type": "task",
+      "name": "Create barrel export index.ts",
+      "action": {
+        "verb": "Create",
+        "target": "index.ts barrel export file"
+      },
+      "purpose": "Provide convenient single import point for all widget placeholders",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 11,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/widgets/ (all placeholder files)"
+        ],
+        "dependencies": [
+          "All 7 placeholder components",
+          "WidgetPlaceholder base component"
+        ],
+        "constraints": [
+          "Export all 8 components (base + 7 placeholders)",
+          "Use named exports pattern",
+          "File location: apps/web/app/home/(user)/_components/widgets/index.ts"
+        ]
+      },
+      "input_state": "No index.ts barrel export exists",
+      "output_state": "index.ts file exists exporting all widget placeholder components",
+      "acceptance_criterion": "index.ts file exists with 8 export statements for all placeholder components",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/widgets/index.ts && grep -c \"export\" apps/web/app/home/\\(user\\)/_components/widgets/index.ts | grep -q \"8\" && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/index.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T10"
+        ],
+        "blocks": [
+          "S1918.I1.F3.T12",
+          "S1918.I1.F3.T13",
+          "S1918.I1.F3.T14"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T12",
+      "type": "task",
+      "name": "Wire Row 1 placeholders to DashboardGrid",
+      "action": {
+        "verb": "Wire",
+        "target": "Row 1 placeholders to grid slots"
+      },
+      "purpose": "Import and render Course Progress, Skills Assessment, and Kanban Summary placeholders in DashboardGrid Row 1",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 12,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
+          "apps/web/app/home/(user)/_components/widgets/index.ts"
+        ],
+        "dependencies": [
+          "DashboardGrid component from F2",
+          "Row 1 placeholders"
+        ],
+        "constraints": [
+          "Import placeholders from widgets/index.ts",
+          "Place in row1 prop or first 3 children slots",
+          "Order: CourseProgressPlaceholder, SkillsAssessmentPlaceholder, KanbanSummaryPlaceholder"
+        ]
+      },
+      "input_state": "DashboardGrid exists but has no widget content in Row 1 slots",
+      "output_state": "DashboardGrid renders 3 Row 1 placeholders in correct order",
+      "acceptance_criterion": "DashboardGrid imports and renders CourseProgressPlaceholder, SkillsAssessmentPlaceholder, KanbanSummaryPlaceholder in Row 1",
+      "verification_command": "grep -q \"CourseProgressPlaceholder\" apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && grep -q \"SkillsAssessmentPlaceholder\" apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && grep -q \"KanbanSummaryPlaceholder\" apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T11"
+        ],
+        "blocks": [
+          "S1918.I1.F3.T16"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T13",
+      "type": "task",
+      "name": "Wire Row 2 placeholders to DashboardGrid",
+      "action": {
+        "verb": "Wire",
+        "target": "Row 2 placeholders to grid slots"
+      },
+      "purpose": "Import and render Recent Activity, Quick Actions, and Coaching Sessions placeholders in DashboardGrid Row 2",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 13,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
+          "apps/web/app/home/(user)/_components/widgets/index.ts"
+        ],
+        "dependencies": [
+          "DashboardGrid component from F2",
+          "Row 2 placeholders"
+        ],
+        "constraints": [
+          "Import placeholders from widgets/index.ts",
+          "Place in row2 prop or slots 4-6",
+          "Order: RecentActivityPlaceholder, QuickActionsPlaceholder, CoachingSessionsPlaceholder"
+        ]
+      },
+      "input_state": "DashboardGrid has Row 1 placeholders but no Row 2 content",
+      "output_state": "DashboardGrid renders 3 Row 2 placeholders in correct order",
+      "acceptance_criterion": "DashboardGrid imports and renders RecentActivityPlaceholder, QuickActionsPlaceholder, CoachingSessionsPlaceholder in Row 2",
+      "verification_command": "grep -q \"RecentActivityPlaceholder\" apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && grep -q \"QuickActionsPlaceholder\" apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && grep -q \"CoachingSessionsPlaceholder\" apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T11"
+        ],
+        "blocks": [
+          "S1918.I1.F3.T16"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T14",
+      "type": "task",
+      "name": "Wire Row 3 placeholder to DashboardGrid",
+      "action": {
+        "verb": "Wire",
+        "target": "Row 3 placeholder to full-width slot"
+      },
+      "purpose": "Import and render Presentations Table placeholder in DashboardGrid Row 3 spanning full width",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 14,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
+          "apps/web/app/home/(user)/_components/widgets/index.ts"
+        ],
+        "dependencies": [
+          "DashboardGrid component from F2",
+          "PresentationsTablePlaceholder"
+        ],
+        "constraints": [
+          "Import placeholder from widgets/index.ts",
+          "Place in row3 prop or last full-width slot",
+          "Should span full grid width (col-span-full or separate row section)"
+        ]
+      },
+      "input_state": "DashboardGrid has Row 1 and Row 2 placeholders but no Row 3 content",
+      "output_state": "DashboardGrid renders PresentationsTablePlaceholder in Row 3 spanning full width",
+      "acceptance_criterion": "DashboardGrid imports and renders PresentationsTablePlaceholder in full-width Row 3",
+      "verification_command": "grep -q \"PresentationsTablePlaceholder\" apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T11"
+        ],
+        "blocks": [
+          "S1918.I1.F3.T16"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T15",
+      "type": "task",
+      "name": "Verify dark mode styling",
+      "action": {
+        "verb": "Verify",
+        "target": "dark mode compatibility"
+      },
+      "purpose": "Ensure all placeholders render correctly in both light and dark themes",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 15,
+      "group": 5,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/widgets/widget-placeholder.tsx",
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        ],
+        "dependencies": [
+          "All placeholder components wired to grid"
+        ],
+        "constraints": [
+          "Verify semantic color classes used (bg-background, text-foreground, text-muted-foreground)",
+          "Check border-dashed visibility in both themes",
+          "No hardcoded color values (e.g., bg-gray-100)"
+        ]
+      },
+      "input_state": "All placeholders wired to grid but dark mode not explicitly verified",
+      "output_state": "Verified that placeholders use semantic colors and render correctly in dark mode",
+      "acceptance_criterion": "All placeholder components use semantic Tailwind classes (bg-background, text-foreground, etc.) and avoid hardcoded colors",
+      "verification_command": "grep -E \"bg-background|text-foreground|text-muted-foreground\" apps/web/app/home/\\(user\\)/_components/widgets/widget-placeholder.tsx && ! grep -E \"bg-gray-|text-gray-|bg-white|text-black\" apps/web/app/home/\\(user\\)/_components/widgets/widget-placeholder.tsx && pnpm typecheck",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T12",
+          "S1918.I1.F3.T13",
+          "S1918.I1.F3.T14"
+        ],
+        "blocks": [
+          "S1918.I1.F3.T16"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I1.F3.T16",
+      "type": "task",
+      "name": "Verify typecheck and visual layout",
+      "action": {
+        "verb": "Verify",
+        "target": "typecheck and grid layout rendering"
+      },
+      "purpose": "Ensure all code is type-safe and dashboard renders with all 7 placeholders in correct positions",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 16,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Course Progress"
+          },
+          {
+            "command": "is visible",
+            "target": "Skills Assessment"
+          },
+          {
+            "command": "is visible",
+            "target": "Kanban Summary"
+          },
+          {
+            "command": "is visible",
+            "target": "Recent Activity"
+          },
+          {
+            "command": "is visible",
+            "target": "Quick Actions"
+          },
+          {
+            "command": "is visible",
+            "target": "Coaching Sessions"
+          },
+          {
+            "command": "is visible",
+            "target": "Presentations Table"
+          },
+          {
+            "command": "find role",
+            "target": "main"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
+          "apps/web/app/home/(user)/_components/widgets/ (all files)"
+        ],
+        "dependencies": [
+          "All tasks completed",
+          "pnpm typecheck command"
+        ],
+        "constraints": [
+          "Run pnpm typecheck to verify no TypeScript errors",
+          "Visually inspect dashboard at /home route",
+          "Verify 3-3-1 grid pattern visible",
+          "Verify all 7 placeholder labels are visible",
+          "Verify responsive behavior at mobile, tablet, desktop breakpoints"
+        ]
+      },
+      "input_state": "All placeholders wired but final verification not complete",
+      "output_state": "Typecheck passes, dashboard renders with all 7 placeholders in 3-3-1 grid pattern",
+      "acceptance_criterion": "pnpm typecheck passes with no errors AND visual inspection confirms all 7 placeholders render correctly in grid layout",
+      "verification_command": "pnpm typecheck && pnpm lint --fix && ls -1 apps/web/app/home/\\(user\\)/_components/widgets/*.tsx | wc -l | grep -q \"9\"",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I1.F3.T12",
+          "S1918.I1.F3.T13",
+          "S1918.I1.F3.T14",
+          "S1918.I1.F3.T15"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Base Component Setup",
+        "task_ids": [
+          "S1918.I1.F3.T1",
+          "S1918.I1.F3.T2"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Widget Placeholder Creation",
+        "task_ids": [
+          "S1918.I1.F3.T3",
+          "S1918.I1.F3.T4",
+          "S1918.I1.F3.T5",
+          "S1918.I1.F3.T6",
+          "S1918.I1.F3.T7",
+          "S1918.I1.F3.T8",
+          "S1918.I1.F3.T9"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 7,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Testing and Export",
+        "task_ids": [
+          "S1918.I1.F3.T10",
+          "S1918.I1.F3.T11"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Grid Integration",
+        "task_ids": [
+          "S1918.I1.F3.T12",
+          "S1918.I1.F3.T13",
+          "S1918.I1.F3.T14"
+        ],
+        "depends_on_groups": [
+          3
+        ],
+        "estimated_hours": 5,
+        "parallel_hours": 2
+      },
+      {
+        "id": 5,
+        "name": "Verification",
+        "task_ids": [
+          "S1918.I1.F3.T15",
+          "S1918.I1.F3.T16"
+        ],
+        "depends_on_groups": [
+          4
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1918.I1.F3.T1",
+        "S1918.I1.F3.T2",
+        "S1918.I1.F3.T3",
+        "S1918.I1.F3.T10",
+        "S1918.I1.F3.T11",
+        "S1918.I1.F3.T12",
+        "S1918.I1.F3.T15",
+        "S1918.I1.F3.T16"
+      ],
+      "total_hours": 12
+    },
+    "duration": {
+      "sequential": 21,
+      "parallel": 12,
+      "time_saved_percent": 43
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

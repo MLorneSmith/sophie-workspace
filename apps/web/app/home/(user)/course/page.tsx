@@ -1,11 +1,11 @@
 import { getCourses } from "@kit/cms/payload";
+import type { Course } from "@kit/cms-types";
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { PageBody } from "@kit/ui/page";
 import { Trans } from "@kit/ui/trans";
 import { redirect } from "next/navigation";
 
-import type { Database } from "~/lib/database.types";
 import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
 import { withI18n } from "~/lib/i18n/with-i18n";
 
@@ -40,9 +40,6 @@ async function CoursePage() {
 	// Get all published courses using Local API (direct DB access)
 	const coursesData = await getCourses();
 	const courses = coursesData.docs || [];
-
-	// Define type alias for cleaner code
-	type Course = Database["payload"]["Tables"]["courses"]["Row"];
 
 	// Find the "Decks for Decision Makers" course
 	const decksForDecisionMakersCourse =

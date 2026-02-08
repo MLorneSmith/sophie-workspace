@@ -1,4 +1,5 @@
 import { getCourses } from "@kit/cms/payload";
+import type { Course } from "@kit/cms-types";
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { PageBody } from "@kit/ui/page";
@@ -38,9 +39,6 @@ async function CertificatePage() {
 
 	// User is authenticated
 	const user = auth.data;
-
-	// Define type alias for cleaner code
-	type Course = Database["payload"]["Tables"]["courses"]["Row"];
 
 	// Get all published courses from Payload CMS (same pattern as course/page.tsx)
 	const coursesData = await getCourses();

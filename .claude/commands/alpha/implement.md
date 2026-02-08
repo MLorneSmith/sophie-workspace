@@ -1,15 +1,10 @@
 ---
 description: Implement all tasks for a feature from Alpha workflow. Reads tasks.json, executes with sub-agents (parallel by default), validates, commits, and reports progress.
-argument-hint: <feature-id> [--resume-from=<task-id>] [--sequential] [--parallel-dry-run]
+argument-hint: <S#.I#.F#|feature-#> [--resume-from=<task-id>] [--sequential] [--parallel-dry-run]
 model: opus
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion, WebFetch, WebSearch, TaskOutput]
 hooks:
   PostToolUse:
-    - matcher: ""
-      hooks:
-        - type: command
-          command: "HOOK_EVENT_TYPE=post_tool_use python3 $CLAUDE_PROJECT_DIR/.claude/hooks/event_reporter.py || true"
-          timeout: 3
     - matcher: "TodoWrite"
       hooks:
         - type: command
@@ -31,13 +26,17 @@ hooks:
 
 # Alpha Feature Implementation
 
-Implement ALL tasks for Feature #$ARGUMENTS from the Alpha autonomous coding workflow.
+Implement ALL tasks for Feature $ARGUMENTS from the Alpha autonomous coding workflow.
 
 **Arguments:**
-- `<feature-id>` - Required. The GitHub issue number for the feature.
-- `--resume-from=<task-id>` - Optional. Skip completed tasks and resume from the specified task ID (e.g., `--resume-from=T5`).
+- `<feature-id>` - Required. Semantic ID (e.g., `S1362.I1.F1`) or legacy GitHub issue number.
+- `--resume-from=<task-id>` - Optional. Skip completed tasks and resume from the specified task ID (e.g., `--resume-from=T5` or `--resume-from=S1362.I1.F1.T5`).
 - `--sequential` - Optional. Force sequential execution even when parallel batches are available.
 - `--parallel-dry-run` - Optional. Log parallel execution plan without executing. Use to validate analysis.
+
+**Accepted ID Formats:**
+- `S1362.I1.F1` - Semantic feature ID (preferred)
+- `1367` - Legacy GitHub issue number
 
 ## Context
 
@@ -70,16 +69,64 @@ You are running inside an E2B sandbox as part of the Alpha Initiative Orchestrat
 
 ### Phase 1: Load Context
 
-1. **Find feature directory**:
+0. **Initialize progress file immediately**:
+   - Write a minimal `.initiative-progress.json` at repo root before any heavy work.
+   - This prevents PTY timeout recovery from failing when the file doesn't exist yet.
+   - Use the helper script (preferred):
    ```bash
-   # Search for feature directory by ID
+   python3 .claude/hooks/init_progress.py
+   ```
+   - Example (fill feature id/title after parsing `tasks.json`):
+   ```json
+   {
+     "status": "in_progress",
+     "phase": "starting",
+     "completed_tasks": [],
+     "failed_tasks": [],
+     "context_usage_percent": 0,
+     "last_heartbeat": "2024-01-01T12:00:00Z"
+   }
+   ```
+
+1. **Parse input and find feature directory**:
+
+   **For semantic IDs (S#.I#.F#):**
+   ```typescript
+   const input = '$ARGUMENTS'.split(' ')[0]; // Extract feature ID
+   if (input.match(/^S\d+\.I\d+\.F\d+$/)) {
+     // Semantic ID: S1362.I1.F1
+     const match = input.match(/S(\d+)\.I(\d+)\.F(\d+)/);
+     const specNum = match[1];
+     const initPriority = match[2];
+     const featPriority = match[3];
+     // Use Glob to find: .ai/alpha/specs/**/S${specNum}.I${initPriority}.F${featPriority}-Feature-*
+   }
+   ```
+
+   Use Glob tool to find the feature directory:
+   ```
+   Glob tool:
+     pattern: .ai/alpha/specs/**/S*.I*.F*-Feature-*
+     # Or for specific ID: .ai/alpha/specs/**/S1362.I1.F1-Feature-*
+   ```
+
+   **For legacy issue numbers:**
+   ```bash
+   # Search for feature directory by legacy ID
    find .ai/alpha/specs -name "$ARGUMENTS-Feature-*" -type d
    ```
 
 2. **Load tasks.json**:
    - Read the `tasks.json` file from the feature directory
    - Parse metadata, tasks, and execution groups
-   - Create TodoWrite items for all tasks
+   - **CRITICAL**: Create TodoWrite items using SEMANTIC TASK IDs from tasks.json
+     - Format TodoWrite content as: `[S1692.I1.F1.T1] Task description`
+     - Format TodoWrite activeForm as: `[S1692.I1.F1.T1] Task active form`
+     - The semantic ID MUST be the exact `id` field from each task in tasks.json
+     - Example: For a task with `"id": "S1692.I1.F1.T1"` and `"name": "Create types"`
+       - content: `[S1692.I1.F1.T1] Create types`
+       - activeForm: `[S1692.I1.F1.T1] Creating types`
+     - This ensures the orchestrator can match completed tasks to tasks.json
 
 3. **Load research library**:
    - Check for `research-library/` directory in parent spec folder
@@ -642,7 +689,63 @@ If typecheck fails:
 3. **Match context.patterns** - Follow existing code patterns
 4. **Produce outputs** - Create/modify files as specified
 5. **Run verification** - Execute verification_command
-6. **Meet acceptance_criterion** - Binary done/not-done
+6. **Run Conditional Typecheck** - If task modified .ts/.tsx files (see below)
+7. **Meet acceptance_criterion** - Binary done/not-done
+
+### Task-Level Typecheck Validation (MANDATORY)
+
+After each task's `verification_command` passes, run a conditional typecheck:
+
+```
+IF task modified or created any .ts or .tsx files:
+    Log: "🔍 Running task-level typecheck..."
+
+    1. Determine affected package(s):
+       - apps/web/* → pnpm typecheck --filter web
+       - apps/e2e/* → pnpm typecheck --filter web-e2e
+       - packages/ui/* → pnpm typecheck --filter @kit/ui
+       - packages/*/* → pnpm typecheck --filter @kit/[package-name]
+
+    2. Run targeted typecheck:
+       pnpm typecheck --filter [affected-packages]
+
+    3. Handle result:
+       IF typecheck passes:
+           Log: "✅ Task-level typecheck passed"
+           Proceed to next task
+
+       IF typecheck fails:
+           Log: "❌ TypeScript errors detected - fixing before proceeding"
+           Log all errors to console
+           DO NOT proceed to next task
+           Fix type errors in implementation
+           Re-run typecheck to validate fix
+           Only mark task complete when typecheck passes
+           Increment verification_attempts in progress file
+
+IF task only modified non-TS files (docs, config, .json, .sql, etc.):
+    Log: "📝 Non-TypeScript task - skipping typecheck"
+    Proceed normally
+```
+
+**Package Detection Logic**:
+```bash
+# Extract package name from file path
+file_path="apps/web/src/components/foo.tsx"
+if [[ $file_path =~ ^apps/([^/]+) ]]; then
+    package="${BASH_REMATCH[1]}"
+    echo "pnpm typecheck --filter $package"
+elif [[ $file_path =~ ^packages/([^/]+) ]]; then
+    package="@kit/${BASH_REMATCH[1]}"
+    echo "pnpm typecheck --filter $package"
+fi
+```
+
+**Why Task-Level Typecheck?**
+- Catches type errors immediately after they're introduced
+- Faster feedback than waiting for group-level check
+- Targeted to affected packages (faster than full check)
+- Prevents cascading errors in subsequent tasks
 
 ### Database Task Handling
 
@@ -738,16 +841,404 @@ grep 'table_name' ../web/lib/database.types.ts
 - `Test` - Write or run tests
 - `Spike` - Research and document findings
 
+### Frontend Task Skill Invocation
+
+**Purpose**: When implementing frontend tasks, invoke specialized skills to improve code quality and ensure adherence to React and design best practices.
+
+**Identifying Frontend Tasks**:
+A task is considered a frontend task when ANY of these conditions are met:
+- Task outputs include `.tsx` files in `_components/` directories
+- Task action involves: "Create component", "Build UI", "Design interface"
+- Task touches: pages, layouts, panels, cards, forms, modals, dialogs
+- Task has `ui_task: true` in its metadata
+- Task has `skill_hints` array containing frontend skills
+
+**Available Frontend Skills**:
+- `/frontend-design` - Create distinctive, production-grade frontend interfaces with high design quality
+- `/react-best-practices` - React and Next.js performance optimization guidelines
+
+**Skill Selection Heuristics**:
+
+| Task Type | Skill to Invoke | Trigger Signal |
+|-----------|----------------|----------------|
+| New UI component | `/frontend-design` | Creates new `.tsx` in `_components/` |
+| Page layout | `/frontend-design` | Creates `page.tsx` or layout file |
+| Complex component design | `/frontend-design` | Task mentions "design", "styled", "aesthetic" |
+| Data-fetching component | `/react-best-practices` | Uses loader, suspense, or RSC patterns |
+| Performance-critical component | `/react-best-practices` | Task constraints mention performance |
+| Interactive form | Both skills | Creates form with validation/state |
+| Dashboard/data visualization | Both skills | Complex UI with data binding |
+
+**Skill Invocation Workflow**:
+
+```
+IF task is identified as frontend task:
+    Log: "🎨 Frontend task detected: ${task.name}"
+
+    IF task.skill_hints exists:
+        # Use explicit hints from task decomposition
+        For each skill in task.skill_hints:
+            Invoke: /${skill}
+    ELSE:
+        # Infer skills from task characteristics
+        IF task creates component in _components/ OR page layout:
+            Invoke: /frontend-design
+
+        IF task involves data fetching OR RSC OR performance:
+            Invoke: /react-best-practices
+
+        IF task creates form with validation:
+            Invoke: /frontend-design
+            Invoke: /react-best-practices
+
+    # Continue with task implementation using skill guidance
+```
+
+**Example Task with Skill Hints**:
+```json
+{
+  "id": "T5",
+  "name": "Create dashboard metrics panel",
+  "ui_task": true,
+  "skill_hints": ["frontend-design", "react-best-practices"],
+  "action": { "verb": "Create", "target": "metrics panel component" },
+  "outputs": [
+    { "type": "new", "path": "apps/web/app/home/(user)/_components/metrics-panel.tsx" }
+  ]
+}
+```
+
+**Important Notes**:
+- Skills are advisory and enhance implementation quality - they don't replace verification
+- Skill invocation adds context but should not significantly impact task duration
+- If skill invocation fails (e.g., skill unavailable), continue with standard implementation
+- Document skill usage in task progress for traceability
+
+### Visual Verification (UI Tasks)
+
+**Identifying UI Tasks**:
+Tasks are considered UI tasks when ANY of these conditions are met:
+- Task has `visual_verification` field defined in tasks.json
+- Task has `requires_ui: true` field
+- Task outputs include `*.tsx` files in app routes (e.g., `apps/web/app/**/*.tsx`)
+- Task name contains: "component", "page", "layout", "form", "modal", "dialog"
+- Task action verb is `Create` or `Wire` with target containing UI terms
+
+**Visual Verification Workflow**:
+
+```
+IF task has visual_verification OR task is identified as UI task:
+    Log: "🖥️ UI task detected: ${task.name}"
+
+    1. Ensure dev server is running:
+       - Check if port 3000 is responding
+       - If not, start dev server: pnpm dev (in background)
+       - Wait for server to be ready (max 30s)
+
+    2. Run visual verification (if visual_verification defined):
+       ```bash
+       # Navigate to the route
+       agent-browser open ${baseUrl}${visual_verification.route}
+
+       # Wait for page to load
+       agent-browser wait ${visual_verification.wait_ms || 3000}
+
+       # Run each check
+       FOR each check in visual_verification.checks:
+           IF check.command == "is visible":
+               agent-browser is visible "${check.target}"
+           ELIF check.command == "find role":
+               agent-browser find role ${check.target}
+           ELIF check.command == "find label":
+               agent-browser find label "${check.target}"
+           ELIF check.command == "snapshot":
+               agent-browser snapshot -i -c
+       ```
+
+    3. Capture screenshot for documentation:
+       ```bash
+       # Create output directory
+       mkdir -p .ai/alpha/validation/${FEATURE_ID}/
+
+       # Capture screenshot
+       agent-browser screenshot .ai/alpha/validation/${FEATURE_ID}/${TASK_ID}-screenshot.png
+       ```
+
+    4. Handle verification result:
+       IF all checks pass:
+           Log: "✅ Visual verification passed"
+           Continue to next task
+       ELSE:
+           Log: "❌ Visual verification failed"
+           Log errors for each failed check
+           IF failure is critical (e.g., page doesn't load):
+               Mark task as blocked
+           ELSE:
+               Log warning and continue (non-blocking)
+```
+
+**Visual Verification Schema** (in tasks.json):
+```json
+{
+  "id": "T5",
+  "name": "Create dashboard page layout",
+  "requires_ui": true,
+  "visual_verification": {
+    "route": "/home/dashboard",
+    "wait_ms": 3000,
+    "checks": [
+      { "command": "is visible", "target": "Dashboard" },
+      { "command": "find role", "target": "heading" },
+      { "command": "find role", "target": "navigation" }
+    ],
+    "screenshot": true
+  }
+}
+```
+
+**Timeout and Fallback**:
+- Visual verification timeout: 30 seconds per task
+- If agent-browser is not available, log warning and skip (non-blocking)
+- If dev server is not running and cannot be started, skip visual verification
+- Screenshots are optional documentation - failure to capture doesn't block task
+
+**Screenshot Storage**:
+- Directory: `.ai/alpha/validation/${FEATURE_ID}/`
+- Naming: `${TASK_ID}-screenshot.png`, `${TASK_ID}-snapshot.txt`
+- These directories should be in `.gitignore` (large binary files)
+
+**Quick Reference - agent-browser Commands**:
+```bash
+# Open a page
+agent-browser open http://localhost:3000/home/dashboard
+
+# Wait for page to load (milliseconds)
+agent-browser wait 3000
+
+# Check if element is visible
+agent-browser is visible "Dashboard"
+
+# Find by ARIA role
+agent-browser find role button "Submit"
+agent-browser find role heading
+
+# Find by label
+agent-browser find label "Email"
+
+# Get accessibility snapshot
+agent-browser snapshot -i -c
+
+# Capture screenshot
+agent-browser screenshot ./path/to/screenshot.png
+```
+
+### Behavioral Verification (Interactive Elements)
+
+**Purpose**: Validate that interactive elements (buttons, forms, links) have functional handlers, not just visual presence. This prevents the "renders but doesn't work" failure pattern seen in S1823.
+
+**When to Run**: After visual verification passes, run behavioral verification for tasks with:
+- `behavioral_verification` field defined in tasks.json
+- Task action verb is `Wire`
+- Task involves interactive elements (buttons, forms, links)
+
+**Behavioral Verification Workflow**:
+
+```
+IF task has behavioral_verification:
+    Log: "🔧 Behavioral verification: ${task.name}"
+
+    FOR each pattern in behavioral_verification.patterns:
+        IF pattern.type == "button_handler":
+            # Verify button has onClick handler
+            result = run_grep_check(pattern)
+            IF NOT result:
+                Log: "❌ Button '${pattern.target}' lacks onClick handler"
+                FAIL task
+            ELSE:
+                Log: "✅ Button '${pattern.target}' has handler"
+
+        ELIF pattern.type == "env_var_graceful":
+            # Verify env var handling is graceful (warn not error)
+            anti_pattern = grep_for_error(pattern)
+            IF anti_pattern:
+                Log: "❌ Env var uses console.error instead of graceful handling"
+                FAIL task
+            ELSE:
+                Log: "✅ Env var handled gracefully"
+
+        ELIF pattern.type == "form_submission":
+            # Verify form has onSubmit handler
+            result = run_grep_check(pattern)
+            IF NOT result:
+                Log: "❌ Form lacks onSubmit handler"
+                FAIL task
+
+        ELIF pattern.type == "link_navigation":
+            # Verify link has href or onClick navigation
+            result = run_grep_check(pattern)
+            IF NOT result:
+                Log: "❌ Link lacks navigation handler"
+                FAIL task
+
+        ELIF pattern.type == "modal_trigger":
+            # Verify modal trigger has open state handler
+            result = run_grep_check(pattern)
+            IF NOT result:
+                Log: "❌ Modal trigger lacks open handler"
+                FAIL task
+
+    # Run custom validation command if provided
+    IF behavioral_verification.validation_command:
+        result = bash(behavioral_verification.validation_command)
+        IF result.exit_code != 0:
+            Log: "❌ Custom validation failed"
+            FAIL task
+```
+
+**Behavioral Verification Commands**:
+
+```bash
+# Button handler check - verify onClick exists and is non-empty
+grep -Pzo 'Join[^<]*onClick=\{[^}]+\}' apps/web/.../component.tsx
+
+# Form submission check - verify onSubmit or handleSubmit
+grep -E 'onSubmit=\{|handleSubmit\(' apps/web/.../form.tsx
+
+# Env var graceful check - verify warn not error
+# Should find warn/return null/return []
+grep -E 'console\.warn|return (null|\[\]|undefined)' apps/web/.../loader.ts
+# Should NOT find console.error for missing env
+! grep -E 'console\.error.*API_KEY|throw.*missing.*KEY' apps/web/.../loader.ts
+
+# Link navigation check - verify href or router.push
+grep -E 'href="|onClick=.*navigate|router\.push' apps/web/.../nav.tsx
+
+# Modal trigger check - verify setOpen handler
+grep -E 'onClick=.*setOpen|onClick=.*setIsOpen|DialogTrigger' apps/web/.../modal.tsx
+```
+
+**Example Task with Behavioral Verification**:
+
+```json
+{
+  "id": "T6",
+  "name": "Wire Join button to meeting URL",
+  "action": { "verb": "Wire", "target": "Join button" },
+  "behavioral_verification": {
+    "patterns": [
+      {
+        "type": "button_handler",
+        "target": "Join",
+        "expected_action": "navigate to meeting URL",
+        "file_path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+      }
+    ],
+    "validation_command": "grep -Pzo 'Join[^<]*onClick=\\{[^}]+\\}' apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+  },
+  "verification_command": "pnpm typecheck && grep -q 'onClick.*Join' apps/web/..."
+}
+```
+
+**Failure Handling**:
+
+| Failure Type | Action | Retry? |
+|--------------|--------|--------|
+| Button lacks onClick | FAIL task | Yes (3x) |
+| Form lacks onSubmit | FAIL task | Yes (3x) |
+| Env var uses error | FAIL task | Yes (3x) |
+| Pattern not found | WARN and continue | No |
+| File not found | WARN and continue | No |
+
+**Integration with Visual Verification**:
+
+Behavioral verification runs AFTER visual verification:
+1. Visual: Element exists and is visible
+2. Behavioral: Element has functional handler
+
+This ensures both rendering AND functionality are validated before marking a task complete.
+
+**Interactive Element Click Testing** (Optional, for high-confidence validation):
+
+When agent-browser is available, you can also test actual click behavior:
+
+```bash
+# Navigate to page
+agent-browser open http://localhost:3000/home
+
+# Click a button and verify navigation
+agent-browser click "Join"
+agent-browser wait 2000
+agent-browser is visible "Meeting Room"  # Verify navigated to meeting
+
+# Click a button and verify modal opens
+agent-browser click "Book Session"
+agent-browser wait 1000
+agent-browser find role dialog  # Verify modal opened
+```
+
+Note: Click testing is more reliable but requires the dev server and proper authentication. Use grep-based pattern checks as the primary validation, with click testing as supplementary verification.
+
 ### Phase 3: Validation & Commit
 
 After each execution group:
 
-1. **Run group validations**:
-   ```bash
-   # Type check
+### Group-Level Typecheck Validation (MANDATORY - Before Commit)
+
+Before committing any task group completion, run comprehensive validation:
+
+```
+Log: "🔍 Running group-level validation before commit..."
+
+1. **Global Typecheck** (MANDATORY):
    pnpm typecheck
 
-   # Lint
+   This validates ALL packages, catching cross-package type errors.
+
+   IF typecheck fails:
+       Log: "❌ Global typecheck failed - fixing before commit"
+       Log all errors to console
+       Fix type errors immediately
+       Re-run typecheck to confirm fix
+       DO NOT commit until typecheck passes
+
+2. **Lint Validation**:
+   pnpm lint --filter [affected-packages]
+
+   IF lint fails with errors:
+       Try auto-fix: pnpm lint:fix --filter [affected-packages]
+       Re-run lint to verify
+       Warnings are acceptable, errors must be fixed
+
+3. **Database Type Verification** (if any task had requires_database: true):
+   For tasks with requires_database flag in this group:
+       - Extract table names from task context
+       - Run: grep '[table_name]' apps/web/lib/database.types.ts
+       - IF types missing:
+           Run: pnpm supabase:web:typegen
+           Re-verify types exist
+           IF still missing: Block and report error
+
+4. **Commit Gate**:
+   Only proceed to git commit when ALL pass:
+   - [ ] All verification_commands passed
+   - [ ] pnpm typecheck succeeded (zero errors)
+   - [ ] pnpm lint passed (errors fixed, warnings OK)
+   - [ ] Database types verified (if applicable)
+
+   IF any validation fails:
+       DO NOT commit
+       Fix all errors first
+       Log fix details to progress file
+```
+
+**Applies to BOTH parallel and sequential execution modes.**
+
+1. **Run group validations**:
+   ```bash
+   # Type check (MANDATORY - must pass)
+   pnpm typecheck
+
+   # Lint (errors must be fixed)
    pnpm lint
    ```
 
@@ -840,6 +1331,85 @@ EOF
 ```
 
 **CRITICAL**: Every progress file write MUST include `last_heartbeat` set to the current timestamp. The orchestrator uses this to detect stalled sessions.
+
+### Phase 4.5: Feature-Level Validation (MANDATORY - Before Completion)
+
+Before reporting a feature as complete, run comprehensive validation:
+
+```
+Log: "🔍 Running feature-level validation before completion..."
+
+1. **Full Typecheck** (MANDATORY):
+   pnpm typecheck
+
+   Verify: Zero TypeScript errors across ALL packages
+
+   IF typecheck fails:
+       Log: "❌ Feature-level typecheck failed"
+       Log all errors with file:line references
+       DO NOT mark feature as complete
+       Fix all errors first
+       Re-run typecheck to verify
+
+2. **Lint Validation**:
+   pnpm lint
+
+   Verify: Zero lint errors (warnings acceptable)
+
+   IF lint errors exist:
+       Try: pnpm lint:fix
+       Re-run lint
+       IF errors persist: Fix manually before completion
+
+3. **Database Type Verification** (for features with database tasks):
+   For any task in this feature with requires_database: true:
+       - Extract table names from task context
+       - Verify types exist:
+         grep '[table_name]' apps/web/lib/database.types.ts
+
+       IF types missing:
+           Log: "⚠️ Database types missing - regenerating..."
+           Run: pnpm supabase:web:typegen
+           Re-verify types exist
+
+           IF still missing:
+               Log: "❌ Database types failed to generate"
+               DO NOT mark feature complete
+               Document issue in progress file
+
+4. **Module Import Verification**:
+   Run: pnpm typecheck 2>&1 | grep "Cannot find module"
+
+   Count MUST be zero.
+
+   IF any "Cannot find module" errors:
+       Log: "❌ Unresolved imports detected"
+       List all missing modules
+       Fix imports before feature completion
+       Re-run typecheck
+
+5. **Validation Report Summary**:
+   Log validation results to .initiative-progress.json:
+
+   "validation": {
+       "typecheck": "PASS" | "FAIL (N errors)",
+       "lint": "PASS" | "FAIL (N errors, M warnings)",
+       "database_types": "VERIFIED (N tables)" | "SKIPPED" | "FAILED",
+       "imports": "RESOLVED" | "FAILED (N missing)",
+       "validated_at": "[timestamp]"
+   }
+
+   IF all pass:
+       Log: "✅ Feature-level validation PASSED"
+       Proceed to mark feature complete
+
+   IF any fail:
+       Log: "❌ Feature-level validation FAILED"
+       DO NOT mark feature complete
+       Fix issues and re-validate
+```
+
+**This validation is BLOCKING** - a feature cannot be marked "complete" until all checks pass.
 
 ### Phase 5: Exit Conditions
 
@@ -1045,6 +1615,11 @@ Commits: 3
 8. **Handle --resume-from** - Skip completed tasks when resuming from crash
 9. **Check parallel batches** - Run Phase 1.5 analysis before execution
 10. **Use --parallel-dry-run** - Validate parallelism analysis before enabling parallel execution
+11. **Dependency tasks require special handling** - When a task adds npm packages:
+    - Run `pnpm install` after modifying package.json
+    - Commit both package.json AND pnpm-lock.yaml
+    - Verify with `pnpm typecheck` to ensure imports work
+    - See task-decompose.md "Dependency Installation Task Pattern" for details
 
 ## Parallel Execution Quick Reference
 
@@ -1070,6 +1645,88 @@ Commits: 3
 Look for group.parallel_batches in tasks.json
 If batch.task_ids.length > 1 → Tasks will run in parallel
 If group.parallelization_analysis.speedup_potential > 1 → Worth parallelizing
+```
+
+## Typecheck Verification Reference
+
+### When to Run `pnpm typecheck`
+
+| Situation | Command | Blocking |
+|-----------|---------|----------|
+| Task modifies .ts/.tsx files | `pnpm typecheck --filter [package]` | YES - must pass |
+| After each task group | `pnpm typecheck` | YES - must pass |
+| Before feature completion | `pnpm typecheck` | YES - must pass |
+| Task modifies only docs/config | Not required | NO |
+
+### Package Detection
+
+To determine affected packages for targeted typecheck:
+
+```bash
+# Get package name from file path
+file_path="apps/web/src/components/foo.tsx"
+if [[ $file_path =~ ^apps/([^/]+) ]]; then
+    package="${BASH_REMATCH[1]}"
+elif [[ $file_path =~ ^packages/([^/]+) ]]; then
+    package="@kit/${BASH_REMATCH[1]}"
+fi
+echo "pnpm typecheck --filter $package"
+```
+
+### Database Type Verification
+
+For tasks with `requires_database: true`:
+
+```bash
+# Before task starts
+before=$(grep -c "^export type" apps/web/lib/database.types.ts)
+
+# [Task executes and generates types]
+
+# After task completes
+after=$(grep -c "^export type" apps/web/lib/database.types.ts)
+
+if [ $after -le $before ]; then
+    echo "ERROR: Type generation failed - no new types exported"
+    exit 1
+fi
+```
+
+### Common Typecheck Error Patterns
+
+| Error Pattern | Cause | Fix |
+|---------------|-------|-----|
+| `TS2307: Cannot find module` | Missing import or ungenerated types | Check path, run typegen if DB |
+| `TS2554: Expected X arguments` | Function signature mismatch | Check function definition |
+| `TS2769: No overload matches` | Wrong parameter types | Check type definitions |
+| `TS2741: Property missing` | Incomplete object shape | Add required properties |
+
+### Validation Flow Summary
+
+```
+Task Start
+    ↓
+Run Task Implementation
+    ↓
+Run verification_command
+    ↓
+IF modified .ts/.tsx → Run task-level typecheck
+    ↓
+Mark Task Complete
+    ↓
+[Repeat for all tasks in group]
+    ↓
+Run group-level typecheck (global)
+    ↓
+Run lint validation
+    ↓
+Commit changes
+    ↓
+[Repeat for all groups]
+    ↓
+Run feature-level validation
+    ↓
+Mark Feature Complete
 ```
 
 ## Arguments

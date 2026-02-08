@@ -21,7 +21,7 @@ Two open Dependabot security alerts require attention: a HIGH severity DNS rebin
 
 ## Reproduction Steps
 
-1. View GitHub Dependabot alerts at https://github.com/MLorneSmith/2025slideheroes/security/dependabot
+1. View GitHub Dependabot alerts at https://github.com/slideheroes/2025slideheroes/security/dependabot
 2. Observe two open alerts (#86 and #85)
 
 ## Expected Behavior

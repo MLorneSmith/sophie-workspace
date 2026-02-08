@@ -1,0 +1,368 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1918.I4.F2",
+    "feature_name": "Kanban Summary Widget",
+    "feature_slug": "kanban-summary-widget",
+    "initiative_id": "S1918.I4",
+    "spec_id": "S1918",
+    "created_at": "2026-02-03T10:30:00Z",
+    "complexity": {
+      "score": 31.25,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "signals": {
+        "files_affected": 2,
+        "dependencies": "none",
+        "estimated_loc": 120,
+        "feature_type": "feature"
+      },
+      "pattern_matched": "Layer Decomposition (New Component)"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S1918.I4.F2.T2",
+      "S1918.I4.F2.T3"
+    ],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1918.I4.F2.T1",
+      "type": "task",
+      "name": "Create KanbanSummaryData type definition",
+      "action": {
+        "verb": "Create",
+        "target": "KanbanSummaryData type"
+      },
+      "purpose": "Define TypeScript interface for widget props with task counts and preview data to ensure type safety",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts",
+          "apps/web/app/home/(user)/kanban/_lib/schema/task.schema.ts"
+        ],
+        "dependencies": [
+          "TaskStatus type from kanban schema"
+        ],
+        "constraints": [
+          "Must extend/fit into existing DashboardData interface",
+          "Type must match data shape from dashboard loader",
+          "Reuse TaskStatus enum from kanban schema"
+        ]
+      },
+      "input_state": "Dashboard types file exists with DashboardData interface; TaskStatus type exists in kanban schema",
+      "output_state": "KanbanSummaryData type exported with doingCount (number), doingTasks (array of task previews), nextTask (task preview or null)",
+      "acceptance_criterion": "KanbanSummaryData type exists with doingCount, doingTasks (max 2), nextTask fields",
+      "verification_command": "pnpm typecheck && grep -q 'export type KanbanSummaryData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1918.I4.F2.T2",
+          "S1918.I4.F2.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I4.F2.T2",
+      "type": "task",
+      "name": "Create kanban-summary-widget component with task list",
+      "action": {
+        "verb": "Create",
+        "target": "kanban-summary-widget component"
+      },
+      "purpose": "Build server component that displays doing tasks count, first 2 task titles, and next task preview",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Kanban Summary"
+          },
+          {
+            "command": "find role",
+            "target": "link"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "packages/ui/src/shadcn/badge.tsx",
+          "packages/ui/src/shadcn/button.tsx",
+          "apps/web/config/paths.config.ts"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+          "Badge from @kit/ui/badge",
+          "Button from @kit/ui/button",
+          "Link from next/link",
+          "Lucide icon: ArrowRight"
+        ],
+        "constraints": [
+          "Server component (no 'use client' directive)",
+          "Receives KanbanSummaryData as props",
+          "Display 'Doing' count with Badge component",
+          "Show first 2 tasks with title truncation (line-clamp-1)",
+          "Show 'Next Up' section with first 'Do' task",
+          "Link to /home/kanban with 'View Kanban Board →' text",
+          "Handle empty state: 'No active tasks' message"
+        ]
+      },
+      "input_state": "KanbanSummaryData type exists from T1",
+      "output_state": "KanbanSummaryWidget component exists and exports default function with task list rendering",
+      "acceptance_criterion": "Component file exists with Badge for count, task list with truncation, next task display, and link to kanban",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/kanban-summary-widget.tsx && grep -q 'KanbanSummaryData' apps/web/app/home/\\(user\\)/_components/kanban-summary-widget.tsx && grep -q 'Badge' apps/web/app/home/\\(user\\)/_components/kanban-summary-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I4.F2.T1"
+        ],
+        "blocks": [
+          "S1918.I4.F2.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I4.F2.T3",
+      "type": "task",
+      "name": "Add empty state to kanban-summary-widget",
+      "action": {
+        "verb": "Add",
+        "target": "empty state to widget"
+      },
+      "purpose": "Handle case when user has no active tasks with helpful guidance",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "No active tasks"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx"
+        ],
+        "dependencies": [
+          "Empty state pattern from other dashboard widgets"
+        ],
+        "constraints": [
+          "Show when doingCount is 0 and no nextTask",
+          "Display 'No active tasks' message",
+          "Include suggestion to visit Kanban board",
+          "Keep link to Kanban board visible in empty state",
+          "Use muted text color for secondary message"
+        ]
+      },
+      "input_state": "Widget component exists from T2 without empty state handling",
+      "output_state": "Widget component has conditional rendering for empty state with helpful message",
+      "acceptance_criterion": "Widget shows 'No active tasks' message when doingCount is 0 and renders link to Kanban",
+      "verification_command": "grep -q 'No active tasks' apps/web/app/home/\\(user\\)/_components/kanban-summary-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I4.F2.T2"
+        ],
+        "blocks": [
+          "S1918.I4.F2.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1918.I4.F2.T4",
+      "type": "task",
+      "name": "Wire kanban-summary-widget to dashboard page",
+      "action": {
+        "verb": "Wire",
+        "target": "widget to dashboard grid"
+      },
+      "purpose": "Integrate widget into dashboard page layout at correct grid position (right column, row 1)",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "component_render",
+            "target": "KanbanSummaryWidget",
+            "expected_action": "renders in dashboard grid with props from loader",
+            "file_path": "apps/web/app/home/(user)/page.tsx"
+          }
+        ],
+        "validation_command": "grep -q 'KanbanSummaryWidget' apps/web/app/home/\\(user\\)/page.tsx"
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        ],
+        "dependencies": [
+          "KanbanSummaryWidget component from T2/T3",
+          "Dashboard loader data from S1918.I2.F2"
+        ],
+        "constraints": [
+          "Import KanbanSummaryWidget from _components",
+          "Place in right column, row 1 of grid",
+          "Pass kanbanSummary data from loader as props",
+          "Grid slot should match layout from S1918.I1.F2"
+        ]
+      },
+      "input_state": "Dashboard page has grid layout, widget component exists from T2/T3",
+      "output_state": "Widget renders in dashboard page at correct position with loader data",
+      "acceptance_criterion": "KanbanSummaryWidget imported and rendered in dashboard page.tsx at right column, row 1",
+      "verification_command": "grep -q 'import.*KanbanSummaryWidget' apps/web/app/home/\\(user\\)/page.tsx && grep -q '<KanbanSummaryWidget' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1918.I4.F2.T2",
+          "S1918.I4.F2.T3"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Type Definitions",
+        "task_ids": [
+          "S1918.I4.F2.T1"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Component Implementation",
+        "task_ids": [
+          "S1918.I4.F2.T2",
+          "S1918.I4.F2.T3",
+          "S1918.I4.F2.T4"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 8,
+        "parallel_hours": 8
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1918.I4.F2.T1",
+        "S1918.I4.F2.T2",
+        "S1918.I4.F2.T4"
+      ],
+      "total_hours": 8
+    },
+    "duration": {
+      "sequential": 10,
+      "parallel": 10,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

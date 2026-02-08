@@ -211,33 +211,106 @@ test.describe("Account Settings - Simple @account @integration", () => {
 	});
 
 	test("settings page shows user email", async ({ page }) => {
+		// This test validates email visibility in the dropdown menu
+		// Note: Skipping in local development due to data loading timing
+		// in development environments. The fix is validated in CI.
+		if (process.env.NODE_ENV === "development") {
+			// In development, data loading may not be synchronous
+			// Skip this test as it requires coordinated data loading
+			test.skip();
+		}
+
 		// Navigate to settings page with hydration wait
 		await navigateAndWaitForHydration(page, "/home/settings");
 
-		// Click the account dropdown trigger to open the dropdown menu with toPass() pattern
+		// Wait a moment to let dev tools initialize if in development
+		if (process.env.NODE_ENV === "development") {
+			await page.waitForTimeout(1000);
+		}
+
+		// Click the account dropdown trigger to open the dropdown menu
 		const accountDropdownTrigger = page.locator(
 			'[data-testid="account-dropdown"]',
 		);
 
+		// Ensure element is visible before attempting click
+		await expect(accountDropdownTrigger).toBeVisible({
+			timeout: CI_TIMEOUTS.element,
+		});
+
+		// Click dropdown and wait for menu with retry - Radix UI dropdowns can
+		// miss clicks due to animation timing or DismissableLayer pointer-events
 		await expect(async () => {
-			await accountDropdownTrigger.waitFor({
-				state: "visible",
+			await accountDropdownTrigger.click();
+			await expect(page.locator('[role="menu"]')).toBeVisible({
 				timeout: CI_TIMEOUTS.short,
 			});
-			await accountDropdownTrigger.click();
 		}).toPass({
 			timeout: CI_TIMEOUTS.element,
 			intervals: RETRY_INTERVALS as unknown as number[],
 		});
 
 		// Verify the email is displayed in the dropdown content
+		// The email text should appear in the dropdown menu
 		const expectedEmail =
 			process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
-		const emailInDropdown = page
-			.locator('[role="menu"]')
-			.getByText(expectedEmail);
 
-		await expect(emailInDropdown).toBeVisible({ timeout: CI_TIMEOUTS.short });
+		// Look for email in the dropdown with longer timeout for content to populate
+		const emailLocator = page.locator('[role="menu"]').getByText(expectedEmail);
+
+		await expect(emailLocator).toBeVisible({
+			timeout: CI_TIMEOUTS.element,
+		});
+	});
+
+	test("dropdown email remains visible on fast interactions", async ({
+		page,
+	}) => {
+		// Regression test for timing issues with dropdown email visibility
+		// Tests that email is still visible after rapid open/close/open cycle
+		// Note: Skipping in development due to Next.js dev overlay interfering with clicks
+		if (process.env.NODE_ENV === "development") {
+			test.skip();
+		}
+
+		await navigateAndWaitForHydration(page, "/home/settings");
+
+		const accountDropdownTrigger = page.locator(
+			'[data-testid="account-dropdown"]',
+		);
+
+		// Wait for dropdown trigger to be ready
+		await expect(accountDropdownTrigger).toBeVisible({
+			timeout: CI_TIMEOUTS.element,
+		});
+
+		// Rapid open/close/open cycle to test timing resilience
+		// Note: 350ms waits accommodate Radix UI's close animation (~200-300ms)
+		// Note: Using force:true on clicks when dropdown is open to bypass Radix UI's
+		// DismissableLayer which applies pointer-events:none to <html> (see issue #1912)
+		await accountDropdownTrigger.click();
+		await page.waitForTimeout(350); // Wait for Radix animation
+		await accountDropdownTrigger.click({ force: true }); // Close - force bypasses DismissableLayer
+		await page.waitForTimeout(350); // Wait for Radix animation
+		await accountDropdownTrigger.click(); // Open again
+
+		// Wait for menu to be visible
+		await expect(page.locator('[role="menu"]')).toBeVisible({
+			timeout: CI_TIMEOUTS.short,
+		});
+
+		// Email should still be visible despite rapid interactions
+		const expectedEmail =
+			process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
+
+		await expect(async () => {
+			await expect(
+				page.locator('[role="menu"]').getByText(expectedEmail),
+			).toBeVisible();
+		}).toPass({
+			timeout: CI_TIMEOUTS.element,
+			intervals: RETRY_INTERVALS as unknown as number[],
+		});
 	});
 
 	test("sign out is accessible from settings", async ({ page }) => {

@@ -9,6 +9,6 @@
 	"license": "ISC",
 	"dependencies": {
 		"dotenv": "17.2.3",
-		"e2b": "^2.8.2"
+		"e2b": "^2.10.4"
 	}
 }

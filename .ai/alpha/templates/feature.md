@@ -3,8 +3,8 @@
 ## Metadata
 | Field | Value |
 |-------|-------|
-| **Parent Initiative** | #{{INITIATIVE_NUM}} |
-| **Feature ID** | {{INITIATIVE_NUM}}-F{{FEATURE_NUM}} |
+| **Parent Initiative** | S{{SPEC_NUM}}.I{{INIT_PRIORITY}} |
+| **Feature ID** | S{{SPEC_NUM}}.I{{INIT_PRIORITY}}.F{{PRIORITY}} |
 | **Status** | Draft |
 | **Estimated Days** | {{EST_DAYS}} |
 | **Priority** | {{PRIORITY}} |
@@ -48,13 +48,23 @@
 ### Trade-offs Accepted
 - {{TRADEOFF_1}}
 
+## Required Credentials
+> Environment variables required for this feature to function. Extracted from research files.
+
+| Variable | Description | Source |
+|----------|-------------|--------|
+| `{{ENV_VAR_1}}` | {{ENV_DESC_1}} | {{ENV_SOURCE_1}} |
+
+> If no external credentials required, note "None required" below:
+> {{CREDENTIALS_NOTE}}
+
 ## Dependencies
 
 ### Blocks
-- {{BLOCKS}}
+- {{BLOCKS}} <!-- Use S#.I#.F# format for cross-initiative, F# for same initiative -->
 
 ### Blocked By
-- {{BLOCKED_BY}}
+- {{BLOCKED_BY}} <!-- Use S#.I#.F# format for cross-initiative, F# for same initiative -->
 
 ### Parallel With
 - {{PARALLEL_WITH}}

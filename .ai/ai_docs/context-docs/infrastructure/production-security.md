@@ -35,7 +35,7 @@ The workflow provides these protection mechanisms:
 
 ### To Deploy to Production
 
-1. Go to Actions → [Production Deploy (Solo Developer)](https://github.com/MLorneSmith/2025slideheroes/actions/workflows/production-deploy-gated.yml)
+1. Go to Actions → [Production Deploy (Solo Developer)](https://github.com/slideheroes/2025slideheroes/actions/workflows/production-deploy-gated.yml)
 2. Click "Run workflow"
 3. Fill in:
    - **Deploy options**: Choose web/payload

@@ -62,6 +62,19 @@
 			"env": {
 				"GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_TOKEN_HERE"
 			}
+		},
+		"posthog": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"mcp-remote@latest",
+				"https://mcp.posthog.com/mcp",
+				"--header",
+				"Authorization:${POSTHOG_AUTH_HEADER}"
+			],
+			"env": {
+				"POSTHOG_AUTH_HEADER": "Bearer YOUR_POSTHOG_PERSONAL_API_KEY"
+			}
 		}
 	}
 }
