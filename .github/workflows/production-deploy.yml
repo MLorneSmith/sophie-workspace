@@ -104,6 +104,8 @@ jobs:
     uses: ./.github/workflows/reusable-build.yml
     with:
       environment: production
+      commit_sha: ${{ github.sha }}
+    secrets: inherit
 
   # Deploy Web App to Vercel Production
   deploy-web:
