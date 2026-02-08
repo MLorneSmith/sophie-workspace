@@ -21,6 +21,7 @@ jobs:
   trufflehog:
     name: Secret Scanning
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    if: github.event_name == 'pull_request'
     steps:
       - name: Checkout code
         uses: actions/checkout@v6

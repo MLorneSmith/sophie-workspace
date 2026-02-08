@@ -493,6 +493,7 @@ jobs:
           DATABASE_URI: postgresql://postgres:postgres@localhost:54522/postgres
           PAYLOAD_SECRET: test_payload_secret_for_e2e_testing
           SEED_USER_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+          SEED_SOPHIE_API_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
 
       - name: Extract Supabase JWT keys
         if: steps.check-skip.outputs.skip != 'true' && steps.shard-reqs.outputs.needs-supabase == 'true'
