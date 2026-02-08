@@ -39,7 +39,7 @@ permissions:
   actions: read
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   PNPM_VERSION: '10.14.0'
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -258,7 +258,8 @@ jobs:
         env:
           TURBO_TOKEN: ''
           TURBO_TEAM: ''
-        run: pnpm turbo run test --cache-dir=.turbo --filter=!web-e2e --filter=!payload --concurrency=4
+          TURBO_REMOTE_CACHE_SIGNATURE_KEY: ''
+        run: pnpm -r --parallel --if-present --filter=!web-e2e --filter=!payload --filter=!@slideheroes/alpha-scripts --filter=!@slideheroes/orchestrator-ui run test
 
   # YAML linting
   yaml-lint:
