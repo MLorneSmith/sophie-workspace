@@ -81,16 +81,23 @@ Keep paying customers engaged, successful, and growing with SlideHeroes.
 
 ---
 
-### 6. 🤖 Build the AI & Content Engine
+### 6. 🤖 Build the AI Systems
 
-Create the AI systems, content workflows, and knowledge base that produce consistently high-quality output.
+Build the autonomous AI systems that power both product development and content creation.
 
-**Scope:** Sophie Loop (loop runner, agent profiles, orchestration), Context Foundation, content skills and pipelines, presentation examples library, research infrastructure, best practices database, and all AI-powered automation that generates content or product assets.
+**Scope:** All AI infrastructure — the shared knowledge/context layer, orchestration and quality systems (loop runner, agent profiles, review workflows), the coding engine (Alpha Orchestrator, Codex sub-agents, GitHub workflows), and the content engine (blog, email, social pipelines). Everything that lets AI agents autonomously produce, review, and deliver work.
+
+**Initiatives:**
+- **A. Establish the Knowledge & Context Layer** — Context files, skill mappings, best practices DB, #capture pipeline, examples library. The shared intelligence that all agents draw from. Gets smarter over time through feedback loops.
+- **B. Build the Orchestration & Quality System** — Loop runner, agent profiles, task decomposition, self-review, MC integration, approval workflows. The use-case-agnostic system that handles pick up task → execute → review → deliver.
+- **C. Deploy the Coding Engine** — Alpha Orchestrator (Mike's local), Codex sub-agents (server), GitHub workflows, `.ai/` tooling, code-specific quality gates (lint, typecheck, tests).
+- **D. Launch the Content Engine** — Blog, email, social pipelines. Content-specific quality gates (voice check, persona alignment, SEO). Consumes B's orchestration + A's knowledge.
 
 **Key Results:**
-- KR: Sophie Loop operational with [X] agent profiles
+- KR: Orchestration system operational with [X] agent profiles
 - KR: Context Foundation complete and validated ([Y] files)
 - KR: [Z] content pieces produced per month through automated pipeline
+- KR: Coding engine completing [W] issues per week autonomously
 
 ---
 
@@ -116,7 +123,7 @@ Implement the tools, infrastructure, and processes required to run and scale the
 | "Email existing customers about the new platform" | 3. Convert Existing Customers |
 | "Launch on Product Hunt" | 4. Acquire New Customers |
 | "Reduce monthly churn by 2%" | 5. Delight & Retain |
-| "Create the Writer agent profile" | 6. AI & Content Engine |
+| "Create the Writer agent profile" | 6. AI Systems |
 | "Add Ready for Review column to MC" | 7. Business Operating System |
 
 ### Boundary Cases
@@ -125,11 +132,11 @@ Implement the tools, infrastructure, and processes required to run and scale the
 |------|-------------|---------------|-----|
 | Build onboarding flow | #1 or #5 | **#1** Product | It's a product feature, even though it serves retention |
 | Collect user feedback | #1 or #5 | **#5** Delight & Retain | It's a post-sale motion to understand and keep customers |
-| Context Foundation audit | #6 or #7 | **#6** AI & Content Engine | It's knowledge that powers AI output |
+| Context Foundation audit | #6 or #7 | **#6** AI Systems | It's knowledge that powers AI output |
 | Set up billing system | #1 or #7 | **#7** Business OS | It's operational infrastructure |
 | Outbound email to consultancies | #2 or #4 | **#4** Acquire New | It's bottom-of-funnel conversion, not awareness |
 | Blog post SEO optimization | #2 or #6 | **#2** Build Audience | It's about reaching people, not about the AI system |
-| Email-marketing skill improvements | #2 or #6 | **#6** AI & Content Engine | It's tooling that enables content creation |
+| Email-marketing skill improvements | #2 or #6 | **#6** AI Systems | It's tooling that enables content creation |
 | Community Slack/Discord | #2 or #5 | **#5** Delight & Retain | Community is about keeping customers engaged |
 | Partnership with Seneca | #4 or #5 | **#4** Acquire New | It's a distribution channel for new users |
 

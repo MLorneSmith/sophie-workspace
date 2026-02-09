@@ -1,0 +1,27 @@
+{
+  "taskId": 84,
+  "agent": "writer",
+  "persona": "solo-consultant",
+  "iteration": 1,
+  "createdAt": "2026-02-08T20:36:15+00:00",
+  "updatedAt": "2026-02-08T20:36:15+00:00",
+  "status": "prompt_prepared",
+  "checks": {},
+  "contextMapping": "blog-writing",
+  "builderModel": "anthropic/claude-opus-4-6",
+  "builderThinking": "high",
+  "contextFiles": [
+    "/home/ubuntu/clawd/.ai/contexts/company/about.md",
+    "/home/ubuntu/clawd/.ai/contexts/voice/brand-voice.md",
+    "/home/ubuntu/clawd/.ai/contexts/voice/mike-style.md",
+    "/home/ubuntu/clawd/.ai/contexts/voice/pov-presentations.md",
+    "/home/ubuntu/clawd/.ai/contexts/voice/vocabulary.md",
+    "/home/ubuntu/clawd/.ai/contexts/guidelines/blog-guidelines.md",
+    "/home/ubuntu/clawd/.ai/contexts/messaging/positioning.md",
+    "/home/ubuntu/clawd/.ai/contexts/personas/solo-consultant.md",
+    "/home/ubuntu/clawd/.ai/contexts/messaging/pain-points.md"
+  ],
+  "taskType": "content",
+  "maxIterations": 3,
+  "lastPrepareAt": "2026-02-08T20:36:15+00:00"
+}

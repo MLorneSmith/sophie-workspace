@@ -1,0 +1,156 @@
+# Skill-to-Context Mappings
+# Defines which context files are loaded for each agent/skill type.
+# Used by the Sophie Loop to assemble context bundles for builder and reviewer agents.
+#
+# Last Updated: 2026-02-08
+# Status: Draft — awaiting Mike's review
+#
+# Paths are relative to this directory (~/.ai/contexts/ or ~/clawd/.ai/contexts/)
+
+blog-writing:
+  always:
+    - company/about.md
+    - voice/brand-voice.md
+    - voice/mike-style.md
+    - voice/pov-presentations.md
+    - voice/vocabulary.md
+    - guidelines/blog-guidelines.md
+    - messaging/positioning.md
+  per-persona:
+    solo-consultant:
+      - personas/solo-consultant.md
+      - messaging/pain-points.md    # solo-consultant section
+    boutique:
+      - personas/boutique-consultancy.md
+      - messaging/pain-points.md    # boutique section
+    corporate:
+      - personas/corporate-professional.md
+      - messaging/pain-points.md    # corporate section
+    general:
+      - personas/overview.md
+  optional:
+    - voice/pov-ai.md              # when writing about AI topics
+    - company/differentiators.md    # when positioning-heavy content
+
+email-marketing:
+  always:
+    - company/about.md
+    - company/products.md
+    - voice/brand-voice.md
+    - voice/mike-style.md
+    - voice/vocabulary.md
+    - messaging/pain-points.md
+    - messaging/value-props.md
+    - guidelines/email-guidelines.md
+  per-persona:
+    solo-consultant:
+      - personas/solo-consultant.md
+    boutique:
+      - personas/boutique-consultancy.md
+    corporate:
+      - personas/corporate-professional.md
+  optional:
+    - messaging/objections.md       # for objection-handling sequences
+    - voice/pov-presentations.md    # for methodology-forward emails
+
+outbound:
+  always:
+    - company/about.md
+    - company/products.md
+    - voice/brand-voice.md
+    - voice/mike-style.md
+    - messaging/value-props.md
+    - messaging/objections.md
+    - guidelines/outbound-guidelines.md
+  per-persona:
+    solo-consultant:
+      - personas/solo-consultant.md
+      - messaging/pain-points.md
+    boutique:
+      - personas/boutique-consultancy.md
+      - messaging/pain-points.md
+    corporate:
+      - personas/corporate-professional.md
+      - messaging/pain-points.md
+  optional:
+    - company/differentiators.md    # for competitive positioning emails
+
+social-media:
+  always:
+    - company/about.md
+    - voice/brand-voice.md
+    - voice/mike-style.md
+    - voice/pov-presentations.md
+    - voice/vocabulary.md
+    - guidelines/social-guidelines.md
+  optional:
+    - voice/pov-ai.md              # for AI-related social posts
+    - messaging/positioning.md      # for positioning-heavy posts
+    - company/differentiators.md    # for competitive posts
+  per-persona:
+    # Social is typically all-audience, but can target:
+    corporate:
+      - personas/corporate-professional.md
+    solo-consultant:
+      - personas/solo-consultant.md
+
+coding:
+  always:
+    - company/about.md
+    - company/products.md
+  optional:
+    - messaging/positioning.md      # for customer-facing features
+    - company/roadmap.md            # for product feature work
+
+design:
+  always:
+    - company/about.md
+    - company/products.md
+    - voice/brand-voice.md
+    - voice/vocabulary.md
+  optional:
+    - messaging/positioning.md      # for landing page design
+    - company/differentiators.md    # for comparison pages
+
+research:
+  always:
+    - company/about.md
+    - messaging/positioning.md
+    - company/products.md
+  optional:
+    - company/differentiators.md    # for competitive research
+    - company/roadmap.md            # for product/market research
+    - personas/overview.md          # for audience research
+
+devops:
+  always:
+    - company/products.md
+  optional:
+    - company/roadmap.md            # for infrastructure planning
+
+planning:
+  always:
+    - company/about.md
+    - company/products.md
+    - company/roadmap.md
+    - messaging/positioning.md
+  optional:
+    - company/differentiators.md
+    - personas/overview.md
+
+review:
+  # Reviewer loads the SAME context as the builder it's reviewing.
+  # This mapping is resolved dynamically: review uses the builder's skill mapping.
+  # Listed here for documentation.
+  note: "Reviewer inherits the builder agent's context mapping"
+  always:
+    - company/about.md
+    - voice/brand-voice.md
+    - voice/vocabulary.md
+
+# --- Anti-persona filter ---
+# All content-producing agents should have access to anti-personas
+# to avoid writing for the wrong audience. Loaded on demand, not by default.
+anti-persona-filter:
+  always:
+    - personas/anti-personas.md

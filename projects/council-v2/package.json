@@ -1,0 +1,17 @@
+{
+  "name": "council-v2",
+  "version": "1.0.0",
+  "description": "Multi-agent deliberation system for Claude, GPT, and GLM",
+  "type": "module",
+  "main": "src/orchestrator.ts",
+  "scripts": {
+    "cli": "npx ts-node --esm src/cli.ts",
+    "test": "npx ts-node --esm src/test-debate.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.0"
+  }
+}

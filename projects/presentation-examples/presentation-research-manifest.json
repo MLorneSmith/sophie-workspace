@@ -1,0 +1,1318 @@
+{
+  "schema_version": 2,
+  "description": "Presentation research manifest \u2014 single source of truth for the presentation examples discovery pipeline. Tracks every presentation from catalog through download, evaluation, and keep/delete.",
+  "statuses": {
+    "new": "In catalog, not yet downloaded",
+    "uploaded": "Downloaded and uploaded to R2 to-be-evaluated/",
+    "evaluated_kept": "Evaluated, score >= threshold, moved to best-practice-examples/",
+    "evaluated_deleted": "Evaluated, score < threshold, deleted from R2",
+    "failed": "Download or upload failed",
+    "skipped": "Manually skipped (e.g. not a PDF, SlideShare)"
+  },
+  "presentations": [
+    {
+      "id": "050af53c158e",
+      "firm": "bcg",
+      "title": "Reshaping NYCHA support functions",
+      "url": "https://www1.nyc.gov/assets/nycha/downloads/pdf/BCG-report-NYCHA-Key-Findings-and-Recommendations-8-15-12vFinal.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.84,
+        "argument_average": 2.2,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:06:49.779671+00:00",
+        "slide_count": 112,
+        "storyline_summary": "The presentation attempts to convey an analysis and recommendations for improving NYCHA's operations. However, the lack of clear and actionable headlines detracts from the overall narrative, resulting in an unclear progression from problem identification to proposed solutions."
+      }
+    },
+    {
+      "id": "a6f5ff7f5636",
+      "firm": "bcg",
+      "title": "Loose Dogs in Dallas: Strategic Recommendations",
+      "url": "https://dallascityhall.com/government/Council%20Meeting%20Documents/loose-dogs-in-dallas-strategic-recommendations-to-improve-public-safety-and-animal-welfare_combined_083016.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/bcg/Loose Dogs in Dallas Strategic Recommendations.pdf"
+    },
+    {
+      "id": "ad6a1327c65a",
+      "firm": "bcg",
+      "title": "Melbourne as a Global Cultural Destination",
+      "url": "https://creative.vic.gov.au/resources/melbourne-as-a-global-cultural-destination",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "4fde969a6dac",
+      "firm": "bcg",
+      "title": "The Open Education Resources ecosystem",
+      "url": "https://www.hewlett.org/wp-content/uploads/2016/08/The%20Open%20Educational%20Resources%20Ecosystem.pdf",
+      "status": "evaluated_kept",
+      "r2_key": "best-practice-examples/bcg/The Open Education Resources ecosystem.pdf",
+      "evaluation": {
+        "combined_score": 3.28,
+        "argument_average": 2.8,
+        "design_average": 4.0,
+        "evaluated_at": "2026-02-07T04:06:55.928377+00:00",
+        "slide_count": 23,
+        "storyline_summary": "The headlines outline the current state and challenges of the Open Education Resources ecosystem, emphasizing the importance of in-classroom adoption and the perceptions of educators. There are indications of positive trends but also barriers to mainstream adoption, pointing towards the need for clarity and policy changes to enhance utilization."
+      }
+    },
+    {
+      "id": "6e7e1722d237",
+      "firm": "bcg",
+      "title": "True-Luxury Global Consumer Insight (7th Edition)",
+      "url": "https://web-assets.bcg.com/f2/f1/002816bc4aca91276243c72ee57d/bcgxaltagamma-true-luxury-global-consumer-insight-2021.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/bcg/True-Luxury Global Consumer Insight (7th Edition).pdf"
+    },
+    {
+      "id": "3277ccfcdb12",
+      "firm": "bcg",
+      "title": "Evaluating NYC media sector development",
+      "url": "http://www.nyc.gov/html/film/downloads/pdf/Media_in_NYC_2012.pdf",
+      "status": "evaluated_kept",
+      "r2_key": "best-practice-examples/bcg/Evaluating NYC media sector development.pdf",
+      "evaluation": {
+        "combined_score": 3.44,
+        "argument_average": 3.2,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:06:12.955449+00:00",
+        "slide_count": 42,
+        "storyline_summary": "The slides describe the development and current state of the media sector in NYC, highlighting growth in filmed entertainment despite national trends. They also note challenges and opportunities across traditional and digital subsectors, concluding with suggested actions for future growth and collaboration."
+      }
+    },
+    {
+      "id": "13635387f4e8",
+      "firm": "bcg",
+      "title": "The Electric Car Tipping Point",
+      "url": "https://www.slideshare.net/TheBostonConsultingGroup/the-electric-car-tipping-point-81666290",
+      "status": "skipped",
+      "r2_key": null
+    },
+    {
+      "id": "04ac360aecc5",
+      "firm": "bcg",
+      "title": "Projecting US Mail volumes to 2020",
+      "url": "https://about.usps.com/future-postal-service/bcg-detailedpresentation.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.2,
+        "argument_average": 1.0,
+        "design_average": 4.0,
+        "evaluated_at": "2026-02-07T04:06:42.320936+00:00",
+        "slide_count": 41,
+        "storyline_summary": "The slide headlines fail to convey a logical or coherent argument due to the absence of clear and meaningful titles. Without actionable statements, there is no clear storyline or insight communicated through the headlines."
+      }
+    },
+    {
+      "id": "a4bb3d9b1580",
+      "firm": "bcg",
+      "title": "Next Generation Manufacturing (2016)",
+      "url": "https://media-publications.bcg.com/BCG-CII-Report-Next-Gen-Mfg-Nov-2016.PDF",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "f8a031239e6c",
+      "firm": "bcg",
+      "title": "COVID-19 BCG Perspectives: Global Restart",
+      "url": "https://media-publications.bcg.com/BCG-COVID-19-BCG-Perspectives-Version13.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "23785994fd4b",
+      "firm": "bcg",
+      "title": "BCG Investor Perspective Series: Pulse Check #21",
+      "url": "https://web-assets.bcg.com/58/ed/0c59f92f40059f65c55a77289af0/investor-pulse-21-slideshow-221025.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/bcg/BCG Investor Perspective Series Pulse Check 21.pdf"
+    },
+    {
+      "id": "12d29c99dc5e",
+      "firm": "bcg",
+      "title": "BCG Executive Perspectives: Future of Sales and Marketing",
+      "url": "https://media-publications.bcg.com/BCG-Executive-Perspectives-2022-Future-of-Marketing-and-Sales.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "fb9a8abbf21f",
+      "firm": "bcg",
+      "title": "BCG Executive Perspectives: Race for Innovation",
+      "url": "https://media-publications.bcg.com/BCG-Executive-Perspectives-Race-for-Innovation.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "3aa2ccf4d021",
+      "firm": "bcg",
+      "title": "Digital consumer spending in India: $100Bn opportunity",
+      "url": "https://think.storage.googleapis.com/docs/digital-consumer-spending-in-india-launch-presentation.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/bcg/Digital consumer spending in India 100Bn opportunity.pdf"
+    },
+    {
+      "id": "5e3cef11bb1a",
+      "firm": "bcg",
+      "title": "Economic Impact of Ford and F-Series",
+      "url": "https://media.ford.com/content/dam/fordmedia/North%20America/US/2020/09/17/Boston-Consulting-Group-Report.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/bcg/Economic Impact of Ford and F-Series.pdf"
+    },
+    {
+      "id": "3bbd84dffac8",
+      "firm": "bcg",
+      "title": "Path to digital marketing maturity",
+      "url": "https://think.storage.googleapis.com/docs/BCG-Google-AUNZ-Digital-Marketing-Maturity-Report.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.6,
+        "argument_average": 1.8,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:06:36.579367+00:00",
+        "slide_count": 16,
+        "storyline_summary": "The headlines suggest an analysis of digital marketing maturity among brands, with a focus on consumer expectations and the value of data-driven marketing. However, the lack of clear organization and actionable titles makes it difficult to follow a coherent narrative or actionable recommendations."
+      }
+    },
+    {
+      "id": "571d362940bc",
+      "firm": "bcg",
+      "title": "2019 True-Luxury Global Consumer Insight",
+      "url": "https://media-publications.bcg.com/france/True-Luxury%20Global%20Consumer%20Insight%202019%20-%20Plenary%20-%20vMedia.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.4,
+        "argument_average": 1.2,
+        "design_average": 4.2,
+        "evaluated_at": "2026-02-07T04:05:48.788429+00:00",
+        "slide_count": 49,
+        "storyline_summary": "The headlines attempt to present insights from the True-Luxury Global Consumer Insight 2019 study but fail to form a coherent narrative. There is a mix of topics, including collaborations and second-hand luxury, but they do not connect logically to form a clear argument or recommendation."
+      }
+    },
+    {
+      "id": "380bba8d404e",
+      "firm": "bcg",
+      "title": "Out @ Work Barometer",
+      "url": "https://media-publications.bcg.com/pdf/out-at-work-barometer.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/bcg/Out Work Barometer.pdf"
+    },
+    {
+      "id": "bfe826830766",
+      "firm": "bcg",
+      "title": "Evolving State of Digital Transformation",
+      "url": "https://web-assets.bcg.com/1f/a3/c14cefc747b695e28155f732a556/bcg-the-evolving-state-of-digital-transformation-slideshow-sept-2020.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/bcg/Evolving State of Digital Transformation.pdf"
+    },
+    {
+      "id": "a960a1857010",
+      "firm": "bcg",
+      "title": "NY COVID-19 Economic Impact Assessment",
+      "url": "https://www.budget.ny.gov/pubs/archive/fy21/ny-covid19-economic-impact-prelim.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.48,
+        "argument_average": 1.6,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:06:22.183439+00:00",
+        "slide_count": 38,
+        "storyline_summary": "The headlines indicate a focus on the economic impact of COVID-19 on New York but lack coherence and clarity. The overall story is muddled due to unclear and unstructured headlines, making it difficult to understand the main argument or conclusions without further context."
+      }
+    },
+    {
+      "id": "87e7c502409d",
+      "firm": "bcg",
+      "title": "How COVID-19 Changed the Consumer",
+      "url": "https://media-publications.bcg.com/BCG-Executive-Perspectives-How-Covid-Changed-the-Consumer.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "e18d1432f700",
+      "firm": "bcg",
+      "title": "Climate Change: BCG Perspectives and Offerings",
+      "url": "https://www.spe-london.org/wp-content/uploads/2020/03/SPE-presentation-v1-for-distribution.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.84,
+        "argument_average": 2.2,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:05:59.210345+00:00",
+        "slide_count": 33,
+        "storyline_summary": "The headlines indicate a focus on the urgent threat of climate change, emphasizing the historical and projected CO2 levels and the need for action. However, the lack of clear headlines for several slides disrupts the flow and coherence of the argument."
+      }
+    },
+    {
+      "id": "34903f10e71f",
+      "firm": "bcg",
+      "title": "AI at Work: What People Are Saying",
+      "url": "https://web-assets.bcg.com/8c/26/b80dfaa64b1d92bed7b64d2e19dd/ai-at-work-what-people-are-saying.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/bcg/AI at Work What People Are Saying.pdf"
+    },
+    {
+      "id": "90996ebc0e63",
+      "firm": "bcg",
+      "title": "CEO Outlook: Caution, Optimism, and Road Ahead",
+      "url": "https://media-publications.bcg.com/BCG-Executive-Perspectives-CEO-Outlook-Survey-March-2023.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "48dafd627550",
+      "firm": "bcg",
+      "title": "CEO's Guide to Costs and Growth",
+      "url": "https://media-publications.bcg.com/BCG-Executive-Perspectives-CEOs-Guide-to-Costs-and-Growth.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "39089ffc68f5",
+      "firm": "mckinsey",
+      "title": "Helping Global Health Partnerships to increase their impact: Stop TB Partnership (2009)",
+      "url": "https://stoptb.org/assets/documents/about/cb/meetings/17/2.09-03%20Strengthening%20Performance%20Management%20in%20the%20Partnership/2.09-03.1%20Helping%20Global%20Health%20Partnerships%20to%20Increase%20their%20Impact.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.32,
+        "argument_average": 1.2,
+        "design_average": 4.0,
+        "evaluated_at": "2026-02-07T04:09:07.887562+00:00",
+        "slide_count": 54,
+        "storyline_summary": "The headlines do not present a coherent or logical flow of arguments, lacking clear titles and action-oriented statements. There is minimal insight conveyed owing to the predominance of generic labels and repetitive company branding. Overall, the slides fail to tell a clear, logical story."
+      }
+    },
+    {
+      "id": "e373362fda9b",
+      "firm": "mckinsey",
+      "title": "USPS: Future Business Model (2010)",
+      "url": "https://about.usps.com/future-postal-service/mckinsey-usps-future-bus-model2.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.12,
+        "argument_average": 1.0,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:10:22.081961+00:00",
+        "slide_count": 39,
+        "storyline_summary": "The slide headlines are largely unclear and do not provide a coherent narrative. Most headlines consist of repetitive and vague references to 'McKinsey & Company' without conveying any specific actionable insights or progression of ideas."
+      }
+    },
+    {
+      "id": "5e65e75aa224",
+      "firm": "mckinsey",
+      "title": "USPS: Envisioning America's Future Postal Service (2010)",
+      "url": "https://about.usps.com/future-postal-service/mckinsey-march-2nd-presentation2.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/mckinsey/USPS Envisioning Americas Future Postal Service (2010).pdf"
+    },
+    {
+      "id": "1789861347a3",
+      "firm": "mckinsey",
+      "title": "USPS: Selected Slides (2010)",
+      "url": "https://about.usps.com/future-postal-service/mckinsey-selected-slides.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.28,
+        "argument_average": 1.0,
+        "design_average": 4.2,
+        "evaluated_at": "2026-02-07T04:10:26.793500+00:00",
+        "slide_count": 2,
+        "storyline_summary": "The headlines fail to provide a coherent narrative as there is no clear headline on the first slide, and the second slide's title is a vague label that lacks actionable insight. The overall structure does not lead to a cohesive story or takeaway."
+      }
+    },
+    {
+      "id": "c29a4e58e5f7",
+      "firm": "mckinsey",
+      "title": "Capturing the full electricity efficiency potential of the U.K. (2012)",
+      "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/65626/7035-capturing-full-elec-eff-potential-edr.pdf",
+      "status": "evaluated_kept",
+      "r2_key": "best-practice-examples/mckinsey/Capturing the full electricity efficiency potential of the U.K. (2012).pdf",
+      "evaluation": {
+        "combined_score": 3.32,
+        "argument_average": 3.0,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:08:30.317306+00:00",
+        "slide_count": 129,
+        "storyline_summary": "The presentation seeks to assess the electricity efficiency potential in the UK by analyzing past demand, projected growth, and various sectors' capabilities for reduction. Key insights highlight barriers and key findings that outline the necessary steps for effective intervention while indicating the potential savings achievable through different measures."
+      }
+    },
+    {
+      "id": "8189a09b2704",
+      "firm": "mckinsey",
+      "title": "Modelling the potential of digitally-enabled processes in the NHS (2014)",
+      "url": "https://www.digitalhealth.net/includes/images/news0254/PDF/overview-evidence-review-of-data-and-information.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.72,
+        "argument_average": 2.0,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:09:42.197598+00:00",
+        "slide_count": 26,
+        "storyline_summary": "The headlines suggest an exploration of digitally-enabled processes within the NHS, aiming to analyze potential benefits and challenges. However, they lack clarity and coherent progression, making it difficult to follow the argument's flow and draw actionable insights."
+      }
+    },
+    {
+      "id": "4527ef1b5928",
+      "firm": "mckinsey",
+      "title": "Refueling the innovation engine in vaccines (2016)",
+      "url": "https://www.hhs.gov/sites/default/files/Azimi_McKinsey_Vaccine_Innovation_Findings-remediated.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/mckinsey/Refueling the innovation engine in vaccines (2016).pdf"
+    },
+    {
+      "id": "8629e3a38636",
+      "firm": "mckinsey",
+      "title": "Transportation and Warehousing Sector Analysis (2020)",
+      "url": "https://www.federalcitycouncil.org/wp-content/uploads/2020/12/McKinsey_Transportation.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.36,
+        "argument_average": 1.0,
+        "design_average": 4.4,
+        "evaluated_at": "2026-02-07T04:10:10.640702+00:00",
+        "slide_count": 40,
+        "storyline_summary": "The headlines provide disjointed information about transportation in DC without a cohesive argument or progression. There is a lack of clarity regarding the challenges and significant insights, making it difficult to grasp the core message."
+      }
+    },
+    {
+      "id": "c10d063b08ea",
+      "firm": "mckinsey",
+      "title": "Chilean Hydrogen Pathway: Final report (2020)",
+      "url": "https://energia.gob.cl/sites/default/files/estudio_base_para_la_elaboracion_de_la_estrategia_nacional_para_el_desarrollo_de_hidrogeno_verde_en_chile.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.8,
+        "argument_average": 2.0,
+        "design_average": 4.0,
+        "evaluated_at": "2026-02-07T04:08:45.260378+00:00",
+        "slide_count": 65,
+        "storyline_summary": "The slides outline the state and potential of the hydrogen industry globally, focusing on various countries' strategies and the business case for domestic production and exportation. However, the narrative lacks clear action-oriented headlines and a coherent structure, making it hard to extract a definitive takeaway."
+      }
+    },
+    {
+      "id": "92a2d686930d",
+      "firm": "mckinsey",
+      "title": "MTA: Financial Impact Assessment on 2020 Revenue of COVID-19",
+      "url": "https://new.mta.info/document/16951",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.32,
+        "argument_average": 1.2,
+        "design_average": 4.0,
+        "evaluated_at": "2026-02-07T04:09:35.920488+00:00",
+        "slide_count": 38,
+        "storyline_summary": "The slides fail to convey a clear argument as they lack meaningful headlines and coherent structure. Most slides contain disclaimers or labels, leaving the key findings and recommendations overshadowed and difficult to understand."
+      }
+    },
+    {
+      "id": "acd3b0f527e0",
+      "firm": "mckinsey",
+      "title": "The changed agenda in the global sourcing industry (2009)",
+      "url": "https://web-archive.oecd.org/2012-06-14/112202-44083521.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "8e3abc0c972f",
+      "firm": "mckinsey",
+      "title": "What Makes Private Sector Partnership Works (2011)",
+      "url": "https://www.mcgill.ca/globalfoodsecurity/files/globalfoodsecurity/kathrynyoung.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.8,
+        "argument_average": 2.0,
+        "design_average": 4.0,
+        "evaluated_at": "2026-02-07T04:10:40.168699+00:00",
+        "slide_count": 12,
+        "storyline_summary": "The headlines suggest an analysis of private sector involvement in agriculture and its potential impact, but they lack clarity and actionable insight. The narrative does point towards challenges and opportunities but fails to clearly connect the progression from problem to recommendation."
+      }
+    },
+    {
+      "id": "77bcfbb1cf31",
+      "firm": "mckinsey",
+      "title": "The Internet of Things and Big Data: Opportunities for Value Creation (2013)",
+      "url": "https://www.cisco.com/assets/sol/dc/iot_and_big_data.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.28,
+        "argument_average": 1.0,
+        "design_average": 4.2,
+        "evaluated_at": "2026-02-07T04:09:55.066438+00:00",
+        "slide_count": 18,
+        "storyline_summary": "The headlines present disjointed concepts around the Internet of Things without a clear narrative or logical flow. There are significant gaps in the structure, with many slides lacking appropriate headlines, making it difficult to extract a coherent argument or takeaway."
+      }
+    },
+    {
+      "id": "972056835f18",
+      "firm": "mckinsey",
+      "title": "Laying the foundations for a financially sound industry - Steel (2013)",
+      "url": "https://web-archive.oecd.org/2013-12-16/260684-Laying%20the%20foundations%20for%20a%20financially%20sound%20industry%20-%20OECD.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "30078b2a7345",
+      "firm": "mckinsey",
+      "title": "Insurance trends and growth opportunities for Poland (2015)",
+      "url": "https://piu.org.pl/public/upload/ibrowser/III%20Kongres%20prezentacje/2014.05.04%20Polish%20Insurance%20Association%20-%20final.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.88,
+        "argument_average": 2.0,
+        "design_average": 4.2,
+        "evaluated_at": "2026-02-07T04:09:23.647913+00:00",
+        "slide_count": 25,
+        "storyline_summary": "The slides attempt to discuss the growth potential of the Polish insurance market and its key drivers, including demographic changes and emerging customer segments. However, the repetitive nature of the headlines, lack of clear structure, and insufficient action-oriented statements dilute the argument."
+      }
+    },
+    {
+      "id": "3c9bc8e6b0ad",
+      "firm": "mckinsey",
+      "title": "Challenges in Mining: Scarcity or Opportunity? (2015)",
+      "url": "https://worldmaterialsforum.com/files/downloads/5-Rare_20Raw_20Material_20Issues.pdf",
+      "status": "evaluated_kept",
+      "r2_key": "best-practice-examples/mckinsey/Challenges in Mining Scarcity or Opportunity (2015).pdf",
+      "evaluation": {
+        "combined_score": 3.4,
+        "argument_average": 3.0,
+        "design_average": 4.0,
+        "evaluated_at": "2026-02-07T04:08:38.574218+00:00",
+        "slide_count": 41,
+        "storyline_summary": "The slides outline challenges in the mining industry, particularly a decline in productivity and rising costs. They suggest that technological innovations are key to addressing these challenges, with a specific focus on advanced mining technologies like automated drilling and autonomous haulage. The executive summary and additional context highlight the urgency of these developments in a global market influenced heavily by China's control over rare earth elements."
+      }
+    },
+    {
+      "id": "2126adea6e76",
+      "firm": "mckinsey",
+      "title": "How will IoT, mobile internet, data analytics and cloud transform public services by 2030? (2015)",
+      "url": "https://www.alexanderjarvis.com/wp-content/uploads/2021/12/McKinsey-How-will-Internet-of-Things-mobile-internet-data-analytics-and-cloud-transform-public-services-by-2030.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/mckinsey/How will IoT mobile internet data analytics and cloud transform public services .pdf"
+    },
+    {
+      "id": "e863d5c58e5b",
+      "firm": "mckinsey",
+      "title": "Using Artificial Intelligence to prevent healthcare errors (2017)",
+      "url": "https://www.bundesgesundheitsministerium.de/fileadmin/Dateien/3_Downloads/P/Patientensicherheit/WS3-2017/01_WS3_Henke_20170328_Using_AI_to_prevent_healthcare_errors_from_occuring.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 3.04,
+        "argument_average": 2.4,
+        "design_average": 4.0,
+        "evaluated_at": "2026-02-07T04:10:33.762220+00:00",
+        "slide_count": 26,
+        "storyline_summary": "The slides aim to present the application of artificial intelligence in healthcare, focusing on predictive analytics and their potential impact on various medical outcomes. However, the repetitive nature of agenda slides and vague titles leaves the audience without a clear, cohesive narrative or takeaway."
+      }
+    },
+    {
+      "id": "bf35c3eafc04",
+      "firm": "mckinsey",
+      "title": "Digital Luxury Experience 2017",
+      "url": "https://altagamma.it/media/source/20170525_DLE%202017_Shareablepres_1.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/mckinsey/Digital Luxury Experience 2017.pdf"
+    },
+    {
+      "id": "d7b5aa9ebf0a",
+      "firm": "mckinsey",
+      "title": "Technology's role in mineral criticality (2017)",
+      "url": "https://worldmaterialsforum.com/files/Presentations2017/PlenarySession1/WMF2017-McKinsey-Franck-Bekeart.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/mckinsey/Technologys role in mineral criticality (2017).pdf"
+    },
+    {
+      "id": "3e6d557b6999",
+      "firm": "mckinsey",
+      "title": "The future energy landscape: Global trends and the Netherlands (2017)",
+      "url": "https://www.alexanderjarvis.com/wp-content/uploads/2021/12/McKinsey-The-future-energy-landscape-Global-trends-and-a-closer-look-at-the-Netherlands-.pdf",
+      "status": "evaluated_kept",
+      "r2_key": "best-practice-examples/mckinsey/The future energy landscape Global trends and the Netherlands (2017).pdf",
+      "evaluation": {
+        "combined_score": 3.36,
+        "argument_average": 2.8,
+        "design_average": 4.2,
+        "evaluated_at": "2026-02-07T04:10:03.231949+00:00",
+        "slide_count": 38,
+        "storyline_summary": "The headlines suggest a narrative about the shifting energy landscape, focusing on technological disruptions, economic factors, and needed investments for the future. However, the lack of a clear progression from problem to solution and overlapping categories hinder a cohesive argument."
+      }
+    },
+    {
+      "id": "bbd0573ffb41",
+      "firm": "mckinsey",
+      "title": "European Banking Summit 2018",
+      "url": "https://www.ebf.eu/wp-content/uploads/2018/10/European-Banking-Summit-2018-Max-Floetotto.pdf",
+      "status": "evaluated_kept",
+      "r2_key": "best-practice-examples/mckinsey/European Banking Summit 2018.pdf",
+      "evaluation": {
+        "combined_score": 3.44,
+        "argument_average": 2.8,
+        "design_average": 4.4,
+        "evaluated_at": "2026-02-07T04:08:58.494056+00:00",
+        "slide_count": 10,
+        "storyline_summary": "The headlines outline the challenges faced by European banks and capital markets compared to their US counterparts, highlighting key metrics and performance gaps. However, there is a lack of actionable recommendations or a clear pathway to a solution, which diminishes the overall impact of the narrative."
+      }
+    },
+    {
+      "id": "d07b6077a04f",
+      "firm": "mckinsey",
+      "title": "Current perspectives on Medical Affairs in Japan (2018)",
+      "url": "https://static1.squarespace.com/static/5966db90f9a61efb4cd0dc89/t/5a9750338165f5deb7607a69/1519865953798/Minyoung+Kim.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 3.08,
+        "argument_average": 2.6,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:08:52.475569+00:00",
+        "slide_count": 20,
+        "storyline_summary": "The headlines suggest a narrative about the evolving role of Medical Affairs in Japan, emphasizing a shift from supportive functions to a more pivotal role in the pharmaceutical industry. However, the repetition and lack of clear action-oriented statements dilute the overall impact and coherence of the story."
+      }
+    },
+    {
+      "id": "a68de24f295e",
+      "firm": "mckinsey",
+      "title": "Investment and Industrial Policy: A Perspective on the Future (2018)",
+      "url": "https://unctad.org/system/files/non-official-document/tdb65pt2_item5_presentation_LKrstic_en.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.8,
+        "argument_average": 2.0,
+        "design_average": 4.0,
+        "evaluated_at": "2026-02-07T04:09:30.256901+00:00",
+        "slide_count": 23,
+        "storyline_summary": "The slide headlines attempt to explore the intersection of globalization, digital transformation, and economic impact. However, the lack of coherent sub-headlines and clear titles hinders the ability to follow a logical argument or derive key insights effectively."
+      }
+    },
+    {
+      "id": "41e09162f877",
+      "firm": "mckinsey",
+      "title": "Moving Laggards to Early Adopters (Maybe even innovators) (2018)",
+      "url": "https://polytechnic.purdue.edu/sites/default/files/files/Krish%20-%20Moving%20Laggards%20to%20Early%20Adopters%2C%20NcKinsey%20%26%20Co.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "50f517c7ba46",
+      "firm": "mckinsey",
+      "title": "SDG Guide for Business Leaders (2019)",
+      "url": "https://vl.dk/wp-content/uploads/2019/06/McKinsey-SDG-Practical-Guide.pdf",
+      "status": "evaluated_kept",
+      "r2_key": "best-practice-examples/mckinsey/SDG Guide for Business Leaders (2019).pdf",
+      "evaluation": {
+        "combined_score": 3.56,
+        "argument_average": 3.0,
+        "design_average": 4.4,
+        "evaluated_at": "2026-02-07T04:09:49.292244+00:00",
+        "slide_count": 52,
+        "storyline_summary": "The presentation outlines the significance of the Sustainable Development Goals (SDGs) for businesses, emphasizing opportunities for value creation through strategic alignment with these goals. It illustrates the need for organizations to engage with these frameworks while also demonstrating specific examples and strategic steps for implementation."
+      }
+    },
+    {
+      "id": "1e700d78de3b",
+      "firm": "mckinsey",
+      "title": "Global Hydrogen Flows (2022)",
+      "url": "https://hydrogencouncil.com/wp-content/uploads/2022/10/Global-Hydrogen-Flows.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/mckinsey/Global Hydrogen Flows (2022).pdf"
+    },
+    {
+      "id": "c2e0fddd5d0a",
+      "firm": "mckinsey",
+      "title": "McKinsey Technology Trends Outlook 2022",
+      "url": "https://www.mckinsey.com/~/media/mckinsey/business%20functions/mckinsey%20digital/our%20insights/the%20top%20trends%20in%20tech%202022/mckinsey-tech-trends-outlook-2022-full-report.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/mckinsey/McKinsey Technology Trends Outlook 2022.pdf"
+    },
+    {
+      "id": "9c29c845984d",
+      "firm": "mckinsey",
+      "title": "Global Economics Intelligence - Global Summary Report (2023)",
+      "url": "https://www.mckinsey.com/~/media/mckinsey/business%20functions/strategy%20and%20corporate%20finance/our%20insights/global%20economics%20intelligence%20executive%20summary%20april%202023/gei-global-summary-april-2023.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/mckinsey/Global Economics Intelligence - Global Summary Report (2023).pdf"
+    },
+    {
+      "id": "989f65ca1783",
+      "firm": "mckinsey",
+      "title": "Context for Global Growth and Development (MGI 2014)",
+      "url": "https://www.un.org/esa/ffd/wp-content/uploads/2014/11/gc-Presentation_Manyika_10Nov14.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/mckinsey/Context for Global Growth and Development (MGI 2014).pdf"
+    },
+    {
+      "id": "397e07dcb108",
+      "firm": "mckinsey",
+      "title": "From poverty to empowerment: India's imperative (MGI 2014)",
+      "url": "https://icrier.org/pdf/mgi_poverty_v2.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/mckinsey/From poverty to empowerment Indias imperative (MGI 2014).pdf"
+    },
+    {
+      "id": "4b20a22030c9",
+      "firm": "mckinsey",
+      "title": "A blueprint for addressing the global affordable housing challenge (MGI 2015)",
+      "url": "https://www.fiic.la/Documentos/Congreso%20CAMACOL%202015/MGI%20AH%20Camacol_Jan%20Mischke.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/mckinsey/A blueprint for addressing the global affordable housing challenge (MGI 2015).pdf"
+    },
+    {
+      "id": "62b656373077",
+      "firm": "mckinsey",
+      "title": "Reinventing Construction: A Route To Higher Productivity (MGI 2017)",
+      "url": "https://ec.europa.eu/docsroom/documents/24763/attachments/3/translations/en/renditions/native",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/mckinsey/Reinventing Construction A Route To Higher Productivity (MGI 2017).pdf"
+    },
+    {
+      "id": "ae7b314bf5d7",
+      "firm": "mckinsey",
+      "title": "Outperformers: High-growth emerging economies (MGI 2018)",
+      "url": "https://www.piie.com/sites/default/files/documents/madgavkar20181017ppt.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/mckinsey/Outperformers High-growth emerging economies (MGI 2018).pdf"
+    },
+    {
+      "id": "2433e518b24a",
+      "firm": "mckinsey",
+      "title": "Persuasive problem solving in 7 steps: Training session (2011)",
+      "url": "https://www.scribd.com/document/465196081/2011-1011-PS-Training-Presentation",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "947614927854",
+      "firm": "mckinsey",
+      "title": "How companies can capture the veteran opportunity (2012)",
+      "url": "https://toolkit.vets.syr.edu/wp-content/uploads/2012/11/Presentation-1-20120911-Veteran-opportunity.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/mckinsey/How companies can capture the veteran opportunity (2012).pdf"
+    },
+    {
+      "id": "080fbba92587",
+      "firm": "bain",
+      "title": "2011 China Luxury Market Study",
+      "url": "https://media.bain.com/Images/2011%20Bain%20China%20Luxury%20Market%20Study.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.28,
+        "argument_average": 1.0,
+        "design_average": 4.2,
+        "evaluated_at": "2026-02-07T04:05:27.319212+00:00",
+        "slide_count": 27,
+        "storyline_summary": "The headlines do not present a coherent or logical storyline, lacking clear context, analysis, or actionable recommendations. There are many instances of unclear or repetitive titles, indicating a fragmented narrative with no clear progression."
+      }
+    },
+    {
+      "id": "fc9262510eeb",
+      "firm": "bain",
+      "title": "Achieving Operational Excellence at UC Berkeley - Diagnostic Report (2010)",
+      "url": "http://oe.berkeley.edu/sites/default/files/diagnostic%20report%20bain%20uc%20berkeley.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.84,
+        "argument_average": 2.2,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:05:34.412621+00:00",
+        "slide_count": 205,
+        "storyline_summary": "The headlines outline the purpose of the document and the vision for Operational Excellence. However, they lack clear action-oriented statements and logical flow, making it difficult to discern a coherent storyline or progressive argument from problem to recommendations."
+      }
+    },
+    {
+      "id": "95b9b2312866",
+      "firm": "bain",
+      "title": "Engaging your organization to deliver results (2019)",
+      "url": "https://chicago.iabc.com/wp-content/uploads/2019/10/Bain-Presentation-Deck.pdf",
+      "status": "evaluated_kept",
+      "r2_key": "best-practice-examples/bain/Engaging your organization to deliver results (2019).pdf",
+      "evaluation": {
+        "combined_score": 3.4,
+        "argument_average": 3.0,
+        "design_average": 4.0,
+        "evaluated_at": "2026-02-07T04:05:41.003718+00:00",
+        "slide_count": 17,
+        "storyline_summary": "The headlines suggest a focus on the importance of organizational commitment and effective communication during change initiatives. The presentation outlines the struggles companies face in transformation, emphasizing that proactive engagement and multi-faceted communication strategies are critical for success."
+      }
+    },
+    {
+      "id": "d4b55b1a5f97",
+      "firm": "bain",
+      "title": "Introduction to Bain & Company / Report on resilience (2021)",
+      "url": "https://amcham.dk/wp-content/uploads/2021/04/20200412-Resilience-AmCham-presentation-vSHARED.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/bain/Introduction to Bain Company Report on resilience (2021).pdf"
+    },
+    {
+      "id": "7b85ef8eedc8",
+      "firm": "bain",
+      "title": "Global Diamond Industry Report 2017",
+      "url": "http://www.bain.com/Images/bain_diamond_report_2017_pages.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "0f6d196d40f5",
+      "firm": "bain",
+      "title": "Global Diamond Industry Report 2018",
+      "url": "https://www.bain.com/contentassets/90de22c8b4b44c6cbb1d1ee93e74a1fa/bain_report_global_diamond_industry_report_2018.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "3e39d7f2ddc8",
+      "firm": "bain",
+      "title": "Global Diamond Industry Report 2019",
+      "url": "https://www.bain.com/globalassets/noindex/2019/bain_report_global_diamond_industry_report_2019.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "6b7788642f2f",
+      "firm": "bain",
+      "title": "Bain Retail Holiday Newsletter 2019",
+      "url": "https://www.bain.com/globalassets/noindex/2019/bain_brief_2019_retail_holiday_newsletter.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "c38a48d6f53c",
+      "firm": "bain",
+      "title": "Front Line of Healthcare Report 2018",
+      "url": "https://www.bain.com/contentassets/b1a3a26c15f048a68c2bd8d5e7bebd1b/bain_report_front_line_of_healthcare_report_2018.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "6f44eedb2c39",
+      "firm": "bain",
+      "title": "Global Private Equity Report 2020",
+      "url": "https://www.bain.com/globalassets/noindex/2020/bain_report_global_private_equity_report_2020.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "b64758e53a9d",
+      "firm": "bain",
+      "title": "Asia-Pacific Private Equity Report 2020",
+      "url": "https://www.bain.com/globalassets/noindex/2020/bain_report_asia-pacific_private_equity_report_2020.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "d6e9fc97800c",
+      "firm": "bain",
+      "title": "Building a Winning Digital Bank",
+      "url": "https://www.bain.com/contentassets/1ed41c72ece041eb92b41ec65df4c0d6/bain_brief_building_a_winning_digital_bank.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "d2ccf957f087",
+      "firm": "bain",
+      "title": "Age of Customer Advocacy",
+      "url": "https://www.bain.com/contentassets/9cc11f9fd0d14b0f91c2d3d24c96d1c5/bain_report_age_of_advocacy.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "c396da3ff373",
+      "firm": "sec_filings",
+      "title": "Investor Presentation March 2024",
+      "url": "https://www.sec.gov/Archives/edgar/data/765880/000110465924029669/tm247564d2_ex99-1.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/sec_filings/Investor Presentation March 2024.pdf"
+    },
+    {
+      "id": "128e021b43c9",
+      "firm": "sec_filings",
+      "title": "Investor Presentation September 2024",
+      "url": "https://www.sec.gov/Archives/edgar/data/1844971/000162828024039789/gree_investorpresentationx.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/sec_filings/Investor Presentation September 2024.pdf"
+    },
+    {
+      "id": "8c7d82d09a4a",
+      "firm": "sec_filings",
+      "title": "Investor Presentation March 2025",
+      "url": "https://www.sec.gov/Archives/edgar/data/1529628/000152962825000061/investorpresentation-march.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/sec_filings/Investor Presentation March 2025.pdf"
+    },
+    {
+      "id": "92f76562c939",
+      "firm": "sec_filings",
+      "title": "Investor Presentation Q1 FY2024",
+      "url": "https://www.sec.gov/Archives/edgar/data/78749/000095017023043685/agys-ex99_1.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "eded5bb4a6b8",
+      "firm": "sec_filings",
+      "title": "Investor Presentation January 2025",
+      "url": "https://www.sec.gov/Archives/edgar/data/799288/000095017025004517/le-ex99_1.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "7886ad4bcdfc",
+      "firm": "deloitte",
+      "title": "SEA CFO Forum Southeast Asia Business Outlook",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/sg/Documents/cxo-programs/sea-cfo-agendo-forum-jan-2022-presentation-slides.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "21606a5bfd55",
+      "firm": "deloitte",
+      "title": "The Shopping Centre Handbook 4.0",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/es/Documents/financial-advisory/Deloitte-ES-Financial-Advisory-The-Shopping-center-Handbook-2019.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "7e171f9909a0",
+      "firm": "deloitte",
+      "title": "Insights from the leading edge of generative AI adoption",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/us/Documents/consulting/us-state-of-gen-ai-report.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "d89ddfd25751",
+      "firm": "deloitte",
+      "title": "Global Business Services Performance improvement",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/us/Documents/process-and-operations/us-operations-global-business-services.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "11c335bc2871",
+      "firm": "deloitte",
+      "title": "Global Shared Services 2017 Survey Report",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/us/Documents/process-and-operations/us-global-shared-services-report.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "7c5aec671717",
+      "firm": "deloitte",
+      "title": "Digital Finance Seeing is Believing",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/cn/Documents/audit/deloitte-cn-assurance-digital-finance-seeing-is-believing-20210707.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "3c432d6ebe92",
+      "firm": "deloitte",
+      "title": "Ground Station Life Cycle Assessment",
+      "url": "https://indico.esa.int/event/321/contributions/6357/attachments/4332/6535/20210920%20ESA_CSID%202021_GSt%20LCA_vf.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.8,
+        "argument_average": 2.0,
+        "design_average": 4.0,
+        "evaluated_at": "2026-02-07T04:07:45.740974+00:00",
+        "slide_count": 33,
+        "storyline_summary": "The presentation attempts to analyze the life cycle impacts of ground stations but lacks a clear narrative flow and action-oriented headlines. While there are segments that touch upon methodology, findings, and recommendations, the disorganization and missing headlines impede understanding and coherence."
+      }
+    },
+    {
+      "id": "1edea58eafb7",
+      "firm": "deloitte",
+      "title": "Doing business in the Philippines 2021",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/ph/Documents/finance/ph-fa-doing-business-in-philippines-2021.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "a0ef0ed94125",
+      "firm": "deloitte",
+      "title": "AI transformation: Four key actions powering value from AI",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/us/Documents/deloitte-analytics/us-ai-institute-state-of-ai-fifth-edition.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "1737dd9c1dce",
+      "firm": "deloitte",
+      "title": "The CMO Survey Marketing in a Post Covid Era",
+      "url": "https://cmosurvey.org/wp-content/uploads/2022/09/The_CMO_Survey-Highlights_and_Insights_Report-September_2022.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.24,
+        "argument_average": 1.2,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:07:58.462641+00:00",
+        "slide_count": 82,
+        "storyline_summary": "The slide headlines lack a coherent narrative and fail to demonstrate a clear progression of ideas. They tend to focus on presenting statistical information without actionable insights or conclusions, leaving the audience without a clear takeaway."
+      }
+    },
+    {
+      "id": "d41730b28150",
+      "firm": "deloitte",
+      "title": "Fletcher Building \u2013 economic uncertainty analysis",
+      "url": "https://fletcherbuilding.com/assets/4-investor-centre/other-documents/fletcher-building-economic-uncertainty-analysis-deloitte-report.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "4ee0e7667c0c",
+      "firm": "deloitte",
+      "title": "Trends & AI in the Contact Center",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/us/Documents/process-and-operations/us-consulting-trends-and-ai-in-contact-center.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "8b2e513a83df",
+      "firm": "deloitte",
+      "title": "2023 Global Shared Services and Outsourcing Survey",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/us/Documents/process-and-operations/us-2023-global-shared-services-and-outsourcing-survey-executive-summary.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.84,
+        "argument_average": 2.2,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:07:03.347129+00:00",
+        "slide_count": 29,
+        "storyline_summary": "The headlines indicate a survey-based exploration of evolving service delivery models within global organizations, focusing on key findings related to geography, strategy, enabling technology, and talent strategy. However, due to the lack of clear, action-oriented headlines and logical progression, the full story is not readily apparent from the headlines alone."
+      }
+    },
+    {
+      "id": "ea748b3ea896",
+      "firm": "deloitte",
+      "title": "Digital Consumer Trends 2023",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/uk/Documents/technology-media-telecommunications/deloitte-uk-digital-consumer-trends-2023-deck.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.84,
+        "argument_average": 2.2,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:07:19.849616+00:00",
+        "slide_count": 45,
+        "storyline_summary": "The presentation attempts to cover various aspects of consumer behavior regarding digital devices but suffers from inconsistencies in structure and clarity. Key themes include device adoption trends, the impact of generative AI, and economic influences on consumer spending, but the logical flow between them is weak and lacks a cohesive narrative."
+      }
+    },
+    {
+      "id": "fc663f9d0dd0",
+      "firm": "deloitte",
+      "title": "Global Human Capital Trends 2023: New fundamentals for a boundaryless world",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/ua/Documents/human-capital/2023-human-capital-trends-presentation_en.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.96,
+        "argument_average": 2.4,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:07:39.490855+00:00",
+        "slide_count": 52,
+        "storyline_summary": "The presentation addresses human capital management challenges, particularly in Ukraine, and outlines evolving job roles and organizational strategies in response to these challenges. However, the lack of clear and specific action-oriented headlines detracts from the overall coherence and impact of the message."
+      }
+    },
+    {
+      "id": "60f58f57392d",
+      "firm": "deloitte",
+      "title": "Private company outlook: Productivity",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/us/Documents/deloitte-private/us-productivity-private-company-march-2024.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.92,
+        "argument_average": 2.2,
+        "design_average": 4.0,
+        "evaluated_at": "2026-02-07T04:07:51.742143+00:00",
+        "slide_count": 13,
+        "storyline_summary": "The slides attempt to convey insights about productivity in private companies, focusing on the anticipated impact of AI and technology investments. However, the lack of clear headlines and logical progression hinders the overall clarity and effectiveness of the argument."
+      }
+    },
+    {
+      "id": "7b22547ff021",
+      "firm": "deloitte",
+      "title": "Building a Future-Ready Investment Firm",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/de/Documents/financial-services/Future-Ready-Investment-Firm-eBook_Final-1.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.6,
+        "argument_average": 1.8,
+        "design_average": 3.8,
+        "evaluated_at": "2026-02-07T04:07:09.803936+00:00",
+        "slide_count": 83,
+        "storyline_summary": "The headlines primarily focus on 'CLIENT DIVERSITY' and 'ADAPT BUSINESS MODELS' without clear connections or a logical progression. They lack a cohesive narrative that guides the audience through a problem, analysis, and actionable recommendations."
+      }
+    },
+    {
+      "id": "a6fae563b5a1",
+      "firm": "deloitte",
+      "title": "The Deloitte Global Millennial Survey 2020",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/global/Documents/About-Deloitte/deloitte-2020-millennial-survey.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "321ff4d191a4",
+      "firm": "deloitte",
+      "title": "TrendRadar: The Future Consumer",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/ch/Documents/consumer-business/deloitte-ch-en-trendradar-future-consumer.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 3.0,
+        "argument_average": 2.2,
+        "design_average": 4.2,
+        "evaluated_at": "2026-02-07T04:08:23.332713+00:00",
+        "slide_count": 31,
+        "storyline_summary": "The slides attempt to present insights into consumer behavior and trends but lack a coherent structure or clear progression. The key findings highlight the necessity for businesses to adapt to rapid changes in technology and consumer preferences but do not provide a well-defined narrative."
+      }
+    },
+    {
+      "id": "312ab32585c1",
+      "firm": "deloitte",
+      "title": "2023 Global Marketing Trends",
+      "url": "https://www2.deloitte.com/content/dam/insights/articles/us175825_gmt2023/pdf/DI_GMT-2023.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "4f64dc162e96",
+      "firm": "deloitte",
+      "title": "Global 2024 Gen Z and Millennial Survey: Netherlands",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/nl/Documents/humancapital/deloitte-nl-hc-2024genzmillennialsurvey-countryreport.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.68,
+        "argument_average": 1.8,
+        "design_average": 4.0,
+        "evaluated_at": "2026-02-07T04:07:32.318899+00:00",
+        "slide_count": 16,
+        "storyline_summary": "The slides aim to present insights from Deloitte's Global 2024 survey focused on Gen Z and Millennials, covering various social, economic, and workplace themes. However, the lack of clear, actionable headlines and the absence of a coherent introductory and concluding slide limit the overall narrative strength."
+      }
+    },
+    {
+      "id": "6551291dd02a",
+      "firm": "deloitte",
+      "title": "The 2016 Deloitte Millennial Survey",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/global/Documents/About-Deloitte/gx-millenial-survey-2016-exec-summary.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "447b87e88ed9",
+      "firm": "deloitte",
+      "title": "The 2017 Deloitte Millennial Survey",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/global/Documents/About-Deloitte/gx-deloitte-millennial-survey-2017-executive-summary.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "8bdde74011db",
+      "firm": "deloitte",
+      "title": "The Logistics Property Handbook 4.0",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/es/Documents/financial-advisory/Deloitte-ES-FA-logistic-property-handbook-2019.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "61dccdec80e6",
+      "firm": "deloitte",
+      "title": "The Hotel Property Handbook 4.0",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/es/Documents/financial-advisory/Deloitte-ES-Financial-Advisory-Hotel-Property-4-0-Executive-Summary.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "aab55a7828df",
+      "firm": "deloitte",
+      "title": "Tested, Trusted, Transformed: Corporate Affairs Function",
+      "url": "https://www.deloitte.com/content/dam/assets-zone2/uk/en/docs/services/risk-advisory/2023/deloitte-uk-del-ca-report-interactive-2023.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "86c94f31d05e",
+      "firm": "deloitte",
+      "title": "VC Human Capital Survey 2023",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/us/Documents/audit/us-audit-human-capital-survey-report-2023.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "5872c0bccdb2",
+      "firm": "deloitte",
+      "title": "Consumer industry's journey towards digital maturity",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/sg/Documents/consumer-business/sea-cb-consumer-industry-journey-towards-digital-maturity.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "069778844f73",
+      "firm": "deloitte",
+      "title": "Foodservice Market Monitor 2023",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/it/Documents/consumer-business/deloitte-foodservice-market-monitor-2023.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "7956193128b9",
+      "firm": "deloitte",
+      "title": "Preparing the workforce for ethical, responsible, and trustworthy AI",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/us/Documents/about-deloitte/us-deloitte-preparing-the-workforce-for-ethical-ai.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "72f01da75cf2",
+      "firm": "deloitte",
+      "title": "Now decides next: Getting real about Generative AI",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/us/Documents/consulting/us-state-of-gen-ai-report-q2.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "6ef4a67e8b56",
+      "firm": "deloitte",
+      "title": "Global Treasury Survey 2022",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/us/Documents/risk/us-deloitte-global-treasury-survey-2022.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "766704cb9ba5",
+      "firm": "deloitte",
+      "title": "The future of M&A 2022 Trends Survey",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/us/Documents/mergers-acqisitions/us-deloitte-2022-mna-trends-report.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "fd9fa8e3611b",
+      "firm": "deloitte",
+      "title": "Women @ Work 2022: A Global Outlook",
+      "url": "https://www2.deloitte.com/content/dam/insights/articles/glob-175228_global-women-%40-work/DI_Global-Women-%40-Work.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "e0152060cf84",
+      "firm": "deloitte",
+      "title": "The Metaverse in Asia: Strategies for Economic Impact",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/sg/Documents/center-for-the-edge/sg-metaverse-in-asia-deloitte-center-for-the-edge-nov22.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "97a643c00a4f",
+      "firm": "deloitte",
+      "title": "2022 Global Tax Survey: Beyond BEPS",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/global/Documents/Tax/gx-beps-global-survey-summary-results-2022.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "605a7d2c7048",
+      "firm": "deloitte",
+      "title": "2022 Japan Consumer Survey on Next-Generation Automobiles",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/tw/Documents/consumer-business/2022-japan-consumeeer-survey-on-next-generation-automobiles-en.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "7d8b48075c9e",
+      "firm": "deloitte",
+      "title": "2021 Global Shared Services and Outsourcing Survey",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/es/Documents/operaciones/Deloitte-es-operations-encuesta-servicios-compartidos-y-outsourcing-2021.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "beca801a3067",
+      "firm": "deloitte",
+      "title": "Global Fashion & Luxury Private Equity Survey 2021",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/it/Documents/finance/FashionLuxuryPrivateEquityAndInvestorsSurvey2021_Deloitte.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "6b7eed12eadc",
+      "firm": "deloitte",
+      "title": "2019 Holiday Survey of Consumers",
+      "url": "https://www2.deloitte.com/content/dam/insights/us/articles/6382_2019-holiday-survey/DEL_Holiday19_ConsumerSurveyFindings.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "f1a288dab026",
+      "firm": "deloitte",
+      "title": "Consumer views on autonomous and electric powertrain - Asia Pacific",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/global/Documents/Consumer-Business/2018-global-automotive-consumer-study-asia-pacific-highlights.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "fab1d216e791",
+      "firm": "deloitte",
+      "title": "Third-party governance and risk management: The threats are real",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/global/Documents/Risk/gx-gers-TPGRM.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "23c5b61ae0a9",
+      "firm": "deloitte",
+      "title": "EMEA Digital Banking Maturity 2018",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/global/Documents/About-Deloitte/central-europe/ce-digital-banking-maturity-study-emea.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "cad97d3b7256",
+      "firm": "deloitte",
+      "title": "Save-to-transform: Global Cost Survey 2019",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/us/Documents/process-and-operations/us-global-cost-survey-2019.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "7b3a7ba758ef",
+      "firm": "deloitte",
+      "title": "Global Contact Center Survey 2017",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/us/Documents/strategy/us-con-2017-global-contact-center-survey.pdf",
+      "status": "new",
+      "r2_key": null
+    },
+    {
+      "id": "5d968a0f0c0a",
+      "firm": "deloitte",
+      "title": "High-Impact Leadership Master Deck",
+      "url": "https://www2.deloitte.com/content/dam/Deloitte/ca/Documents/audit/ca-audit-abm-scotia-high-impact-leadership.pdf",
+      "status": "new",
+      "r2_key": null
+    }
+  ]
+}

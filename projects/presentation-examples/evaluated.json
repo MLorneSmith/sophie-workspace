@@ -1,0 +1,1874 @@
+{
+  "schema_version": 1,
+  "description": "Audit trail of evaluated presentations. Do not re-evaluate presentations listed here.",
+  "evaluations": [
+    {
+      "key": "to-be-evaluated/bain/2011 China Luxury Market Study.pdf",
+      "evaluated_at": "2026-02-07T04:05:27.319212+00:00",
+      "slide_count": 27,
+      "argument_scores": {
+        "logical_flow": 1,
+        "mece_structure": 1,
+        "headline_quality": 1,
+        "completeness": 1,
+        "storyline": 1
+      },
+      "argument_average": 1.0,
+      "storyline_summary": "The headlines do not present a coherent or logical storyline, lacking clear context, analysis, or actionable recommendations. There are many instances of unclear or repetitive titles, indicating a fragmented narrative with no clear progression.",
+      "argument_strengths": [],
+      "argument_weaknesses": [
+        "Lack of clear and coherent headlines",
+        "Inadequate action-oriented statements and insights"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 4,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.2,
+      "design_strengths": [
+        "Professional appearance and cohesive color scheme",
+        "Effective use of charts to illuminate insights"
+      ],
+      "design_weaknesses": [
+        "Some slides may have slightly dense text",
+        "Potential for improved visual hierarchy in data-heavy slides"
+      ],
+      "combined_score": 2.28,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/bain/Achieving Operational Excellence at UC Berkeley - Diagnostic Report (2010).pdf",
+      "evaluated_at": "2026-02-07T04:05:34.412621+00:00",
+      "slide_count": 205,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 3,
+        "storyline": 2
+      },
+      "argument_average": 2.2,
+      "storyline_summary": "The headlines outline the purpose of the document and the vision for Operational Excellence. However, they lack clear action-oriented statements and logical flow, making it difficult to discern a coherent storyline or progressive argument from problem to recommendations.",
+      "argument_strengths": [
+        "Includes some clear summaries of findings and recommendations",
+        "Identifies opportunity areas for potential savings"
+      ],
+      "argument_weaknesses": [
+        "Repeated use of 'Purpose of this document' without action",
+        "Headlines often lack clarity and actionable insights"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Clear visual hierarchy in layouts",
+        "Effective data visualization with relevant charts"
+      ],
+      "design_weaknesses": [
+        "Some slides have a high text density",
+        "Minor inconsistencies in font sizes or styles across slides"
+      ],
+      "combined_score": 2.84,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/bain/Engaging your organization to deliver results (2019).pdf",
+      "evaluated_at": "2026-02-07T04:05:41.003718+00:00",
+      "slide_count": 17,
+      "argument_scores": {
+        "logical_flow": 3,
+        "mece_structure": 3,
+        "headline_quality": 3,
+        "completeness": 3,
+        "storyline": 3
+      },
+      "argument_average": 3.0,
+      "storyline_summary": "The headlines suggest a focus on the importance of organizational commitment and effective communication during change initiatives. The presentation outlines the struggles companies face in transformation, emphasizing that proactive engagement and multi-faceted communication strategies are critical for success.",
+      "argument_strengths": [
+        "Highlights the significance of engagement and communication",
+        "Identifies key factors in driving organizational change"
+      ],
+      "argument_weaknesses": [
+        "Headlines are often more descriptive than action-oriented",
+        "Logical flow could be more explicitly defined to show a clear progression from problem to solution"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Consistent styling and color scheme throughout the slides.",
+        "Effective use of visual hierarchy and whitespace for clarity."
+      ],
+      "design_weaknesses": [
+        "Some slides contain dense text sections that could be more concise.",
+        "A few charts could benefit from clearer labels or explanations."
+      ],
+      "combined_score": 3.4,
+      "threshold": 3.2,
+      "action": "kept",
+      "new_key": "best-practice-examples/bain/Engaging your organization to deliver results (2019).pdf"
+    },
+    {
+      "key": "to-be-evaluated/bcg/2019 True-Luxury Global Consumer Insight.pdf",
+      "evaluated_at": "2026-02-07T04:05:48.788429+00:00",
+      "slide_count": 49,
+      "argument_scores": {
+        "logical_flow": 1,
+        "mece_structure": 1,
+        "headline_quality": 2,
+        "completeness": 1,
+        "storyline": 1
+      },
+      "argument_average": 1.2,
+      "storyline_summary": "The headlines attempt to present insights from the True-Luxury Global Consumer Insight 2019 study but fail to form a coherent narrative. There is a mix of topics, including collaborations and second-hand luxury, but they do not connect logically to form a clear argument or recommendation.",
+      "argument_strengths": [
+        "Some slides provide relevant data points on luxury trends.",
+        "There is an attempt to cover multiple aspects of luxury consumer behavior."
+      ],
+      "argument_weaknesses": [
+        "Lack of coherent logical flow; no progression from problem to solution.",
+        "Many headlines are vague or repetitive, lacking clear action or insight."
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 4,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.2,
+      "design_strengths": [
+        "Consistent and professional appearance across slides.",
+        "Effective use of visual hierarchy and whitespace."
+      ],
+      "design_weaknesses": [
+        "Some slides may have slightly dense text that could overwhelm.",
+        "Occasional inconsistencies in the visual representation of similar data."
+      ],
+      "combined_score": 2.4,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/bcg/Climate Change BCG Perspectives and Offerings.pdf",
+      "evaluated_at": "2026-02-07T04:05:59.210345+00:00",
+      "slide_count": 33,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 3,
+        "headline_quality": 2,
+        "completeness": 2,
+        "storyline": 2
+      },
+      "argument_average": 2.2,
+      "storyline_summary": "The headlines indicate a focus on the urgent threat of climate change, emphasizing the historical and projected CO2 levels and the need for action. However, the lack of clear headlines for several slides disrupts the flow and coherence of the argument.",
+      "argument_strengths": [
+        "Addresses critical issues regarding climate change and emissions.",
+        "Highlights the economic implications of inaction."
+      ],
+      "argument_weaknesses": [
+        "Missing clear and actionable headlines on several slides.",
+        "Weak logical progression between some slides, leading to confusion."
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Clear visual hierarchy",
+        "Effective use of data visualization"
+      ],
+      "design_weaknesses": [
+        "Occasional text density may hinder readability",
+        "Some slides lack sufficient context"
+      ],
+      "combined_score": 2.84,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/bcg/Digital consumer spending in India $100Bn opportunity.pdf",
+      "evaluated_at": "2026-02-07T04:06:06.811500+00:00",
+      "slide_count": 29,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 2,
+        "storyline": 2
+      },
+      "argument_average": 2.0,
+      "storyline_summary": "The headlines discuss the rise of digital consumer spending in India and the factors influencing this growth. However, they lack a clear narrative progression and cohesive recommendations, making it difficult to extract actionable insights purely from the headlines.",
+      "argument_strengths": [
+        "Identifies growth potential in various sectors",
+        "Highlights the evolution of consumer behavior"
+      ],
+      "argument_weaknesses": [
+        "Lacks clear action-oriented headlines",
+        "Insufficient logical progression and cohesiveness in the argument"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Clean and consistent color scheme and design elements",
+        "Effective use of data visualization to convey insights"
+      ],
+      "design_weaknesses": [
+        "Some slides have dense text that may be challenging to digest quickly",
+        "A few charts could benefit from clearer labels or legends"
+      ],
+      "combined_score": 2.72,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/bcg/Evaluating NYC media sector development.pdf",
+      "evaluated_at": "2026-02-07T04:06:12.955449+00:00",
+      "slide_count": 42,
+      "argument_scores": {
+        "logical_flow": 3,
+        "mece_structure": 3,
+        "headline_quality": 3,
+        "completeness": 4,
+        "storyline": 3
+      },
+      "argument_average": 3.2,
+      "storyline_summary": "The slides describe the development and current state of the media sector in NYC, highlighting growth in filmed entertainment despite national trends. They also note challenges and opportunities across traditional and digital subsectors, concluding with suggested actions for future growth and collaboration.",
+      "argument_strengths": [
+        "Includes a comprehensive executive summary that captures key findings.",
+        "Highlights specific data points demonstrating sector growth and challenges."
+      ],
+      "argument_weaknesses": [
+        "Many headlines focus on the same 'Traditional media industry snapshot' label, reducing clarity and insight.",
+        "Lack of clear progression between slides and disconnected ideas make the overall argument harder to follow."
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Clean layout designs throughout",
+        "Effective use of data visualizations"
+      ],
+      "design_weaknesses": [
+        "Some slides have high text density",
+        "Variability in text formatting across slides"
+      ],
+      "combined_score": 3.44,
+      "threshold": 3.2,
+      "action": "kept",
+      "new_key": "best-practice-examples/bcg/Evaluating NYC media sector development.pdf"
+    },
+    {
+      "key": "to-be-evaluated/bcg/NY COVID-19 Economic Impact Assessment.pdf",
+      "evaluated_at": "2026-02-07T04:06:22.183439+00:00",
+      "slide_count": 38,
+      "argument_scores": {
+        "logical_flow": 1,
+        "mece_structure": 1,
+        "headline_quality": 1,
+        "completeness": 3,
+        "storyline": 2
+      },
+      "argument_average": 1.6,
+      "storyline_summary": "The headlines indicate a focus on the economic impact of COVID-19 on New York but lack coherence and clarity. The overall story is muddled due to unclear and unstructured headlines, making it difficult to understand the main argument or conclusions without further context.",
+      "argument_strengths": [
+        "Presence of summary pages with some relevant information",
+        "Attempts to convey significant economic data"
+      ],
+      "argument_weaknesses": [
+        "Unclear and vague primary headlines",
+        "Poor logical flow and structure overall, making it hard to follow the argument"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Strong visual hierarchy and use of whitespace.",
+        "Effective data visualization tools that illuminate insights."
+      ],
+      "design_weaknesses": [
+        "Some slides have higher text density that could be streamlined.",
+        "Minor inconsistencies in text formatting across slides."
+      ],
+      "combined_score": 2.48,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/bcg/Out @ Work Barometer.pdf",
+      "evaluated_at": "2026-02-07T04:06:30.516737+00:00",
+      "slide_count": 15,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 2,
+        "storyline": 2
+      },
+      "argument_average": 2.0,
+      "storyline_summary": "The slides attempt to convey insights about LGBT+ inclusion in the workplace in Germany, Austria, and Switzerland, yet the overall argument is fragmented and lacks a clear narrative. There are notable gaps in structured recommendations or conclusions based on the analysis provided in the slides.",
+      "argument_strengths": [
+        "Some headlines provide useful statistics about LGBT+ experiences in the workplace.",
+        "Certain slides prompt important discussions about workplace inclusivity."
+      ],
+      "argument_weaknesses": [
+        "Many slides lack clear, action-oriented headlines and fail to establish a coherent narrative.",
+        "There is significant redundancy and lack of logical progression between slides."
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Cohesive color scheme",
+        "Clear visual hierarchy in data visuals"
+      ],
+      "design_weaknesses": [
+        "Some slides have moderately high text density",
+        "Occasional lack of concise key points"
+      ],
+      "combined_score": 2.8,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/bcg/Path to digital marketing maturity.pdf",
+      "evaluated_at": "2026-02-07T04:06:36.579367+00:00",
+      "slide_count": 16,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 1,
+        "storyline": 2
+      },
+      "argument_average": 1.8,
+      "storyline_summary": "The headlines suggest an analysis of digital marketing maturity among brands, with a focus on consumer expectations and the value of data-driven marketing. However, the lack of clear organization and actionable titles makes it difficult to follow a coherent narrative or actionable recommendations.",
+      "argument_strengths": [
+        "Highlights the importance of consumer expectations",
+        "Identifies the need for brands to improve in digital marketing maturity"
+      ],
+      "argument_weaknesses": [
+        "Slides lack clear headlines and logical progression",
+        "Limited action-oriented statements and insights in headlines"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Effective data visualization using clear charts",
+        "Consistent styling and color scheme throughout"
+      ],
+      "design_weaknesses": [
+        "Some slides have higher text density than ideal",
+        "Certain points could be highlighted more effectively"
+      ],
+      "combined_score": 2.6,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/bcg/Projecting US Mail volumes to 2020.pdf",
+      "evaluated_at": "2026-02-07T04:06:42.320936+00:00",
+      "slide_count": 41,
+      "argument_scores": {
+        "logical_flow": 1,
+        "mece_structure": 1,
+        "headline_quality": 1,
+        "completeness": 1,
+        "storyline": 1
+      },
+      "argument_average": 1.0,
+      "storyline_summary": "The slide headlines fail to convey a logical or coherent argument due to the absence of clear and meaningful titles. Without actionable statements, there is no clear storyline or insight communicated through the headlines.",
+      "argument_strengths": [],
+      "argument_weaknesses": [
+        "No clear headlines or structure detected throughout the slides.",
+        "Lack of actionable insights or coherent narrative in the presentation."
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Consistent styling and professional appearance across slides.",
+        "Effective use of data visualizations that support insights."
+      ],
+      "design_weaknesses": [
+        "Some slides may have slightly dense text that could be streamlined.",
+        "A few charts could benefit from clearer labeling or annotations for better comprehension."
+      ],
+      "combined_score": 2.2,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/bcg/Reshaping NYCHA support functions.pdf",
+      "evaluated_at": "2026-02-07T04:06:49.779671+00:00",
+      "slide_count": 112,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 3,
+        "storyline": 2
+      },
+      "argument_average": 2.2,
+      "storyline_summary": "The presentation attempts to convey an analysis and recommendations for improving NYCHA's operations. However, the lack of clear and actionable headlines detracts from the overall narrative, resulting in an unclear progression from problem identification to proposed solutions.",
+      "argument_strengths": [
+        "Includes detailed context around NYCHA's challenges",
+        "A comprehensive set of recommendations for improvement"
+      ],
+      "argument_weaknesses": [
+        "Frequent use of vague or non-action-oriented headlines",
+        "Lacks a coherent structure that clearly guides the audience through the argument"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Clear layout and visual hierarchy",
+        "Effective use of data visualization"
+      ],
+      "design_weaknesses": [
+        "Moderate text density in some slides",
+        "Occasional inconsistency in font sizes"
+      ],
+      "combined_score": 2.84,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/bcg/The Open Education Resources ecosystem.pdf",
+      "evaluated_at": "2026-02-07T04:06:55.928377+00:00",
+      "slide_count": 23,
+      "argument_scores": {
+        "logical_flow": 3,
+        "mece_structure": 3,
+        "headline_quality": 2,
+        "completeness": 3,
+        "storyline": 3
+      },
+      "argument_average": 2.8,
+      "storyline_summary": "The headlines outline the current state and challenges of the Open Education Resources ecosystem, emphasizing the importance of in-classroom adoption and the perceptions of educators. There are indications of positive trends but also barriers to mainstream adoption, pointing towards the need for clarity and policy changes to enhance utilization.",
+      "argument_strengths": [
+        "Identifies key metrics for assessing OER adoption",
+        "Highlights the importance of educator perceptions and resource availability"
+      ],
+      "argument_weaknesses": [
+        "Headlines often lack action-oriented statements",
+        "Some slides do not clearly advance the argument or connect logically with each other"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Strong visual consistency throughout slides",
+        "Effective use of color and typography"
+      ],
+      "design_weaknesses": [
+        "Some slides have dense text requiring careful reading",
+        "Occasional lack of clear labels in data visualizations"
+      ],
+      "combined_score": 3.28,
+      "threshold": 3.2,
+      "action": "kept",
+      "new_key": "best-practice-examples/bcg/The Open Education Resources ecosystem.pdf"
+    },
+    {
+      "key": "to-be-evaluated/deloitte/2023 Global Shared Services and Outsourcing Survey.pdf",
+      "evaluated_at": "2026-02-07T04:07:03.347129+00:00",
+      "slide_count": 29,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 3,
+        "storyline": 2
+      },
+      "argument_average": 2.2,
+      "storyline_summary": "The headlines indicate a survey-based exploration of evolving service delivery models within global organizations, focusing on key findings related to geography, strategy, enabling technology, and talent strategy. However, due to the lack of clear, action-oriented headlines and logical progression, the full story is not readily apparent from the headlines alone.",
+      "argument_strengths": [
+        "Includes executive summary pages that provide some structure",
+        "Covers a wide range of relevant topics related to shared services and outsourcing"
+      ],
+      "argument_weaknesses": [
+        "Numerous unclear slide titles lead to a lack of coherence",
+        "Inconsistent use of action-oriented language diminishes insight and impact"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Strong visual hierarchy in the key findings slide",
+        "Effective use of charts to represent data trends"
+      ],
+      "design_weaknesses": [
+        "Some slides have dense text that may overwhelm the audience",
+        "Minor inconsistencies in the alignment of visual elements"
+      ],
+      "combined_score": 2.84,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/deloitte/Building a Future-Ready Investment Firm.pdf",
+      "evaluated_at": "2026-02-07T04:07:09.803936+00:00",
+      "slide_count": 83,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 1,
+        "headline_quality": 2,
+        "completeness": 2,
+        "storyline": 2
+      },
+      "argument_average": 1.8,
+      "storyline_summary": "The headlines primarily focus on 'CLIENT DIVERSITY' and 'ADAPT BUSINESS MODELS' without clear connections or a logical progression. They lack a cohesive narrative that guides the audience through a problem, analysis, and actionable recommendations.",
+      "argument_strengths": [
+        "Some action-oriented sub-headlines hint at suggested actions.",
+        "There is an attempt to address business model adaptation."
+      ],
+      "argument_weaknesses": [
+        "Over-reliance on the term 'CLIENT DIVERSITY' creates redundancy and confusion.",
+        "Lack of structured flow and coherent narrative through the slides."
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Clean and professional layouts with clear visual hierarchy.",
+        "Effective data visualizations that support insights."
+      ],
+      "design_weaknesses": [
+        "Some slides have a higher text density that could be simplified.",
+        "A few charts could improve labeling for better clarity."
+      ],
+      "combined_score": 2.6,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/deloitte/Digital Consumer Trends 2023.pdf",
+      "evaluated_at": "2026-02-07T04:07:19.849616+00:00",
+      "slide_count": 45,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 3,
+        "storyline": 2
+      },
+      "argument_average": 2.2,
+      "storyline_summary": "The presentation attempts to cover various aspects of consumer behavior regarding digital devices but suffers from inconsistencies in structure and clarity. Key themes include device adoption trends, the impact of generative AI, and economic influences on consumer spending, but the logical flow between them is weak and lacks a cohesive narrative.",
+      "argument_strengths": [
+        "Some insights about consumer behavior and technology adoption are presented.",
+        "Key takeaways summarize important points."
+      ],
+      "argument_weaknesses": [
+        "Multiple slides lack clear headlines, disrupting the logical flow.",
+        "The organization of information does not follow a clear MECE structure, leading to potential overlaps and omissions."
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Clean visual hierarchy in slides",
+        "Effective use of data visualization"
+      ],
+      "design_weaknesses": [
+        "Some text-heavy slides",
+        "Inconsistent text density across slides"
+      ],
+      "combined_score": 2.84,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/deloitte/Fletcher Building \u2013 economic uncertainty analysis.pdf",
+      "evaluated_at": "2026-02-07T04:07:26.099346+00:00",
+      "slide_count": 19,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 2,
+        "storyline": 2
+      },
+      "argument_average": 2.0,
+      "storyline_summary": "The presentation outlines economic uncertainty and its impact on work put in place in New Zealand and work done in Australia. However, the lack of clear and action-oriented headlines makes it difficult to follow the argument or discern key takeaways.",
+      "argument_strengths": [
+        "Includes some detailed insights into economic scenarios",
+        "Offers a summary page providing context for the analysis"
+      ],
+      "argument_weaknesses": [
+        "Headlines are not clearly defined or action-oriented, leading to confusion",
+        "Lacks a coherent logical flow and structured analysis across slides"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Professional and cohesive visual style",
+        "Effective use of charts to present data"
+      ],
+      "design_weaknesses": [
+        "Some slides have a dense amount of text",
+        "Certain visualizations could be clearer with better labeling"
+      ],
+      "combined_score": 2.8,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/deloitte/Global 2024 Gen Z and Millennial Survey Netherlands.pdf",
+      "evaluated_at": "2026-02-07T04:07:32.318899+00:00",
+      "slide_count": 16,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 1,
+        "completeness": 2,
+        "storyline": 2
+      },
+      "argument_average": 1.8,
+      "storyline_summary": "The slides aim to present insights from Deloitte's Global 2024 survey focused on Gen Z and Millennials, covering various social, economic, and workplace themes. However, the lack of clear, actionable headlines and the absence of a coherent introductory and concluding slide limit the overall narrative strength.",
+      "argument_strengths": [
+        "Focus on relevant topics for Gen Z and Millennials",
+        "Inclusion of diverse aspects like career choices, mental well-being, and environmental responsibility"
+      ],
+      "argument_weaknesses": [
+        "Headlines are mostly labels rather than actionable insights",
+        "No clear progression from introduction to conclusion or recommendations"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 5,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Effective data visualization with clear charts and insights.",
+        "Consistent visual style across slides."
+      ],
+      "design_weaknesses": [
+        "Occasional high text density on some slides.",
+        "Some slides could benefit from more whitespace for improved clarity."
+      ],
+      "combined_score": 2.68,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/deloitte/Global Human Capital Trends 2023 New fundamentals for a boundaryless world.pdf",
+      "evaluated_at": "2026-02-07T04:07:39.490855+00:00",
+      "slide_count": 52,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 3,
+        "headline_quality": 2,
+        "completeness": 3,
+        "storyline": 2
+      },
+      "argument_average": 2.4,
+      "storyline_summary": "The presentation addresses human capital management challenges, particularly in Ukraine, and outlines evolving job roles and organizational strategies in response to these challenges. However, the lack of clear and specific action-oriented headlines detracts from the overall coherence and impact of the message.",
+      "argument_strengths": [
+        "Covers relevant topics related to human capital in a global context",
+        "Includes summary pages which help encapsulate key findings"
+      ],
+      "argument_weaknesses": [
+        "Numerous slides lack clear headlines, hindering logical flow",
+        "Headlines often resemble labels rather than action-oriented statements, reducing insightfulness"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Good use of color and imagery",
+        "Clear data representation in charts"
+      ],
+      "design_weaknesses": [
+        "Some slides have higher text density",
+        "Minor inconsistencies in font usage"
+      ],
+      "combined_score": 2.96,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/deloitte/Ground Station Life Cycle Assessment.pdf",
+      "evaluated_at": "2026-02-07T04:07:45.740974+00:00",
+      "slide_count": 33,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 1,
+        "completeness": 3,
+        "storyline": 2
+      },
+      "argument_average": 2.0,
+      "storyline_summary": "The presentation attempts to analyze the life cycle impacts of ground stations but lacks a clear narrative flow and action-oriented headlines. While there are segments that touch upon methodology, findings, and recommendations, the disorganization and missing headlines impede understanding and coherence.",
+      "argument_strengths": [
+        "Some clear conclusions are drawn regarding environmental impacts.",
+        "Certain slides offer valuable insights into specific methodologies."
+      ],
+      "argument_weaknesses": [
+        "Many slides lack clear, action-oriented headlines or titles.",
+        "The overall structure is fragmented, making it difficult to follow the argument or progression."
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Professional appearance with cohesive visuals",
+        "Clear visual hierarchy in most slides"
+      ],
+      "design_weaknesses": [
+        "Some slides have a higher text density than optimal",
+        "A few charts could better illuminate insights"
+      ],
+      "combined_score": 2.8,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/deloitte/Private company outlook Productivity.pdf",
+      "evaluated_at": "2026-02-07T04:07:51.742143+00:00",
+      "slide_count": 13,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 3,
+        "storyline": 2
+      },
+      "argument_average": 2.2,
+      "storyline_summary": "The slides attempt to convey insights about productivity in private companies, focusing on the anticipated impact of AI and technology investments. However, the lack of clear headlines and logical progression hinders the overall clarity and effectiveness of the argument.",
+      "argument_strengths": [
+        "Includes an Executive Summary with key insights.",
+        "Addresses relevant issues affecting productivity."
+      ],
+      "argument_weaknesses": [
+        "No clear headline for several slides, leading to confusion.",
+        "Weak logical flow with overlapping and poorly defined groupings of ideas."
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Strong visual consistency and professional appearance",
+        "Effective use of data visualization"
+      ],
+      "design_weaknesses": [
+        "Text density could be streamlined for easier reading",
+        "Some slides contain dense information requiring careful scanning"
+      ],
+      "combined_score": 2.92,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/deloitte/The CMO Survey Marketing in a Post Covid Era.pdf",
+      "evaluated_at": "2026-02-07T04:07:58.462641+00:00",
+      "slide_count": 82,
+      "argument_scores": {
+        "logical_flow": 1,
+        "mece_structure": 1,
+        "headline_quality": 1,
+        "completeness": 2,
+        "storyline": 1
+      },
+      "argument_average": 1.2,
+      "storyline_summary": "The slide headlines lack a coherent narrative and fail to demonstrate a clear progression of ideas. They tend to focus on presenting statistical information without actionable insights or conclusions, leaving the audience without a clear takeaway.",
+      "argument_strengths": [
+        "Some slides provide relevant data points",
+        "Includes a summary page that outlines methodology"
+      ],
+      "argument_weaknesses": [
+        "Most headlines are poorly crafted and non-action-oriented",
+        "No clear logical flow or structure from problem to recommendation"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Clear visual hierarchy in most slides",
+        "Effective data visualization that supports insights"
+      ],
+      "design_weaknesses": [
+        "Some slides have higher text density, risking overwhelm",
+        "Occasional inconsistency in visual elements across slides"
+      ],
+      "combined_score": 2.24,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/deloitte/The Logistics Property Handbook 4.0.pdf",
+      "evaluated_at": "2026-02-07T04:08:08.204105+00:00",
+      "slide_count": 27,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 2,
+        "storyline": 2
+      },
+      "argument_average": 2.0,
+      "storyline_summary": "The headlines attempt to capture key performance indicators and market dynamics in various Spanish regions but lack a coherent narrative flow leading to clear conclusions or recommendations. There are significant gaps in context, overall analysis, and actionable insights.",
+      "argument_strengths": [
+        "Includes relevant data points for each region",
+        "Attempts to cover multiple geographic areas"
+      ],
+      "argument_weaknesses": [
+        "Many headlines lack clear action-oriented statements",
+        "Clear gaps in logical progression and flow of information"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Professional appearance with cohesive color scheme",
+        "Effective use of visuals to support information"
+      ],
+      "design_weaknesses": [
+        "Some slides could reduce text density",
+        "Charts could include more specific labels for clarity"
+      ],
+      "combined_score": 2.8,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/deloitte/The Shopping Centre Handbook 4.0.pdf",
+      "evaluated_at": "2026-02-07T04:08:17.166796+00:00",
+      "slide_count": 31,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 1,
+        "headline_quality": 2,
+        "completeness": 3,
+        "storyline": 2
+      },
+      "argument_average": 2.0,
+      "storyline_summary": "The presentation appears to address the impact of global disruptive trends on retail and shopping centers, but lacks a coherent and logical storytelling flow. The headlines are often unclear or redundant, making it difficult to grasp the main arguments without extensive reading of the content.",
+      "argument_strengths": [
+        "Addresses relevant and timely topics",
+        "Includes a summary that outlines key conclusions"
+      ],
+      "argument_weaknesses": [
+        "Headlines are often vague and lack action-oriented language",
+        "Logical flow is disjointed with insufficient structure"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Strong visual hierarchy in charts",
+        "Consistent use of branding elements"
+      ],
+      "design_weaknesses": [
+        "Some slides have dense text",
+        "Occasional clutter in visuals"
+      ],
+      "combined_score": 2.72,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/deloitte/TrendRadar The Future Consumer.pdf",
+      "evaluated_at": "2026-02-07T04:08:23.332713+00:00",
+      "slide_count": 31,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 3,
+        "storyline": 2
+      },
+      "argument_average": 2.2,
+      "storyline_summary": "The slides attempt to present insights into consumer behavior and trends but lack a coherent structure or clear progression. The key findings highlight the necessity for businesses to adapt to rapid changes in technology and consumer preferences but do not provide a well-defined narrative.",
+      "argument_strengths": [
+        "Highlights important trends affecting the consumer industry",
+        "Includes an engaging, futuristic example to attract attention"
+      ],
+      "argument_weaknesses": [
+        "Lacks clear and logical flow between slides",
+        "Headlines are mostly labels without actionable insights"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 4,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.2,
+      "design_strengths": [
+        "Strong visual consistency across slides",
+        "Effective use of visual elements to support information"
+      ],
+      "design_weaknesses": [
+        "Charts could be improved for greater clarity",
+        "Some slides have dense text requiring careful scanning"
+      ],
+      "combined_score": 3.0,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/Capturing the full electricity efficiency potential of the U.K. (2012).pdf",
+      "evaluated_at": "2026-02-07T04:08:30.317306+00:00",
+      "slide_count": 129,
+      "argument_scores": {
+        "logical_flow": 3,
+        "mece_structure": 3,
+        "headline_quality": 2,
+        "completeness": 4,
+        "storyline": 3
+      },
+      "argument_average": 3.0,
+      "storyline_summary": "The presentation seeks to assess the electricity efficiency potential in the UK by analyzing past demand, projected growth, and various sectors' capabilities for reduction. Key insights highlight barriers and key findings that outline the necessary steps for effective intervention while indicating the potential savings achievable through different measures.",
+      "argument_strengths": [
+        "Includes a comprehensive executive summary and key insights that provide a clear overview of findings.",
+        "Structure allows for a breakdown of various sectors and insights into specific barriers and opportunities."
+      ],
+      "argument_weaknesses": [
+        "Many headlines are more descriptive than action-oriented, lacking the clarity and impact that action statements would bring.",
+        "Some areas lack a coherent logical flow, especially connecting specific analysis results directly to solutions or recommendations."
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Strong visual hierarchy and layout in most slides",
+        "Effective use of charts to convey insights"
+      ],
+      "design_weaknesses": [
+        "Some slides have higher text density that could be streamlined further",
+        "Occasional inconsistency in text styling across different slides"
+      ],
+      "combined_score": 3.32,
+      "threshold": 3.2,
+      "action": "kept",
+      "new_key": "best-practice-examples/mckinsey/Capturing the full electricity efficiency potential of the U.K. (2012).pdf"
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/Challenges in Mining Scarcity or Opportunity (2015).pdf",
+      "evaluated_at": "2026-02-07T04:08:38.574218+00:00",
+      "slide_count": 41,
+      "argument_scores": {
+        "logical_flow": 3,
+        "mece_structure": 3,
+        "headline_quality": 2,
+        "completeness": 4,
+        "storyline": 3
+      },
+      "argument_average": 3.0,
+      "storyline_summary": "The slides outline challenges in the mining industry, particularly a decline in productivity and rising costs. They suggest that technological innovations are key to addressing these challenges, with a specific focus on advanced mining technologies like automated drilling and autonomous haulage. The executive summary and additional context highlight the urgency of these developments in a global market influenced heavily by China's control over rare earth elements.",
+      "argument_strengths": [
+        "Includes an executive summary that encapsulates key trends and challenges in the industry",
+        "Highlights the need for innovation as a response to declining productivity"
+      ],
+      "argument_weaknesses": [
+        "Headlines often lack action-oriented statements, making them more descriptive than analytical",
+        "Some slides are repetitive or overly verbose, reducing clarity and impact"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Consistent styling across slides",
+        "Effective use of visuals to support data understanding"
+      ],
+      "design_weaknesses": [
+        "Some slides have higher text density which might overwhelm",
+        "A few charts could benefit from clearer labels or explanations"
+      ],
+      "combined_score": 3.4,
+      "threshold": 3.2,
+      "action": "kept",
+      "new_key": "best-practice-examples/mckinsey/Challenges in Mining Scarcity or Opportunity (2015).pdf"
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/Chilean Hydrogen Pathway Final report (2020).pdf",
+      "evaluated_at": "2026-02-07T04:08:45.260378+00:00",
+      "slide_count": 65,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 2,
+        "storyline": 2
+      },
+      "argument_average": 2.0,
+      "storyline_summary": "The slides outline the state and potential of the hydrogen industry globally, focusing on various countries' strategies and the business case for domestic production and exportation. However, the narrative lacks clear action-oriented headlines and a coherent structure, making it hard to extract a definitive takeaway.",
+      "argument_strengths": [
+        "Coverage of diverse hydrogen strategies across different countries",
+        "Production cost and market potential insights"
+      ],
+      "argument_weaknesses": [
+        "Lack of clear action-oriented headlines",
+        "Weak logical progression from analysis to recommendations"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Professional appearance",
+        "Logical organization of information"
+      ],
+      "design_weaknesses": [
+        "Moderate text density",
+        "Some charts could be clearer"
+      ],
+      "combined_score": 2.8,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/Current perspectives on Medical Affairs in Japan (2018).pdf",
+      "evaluated_at": "2026-02-07T04:08:52.475569+00:00",
+      "slide_count": 20,
+      "argument_scores": {
+        "logical_flow": 3,
+        "mece_structure": 3,
+        "headline_quality": 2,
+        "completeness": 2,
+        "storyline": 3
+      },
+      "argument_average": 2.6,
+      "storyline_summary": "The headlines suggest a narrative about the evolving role of Medical Affairs in Japan, emphasizing a shift from supportive functions to a more pivotal role in the pharmaceutical industry. However, the repetition and lack of clear action-oriented statements dilute the overall impact and coherence of the story.",
+      "argument_strengths": [
+        "Highlights the importance of Medical Affairs as a growing influence",
+        "Identifies specific priorities for leaders in the field"
+      ],
+      "argument_weaknesses": [
+        "Repetitive titles hinder clarity and impact",
+        "Lacks a strong initial context and clear recommendations in the conclusions"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Clear visual hierarchy",
+        "Effective use of charts to convey insights"
+      ],
+      "design_weaknesses": [
+        "Moderate text density on some slides",
+        "Minor inconsistencies in visual elements"
+      ],
+      "combined_score": 3.08,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/European Banking Summit 2018.pdf",
+      "evaluated_at": "2026-02-07T04:08:58.494056+00:00",
+      "slide_count": 10,
+      "argument_scores": {
+        "logical_flow": 3,
+        "mece_structure": 3,
+        "headline_quality": 3,
+        "completeness": 2,
+        "storyline": 3
+      },
+      "argument_average": 2.8,
+      "storyline_summary": "The headlines outline the challenges faced by European banks and capital markets compared to their US counterparts, highlighting key metrics and performance gaps. However, there is a lack of actionable recommendations or a clear pathway to a solution, which diminishes the overall impact of the narrative.",
+      "argument_strengths": [
+        "Highlights key metrics and performance gaps",
+        "Identifies the main challenges in the European banking sector"
+      ],
+      "argument_weaknesses": [
+        "Lacks a clear conclusion or recommendations for improvement",
+        "No coherent introduction or context is provided to frame the discussion"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 5,
+        "text_density": 4,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.4,
+      "design_strengths": [
+        "Strong data visualization that highlights key insights.",
+        "Consistent and professional styling throughout."
+      ],
+      "design_weaknesses": [
+        "Some text is dense but appropriate for a sit-down presentation.",
+        "Limited whitespace on certain slides could enhance clarity."
+      ],
+      "combined_score": 3.44,
+      "threshold": 3.2,
+      "action": "kept",
+      "new_key": "best-practice-examples/mckinsey/European Banking Summit 2018.pdf"
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/Helping Global Health Partnerships to increase their impact Stop TB Partnership (2009).pdf",
+      "evaluated_at": "2026-02-07T04:09:07.887562+00:00",
+      "slide_count": 54,
+      "argument_scores": {
+        "logical_flow": 1,
+        "mece_structure": 1,
+        "headline_quality": 1,
+        "completeness": 2,
+        "storyline": 1
+      },
+      "argument_average": 1.2,
+      "storyline_summary": "The headlines do not present a coherent or logical flow of arguments, lacking clear titles and action-oriented statements. There is minimal insight conveyed owing to the predominance of generic labels and repetitive company branding. Overall, the slides fail to tell a clear, logical story.",
+      "argument_strengths": [],
+      "argument_weaknesses": [
+        "Headlines are unclear and lack logical flow.",
+        "No cohesive argument structure or action-oriented statements present."
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Strong visual consistency across slides",
+        "Effective use of charts for data representation"
+      ],
+      "design_weaknesses": [
+        "Some slides have higher text density than necessary",
+        "Occasional layout clutter in data slides"
+      ],
+      "combined_score": 2.32,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/How will IoT, mobile internet, data analytics and cloud transform public services by 2030 (2015).pdf",
+      "evaluated_at": "2026-02-07T04:09:15.502450+00:00",
+      "slide_count": 15,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 3,
+        "completeness": 2,
+        "storyline": 2
+      },
+      "argument_average": 2.2,
+      "storyline_summary": "The headlines aim to discuss the impact of various technological advancements, particularly in the context of the Internet of Things and data analytics. However, they lack a coherent flow that connects the discussion of technologies to actionable recommendations for government or business sectors.",
+      "argument_strengths": [
+        "Covers multiple relevant technological trends",
+        "Highlights potential economic impacts"
+      ],
+      "argument_weaknesses": [
+        "Lacks a clear progression from problem to solution",
+        "Headlines often use labels instead of actionable insights, leading to ambiguity"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Consistent styling throughout",
+        "Effective use of visuals to convey information"
+      ],
+      "design_weaknesses": [
+        "Some slides have high text density",
+        "Certain data labels could be clearer"
+      ],
+      "combined_score": 2.92,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/Insurance trends and growth opportunities for Poland (2015).pdf",
+      "evaluated_at": "2026-02-07T04:09:23.647913+00:00",
+      "slide_count": 25,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 2,
+        "storyline": 2
+      },
+      "argument_average": 2.0,
+      "storyline_summary": "The slides attempt to discuss the growth potential of the Polish insurance market and its key drivers, including demographic changes and emerging customer segments. However, the repetitive nature of the headlines, lack of clear structure, and insufficient action-oriented statements dilute the argument.",
+      "argument_strengths": [
+        "Identifies key drivers of growth in the insurance market",
+        "Mentions emerging demographics and market segments"
+      ],
+      "argument_weaknesses": [
+        "Repetitive headlines lead to confusion",
+        "Lacks a clear progression from problem to recommendation"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 4,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.2,
+      "design_strengths": [
+        "Professional appearance",
+        "Good use of color scheme"
+      ],
+      "design_weaknesses": [
+        "Some slides have high text density",
+        "Occasional clutter in visual elements"
+      ],
+      "combined_score": 2.88,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/Investment and Industrial Policy A Perspective on the Future (2018).pdf",
+      "evaluated_at": "2026-02-07T04:09:30.256901+00:00",
+      "slide_count": 23,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 2,
+        "storyline": 2
+      },
+      "argument_average": 2.0,
+      "storyline_summary": "The slide headlines attempt to explore the intersection of globalization, digital transformation, and economic impact. However, the lack of coherent sub-headlines and clear titles hinders the ability to follow a logical argument or derive key insights effectively.",
+      "argument_strengths": [
+        "Some slides indicate critical insights about globalization and digitization",
+        "Discussion on economic impacts shows potential for depth"
+      ],
+      "argument_weaknesses": [
+        "Missing clear headlines for several slides disrupts logical flow",
+        "Headlines often lack action-oriented statements, making analysis less engaging"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Strong visual consistency across slides",
+        "Effective data visualization that enhances understanding"
+      ],
+      "design_weaknesses": [
+        "Some slides have higher text density that may overwhelm",
+        "Minor discrepancies in layout clarity on certain slides"
+      ],
+      "combined_score": 2.8,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/MTA Financial Impact Assessment on 2020 Revenue of COVID-19.pdf",
+      "evaluated_at": "2026-02-07T04:09:35.920488+00:00",
+      "slide_count": 38,
+      "argument_scores": {
+        "logical_flow": 1,
+        "mece_structure": 1,
+        "headline_quality": 1,
+        "completeness": 2,
+        "storyline": 1
+      },
+      "argument_average": 1.2,
+      "storyline_summary": "The slides fail to convey a clear argument as they lack meaningful headlines and coherent structure. Most slides contain disclaimers or labels, leaving the key findings and recommendations overshadowed and difficult to understand.",
+      "argument_strengths": [
+        "Inclusion of summary pages that attempt to encapsulate findings",
+        "Recognition of a critical context regarding COVID-19's impact on operations"
+      ],
+      "argument_weaknesses": [
+        "Overwhelming presence of disclaimers instead of actionable insights",
+        "Lack of coherent flow or logical progression in the slides"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 5
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Clear and logical organization of information",
+        "Effective use of data visualization to support insights"
+      ],
+      "design_weaknesses": [
+        "Some slides contain dense text that may overwhelm",
+        "A few charts could use clearer labels for better understanding"
+      ],
+      "combined_score": 2.32,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/Modelling the potential of digitally-enabled processes in the NHS (2014).pdf",
+      "evaluated_at": "2026-02-07T04:09:42.197598+00:00",
+      "slide_count": 26,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 2,
+        "completeness": 2,
+        "storyline": 2
+      },
+      "argument_average": 2.0,
+      "storyline_summary": "The headlines suggest an exploration of digitally-enabled processes within the NHS, aiming to analyze potential benefits and challenges. However, they lack clarity and coherent progression, making it difficult to follow the argument's flow and draw actionable insights.",
+      "argument_strengths": [
+        "Includes a summary page that attempts to encapsulate the project scope",
+        "Addresses significant challenges in the NHS context"
+      ],
+      "argument_weaknesses": [
+        "Headlines often use labels and vague phrases instead of action-oriented statements",
+        "Logical progression and MECE structure are not clearly defined, causing confusion in the argument's flow"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Clear visual hierarchy",
+        "Effective data visualization"
+      ],
+      "design_weaknesses": [
+        "Some slides have high text density",
+        "Occasional lack of bullet point structure"
+      ],
+      "combined_score": 2.72,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/SDG Guide for Business Leaders (2019).pdf",
+      "evaluated_at": "2026-02-07T04:09:49.292244+00:00",
+      "slide_count": 52,
+      "argument_scores": {
+        "logical_flow": 3,
+        "mece_structure": 3,
+        "headline_quality": 2,
+        "completeness": 4,
+        "storyline": 3
+      },
+      "argument_average": 3.0,
+      "storyline_summary": "The presentation outlines the significance of the Sustainable Development Goals (SDGs) for businesses, emphasizing opportunities for value creation through strategic alignment with these goals. It illustrates the need for organizations to engage with these frameworks while also demonstrating specific examples and strategic steps for implementation.",
+      "argument_strengths": [
+        "Provides a clear overview of the SDGs and their relevance to businesses.",
+        "Includes practical recommendations and examples of how companies can engage with the SDGs."
+      ],
+      "argument_weaknesses": [
+        "Many headlines lack action-oriented language, making them less impactful.",
+        "Some slides have repetitive or unclear content that detracts from the logical progression."
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 5,
+        "text_density": 4,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.4,
+      "design_strengths": [
+        "Strong data visualization with clear insights",
+        "Consistent professional styling and color scheme"
+      ],
+      "design_weaknesses": [
+        "Some slides have slightly dense text",
+        "Minor variations in text hierarchy"
+      ],
+      "combined_score": 3.56,
+      "threshold": 3.2,
+      "action": "kept",
+      "new_key": "best-practice-examples/mckinsey/SDG Guide for Business Leaders (2019).pdf"
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/The Internet of Things and Big Data Opportunities for Value Creation (2013).pdf",
+      "evaluated_at": "2026-02-07T04:09:55.066438+00:00",
+      "slide_count": 18,
+      "argument_scores": {
+        "logical_flow": 1,
+        "mece_structure": 1,
+        "headline_quality": 1,
+        "completeness": 1,
+        "storyline": 1
+      },
+      "argument_average": 1.0,
+      "storyline_summary": "The headlines present disjointed concepts around the Internet of Things without a clear narrative or logical flow. There are significant gaps in the structure, with many slides lacking appropriate headlines, making it difficult to extract a coherent argument or takeaway.",
+      "argument_strengths": [],
+      "argument_weaknesses": [
+        "Poor logical flow due to lack of coherent structure.",
+        "Many slides do not have clear headlines, leading to confusion."
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 4,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.2,
+      "design_strengths": [
+        "Professional and clean layout",
+        "Strong visual consistency across slides"
+      ],
+      "design_weaknesses": [
+        "Some slides have slightly dense text",
+        "Limited variety in data visualization techniques"
+      ],
+      "combined_score": 2.28,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/The future energy landscape Global trends and the Netherlands (2017).pdf",
+      "evaluated_at": "2026-02-07T04:10:03.231949+00:00",
+      "slide_count": 38,
+      "argument_scores": {
+        "logical_flow": 3,
+        "mece_structure": 2,
+        "headline_quality": 3,
+        "completeness": 3,
+        "storyline": 3
+      },
+      "argument_average": 2.8,
+      "storyline_summary": "The headlines suggest a narrative about the shifting energy landscape, focusing on technological disruptions, economic factors, and needed investments for the future. However, the lack of a clear progression from problem to solution and overlapping categories hinder a cohesive argument.",
+      "argument_strengths": [
+        "Covers a wide range of energy topics",
+        "Includes important investment needs and future scenarios"
+      ],
+      "argument_weaknesses": [
+        "Lacks clear logical progression from one slide to another",
+        "Headlines often read as fragmented statements rather than cohesive arguments"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 4,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.2,
+      "design_strengths": [
+        "Strong visual consistency",
+        "Effective use of charts to convey insights"
+      ],
+      "design_weaknesses": [
+        "Some slides could use more whitespace",
+        "Text density is high in certain areas"
+      ],
+      "combined_score": 3.36,
+      "threshold": 3.2,
+      "action": "kept",
+      "new_key": "best-practice-examples/mckinsey/The future energy landscape Global trends and the Netherlands (2017).pdf"
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/Transportation and Warehousing Sector Analysis (2020).pdf",
+      "evaluated_at": "2026-02-07T04:10:10.640702+00:00",
+      "slide_count": 40,
+      "argument_scores": {
+        "logical_flow": 1,
+        "mece_structure": 1,
+        "headline_quality": 1,
+        "completeness": 1,
+        "storyline": 1
+      },
+      "argument_average": 1.0,
+      "storyline_summary": "The headlines provide disjointed information about transportation in DC without a cohesive argument or progression. There is a lack of clarity regarding the challenges and significant insights, making it difficult to grasp the core message.",
+      "argument_strengths": [],
+      "argument_weaknesses": [
+        "No clear logical flow or argument progression",
+        "Headlines fail to convey actionable insights or coherence"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 5,
+        "text_density": 4,
+        "visual_consistency": 4,
+        "information_design": 5
+      },
+      "design_average": 4.4,
+      "design_strengths": [
+        "Effective use of data visualization to convey insights",
+        "Logical organization of information on slides"
+      ],
+      "design_weaknesses": [
+        "Some slides may benefit from increased whitespace",
+        "Occasional dense text that could be streamlined"
+      ],
+      "combined_score": 2.36,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/USPS Envisioning America's Future Postal Service (2010).pdf",
+      "evaluated_at": "2026-02-07T04:10:17.054908+00:00",
+      "slide_count": 25,
+      "argument_scores": {
+        "logical_flow": 1,
+        "mece_structure": 1,
+        "headline_quality": 1,
+        "completeness": 1,
+        "storyline": 1
+      },
+      "argument_average": 1.0,
+      "storyline_summary": "The headlines provide insufficient information to convey a coherent argument or story, with most lacking clarity or actionable insights. There is no discernible progression or logical flow evident from the headlines presented.",
+      "argument_strengths": [],
+      "argument_weaknesses": [
+        "No clear headlines detected to establish logical flow or argument structure.",
+        "Most headlines do not convey actionable insights or connect to the overall narrative."
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Consistent and professional visual styling",
+        "Effective use of data visualization to support insights"
+      ],
+      "design_weaknesses": [
+        "Some slides have slightly dense text",
+        "A few charts could be made more intuitive"
+      ],
+      "combined_score": 2.2,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/USPS Future Business Model (2010).pdf",
+      "evaluated_at": "2026-02-07T04:10:22.081961+00:00",
+      "slide_count": 39,
+      "argument_scores": {
+        "logical_flow": 1,
+        "mece_structure": 1,
+        "headline_quality": 1,
+        "completeness": 1,
+        "storyline": 1
+      },
+      "argument_average": 1.0,
+      "storyline_summary": "The slide headlines are largely unclear and do not provide a coherent narrative. Most headlines consist of repetitive and vague references to 'McKinsey & Company' without conveying any specific actionable insights or progression of ideas.",
+      "argument_strengths": [],
+      "argument_weaknesses": [
+        "Lack of clear and actionable headlines",
+        "Absence of logical structure and flow in argument"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 3.8,
+      "design_strengths": [
+        "Clear visual hierarchy in charts",
+        "Consistent styling and color scheme throughout"
+      ],
+      "design_weaknesses": [
+        "Some slides have higher text density",
+        "Minor clutter in data presentation"
+      ],
+      "combined_score": 2.12,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/USPS Selected Slides (2010).pdf",
+      "evaluated_at": "2026-02-07T04:10:26.793500+00:00",
+      "slide_count": 2,
+      "argument_scores": {
+        "logical_flow": 1,
+        "mece_structure": 1,
+        "headline_quality": 1,
+        "completeness": 1,
+        "storyline": 1
+      },
+      "argument_average": 1.0,
+      "storyline_summary": "The headlines fail to provide a coherent narrative as there is no clear headline on the first slide, and the second slide's title is a vague label that lacks actionable insight. The overall structure does not lead to a cohesive story or takeaway.",
+      "argument_strengths": [],
+      "argument_weaknesses": [
+        "Lack of clear introductory headline",
+        "No logical progression between slides",
+        "Headlines are not action-oriented",
+        "Inadequate completeness of the storyline"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 5,
+        "text_density": 4,
+        "visual_consistency": 4,
+        "information_design": 4
+      },
+      "design_average": 4.2,
+      "design_strengths": [
+        "Effective use of data visualization",
+        "Clear visual hierarchy and organization"
+      ],
+      "design_weaknesses": [
+        "Slightly high text density on some slides",
+        "Minor inconsistencies in text alignment"
+      ],
+      "combined_score": 2.28,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/Using Artificial Intelligence to prevent healthcare errors (2017).pdf",
+      "evaluated_at": "2026-02-07T04:10:33.762220+00:00",
+      "slide_count": 26,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 3,
+        "completeness": 3,
+        "storyline": 2
+      },
+      "argument_average": 2.4,
+      "storyline_summary": "The slides aim to present the application of artificial intelligence in healthcare, focusing on predictive analytics and their potential impact on various medical outcomes. However, the repetitive nature of agenda slides and vague titles leaves the audience without a clear, cohesive narrative or takeaway.",
+      "argument_strengths": [
+        "Some slides present clear action-oriented statements",
+        "The summary pages consolidate findings effectively for specific cases"
+      ],
+      "argument_weaknesses": [
+        "Frequent repetition of agenda slides disrupts flow",
+        "Many headlines lack clarity and do not fully convey the argument"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Consistent styling and professional appearance across slides.",
+        "Effective data visualization that supports insights."
+      ],
+      "design_weaknesses": [
+        "Some slides have dense text that may hinder quick scanning.",
+        "A few charts could use clearer labels for easier interpretation."
+      ],
+      "combined_score": 3.04,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    },
+    {
+      "key": "to-be-evaluated/mckinsey/What Makes Private Sector Partnership Works (2011).pdf",
+      "evaluated_at": "2026-02-07T04:10:40.168699+00:00",
+      "slide_count": 12,
+      "argument_scores": {
+        "logical_flow": 2,
+        "mece_structure": 2,
+        "headline_quality": 1,
+        "completeness": 3,
+        "storyline": 2
+      },
+      "argument_average": 2.0,
+      "storyline_summary": "The headlines suggest an analysis of private sector involvement in agriculture and its potential impact, but they lack clarity and actionable insight. The narrative does point towards challenges and opportunities but fails to clearly connect the progression from problem to recommendation.",
+      "argument_strengths": [
+        "Summary page provides a concise overview of main points",
+        "Mention of existing models indicates some level of analysis"
+      ],
+      "argument_weaknesses": [
+        "Headlines are primarily labels rather than action-oriented statements",
+        "Logical flow is obscured by ambiguous titles and missing connections"
+      ],
+      "design_scores": {
+        "layout_clarity": 4,
+        "data_visualization": 4,
+        "text_density": 3,
+        "visual_consistency": 5,
+        "information_design": 4
+      },
+      "design_average": 4.0,
+      "design_strengths": [
+        "Professional appearance",
+        "Consistent styling throughout slides"
+      ],
+      "design_weaknesses": [
+        "Some slides have text-heavy sections",
+        "Charts could include more explanatory labels"
+      ],
+      "combined_score": 2.8,
+      "threshold": 3.2,
+      "action": "deleted",
+      "new_key": null
+    }
+  ]
+}

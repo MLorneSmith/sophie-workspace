@@ -11,10 +11,24 @@ If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out w
 Before doing anything else:
 1. Read `SOUL.md` — this is who you are
 2. Read `USER.md` — this is who you're helping
-3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
-4. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
+3. Read `state/current.md` — this is what's happening RIGHT NOW
+4. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
+5. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
 
 Don't ask permission. Just do it.
+
+## 📍 Bookend Checkpoints
+
+**Always keep `state/current.md` up to date.** This file survives context compaction.
+
+Checkpoint when:
+- Every ~30 min during active work
+- After completing a major task
+- Before any `/new` or `/reset`
+- When conversation is getting long
+- Before going quiet for a while
+
+See `state/ROUTINES.md` for full morning/checkpoint/EOD procedures.
 
 ## Memory
 
@@ -47,6 +61,33 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 - Don't run destructive commands without asking.
 - `trash` > `rm` (recoverable beats gone forever)
 - When in doubt, ask.
+
+## Task Capture (Mission Control)
+
+When Mike mentions tasks in conversation, create them in Mission Control automatically:
+
+**Trigger phrases:**
+- "task:" or "task -" → Create task immediately
+- "add to backlog:" → Create task, assign to Sophie
+- "Sophie should..." / "overnight you could..." / "when you have time..." → Offer to create task
+
+**API:**
+```bash
+# Create task (always assign to Sophie — Mission Control is Sophie's board)
+POST http://localhost:3001/api/v1/tasks
+{"name": "...", "board_id": 1, "priority": "medium"}
+# Then immediately assign:
+PATCH http://localhost:3001/api/v1/tasks/{id}/assign
+
+# Complete task
+PATCH http://localhost:3001/api/v1/tasks/{id}/complete
+```
+
+**Important:** Always assign tasks after creating them. Unassigned tasks won't be picked up by the nightly job.
+
+**Boards:** 1=Mission Control, 2=Build Product, 3=Build Content System, 4=Build Sophie, 6=Create Content
+
+Don't wait for memory — if it sounds like a task, capture it or ask.
 
 ## External vs Internal
 

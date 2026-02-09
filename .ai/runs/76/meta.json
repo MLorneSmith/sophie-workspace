@@ -1,0 +1,21 @@
+{
+  "taskId": 76,
+  "agent": "researcher",
+  "persona": null,
+  "iteration": 1,
+  "createdAt": "2026-02-09T00:48:25+00:00",
+  "updatedAt": "2026-02-09T00:48:25+00:00",
+  "status": "prompt_prepared",
+  "checks": {},
+  "contextMapping": "research",
+  "builderModel": "zai/glm-4.7",
+  "builderThinking": "default",
+  "contextFiles": [
+    "/home/ubuntu/clawd/.ai/contexts/company/about.md",
+    "/home/ubuntu/clawd/.ai/contexts/messaging/positioning.md",
+    "/home/ubuntu/clawd/.ai/contexts/company/products.md"
+  ],
+  "taskType": "research",
+  "maxIterations": 2,
+  "lastPrepareAt": "2026-02-09T00:48:25+00:00"
+}

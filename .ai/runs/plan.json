@@ -1,0 +1,38 @@
+{
+  "action": "plan",
+  "createdAt": "2026-02-09T00:47:43.006514+00:00",
+  "totalTasks": 3,
+  "parallelSlots": 3,
+  "tasks": [
+    {
+      "taskId": 85,
+      "name": "Sophie Loop Phase 5: Loop Runner",
+      "boardId": 4,
+      "initiativeId": 2,
+      "agent": "coder",
+      "persona": null,
+      "priority": 2,
+      "status": "pending"
+    },
+    {
+      "taskId": 87,
+      "name": "Sophie Loop Phase 7: Test Run",
+      "boardId": 4,
+      "initiativeId": 2,
+      "agent": "writer",
+      "persona": "solo-consultant",
+      "priority": 2,
+      "status": "pending"
+    },
+    {
+      "taskId": 76,
+      "name": "Find and evaluate more best-practice presentations",
+      "boardId": 1,
+      "initiativeId": 14,
+      "agent": "researcher",
+      "persona": null,
+      "priority": 3,
+      "status": "pending"
+    }
+  ]
+}

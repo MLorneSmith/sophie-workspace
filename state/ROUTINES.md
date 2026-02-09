@@ -2,51 +2,42 @@
 
 ## 🌅 Morning Briefing (first heartbeat after 07:00 local)
 
-1. Read `state/current.md`
-2. Check yesterday's `memory/YYYY-MM-DD.md`
-3. Scan emails for urgent items (gog gmail list --unread)
-4. Fetch calendar events for today and tomorrow (see below)
-5. Fetch top AI agent use cases (see below)
-6. Fetch EC2 daily cost: `~/clawd/scripts/get-ec2-daily-cost.sh`
-7. Send brief to Mike:
-   - Top 3 priorities from current.md
-   - Any urgent/new emails
-   - 📅 Today's Meetings
-   - 📅 Tomorrow's Meetings
-   - 💰 Yesterday's EC2 cost (from step 6)
-   - Weather if relevant
-   - 🔍 Top 3-5 AI Agent Use Cases (from Feed Monitor)
+### ⚠️ PRE-FLIGHT CHECKLIST — READ BEFORE GENERATING BRIEFING
+Before composing the briefing, verify these MANDATORY items:
+- [ ] **NO LOCALHOST LINKS** — Never include `localhost:3001` URLs. They don't work from Discord. Use "React 👍 or 👎" instead.
+- [ ] **CALENDAR SECTION EXISTS** — Must include 📅 Today's Meetings AND 📅 Tomorrow's Meetings, even if empty ("No meetings scheduled").
+- [ ] **QUOTE IS ROTATED** — Use quotes.json rotation, not a hardcoded quote.
+If any of these are missing from your draft, FIX IT before sending.
 
-### Fetching Calendar Events
-```bash
-# Today's meetings
-TODAY=$(date +%Y-%m-%d)
-TOMORROW=$(date -d "+1 day" +%Y-%m-%d)
-DAY_AFTER=$(date -d "+2 days" +%Y-%m-%d)
+### Process (Template-Based)
+1. **Gather data:** Run `~/clawd/scripts/morning-briefing-data.sh > /tmp/briefing-data.json`
+2. **Read template:** `~/clawd/templates/morning-briefing.md`
+3. **Read context:** `state/current.md` + yesterday's `memory/YYYY-MM-DD.md`
+4. **Compose briefing:** Fill every `{{PLACEHOLDER}}` from the JSON data. Write `[COMPOSE]` sections from context.
+5. **Validate:** Pipe your draft through `~/clawd/scripts/validate-briefing.sh` — fix any errors
+6. **Send** to Mike
 
-# Today
-gog calendar events primary --from "${TODAY}T00:00:00Z" --to "${TOMORROW}T00:00:00Z" --json | \
-  jq -r '.events[]? | "• \(.start.dateTime // .start.date | split("T")[1][:5] // "All day") — \(.summary)"'
+### What the data script collects automatically
+- Dates, weather, quote (rotated), calendar (today + tomorrow)
+- Unread emails, feed monitor articles, capture activity
+- AWS costs, disk space warnings
 
-# Tomorrow
-gog calendar events primary --from "${TOMORROW}T00:00:00Z" --to "${DAY_AFTER}T00:00:00Z" --json | \
-  jq -r '.events[]? | "• \(.start.dateTime // .start.date | split("T")[1][:5] // "All day") — \(.summary)"'
-```
-If no events, say "No meetings scheduled."
+### What you compose manually
+- Top Headlines (curated, relevant to SlideHeroes)
+- Sophie Can Do Today (from backlog + priorities)
+- Mike's Agenda (review items, decisions needed)
+- Overnight Work summary (from state/current.md)
 
-### Fetching Use Cases
-```bash
-curl -s http://localhost:3001/api/feed-monitor/use-cases | jq '.useCases[:5] | .[] | {id: .item.id, title: .item.title, score: .useCaseScore, type: .useCaseType, snippet: .useCaseSnippet, link: .item.link}'
-```
-Include in briefing: title, type, 1-line snippet, and link. Skip if API unavailable.
+### Legacy Manual Steps (now handled by data script)
+All calendar, weather, quotes, feed items, costs, and email data are now gathered
+automatically by `~/clawd/scripts/morning-briefing-data.sh`. See above for the new process.
 
-### Feedback Links (for each article)
-Add clickable feedback links so Mike can rate articles directly from Discord:
-```
-[👍](https://internal.slideheroes.com/api/newsletter/feedback?itemId=ITEM_ID&rating=1) [👎](https://internal.slideheroes.com/api/newsletter/feedback?itemId=ITEM_ID&rating=-1)
-```
-Replace `ITEM_ID` with the article's `id` field.
-Feedback adjusts source feed reputation over time (good sources rise, noisy ones sink).
+**Reference commands** (if data script fails):
+- Calendar: `gog calendar events primary --from "...T00:00:00Z" --to "...T00:00:00Z" --json`
+- Weather: `curl -s "wttr.in/Toronto?format=%C+%t&m"`
+- Costs: `~/clawd/scripts/get-ec2-daily-cost.sh`
+- Feed: `curl -s http://localhost:3001/api/feed-monitor/use-cases`
+- Quotes: `~/clawd/data/quotes.json` (rotate lastUsedIndex)
 
 ## 🔄 Checkpoint (every ~30 min during active work)
 
