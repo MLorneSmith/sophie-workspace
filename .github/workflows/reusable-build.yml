@@ -152,12 +152,29 @@ jobs:
         env:
           NODE_ENV: production
           NEXT_PUBLIC_APP_ENV: ${{ inputs.environment }}
+          # Database
           DATABASE_URI: ${{ secrets.DATABASE_URI }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          # Payload CMS
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
           PAYLOAD_PUBLIC_SERVER_URL: ${{ vars.PAYLOAD_PUBLIC_SERVER_URL }}
+          # Supabase
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
+          # Auth configuration (baked into client bundle at build time)
+          NEXT_PUBLIC_AUTH_PASSWORD: ${{ vars.NEXT_PUBLIC_AUTH_PASSWORD || 'true' }}
+          NEXT_PUBLIC_AUTH_MAGIC_LINK: ${{ vars.NEXT_PUBLIC_AUTH_MAGIC_LINK || 'false' }}
+          NEXT_PUBLIC_AUTH_OTP: ${{ vars.NEXT_PUBLIC_AUTH_OTP || 'false' }}
+          # Billing
+          NEXT_PUBLIC_BILLING_PROVIDER: ${{ vars.NEXT_PUBLIC_BILLING_PROVIDER || 'stripe' }}
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          # Site configuration
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_PRODUCT_NAME: ${{ vars.NEXT_PUBLIC_PRODUCT_NAME || 'SlideHeroes' }}
+          EMAIL_SENDER: ${{ vars.EMAIL_SENDER || 'noreply@slideheroes.com' }}
 
       - name: Cache build artifacts
         uses: actions/cache@v5

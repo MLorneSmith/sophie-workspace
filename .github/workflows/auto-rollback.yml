@@ -19,6 +19,8 @@ on:
         required: true
       VERCEL_PROJECT_ID:
         required: true
+      VERCEL_AUTOMATION_BYPASS_SECRET:
+        required: false
 
 jobs:
   health-check:
@@ -33,7 +35,9 @@ jobs:
       - name: Health check
         id: health
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" "${{ inputs.deployment_url }}/healthcheck")
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+            "${{ inputs.deployment_url }}/healthcheck")
           if [ "$response" = "200" ]; then
             echo "status=healthy" >> $GITHUB_OUTPUT
           else
@@ -57,8 +61,6 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 8
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -91,7 +93,9 @@ jobs:
           error_requests=0
           
           while [ $(date +%s) -lt $end_time ]; do
-            response=$(curl -s -o /dev/null -w "%{http_code}" "${{ inputs.deployment_url }}/healthcheck")
+            response=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+              "${{ inputs.deployment_url }}/healthcheck")
             total_requests=$((total_requests + 1))
             
             if [ "$response" != "200" ]; then

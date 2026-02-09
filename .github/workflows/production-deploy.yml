@@ -1,6 +1,7 @@
 name: Deploy to Production
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -73,10 +74,10 @@ jobs:
       - name: TruffleHog Secret Scan
         uses: docker://trufflesecurity/trufflehog:3.63.7
         with:
-          args: |
-            git file://./ \
-            --since-commit HEAD~1 \
-            --fail \
+          args: >-
+            git file://./
+            --since-commit HEAD~1
+            --fail
             --no-update
       
       # NOTE: AikidoSec/github-actions-workflow is deprecated (May 2025).
@@ -104,6 +105,7 @@ jobs:
     uses: ./.github/workflows/reusable-build.yml
     with:
       environment: production
+    secrets: inherit
 
   # Deploy Web App to Vercel Production
   deploy-web:
@@ -250,8 +252,10 @@ jobs:
 
       - name: Check production web health
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ needs.deploy-web.outputs.url }}/healthcheck)
-          if [ $response -eq 200 ]; then
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+            "${{ needs.deploy-web.outputs.url }}/healthcheck")
+          if [ "$response" = "200" ]; then
             echo "✅ Production web health check passed"
           else
             echo "❌ Production web health check failed with status $response"
@@ -260,8 +264,10 @@ jobs:
 
       - name: Check production payload health
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ needs.deploy-payload.outputs.url }}/api/health)
-          if [ $response -eq 200 ]; then
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}" \
+            "${{ needs.deploy-payload.outputs.url }}/api/health")
+          if [ "$response" = "200" ]; then
             echo "✅ Production payload health check passed"
           else
             echo "❌ Production payload health check failed with status $response"
@@ -331,8 +337,9 @@ jobs:
         with:
           status: success
           text: '🚀 Production deployment completed successfully!'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
           fields: 'repo,commit,author'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   # Auto-rollback workflow
   auto-rollback:
@@ -346,3 +353,4 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
