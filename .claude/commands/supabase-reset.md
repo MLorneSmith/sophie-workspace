@@ -40,7 +40,7 @@ You are a Database Operations Specialist with expertise in Supabase management, 
 **Database reset outcomes**:
 
 1. **Primary Objective**: Fresh local Supabase database with seeded Payload CMS
-2. **Success Criteria**: Database reset, migrations applied, 257 records seeded across 12 collections
+2. **Success Criteria**: Database reset, migrations applied, 258 records seeded across 12 collections
 3. **Safety Features**: Pre-flight validation, automatic cleanup, duplicate prevention
 
 </purpose>
@@ -82,6 +82,7 @@ You are a Database Operations Specialist with expertise in Supabase management, 
 - Docker daemon is running
 - Supabase CLI is available
 - Required bash scripts exist in `.ai/ai_scripts/database/` and `.ai/ai_scripts/development/`
+- `apps/payload/.env.test` exists (create from `.env.test.example` if missing, copying R2 credentials from `.env.development`)
 
 </inputs>
 
@@ -143,7 +144,34 @@ if ! command -v supabase >/dev/null 2>&1; then
   exit 1
 fi
 
-# 1.4 Validate Payload configuration (unless regenerating)
+# 1.4 Ensure apps/payload/.env.test exists (required for seeding)
+ENV_TEST="apps/payload/.env.test"
+ENV_TEST_EXAMPLE="apps/payload/.env.test.example"
+ENV_DEV="apps/payload/.env.development"
+
+if [ ! -f "$ENV_TEST" ]; then
+  echo "⚠️  .env.test missing, creating from .env.test.example..."
+  if [ -f "$ENV_TEST_EXAMPLE" ]; then
+    cp "$ENV_TEST_EXAMPLE" "$ENV_TEST"
+    # Copy R2 credentials from .env.development if available
+    if [ -f "$ENV_DEV" ]; then
+      for var in R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_ACCOUNT_ID R2_ENDPOINT; do
+        DEV_VALUE=$(grep "^${var}=" "$ENV_DEV" | cut -d'=' -f2-)
+        if [ -n "$DEV_VALUE" ] && [ "$DEV_VALUE" != "your_${var,,}_here" ]; then
+          sed -i "s|^${var}=.*|${var}=${DEV_VALUE}|" "$ENV_TEST"
+        fi
+      done
+      echo "✅ Created .env.test with R2 credentials from .env.development"
+    else
+      echo "⚠️  Created .env.test from example - you may need to add R2 credentials manually"
+    fi
+  else
+    echo "❌ ERROR: Neither .env.test nor .env.test.example found"
+    exit 1
+  fi
+fi
+
+# 1.5 Validate Payload configuration (unless regenerating)
 if [ "$REGENERATE_MIGRATIONS" = false ]; then
   bash .ai/ai_scripts/database/validate-payload-config.sh || exit 1
 fi
@@ -187,15 +215,25 @@ npx supabase start
 
 # 2.4 Reset database with migrations (requires Supabase to be running)
 # Pipe "n" to reject remote database reset prompt when project is linked
+# NOTE: supabase db reset may return exit code 1 with a transient 502 error
+# on container restart even though the reset succeeded. We verify connectivity
+# after instead of relying on the exit code.
 echo "🔄 Resetting Supabase database..."
-echo "n" | npx supabase db reset
+echo "n" | npx supabase db reset || true
 
 # 2.5 Set DATABASE_URL for local Supabase (always uses these ports)
 # Hardcoding is more reliable than parsing supabase status output
 DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:54522/postgres"
 
-echo "✅ Database reset complete"
-echo "   Database URL: $DATABASE_URL"
+# 2.6 Verify database connectivity (the real success check)
+if psql "$DATABASE_URL" -c "SELECT 1;" >/dev/null 2>&1; then
+  echo "✅ Database reset complete"
+  echo "   Database URL: $DATABASE_URL"
+else
+  echo "❌ ERROR: Database not reachable after reset"
+  echo "Try: npx supabase stop && npx supabase start"
+  exit 1
+fi
 
 # ============================================================
 # PHASE 3: Verify Payload Schema and Run Migrations
@@ -261,11 +299,12 @@ if [ "$SCHEMA_ONLY" = false ]; then
   }
 
   # 4.3 Run seeding (files already pre-uploaded to R2)
+  # NOTE: seed:run may exit non-zero if the optional sophie-api user fails
+  # (requires SEED_SOPHIE_API_PASSWORD). We validate actual record counts after
+  # instead of relying on the exit code.
   echo "📤 Seeding database with pre-uploaded R2 file URLs..."
   DATABASE_URI="$DATABASE_URL?sslmode=disable" NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run seed:run || {
-    echo "❌ ERROR: Seeding failed"
-    echo "Check collection configuration and try --regenerate-payload-migrations"
-    exit 1
+    echo "⚠️  Seeding exited with errors - validating actual results..."
   }
 
   # 4.4 Validate seeded data (check for duplicates)
@@ -282,8 +321,8 @@ if [ "$SCHEMA_ONLY" = false ]; then
       END as status
     FROM (
       SELECT 'users' as collection, COUNT(*)::int as actual, 1 as expected FROM payload.users
-      UNION ALL SELECT 'media', COUNT(*)::int, 24 FROM payload.media
-      UNION ALL SELECT 'downloads', COUNT(*)::int, 20 FROM payload.downloads
+      UNION ALL SELECT 'media', COUNT(*)::int, 26 FROM payload.media
+      UNION ALL SELECT 'downloads', COUNT(*)::int, 23 FROM payload.downloads
       UNION ALL SELECT 'posts', COUNT(*)::int, 8 FROM payload.posts
       UNION ALL SELECT 'courses', COUNT(*)::int, 1 FROM payload.courses
       UNION ALL SELECT 'course_lessons', COUNT(*)::int, 25 FROM payload.course_lessons
@@ -292,7 +331,7 @@ if [ "$SCHEMA_ONLY" = false ]; then
       UNION ALL SELECT 'survey_questions', COUNT(*)::int, 32 FROM payload.survey_questions
       UNION ALL SELECT 'surveys', COUNT(*)::int, 3 FROM payload.surveys
       UNION ALL SELECT 'documentation', COUNT(*)::int, 19 FROM payload.documentation
-      UNION ALL SELECT 'private', COUNT(*)::int, 5 FROM payload.private
+      UNION ALL SELECT 'private_posts', COUNT(*)::int, 5 FROM payload.private_posts
     ) counts;
   ")
 
@@ -403,8 +442,9 @@ fi
 - R2 storage configured with production credentials
 - Supabase running on localhost:54521-54523
 - Payload schema with 60 tables
-- 257 records seeded across 12 collections (if not --schema-only)
-- Media files (24) and downloads (20) with R2 URLs
+- 258 records seeded across 12 collections (if not --schema-only)
+  - Note: sophie-api user (1 of 2 users) requires optional SEED_SOPHIE_API_PASSWORD env var; 257/258 is acceptable
+- Media files (26) and downloads (23) with R2 URLs
 - No duplicate records detected
 
 **Final Status Report**:
@@ -416,7 +456,7 @@ fi
 ✅ Phase 1: Environment validated
 ✅ Phase 2: Supabase started and database reset
 ✅ Phase 3: Payload migrations applied (60 tables)
-✅ Phase 4: Seeding complete (257/257 records)
+✅ Phase 4: Seeding complete (257-258/258 records)
 ✅ Phase 5: Database verified
 
 **Connection Details:**
@@ -568,7 +608,7 @@ Reset local Supabase database and seed Payload CMS with fresh data.
 2. ✅ Resets Supabase database (drops and recreates public + payload schemas)
 3. ✅ Payload schema auto-created by migration (with DROP CASCADE for clean slate)
 4. ✅ Runs Payload CMS migrations (creates 60 tables)
-5. ✅ Seeds Payload CMS with 257 records (unless --schema-only)
+5. ✅ Seeds Payload CMS with 258 records across 12 collections (unless --schema-only)
 6. ✅ Verifies database state
 
 **Requirements:**
