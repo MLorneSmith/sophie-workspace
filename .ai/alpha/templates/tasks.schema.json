@@ -132,7 +132,9 @@
 		},
 		"tasks": {
 			"type": "array",
-			"description": "All tasks including spikes",
+			"description": "All tasks including spikes. Hard maximum of 12 tasks per feature; if more are needed, split the feature in /alpha:feature-decompose.",
+			"minItems": 1,
+			"maxItems": 12,
 			"items": {
 				"$ref": "#/definitions/task"
 			}

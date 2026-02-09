@@ -77,18 +77,21 @@ export {
 	killClaudeProcess,
 	runHealthChecks,
 } from "./health.js";
+// Feature status transitions (centralized state management - #1955)
 export type {
-	HeartbeatConfig,
-	HeartbeatStatus,
-	HeartbeatStatusType,
-} from "./heartbeat-monitor.js";
-// Heartbeat monitor (Bug fix #1786: Event-driven architecture)
+	TransitionOptions,
+	TransitionResult,
+} from "./feature-transitions.js";
 export {
-	DEFAULT_HEARTBEAT_CONFIG,
-	formatHeartbeatStatus,
-	HeartbeatMonitor,
-	heartbeatMonitor,
-} from "./heartbeat-monitor.js";
+	transitionFeatureStatus,
+	transitionInitiativeStatus,
+	updateInitiativeStatusFromFeatures,
+	VALID_FEATURE_TRANSITIONS,
+	VALID_INITIATIVE_TRANSITIONS,
+} from "./feature-transitions.js";
+
+// Shared logger
+export { createLogger } from "./logger.js";
 
 // Lock management
 export {
@@ -123,9 +126,13 @@ export type { WorkLoopOptions, WorkLoopResult } from "./work-loop.js";
 export { runWorkLoop, WorkLoop } from "./work-loop.js";
 // Port health checks
 export { isPortOpen, waitForDevServer, waitForPort } from "./port-health.js";
-export type { PreFlightResult } from "./pre-flight.js";
+export type {
+	FeatureTaskCountCheckResult,
+	PreFlightResult,
+} from "./pre-flight.js";
 // Pre-flight checks
 export {
+	checkFeatureTaskCounts,
 	checkPreFlightSilent,
 	formatPreFlightForDryRun,
 	runPreFlightCheck,
@@ -139,19 +146,6 @@ export {
 	writeIdleProgress,
 	writeUIProgress,
 } from "./progress.js";
-export type {
-	RecoveryConfig,
-	RecoveryResult,
-	RecoveryTelemetry,
-} from "./recovery-manager.js";
-// Recovery manager (Bug fix #1786: Event-driven architecture)
-export {
-	DEFAULT_RECOVERY_CONFIG,
-	formatRecoveryResult,
-	quickCleanup,
-	RecoveryManager,
-	recoveryManager,
-} from "./recovery-manager.js";
 export type { RunMetadata } from "./run-id.js";
 // Run ID generation
 export {
@@ -182,23 +176,6 @@ export {
 	shouldRetry,
 	updateOutputTracker,
 } from "./startup-monitor.js";
-export type {
-	FeatureContext,
-	FeatureState,
-	StateTransition,
-	TransitionListener,
-	TransitionResult,
-} from "./state-machine.js";
-// State machine (Bug fix #1786: Event-driven architecture)
-export {
-	createDefaultContext,
-	FeatureStateMachine,
-	featureStateMachine,
-	isActiveState,
-	isAssignableState,
-	isTerminalState,
-	STATE_TRANSITIONS,
-} from "./state-machine.js";
 // TTS (Text-to-Speech) notifications
 export { isTTSAvailable, speak, speakCompletion } from "./tts.js";
 // Utilities

@@ -17,6 +17,53 @@ import {
 } from "../config/index.js";
 
 // ============================================================================
+// Status Validation
+// ============================================================================
+
+/** Valid status values that the orchestrator recognizes from progress files. */
+export const VALID_PROGRESS_STATUSES = new Set([
+	"in_progress",
+	"completed",
+	"failed",
+] as const);
+
+export type ValidProgressStatus = "in_progress" | "completed" | "failed";
+
+/**
+ * Validate and normalize a progress file status value.
+ *
+ * TypeScript unions are erased at runtime. External agents can write any
+ * string to the progress file. This function ensures only valid statuses
+ * propagate into the orchestrator.
+ *
+ * Remapping rules:
+ * - "blocked" -> "failed" (Bug fix #1952: prevents unrecoverable state)
+ * - Unknown values -> "in_progress" (safe fallback, health checks will catch stuck features)
+ */
+export function validateProgressStatus(
+	rawStatus: unknown,
+): ValidProgressStatus {
+	if (
+		typeof rawStatus === "string" &&
+		VALID_PROGRESS_STATUSES.has(rawStatus as ValidProgressStatus)
+	) {
+		return rawStatus as ValidProgressStatus;
+	}
+
+	if (rawStatus === "blocked") {
+		console.warn(
+			'[STATUS_VALIDATION] Remapping "blocked" -> "failed" (agent wrote non-orchestrator status)',
+		);
+		return "failed";
+	}
+
+	console.warn(
+		`[STATUS_VALIDATION] Unknown progress status "${String(rawStatus)}" -> defaulting to "in_progress"`,
+	);
+	return "in_progress";
+}
+
+// ============================================================================
 // Types
 // ============================================================================
 
@@ -26,7 +73,7 @@ import {
  * which is the source of truth for feature completion status.
  */
 export interface ProgressFileData {
-	status: "in_progress" | "completed" | "failed" | "blocked";
+	status: ValidProgressStatus;
 	phase: string;
 	completed_tasks: string[];
 	failed_tasks?: string[];
@@ -77,7 +124,11 @@ export async function readProgressFile(
 			};
 		}
 
-		const data = JSON.parse(result.stdout) as ProgressFileData;
+		const raw = JSON.parse(result.stdout);
+		const data: ProgressFileData = {
+			...raw,
+			status: validateProgressStatus(raw.status),
+		};
 		return { success: true, data };
 	} catch (error) {
 		return {

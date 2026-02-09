@@ -22,26 +22,11 @@ import type {
 	SandboxInstance,
 	SandboxProgress,
 } from "../types/index.js";
+import { createLogger } from "./logger.js";
 import { getProjectRoot } from "./lock.js";
+import { validateProgressStatus } from "./progress-file.js";
 import { ensureUIProgressDir } from "./manifest.js";
 import { sleep } from "./utils.js";
-
-// ============================================================================
-// Logging Helper
-// ============================================================================
-
-/**
- * Create a conditional logger that only outputs when UI is disabled.
- * When UI is enabled, all console output is suppressed to avoid interfering
- * with the Ink-based dashboard.
- */
-function createLogger(uiEnabled: boolean) {
-	return {
-		log: (...args: unknown[]) => {
-			if (!uiEnabled) console.log(...args);
-		},
-	};
-}
 
 // ============================================================================
 // Progress Display
@@ -336,7 +321,13 @@ export function startProgressPolling(
 					if (!isPolling) return;
 
 					if (result.stdout?.trim()) {
-						const progress: SandboxProgress = JSON.parse(result.stdout);
+						const raw = JSON.parse(result.stdout);
+						const progress: SandboxProgress = {
+							...raw,
+							status: raw.status
+								? validateProgressStatus(raw.status)
+								: undefined,
+						};
 
 						// Handle stale progress data from previous sessions
 						if (progress.last_heartbeat) {
@@ -350,7 +341,7 @@ export function startProgressPolling(
 										sandboxLabel,
 										{
 											...progress,
-											status: "recovering",
+											status: "in_progress",
 											phase: "recovering",
 											last_heartbeat: new Date().toISOString(),
 										},

@@ -300,6 +300,57 @@ export function formatPreFlightForDryRun(manifest: SpecManifest): string {
 }
 
 // ============================================================================
+// Feature Task Count Pre-Flight Check
+// ============================================================================
+
+/**
+ * Result of the feature task count pre-flight check.
+ */
+export interface FeatureTaskCountCheckResult {
+	/** Whether to proceed with orchestration (always true - warning only) */
+	proceed: boolean;
+	/** Number of features exceeding the task count limit */
+	oversizedCount: number;
+}
+
+/**
+ * Run pre-flight check for feature task counts in the manifest.
+ *
+ * Warns about features that exceed 12 tasks per feature. This is a
+ * soft check (warning only) -- it does not block orchestration.
+ *
+ * Chore #1962: Enforce max 12 tasks per feature
+ *
+ * @param manifest - The spec manifest to validate
+ * @param log - Logger function for output
+ * @returns FeatureTaskCountCheckResult
+ */
+export function checkFeatureTaskCounts(
+	manifest: SpecManifest,
+	log: (...args: unknown[]) => void,
+): FeatureTaskCountCheckResult {
+	log("   Validating feature task counts...");
+	const MAX_TASKS_PER_FEATURE = 12;
+	let oversizedCount = 0;
+
+	for (const feature of manifest.feature_queue) {
+		if (feature.task_count > MAX_TASKS_PER_FEATURE) {
+			log(`   ⚠️ Feature ${feature.id} has ${feature.task_count} tasks (max: ${MAX_TASKS_PER_FEATURE})`);
+			oversizedCount++;
+		}
+	}
+
+	if (oversizedCount > 0) {
+		log(`   ⚠️ ${oversizedCount} feature(s) exceed ${MAX_TASKS_PER_FEATURE} tasks. Consider splitting.`);
+	} else {
+		log("   ✅ All features within task count limits");
+	}
+
+	// Warning only - don't block execution
+	return { proceed: true, oversizedCount };
+}
+
+// ============================================================================
 // Circular Dependency Pre-Flight Check
 // ============================================================================
 

@@ -216,7 +216,7 @@ describe("writeIdleProgress after restart (Bug fix #1713)", () => {
 		writeUIProgress(
 			"sbx-clear",
 			{
-				status: "running",
+				status: "in_progress",
 				phase: "executing",
 				completed_tasks: ["task-1"],
 				failed_tasks: [],

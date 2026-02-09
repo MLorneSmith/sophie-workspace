@@ -45,6 +45,8 @@ export function parseArgs(): OrchestratorOptions {
 		skipToCompletion: false,
 		skipPreFlight: false,
 		document: false, // Opt-in: generate spec documentation after completion
+		phase: undefined,
+		baseBranch: undefined,
 	};
 
 	for (let i = 0; i < args.length; i++) {
@@ -88,6 +90,12 @@ export function parseArgs(): OrchestratorOptions {
 			options.skipPreFlight = true;
 		} else if (arg === "--document") {
 			options.document = true;
+		} else if (arg === "--phase" && nextArg) {
+			options.phase = nextArg.toUpperCase();
+			i++;
+		} else if (arg === "--base-branch" && nextArg) {
+			options.baseBranch = nextArg;
+			i++;
 		} else if (
 			!arg.startsWith("--") &&
 			!arg.startsWith("-") &&
@@ -119,6 +127,8 @@ Options:
   --sandboxes <n>, -s   Number of sandboxes (default: 3, max: 3)
   --timeout <s>         Sandbox timeout in seconds (default: 3600, max: 3600)
   --provider <name>     Agent provider: claude | gpt (default: claude)
+  --phase <id>          Run only a specific phase (e.g., --phase P1)
+  --base-branch <name>  Fork from a previous phase's branch (requires --phase)
   --dry-run             Show execution plan without running
   --force-unlock        Force release any existing orchestrator lock
   --reset               Reset manifest state (delete and regenerate)
@@ -153,6 +163,12 @@ Examples:
   tsx spec-orchestrator.ts 1362 --skip-db-seed  # Resume without re-seeding
   tsx spec-orchestrator.ts 0                    # Run debug spec
   tsx spec-orchestrator.ts 1362 --skip-to-completion  # Debug completion sequence
+
+Phase Execution (for large specs):
+  tsx spec-orchestrator.ts 1918 --phase P1                                      # Run phase 1
+  tsx spec-orchestrator.ts 1918 --phase P2 --base-branch alpha/spec-S1918-P1    # Chain from P1
+  tsx spec-orchestrator.ts 1918 --phase P3 --base-branch alpha/spec-S1918-P2    # Chain from P2
+  tsx spec-orchestrator.ts 1918 --phase P1 --dry-run                            # Preview phase
 
 Environment Variables (for sandbox database):
   SUPABASE_SANDBOX_PROJECT_REF   Sandbox project reference ID

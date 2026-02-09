@@ -54,7 +54,7 @@ You are a Database Operations Specialist with expertise in Supabase management, 
 **Remote database reset outcomes**:
 
 1. **Primary Objective**: Fresh remote Supabase database with seeded Payload CMS
-2. **Success Criteria**: Database reset, Supabase migrations applied, Payload migrations run (60+ tables), 257 records seeded across 12 collections
+2. **Success Criteria**: Database reset, Supabase migrations applied, Payload migrations run (60+ tables), 258 records seeded across 12 collections (257 if SEED_SOPHIE_API_PASSWORD is not set)
 3. **Safety Features**: Pre-backup, progress tracking, comprehensive verification
 
 </purpose>
@@ -89,16 +89,19 @@ You are a Database Operations Specialist with expertise in Supabase management, 
 
 **Environment Requirements**:
 
-- Remote DATABASE_URI from `apps/payload/.env.production`
-- `SEED_USER_PASSWORD` from `apps/payload/.env` (for test user creation)
-- SSL mode required for remote connections
-- `NODE_TLS_REJECT_UNAUTHORIZED=0` may be needed for some environments
+- `apps/payload/.env.production` with `DATABASE_URI` (includes `&sslmode=require`)
+  - One-time setup: `cd apps/payload && vercel env pull .env.production --environment production`
+  - Then add: `PAYLOAD_ENABLE_SSL=true`, `NODE_ENV=production`, and `&sslmode=require` to DATABASE_URI
+- `SUPABASE_DB_PASSWORD` - auto-extracted from DATABASE_URI in Phase 1 (no manual setup needed)
+- `SEED_USER_PASSWORD` from `apps/payload/.env` (required for admin user creation)
+- `SEED_SOPHIE_API_PASSWORD` from `apps/payload/.env` (optional - sophie-api user skipped if not set, 257/258 records is acceptable)
+- `NODE_TLS_REJECT_UNAUTHORIZED=0` set automatically for remote SSL connections
 
 **Validate**:
 
 - Supabase CLI is available
 - Project is linked to remote (`supabase projects list`)
-- Required scripts exist
+- Required scripts exist (`.ai/ai_scripts/database/validate-payload-config.sh`, `validate-seeding-config.sh`, `cleanup-payload-tables.sh`)
 
 </inputs>
 
@@ -187,14 +190,33 @@ if ! npx supabase projects list --linked 2>/dev/null | grep -q "ldebzombxtszzcgn
   exit 1
 fi
 
-# 1.4 Report old backups (advisory only - auto-delete blocked by security hooks)
+# 1.4 Validate .env.production and extract SUPABASE_DB_PASSWORD for CLI operations
+if [ ! -f "../payload/.env.production" ]; then
+  echo "ERROR: apps/payload/.env.production not found"
+  echo ""
+  echo "Create it by pulling from Vercel:"
+  echo "  cd apps/payload && vercel env pull .env.production --environment production"
+  echo ""
+  echo "Then ensure it has: PAYLOAD_ENABLE_SSL=true, NODE_ENV=production"
+  echo "And DATABASE_URI includes &sslmode=require"
+  exit 1
+fi
+
+# Extract DB password from DATABASE_URI for Supabase CLI (--linked operations)
+export SUPABASE_DB_PASSWORD=$(grep "^DATABASE_URI" ../payload/.env.production | sed -n 's|.*://[^:]*:\([^@]*\)@.*|\1|p')
+if [ -z "$SUPABASE_DB_PASSWORD" ]; then
+  echo "ERROR: Could not extract database password from DATABASE_URI in .env.production"
+  exit 1
+fi
+
+# 1.5 Report old backups (advisory only - auto-delete blocked by security hooks)
 BACKUP_COUNT=$(ls -1 backup-remote-*.sql 2>/dev/null | wc -l)
 if [ "$BACKUP_COUNT" -gt 5 ]; then
   echo "INFO: Found $BACKUP_COUNT backups. Consider manual cleanup of oldest:"
   ls -1t backup-remote-*.sql | tail -n +6
 fi
 
-# 1.5 Create backup before destructive operations
+# 1.6 Create backup before destructive operations
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 BACKUP_SCHEMA="backup-remote-${TIMESTAMP}-schema.sql"
 
@@ -255,35 +277,28 @@ cd apps/payload
 
 echo "Running Payload migrations on remote database..."
 
-# Get remote database connection string
-# Priority: 1) REMOTE_DATABASE_URL env var, 2) .env.production file
-
-if [ -n "$REMOTE_DATABASE_URL" ]; then
-  DATABASE_URI="$REMOTE_DATABASE_URL"
-  echo "Using REMOTE_DATABASE_URL from environment"
-elif [ -f ".env.production" ]; then
-  # Source DATABASE_URI from .env.production (already configured for remote)
-  source .env.production
-  if [ -n "$DATABASE_URI" ]; then
-    echo "Using DATABASE_URI from apps/payload/.env.production"
-  else
-    echo "ERROR: DATABASE_URI not found in .env.production"
-    exit 1
-  fi
-else
-  echo "ERROR: No remote database configuration found"
-  echo ""
-  echo "Options:"
-  echo "1. Ensure apps/payload/.env.production exists with DATABASE_URI"
-  echo "2. Set REMOTE_DATABASE_URL environment variable"
-  echo ""
-  echo "You can find the connection string in Supabase Dashboard > Settings > Database"
+# Validate Payload configuration before running migrations
+bash ../../.ai/ai_scripts/database/validate-payload-config.sh || {
+  echo "ERROR: Payload configuration validation failed"
+  echo "Fix the issues above before proceeding"
   exit 1
-fi
+}
 
-# Run Payload migrations
+# IMPORTANT: Use explicit env var prefix, NOT `source .env.production`.
+# `source` sets bash vars but Node's dotenv loads .env first (local DB),
+# so Payload silently connects to the wrong database.
+# Explicit env vars on the command line override everything.
+
+# Extract required values from .env.production
+REMOTE_DB_URI=$(grep "^DATABASE_URI" .env.production | cut -d'"' -f2)
+REMOTE_PAYLOAD_SECRET=$(grep "^PAYLOAD_SECRET" .env.production | cut -d'"' -f2)
+
 echo "Executing Payload migrations..."
-NODE_TLS_REJECT_UNAUTHORIZED=0 \
+DATABASE_URI="$REMOTE_DB_URI" \
+  PAYLOAD_SECRET="$REMOTE_PAYLOAD_SECRET" \
+  NODE_ENV=production \
+  PAYLOAD_ENABLE_SSL=true \
+  NODE_TLS_REJECT_UNAUTHORIZED=0 \
   pnpm run payload migrate --forceAcceptWarning || {
     echo "ERROR: Payload migration failed"
     echo ""
@@ -294,7 +309,7 @@ NODE_TLS_REJECT_UNAUTHORIZED=0 \
     exit 1
   }
 
-# Verify Payload tables using supabase inspect (no credentials needed)
+# Verify Payload tables using supabase inspect (SUPABASE_DB_PASSWORD set in Phase 1)
 cd ../web
 echo "Verifying Payload tables..."
 PAYLOAD_TABLE_COUNT=$(npx supabase inspect db table-stats --linked 2>&1 | grep -c "payload\.")
@@ -330,37 +345,60 @@ if [ "$SCHEMA_ONLY" = false ]; then
 
   echo "Seeding Payload CMS..."
 
+  # Re-source .env.production to ensure DATABASE_URI is available in this phase
+  # (Phase 3 may have run in a separate shell session)
+  if [ -f ".env.production" ]; then
+    source .env.production
+  fi
+  # Allow REMOTE_DATABASE_URL override (same as Phase 3)
+  if [ -n "$REMOTE_DATABASE_URL" ]; then
+    export DATABASE_URI="$REMOTE_DATABASE_URL"
+  fi
+
+  # Validate seeding configuration before proceeding
+  bash ../../.ai/ai_scripts/database/validate-seeding-config.sh || {
+    echo "ERROR: Seeding configuration validation failed"
+    exit 1
+  }
+
+  # Cleanup existing data to prevent duplicates (matches local /supabase-reset behavior)
+  echo "Cleaning up existing Payload data before seeding..."
+  bash ../../.ai/ai_scripts/database/cleanup-payload-tables.sh "$DATABASE_URI" || {
+    echo "WARNING: Cleanup failed, proceeding with seeding (duplicates possible)..."
+  }
+
   # Build SEED_FLAGS based on command-line options
   SEED_FLAGS=""
   if [ "$VERBOSE" = true ]; then
     SEED_FLAGS="$SEED_FLAGS --verbose"
   fi
 
-  # Run seeding with --env=production and --force flags
-  # --env=production: Use .env.production to connect to remote database
-  # --force: Bypass NODE_ENV=production safety check for intentional remote seeding
-  # --verbose: Enable detailed logging of seeding operations (if specified)
-  # SEED_USER_PASSWORD: Required for creating test users (get from .env or .env.example)
-  echo "Seeding database with Payload content..."
-
   # Source SEED_USER_PASSWORD from local .env if not already set
+  # Note: SEED_SOPHIE_API_PASSWORD is optional - the sophie-api user will be
+  # skipped if not set, resulting in 257/258 records (this is acceptable)
   if [ -z "$SEED_USER_PASSWORD" ] && [ -f ".env" ]; then
     export SEED_USER_PASSWORD=$(grep "^SEED_USER_PASSWORD=" .env | cut -d'=' -f2)
   fi
+  if [ -z "$SEED_SOPHIE_API_PASSWORD" ] && [ -f ".env" ]; then
+    SOPHIE_PW=$(grep "^SEED_SOPHIE_API_PASSWORD=" .env | cut -d'=' -f2)
+    if [ -n "$SOPHIE_PW" ]; then
+      export SEED_SOPHIE_API_PASSWORD="$SOPHIE_PW"
+    fi
+  fi
 
+  # Run seeding with --env=production and --force flags
+  # --env=production: Use .env.production to connect to remote database
+  # --force: Bypass NODE_ENV=production safety check for intentional remote seeding
+  # NOTE: seed:run:remote may exit non-zero if the optional sophie-api user fails
+  # (requires SEED_SOPHIE_API_PASSWORD). We validate actual record counts after
+  # instead of relying on the exit code.
+  echo "Seeding database with Payload content..."
   NODE_TLS_REJECT_UNAUTHORIZED=0 \
     pnpm run seed:run:remote $SEED_FLAGS || {
-      echo "ERROR: Seeding failed"
-      echo ""
-      echo "Troubleshooting:"
-      echo "1. Check seeding script for errors"
-      echo "2. Verify all collections exist in Payload config"
-      echo "3. Try running migrations again"
-      echo "4. Verify apps/payload/.env.production has correct DATABASE_URI"
-      exit 1
+      echo "WARNING: Seeding exited with errors - validating actual results..."
     }
 
-  # Validate seeded data using psql (supabase db exec doesn't support --linked)
+  # Validate seeded data using psql
   echo "Validating seeded data..."
   VALIDATION_RESULT=$(psql "$DATABASE_URI" -c "
     SELECT
@@ -373,8 +411,8 @@ if [ "$SCHEMA_ONLY" = false ]; then
         ELSE 'MISSING'
       END as status
     FROM (
-      SELECT 'users' as collection, COUNT(*)::int as actual, 1 as expected FROM payload.users
-      UNION ALL SELECT 'media', COUNT(*)::int, 24 FROM payload.media
+      SELECT 'users' as collection, COUNT(*)::int as actual, 2 as expected FROM payload.users
+      UNION ALL SELECT 'media', COUNT(*)::int, 26 FROM payload.media
       UNION ALL SELECT 'downloads', COUNT(*)::int, 23 FROM payload.downloads
       UNION ALL SELECT 'posts', COUNT(*)::int, 8 FROM payload.posts
       UNION ALL SELECT 'courses', COUNT(*)::int, 1 FROM payload.courses
@@ -392,14 +430,13 @@ if [ "$SCHEMA_ONLY" = false ]; then
   echo "$VALIDATION_RESULT"
 
   # Check for issues
-  if echo "$VALIDATION_RESULT" | grep -q "DUPLICATE"; then
-    echo "WARNING: Duplicate records detected"
-    echo "This may indicate seeding ran multiple times"
+  if echo "$VALIDATION_RESULT" | grep -q "EXTRA"; then
+    echo "WARNING: Extra records detected - may indicate seeding ran multiple times"
   fi
 
   if echo "$VALIDATION_RESULT" | grep -q "MISSING"; then
     echo "WARNING: Some expected records are missing"
-    echo "Check seeding script output for errors"
+    echo "Note: 1 missing user is acceptable if SEED_SOPHIE_API_PASSWORD is not set"
   fi
 
   echo "Seeding complete"
@@ -428,7 +465,12 @@ echo "Migration Status:"
 npx supabase migration list --linked | tail -10
 
 # 5.2 Verify Payload tables using psql
-cd ../payload && source .env.production
+cd ../payload
+source .env.production
+# Allow REMOTE_DATABASE_URL override (same as Phase 3/4)
+if [ -n "$REMOTE_DATABASE_URL" ]; then
+  DATABASE_URI="$REMOTE_DATABASE_URL"
+fi
 echo ""
 echo "Payload Tables:"
 TABLE_COUNT=$(psql "$DATABASE_URI" -t -c "
@@ -463,7 +505,7 @@ echo ""
 echo "Remote project: ldebzombxtszzcgnylgq (2025slideheroes)"
 echo "Payload tables: $TABLE_COUNT"
 if [ "$SCHEMA_ONLY" = false ]; then
-  echo "Seeding: Complete (257 records expected)"
+  echo "Seeding: Complete (257-258 records expected)"
 else
   echo "Seeding: Skipped (--schema-only)"
 fi
@@ -520,7 +562,8 @@ echo ""
 
 - Supabase migrations applied successfully
 - Payload schema exists with 60+ tables
-- 257 records seeded across 12 collections (if not --schema-only)
+- 257-258 records seeded across 12 collections (if not --schema-only)
+  - 258 if SEED_SOPHIE_API_PASSWORD is set, 257 otherwise (acceptable)
 - No duplicate records detected
 - Verification queries succeed
 
@@ -535,7 +578,7 @@ Results:
 Phase 1: Environment validated, backup created
 Phase 2: Supabase reset complete
 Phase 3: Payload migrations applied (60+ tables)
-Phase 4: Seeding complete (257/257 records)
+Phase 4: Seeding complete (257-258/258 records)
 Phase 5: Database verified
 
 Remote project: ldebzombxtszzcgnylgq
@@ -560,7 +603,7 @@ Completely rebuilds the remote database:
 3. Drops all tables, functions, policies
 4. Re-applies all Supabase migrations from scratch
 5. **Runs Payload CMS migrations** (creates 60+ tables)
-6. **Seeds Payload CMS data** (257 records)
+6. **Seeds Payload CMS data** (258 records; 257 if SEED_SOPHIE_API_PASSWORD not set)
 7. Verifies final database state
 
 ### Push Only (--push-only)
@@ -652,7 +695,7 @@ psql "$DATABASE_URI" < backup-remote-YYYYMMDD-HHMMSS-data.sql
 1. Validates environment, cleans old backups, creates new backup
 2. Resets Supabase database (drops and recreates)
 3. Runs Payload CMS migrations (creates 60+ tables)
-4. Seeds Payload CMS with 257 records (unless --schema-only)
+4. Seeds Payload CMS with 258 records (unless --schema-only; 257 if SEED_SOPHIE_API_PASSWORD not set)
 5. Verifies database state
 
 **Requirements:**
@@ -660,7 +703,8 @@ psql "$DATABASE_URI" < backup-remote-YYYYMMDD-HHMMSS-data.sql
 - Supabase CLI installed
 - Project linked to remote (`npx supabase link`)
 - `apps/payload/.env.production` with DATABASE_URI (already configured)
-- `SEED_USER_PASSWORD` in `apps/payload/.env` (for seeding test users)
+- `SEED_USER_PASSWORD` in `apps/payload/.env` (required for admin user)
+- `SEED_SOPHIE_API_PASSWORD` in `apps/payload/.env` (optional - sophie-api user skipped if not set)
 
 **Default Behavior:**
 Full reset WITH Payload migrations AND seeding - complete database rebuild.

@@ -22,7 +22,7 @@
 	"devDependencies": {
 		"@types/node": "^24.10.1",
 		"@types/react": "19.2.7",
-		"next": "15.4.0-canary.109",
+		"next": "catalog:",
 		"typescript": "^5.9.3"
 	},
 	"exports": {

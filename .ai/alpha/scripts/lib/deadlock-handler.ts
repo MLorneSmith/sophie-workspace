@@ -8,7 +8,12 @@
 
 import type { SandboxInstance, SpecManifest } from "../types/index.js";
 import { emitOrchestratorEvent } from "./event-emitter.js";
+import {
+	transitionFeatureStatus,
+	transitionInitiativeStatus,
+} from "./feature-transitions.js";
 import { saveManifest } from "./manifest.js";
+import { createLogger } from "./logger.js";
 import {
 	DEFAULT_MAX_RETRIES,
 	getBlockingFailedFeatures,
@@ -32,21 +37,6 @@ export interface PhantomRecoveryResult {
 	recoveredCount: number;
 	recoveredFeatureIds: string[];
 	completedInitiativeIds: string[];
-}
-
-// ============================================================================
-// Logging Helper
-// ============================================================================
-
-/**
- * Create a conditional logger that only outputs when UI is disabled.
- */
-function createLogger(uiEnabled: boolean) {
-	return {
-		log: (...args: unknown[]) => {
-			if (!uiEnabled) console.log(...args);
-		},
-	};
 }
 
 // ============================================================================
@@ -98,32 +88,21 @@ export function recoverPhantomCompletedFeatures(
 			`   🔮 [PHANTOM_COMPLETION] Detected: Feature #${feature.id} has ${feature.tasks_completed}/${feature.task_count} tasks completed but status is "${feature.status}"`,
 		);
 
-		// Transition feature to completed
-		feature.status = "completed";
-		feature.assigned_sandbox = undefined;
-		feature.assigned_at = undefined;
+		// Transition feature to completed (handles initiative cascade)
+		transitionFeatureStatus(feature, manifest, "completed", {
+			reason: "phantom completion detected - tasks_completed >= task_count",
+			skipSave: true, // batch save below
+		});
 
-		// Update initiative status
+		// Check if initiative was completed by this transition
 		const initiative = manifest.initiatives.find(
 			(i) => i.id === feature.initiative_id,
 		);
-		if (initiative) {
-			const initFeatures = manifest.feature_queue.filter(
-				(f) => f.initiative_id === initiative.id,
+		if (initiative?.status === "completed") {
+			completedInitiativeIds.push(initiative.id);
+			log(
+				`   🔮 [PHANTOM_COMPLETION] Initiative ${initiative.id} now complete (all ${initiative.feature_count} features done)`,
 			);
-			initiative.features_completed = initFeatures.filter(
-				(f) => f.status === "completed",
-			).length;
-
-			if (initFeatures.every((f) => f.status === "completed")) {
-				initiative.status = "completed";
-				completedInitiativeIds.push(initiative.id);
-				log(
-					`   🔮 [PHANTOM_COMPLETION] Initiative ${initiative.id} now complete (all ${initiative.feature_count} features done)`,
-				);
-			} else {
-				initiative.status = "in_progress";
-			}
 		}
 
 		// Update progress tracking
@@ -197,7 +176,7 @@ export function handleBlockingFailedFeatures(
 				`\n🔄 Retrying failed feature #${feature.id} (attempt ${newRetryCount}/${DEFAULT_MAX_RETRIES})`,
 			);
 
-			resetFailedFeatureForRetry(feature);
+			resetFailedFeatureForRetry(feature, manifest);
 			retriedCount++;
 
 			// Emit event for UI visibility
@@ -219,7 +198,10 @@ export function handleBlockingFailedFeatures(
 				log(
 					`\n❌ Max retries exceeded for feature #${feature.id} - marking initiative ${initiative.id} as failed`,
 				);
-				initiative.status = "failed";
+				transitionInitiativeStatus(initiative, manifest, "failed", {
+					reason: `deadlock recovery: max retries exceeded for feature #${feature.id}`,
+					skipSave: true, // batch save by caller
+				});
 				failedInitiatives.push(initiative.id);
 
 				// Emit event for UI visibility
@@ -342,10 +324,12 @@ export function detectAndHandleDeadlock(
 
 			if (shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)) {
 				feature.retry_count = (feature.retry_count ?? 0) + 1;
-				feature.status = "pending";
-				feature.assigned_sandbox = undefined;
-				feature.assigned_at = undefined;
 				feature.error = `Orphaned in_progress feature reset (attempt ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`;
+				const previousSandbox = feature.assigned_sandbox;
+				transitionFeatureStatus(feature, manifest, "pending", {
+					reason: "orphaned in_progress feature reset",
+					skipSave: true, // batch save below
+				});
 				resetCount++;
 
 				log(
@@ -359,14 +343,15 @@ export function detectAndHandleDeadlock(
 						featureId: feature.id,
 						retryCount: feature.retry_count,
 						maxRetries: DEFAULT_MAX_RETRIES,
-						previousSandbox: feature.assigned_sandbox,
+						previousSandbox,
 					},
 				);
 			} else {
-				feature.status = "failed";
-				feature.assigned_sandbox = undefined;
-				feature.assigned_at = undefined;
 				feature.error = `Orphaned in_progress feature - max retries (${DEFAULT_MAX_RETRIES}) exceeded`;
+				transitionFeatureStatus(feature, manifest, "failed", {
+					reason: "orphaned feature max retries exceeded",
+					skipSave: true, // batch save below
+				});
 
 				log("   ❌ Max retries exceeded - marked as failed");
 
@@ -423,7 +408,7 @@ export function detectAndHandleDeadlock(
 				log(
 					`   🔄 Retrying feature #${feature.id} (attempt ${newRetryCount}/${DEFAULT_MAX_RETRIES})`,
 				);
-				resetFailedFeatureForRetry(feature);
+				resetFailedFeatureForRetry(feature, manifest);
 				retriedCount++;
 
 				// Emit event for UI visibility

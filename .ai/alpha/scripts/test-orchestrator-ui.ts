@@ -174,7 +174,7 @@ function testProgressDirectory(): boolean {
 		tasks_completed: 2,
 		tasks_total: 5,
 		context_usage_percent: 45,
-		status: "running",
+		status: "in_progress",
 		phase: "executing",
 		last_heartbeat: new Date().toISOString(),
 		last_tool: "Read",

@@ -242,8 +242,10 @@ score = (files_weight * 25) + (deps_weight * 25) + (loc_weight * 25) + (type_wei
 | 0-20 | MINIMAL | 1-3 |
 | 21-40 | LOW | 3-6 |
 | 41-60 | STANDARD | 6-12 |
-| 61-80 | HIGH | 12-20 |
-| 81+ | MAXIMAL | 20+ |
+| 61-80 | HIGH | 10-12 |
+| 81+ | MAXIMAL | 12 |
+
+**Hard Maximum: 12 tasks per feature.** If complexity requires more than 12 tasks, the feature MUST be split into sub-features during feature decomposition (Step 3 of Alpha workflow). Do not create tasks.json files with more than 12 tasks.
 
 ### Document Complexity
 
@@ -895,6 +897,15 @@ For each task, check:
 - 80-99%: Most testable
 - <80%: Testability issues
 
+#### 6. Task Count Check
+
+- Total task count <= 12?
+- Task count within complexity target_steps range?
+
+**Score**:
+- 100%: Within limits
+- <100%: Exceeds 12 tasks → REJECTED (split feature required)
+
 ### Verdict Determination
 
 **APPROVED** (all must be true):
@@ -903,6 +914,7 @@ For each task, check:
 - Dependencies = 100%
 - State Flow >= 90%
 - Testability >= 80%
+- Task Count = 100% (must not exceed 12)
 
 **NEEDS_REVISION** (any of):
 - Completeness 70-89%
