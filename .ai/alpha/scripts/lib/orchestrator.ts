@@ -61,6 +61,11 @@ import {
 	saveManifest,
 } from "./manifest.js";
 import {
+	autoGeneratePhases,
+	filterManifestByPhase,
+	validatePhase,
+} from "./phase.js";
+import {
 	checkDependencyCycles,
 	checkPreFlightSilent,
 	formatPreFlightForDryRun,
@@ -89,8 +94,25 @@ import { runWorkLoop } from "./work-loop.js";
 *
 * @param manifest - The spec manifest
  */
-export function printDryRun(manifest: SpecManifest): void {
+export function printDryRun(
+	manifest: SpecManifest,
+	phase?: string,
+): void {
 	console.log("\n🔍 DRY RUN - Execution Plan:\n");
+
+	// Show phase info if running in phase mode
+	if (phase && manifest.phases) {
+		const phaseInfo = manifest.phases.find((p) => p.id === phase);
+		if (phaseInfo) {
+			console.log(`Phase: ${phaseInfo.id} - ${phaseInfo.name}`);
+			console.log(
+				`Initiatives: ${phaseInfo.initiative_ids.join(", ")}`,
+			);
+			console.log(
+				`Scope: ${phaseInfo.feature_count} features, ${phaseInfo.task_count} tasks\n`,
+			);
+		}
+	}
 
 	const completedIds = new Set(
 		manifest.feature_queue
@@ -162,6 +184,7 @@ export function printSummary(
 	manifest: SpecManifest,
 	instances: SandboxInstance[],
 	reviewUrls: ReviewUrl[],
+	phase?: string,
 ): void {
 	const completed = manifest.feature_queue.filter(
 		(f) => f.status === "completed",
@@ -173,6 +196,10 @@ export function printSummary(
 	console.log("\n" + "═".repeat(70));
 	console.log("   SUMMARY");
 	console.log("═".repeat(70));
+
+	if (phase) {
+		console.log(`\n📦 Phase: ${phase}`);
+	}
 
 	console.log("\n📊 Results:");
 	console.log(
@@ -258,6 +285,8 @@ export async function createSandboxWithRetry(
 	runId: string | undefined,
 	provider: AgentProvider,
 	log: (...args: unknown[]) => void,
+	baseBranch?: string,
+	phase?: string,
 ): Promise<SandboxInstance> {
 	for (let attempt = 1; attempt <= SANDBOX_CREATION_MAX_RETRIES + 1; attempt++) {
 		try {
@@ -268,6 +297,8 @@ export async function createSandboxWithRetry(
 				uiEnabled,
 				runId,
 				provider,
+				baseBranch,
+				phase,
 			);
 		} catch (error) {
 			const isLastAttempt = attempt > SANDBOX_CREATION_MAX_RETRIES;
@@ -360,7 +391,62 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		log("   ✅ Manifest generated successfully");
 	}
 
-	const manifest = manifestOrNull as SpecManifest;
+	let manifest = manifestOrNull as SpecManifest;
+
+	// =========================================================================
+	// Phase Filtering (Feature #1961)
+	// =========================================================================
+	if (options.phase) {
+		log(`\n📦 Phase mode: ${options.phase}`);
+
+		// Auto-generate phases if not defined in manifest
+		if (!manifest.phases || manifest.phases.length === 0) {
+			log("   Auto-generating phases from initiative structure...");
+			manifest.phases = autoGeneratePhases(manifest);
+			saveManifest(manifest);
+			log(
+				`   Generated ${manifest.phases.length} phase(s): ${manifest.phases.map((p) => `${p.id} (${p.feature_count} features)`).join(", ")}`,
+			);
+		}
+
+		// Validate phase exists
+		const phaseIds = manifest.phases.map((p) => p.id);
+		if (!phaseIds.includes(options.phase)) {
+			console.error(
+				`❌ Phase "${options.phase}" not found. Available: ${phaseIds.join(", ")}`,
+			);
+			process.exit(1);
+		}
+
+		// Validate phase limits
+		const validation = validatePhase(manifest, options.phase);
+		if (!validation.valid) {
+			console.error(`❌ Phase "${options.phase}" validation failed:`);
+			for (const error of validation.errors) {
+				console.error(`   - ${error}`);
+			}
+			process.exit(1);
+		}
+
+		// Filter manifest to only include this phase's features
+		manifest = filterManifestByPhase(manifest, options.phase);
+
+		const phaseInfo = manifest.phases?.find((p) => p.id === options.phase);
+		log(
+			`   Phase ${options.phase}: ${manifest.feature_queue.length} features, ${manifest.progress.tasks_total} tasks`,
+		);
+		log(
+			`   Initiatives: ${phaseInfo?.initiative_ids.join(", ") ?? "unknown"}`,
+		);
+
+		if (options.baseBranch) {
+			log(`   Base branch: ${options.baseBranch}`);
+		}
+	} else if (options.baseBranch) {
+		log(
+			"⚠️ --base-branch specified without --phase. Using base branch as fork point with standard branch naming.",
+		);
+	}
 
 	// =========================================================================
 	// Pre-Flight Environment Variable Check
@@ -583,7 +669,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		}
 
 		log(
-			`\n📊 Spec #${manifest.metadata.spec_id}: ${manifest.metadata.spec_name}`,
+			`\n📊 Spec #${manifest.metadata.spec_id}: ${manifest.metadata.spec_name}${options.phase ? ` (Phase ${options.phase})` : ""}`,
 		);
 		log(`Initiatives: ${manifest.initiatives.length}`);
 		log(`Features: ${manifest.progress.features_total}`);
@@ -613,7 +699,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 
 		// Handle dry-run
 		if (options.dryRun) {
-			printDryRun(manifest);
+			printDryRun(manifest, options.phase);
 			return;
 		}
 
@@ -719,6 +805,8 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 							runId,
 							options.provider,
 							log,
+							options.baseBranch,
+							options.phase,
 						),
 					]);
 
@@ -739,6 +827,8 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 							runId,
 							options.provider,
 							log,
+							options.baseBranch,
+							options.phase,
 						);
 						instances.push(instance);
 					}
@@ -763,6 +853,8 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 							runId,
 							options.provider,
 							log,
+							options.baseBranch,
+							options.phase,
 						);
 						instances.push(instance);
 					}
@@ -934,7 +1026,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		// Print summary (always shown - handles its own output)
 		// Bug fix #1727: No implementation sandboxes remain - all were killed
 		if (!options.ui) {
-			printSummary(manifest, [], reviewUrls);
+			printSummary(manifest, [], reviewUrls, options.phase);
 		}
 
 		// Add sandbox database review URL

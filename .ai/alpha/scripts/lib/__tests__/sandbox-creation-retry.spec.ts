@@ -257,6 +257,8 @@ describe("createSandboxWithRetry", () => {
 			"run-42",
 			"gpt",
 			mockLog,
+			"alpha/spec-S1918-P1",
+			"P2",
 		);
 
 		expect(mockCreateSandbox).toHaveBeenCalledWith(
@@ -266,6 +268,8 @@ describe("createSandboxWithRetry", () => {
 			true,
 			"run-42",
 			"gpt",
+			"alpha/spec-S1918-P1",
+			"P2",
 		);
 	});
 });

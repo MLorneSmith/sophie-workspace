@@ -14,6 +14,7 @@ export type {
 	AgentProvider,
 	OrchestratorLock,
 	OrchestratorOptions,
+	PhaseDefinition,
 	ProviderInstallConfig,
 	RequiredEnvVar,
 	ReviewUrl,

@@ -22,6 +22,7 @@ import type {
 } from "../types/index.js";
 import { aggregateRequiredEnvVars } from "./env-requirements.js";
 import { getProjectRoot } from "./lock.js";
+import { autoGeneratePhases } from "./phase.js";
 
 // ============================================================================
 // Types for Manifest Generation
@@ -797,8 +798,16 @@ export function generateSpecManifest(
 		log(`   Found ${requiredEnvVars.length} required environment variable(s)`);
 	}
 
-	// Pass 5: Validate dependencies - check for circular references (#1820)
-	log("   Pass 5: Validating dependency graph...");
+	// Pass 5: Auto-generate execution phases (#1961)
+	log("   Pass 5: Generating execution phases...");
+	const phases = autoGeneratePhases(manifest);
+	manifest.phases = phases;
+	log(
+		`   Generated ${phases.length} phase(s): ${phases.map((p) => `${p.id} (${p.feature_count} features)`).join(", ")}`,
+	);
+
+	// Pass 6: Validate dependencies - check for circular references (#1820)
+	log("   Pass 6: Validating dependency graph...");
 	const circularDeps = detectCircularDependenciesLocal(featureQueue);
 	if (circularDeps.length > 0) {
 		console.error("   ⚠️ Circular dependencies detected:");

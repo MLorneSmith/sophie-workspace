@@ -115,6 +115,28 @@ export interface InitiativeEntry {
 }
 
 // ============================================================================
+// Phase Execution Types
+// ============================================================================
+
+/**
+ * Definition of a phase within a spec execution.
+ * Phases group initiatives into manageable execution units of 7-8 features,
+ * enabling sequential execution with branch chaining.
+ */
+export interface PhaseDefinition {
+	/** Phase identifier (e.g., "P1", "P2", "P3") */
+	id: string;
+	/** Human-readable phase name (e.g., "Foundation", "Widgets", "Polish") */
+	name: string;
+	/** Initiative IDs included in this phase (e.g., ["S1918.I1", "S1918.I2"]) */
+	initiative_ids: string[];
+	/** Total feature count across all initiatives in this phase */
+	feature_count: number;
+	/** Total task count across all initiatives in this phase */
+	task_count: number;
+}
+
+// ============================================================================
 // Manifest Types
 // ============================================================================
 
@@ -189,6 +211,8 @@ export interface SpecManifest {
 		/** Count of sandbox restarts during orchestration (for diagnostics) */
 		restart_count?: number;
 	};
+	/** Phase definitions for phased execution (optional, auto-generated if missing) */
+	phases?: PhaseDefinition[];
 	/** History of refinements applied to this spec (optional) */
 	refinements?: RefinementEntry[];
 }
@@ -217,6 +241,10 @@ export interface OrchestratorOptions {
 	skipPreFlight: boolean;
 	/** Generate spec-level documentation after completion using /alpha:document */
 	document: boolean;
+	/** Run only a specific phase's features (e.g., "P1") */
+	phase?: string;
+	/** Base branch to fork from (e.g., "alpha/spec-S1918-P1") for branch chaining */
+	baseBranch?: string;
 }
 
 export type AgentProvider = "claude" | "gpt";

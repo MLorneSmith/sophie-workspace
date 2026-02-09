@@ -244,3 +244,24 @@ export const HEARTBEAT_TIMEOUT_MS = Number.parseInt(
 	process.env.HEARTBEAT_TIMEOUT_MS ?? String(5 * 60 * 1000),
 	10,
 );
+
+// ============================================================================
+// Phase Execution Limits
+// ============================================================================
+
+/** Maximum features per phase (recommended: 7-8, hard max: 10).
+ * Industry consensus (SWE-bench, Devin, Cursor, PARC) recommends 7-10 features
+ * per execution unit for optimal completion rates.
+ * See assessment report: .ai/reports/research-reports/2026-02-06/alpha-orchestrator-comprehensive-assessment.md
+ */
+export const MAX_FEATURES_PER_PHASE = 10;
+
+/** Maximum tasks per phase.
+ * Keeps total work volume manageable within a single orchestration run.
+ */
+export const MAX_TASKS_PER_PHASE = 100;
+
+/** Maximum dependency depth within a phase.
+ * Deep dependency chains create long critical paths that exceed sandbox lifetimes.
+ */
+export const MAX_DEPENDENCY_DEPTH = 5;
