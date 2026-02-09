@@ -126,9 +126,13 @@ export type { WorkLoopOptions, WorkLoopResult } from "./work-loop.js";
 export { runWorkLoop, WorkLoop } from "./work-loop.js";
 // Port health checks
 export { isPortOpen, waitForDevServer, waitForPort } from "./port-health.js";
-export type { PreFlightResult } from "./pre-flight.js";
+export type {
+	FeatureTaskCountCheckResult,
+	PreFlightResult,
+} from "./pre-flight.js";
 // Pre-flight checks
 export {
+	checkFeatureTaskCounts,
 	checkPreFlightSilent,
 	formatPreFlightForDryRun,
 	runPreFlightCheck,

@@ -576,6 +576,10 @@ export function generateSpecManifest(
 			).length;
 			const taskCount = tasksJson.tasks.length;
 
+			if (taskCount > 12) {
+				log(`   ⚠️ Feature ${featureId} has ${taskCount} tasks (max recommended: 12). Consider splitting.`);
+			}
+
 			totalTasks += taskCount;
 			totalTasksCompleted += completedTasks;
 

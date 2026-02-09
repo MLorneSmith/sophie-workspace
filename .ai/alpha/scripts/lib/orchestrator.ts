@@ -67,6 +67,7 @@ import {
 } from "./phase.js";
 import {
 	checkDependencyCycles,
+	checkFeatureTaskCounts,
 	checkPreFlightSilent,
 	formatPreFlightForDryRun,
 	runPreFlightCheck,
@@ -483,6 +484,9 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			);
 			process.exit(1);
 		}
+
+		// Feature task count check (warning only, does not block)
+		checkFeatureTaskCounts(manifest, log);
 	}
 
 	// =========================================================================
