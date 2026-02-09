@@ -22,6 +22,7 @@ import type {
 	SpecManifest,
 } from "../types/index.js";
 import { transitionFeatureStatus } from "./feature-transitions.js";
+import { validateProgressStatus } from "./progress-file.js";
 import { createLogger } from "./logger.js";
 import { saveManifest } from "./manifest.js";
 import { getForceKillCommand, getProviderDisplayName } from "./provider.js";
@@ -112,8 +113,12 @@ export async function checkSandboxHealth(
 			return { healthy: true, timeSinceStart };
 		}
 
-		// Parse progress file
-		const progress: SandboxProgress = JSON.parse(result.stdout);
+		// Parse progress file (validate status to prevent #1952 propagation)
+		const raw = JSON.parse(result.stdout);
+		const progress: SandboxProgress = {
+			...raw,
+			status: raw.status ? validateProgressStatus(raw.status) : undefined,
+		};
 		instance.lastProgressSeen = new Date();
 
 		// Check heartbeat

@@ -24,6 +24,7 @@ import type {
 	FeatureEntry,
 	FeatureImplementationResult,
 	SandboxInstance,
+	SandboxProgress,
 	SpecManifest,
 	StartupAttemptRecord,
 } from "../types/index.js";
@@ -48,6 +49,7 @@ import {
 	startProgressPolling,
 	writeUIProgress,
 } from "./progress.js";
+import { validateProgressStatus } from "./progress-file.js";
 import {
 	PTYTimeoutError,
 	type WaitWithTimeoutResult,
@@ -678,15 +680,15 @@ export async function runFeatureImplementation(
 		try {
 			const parsed = JSON.parse(progressResult.stdout || "{}");
 			tasksCompleted = parsed.completed_tasks?.length || 0;
-			progressFileStatus = parsed.status;
+			const validatedStatus = validateProgressStatus(parsed.status);
+			progressFileStatus = validatedStatus;
 
 			// Bug fix #1938: Only trust explicit "completed" status from progress file
 			// Exit code 0 alone is NOT sufficient evidence of completion
-			if (parsed.status === "completed") {
+			// Bug fix #1952: "blocked" is remapped to "failed" by validateProgressStatus
+			if (validatedStatus === "completed") {
 				status = "completed";
-			} else if (parsed.status === "blocked") {
-				status = "blocked";
-			} else if (parsed.status === "failed" || result.exitCode !== 0) {
+			} else if (validatedStatus === "failed" || result.exitCode !== 0) {
 				status = "failed";
 			} else {
 				// Progress file exists but status is not "completed"
@@ -795,10 +797,17 @@ export async function runFeatureImplementation(
 		// Write final UI progress to ensure UI reflects completion status
 		// This fixes stale UI after session recovery (see #1499, #1495)
 		if (uiEnabled) {
+			// Map "pending" (retry) to "in_progress" for SandboxProgress UI display
+			const uiStatus: SandboxProgress["status"] =
+				status === "completed"
+					? "completed"
+					: status === "failed"
+						? "failed"
+						: "in_progress";
 			writeUIProgress(
 				instance.label,
 				{
-					status,
+					status: uiStatus,
 					phase: status === "completed" ? "completed" : "finished",
 					completed_tasks: Array.from(
 						{ length: tasksCompleted },
@@ -816,13 +825,7 @@ export async function runFeatureImplementation(
 
 		// Bug fix #1938: Add icon for pending status (retry)
 		const icon =
-			status === "completed"
-				? "✅"
-				: status === "blocked"
-					? "🚫"
-					: status === "pending"
-						? "🔄"
-						: "❌";
+			status === "completed" ? "✅" : status === "pending" ? "🔄" : "❌";
 		log(
 			`   └── ${icon} ${status} (${tasksCompleted}/${feature.task_count} tasks)`,
 		);

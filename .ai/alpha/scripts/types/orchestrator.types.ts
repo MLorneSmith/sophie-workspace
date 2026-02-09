@@ -278,7 +278,7 @@ export interface SandboxProgress {
 		tasks_completed: number;
 	};
 	context_usage_percent?: number;
-	status?: string;
+	status?: "in_progress" | "completed" | "failed";
 	last_commit?: string;
 	last_heartbeat?: string;
 	last_tool?: string;
