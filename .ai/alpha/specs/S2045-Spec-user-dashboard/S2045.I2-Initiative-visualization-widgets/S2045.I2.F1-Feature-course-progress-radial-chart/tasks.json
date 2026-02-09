@@ -1,0 +1,469 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2045.I2.F1",
+    "feature_name": "Course Progress Radial Chart",
+    "feature_slug": "course-progress-radial-chart",
+    "initiative_id": "S2045.I2",
+    "spec_id": "S2045",
+    "created_at": "2026-02-09T18:00:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S2045.I2.F1.T1", "S2045.I2.F1.T2", "S2045.I2.F1.T3"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2045.I2.F1.T1",
+      "type": "task",
+      "name": "Create CourseProgressChart component skeleton with Card wrapper",
+      "action": {
+        "verb": "Create",
+        "target": "CourseProgressChart component skeleton"
+      },
+      "purpose": "Create the base client component structure with Card wrapper, CardHeader, and CardContent but without chart implementation",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Course Progress"
+          },
+          {
+            "command": "find role",
+            "target": "heading"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/chart.tsx",
+          "packages/ui/src/card.tsx",
+          "apps/web/app/home/[account]/_components/dashboard-demo-charts.tsx"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Must be a client component with 'use client' directive",
+          "Must accept props: completionPercentage, completedLessons, totalLessons",
+          "Must handle null/undefined props gracefully"
+        ]
+      },
+      "input_state": "No CourseProgressChart component exists",
+      "output_state": "CourseProgressChart component exists with Card wrapper, renders CardHeader with 'Course Progress' title, CardContent is empty placeholder",
+      "acceptance_criterion": "Component file exists, renders Card with header 'Course Progress', accepts props interface, pnpm typecheck passes",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-chart.tsx && grep -q \"'use client'\" apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-chart.tsx && grep -q 'CardHeader' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-chart.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-chart.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2045.I2.F1.T2", "S2045.I2.F1.T3", "S2045.I2.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I2.F1.T2",
+      "type": "task",
+      "name": "Add PieChart donut with ChartContainer wrapper",
+      "action": {
+        "verb": "Add",
+        "target": "PieChart donut with ChartContainer"
+      },
+      "purpose": "Implement the Recharts PieChart with innerRadius for donut shape, wrapped in ChartContainer with ChartConfig for theme-aware colors",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Course Progress"
+          },
+          {
+            "command": "find role",
+            "target": "img"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/chart.tsx",
+          ".ai/alpha/specs/S2045-Spec-user-dashboard/research-library/context7-recharts-radial-radar-charts.md",
+          "apps/web/app/home/[account]/_components/dashboard-demo-charts.tsx"
+        ],
+        "dependencies": [
+          "ChartContainer, ChartConfig from @kit/ui/chart",
+          "PieChart, Pie, Cell, ResponsiveContainer from recharts"
+        ],
+        "constraints": [
+          "Use innerRadius=60, outerRadius=80 for donut shape",
+          "Use startAngle=90, endAngle=-270 for clockwise from top",
+          "Transform completionPercentage to two-segment data array: completed and remaining",
+          "Use ChartConfig with 'chart-1' for completed, 'muted' for remaining",
+          "Wrap in ResponsiveContainer with width='100%' height={200}"
+        ]
+      },
+      "input_state": "CourseProgressChart component exists with Card wrapper but empty CardContent",
+      "output_state": "PieChart renders inside CardContent with donut shape showing completion percentage, uses theme-aware colors from ChartContainer",
+      "acceptance_criterion": "PieChart renders with innerRadius creating donut, two Cell colors for completed/remaining segments, ChartContainer provides theme support, pnpm typecheck passes",
+      "verification_command": "grep -q 'innerRadius' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-chart.tsx && grep -q 'ChartContainer' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-chart.tsx && grep -q 'PieChart' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-chart.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-chart.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I2.F1.T1"],
+        "blocks": ["S2045.I2.F1.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I2.F1.T3",
+      "type": "task",
+      "name": "Add center label with percentage text",
+      "action": {
+        "verb": "Add",
+        "target": "center label with percentage"
+      },
+      "purpose": "Display the completion percentage as large bold text in the center of the donut chart with 'X of Y lessons' subtitle",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "%"
+          },
+          {
+            "command": "is visible",
+            "target": "lessons"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          ".ai/alpha/specs/S2045-Spec-user-dashboard/research-library/context7-recharts-radial-radar-charts.md",
+          "apps/web/app/home/(user)/_components/dashboard/course-progress-chart.tsx"
+        ],
+        "dependencies": [
+          "SVG text element for center label"
+        ],
+        "constraints": [
+          "Use absolute positioning overlay div for center content (not SVG text)",
+          "Primary text: percentage with large bold font (text-2xl font-bold)",
+          "Secondary text: 'X of Y lessons' with smaller muted color (text-sm text-muted-foreground)",
+          "Center both horizontally and vertically using flex layout"
+        ]
+      },
+      "input_state": "PieChart donut renders but no center label",
+      "output_state": "Donut chart displays completion percentage in center with bold large text and 'X of Y lessons' subtitle below",
+      "acceptance_criterion": "Center label shows percentage (e.g., '72%') with large bold styling, subtitle shows lesson count (e.g., '18 of 25 lessons'), text is centered over donut, pnpm typecheck passes",
+      "verification_command": "grep -q 'text-2xl' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-chart.tsx && grep -q 'lessons' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-chart.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-chart.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I2.F1.T2"],
+        "blocks": ["S2045.I2.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I2.F1.T4",
+      "type": "task",
+      "name": "Add graceful fallback for null data",
+      "action": {
+        "verb": "Add",
+        "target": "null data fallback"
+      },
+      "purpose": "Handle null/undefined course_progress data by displaying 0% ring with appropriate empty state messaging",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "0%"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          ".ai/alpha/specs/S2045-Spec-user-dashboard/research-library/perplexity-dashboard-empty-states-ux.md",
+          "apps/web/app/home/(user)/_components/dashboard/course-progress-chart.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Check for null/undefined props at component entry",
+          "Display 0% ring when data is missing (not hide chart entirely)",
+          "Show '0 of 0 lessons' in subtitle",
+          "Maintain same visual structure as populated state"
+        ]
+      },
+      "input_state": "Component assumes valid data props, may crash or render incorrectly with null",
+      "output_state": "Component handles null/undefined gracefully by showing 0% ring with appropriate empty state text",
+      "acceptance_criterion": "Component renders when props are null/undefined, shows 0% ring with gray fill, displays '0 of 0 lessons', no errors in console, pnpm typecheck passes",
+      "verification_command": "grep -q 'completionPercentage ?? 0' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-chart.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-chart.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I2.F1.T3"],
+        "blocks": ["S2045.I2.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I2.F1.T5",
+      "type": "task",
+      "name": "Wire CourseProgressChart to dashboard grid",
+      "action": {
+        "verb": "Wire",
+        "target": "CourseProgressChart to dashboard"
+      },
+      "purpose": "Import and integrate CourseProgressChart into the dashboard page grid at Row 1, Column 1 position with data from loader",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "CourseProgressChart component",
+          "Dashboard page grid layout from I1.F1",
+          "Dashboard loader from I1.F3"
+        ],
+        "constraints": [
+          "Import CourseProgressChart into page.tsx",
+          "Place in Row 1, Column 1 of grid",
+          "Pass course_progress data from loader as props",
+          "Extract completionPercentage, completedLessons, totalLessons from loader data"
+        ]
+      },
+      "input_state": "CourseProgressChart component exists but not used in dashboard page, page has grid layout from I1.F1",
+      "output_state": "CourseProgressChart renders in dashboard grid at top-left position with live data from loader",
+      "acceptance_criterion": "CourseProgressChart imported in page.tsx, placed in grid position Row 1 Col 1, receives data from loader props, chart renders on /home page, pnpm typecheck passes",
+      "verification_command": "grep -q 'CourseProgressChart' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I2.F1.T4"],
+        "blocks": ["S2045.I2.F1.T6"]
+      },
+      "external_dependencies": ["S2045.I1.F1", "S2045.I1.F3"],
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I2.F1.T6",
+      "type": "task",
+      "name": "Verify rendering and dark mode support",
+      "action": {
+        "verb": "Test",
+        "target": "rendering and dark mode"
+      },
+      "purpose": "Validate chart renders correctly, dark mode works via CSS variables, and all quality checks pass",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Course Progress"
+          },
+          {
+            "command": "is visible",
+            "target": "%"
+          },
+          {
+            "command": "find role",
+            "target": "img"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/dashboard/course-progress-chart.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Test in light mode and dark mode",
+          "Verify chart colors change with theme",
+          "Run pnpm typecheck",
+          "Run pnpm lint",
+          "Visual verification with agent-browser"
+        ]
+      },
+      "input_state": "CourseProgressChart wired to dashboard but not validated",
+      "output_state": "Chart verified to render correctly, dark mode works, all quality checks pass",
+      "acceptance_criterion": "Chart visible at /home in Row 1 Col 1, colors adapt to light/dark mode, pnpm typecheck passes, pnpm lint passes, no console errors",
+      "verification_command": "pnpm typecheck && pnpm lint && agent-browser open http://localhost:3000/home && agent-browser wait 3000 && agent-browser 'is visible' 'Course Progress' && agent-browser 'is visible' '%'",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S2045.I2.F1.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Implementation",
+        "task_ids": ["S2045.I2.F1.T1", "S2045.I2.F1.T2", "S2045.I2.F1.T3", "S2045.I2.F1.T4"],
+        "depends_on_groups": [],
+        "estimated_hours": 9,
+        "parallel_hours": 9
+      },
+      {
+        "id": 2,
+        "name": "Integration & Validation",
+        "task_ids": ["S2045.I2.F1.T5", "S2045.I2.F1.T6"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2045.I2.F1.T1", "S2045.I2.F1.T2", "S2045.I2.F1.T3", "S2045.I2.F1.T4", "S2045.I2.F1.T5", "S2045.I2.F1.T6"],
+      "total_hours": 13
+    },
+    "duration": {
+      "sequential": 13,
+      "parallel": 13,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
