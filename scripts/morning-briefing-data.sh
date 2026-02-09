@@ -16,9 +16,12 @@ DATE_LONG=$(date +"%B %-d, %Y")
 DATE_TODAY_SHORT=$(date +"%a %b %-d")
 DATE_TOMORROW_SHORT=$(date -d "+1 day" +"%a %b %-d")
 
-# ─── Weather ─────────────────────────────────────────────────
-WEATHER=$(curl -sf "wttr.in/Toronto?format=%C+%t+%w+%h&m" 2>/dev/null || echo "Weather unavailable")
-WEATHER_DETAIL=$(curl -sf "wttr.in/Toronto?format=%C|%t|%f|%w|%h|%p&m" 2>/dev/null || echo "|||||||")
+# ─── Weather (parallel) ───────────────────────────────────────
+curl -sf "wttr.in/Toronto?format=%C+%t+%w+%h&m" > /tmp/weather_raw.txt 2>/dev/null &
+curl -sf "wttr.in/Toronto?format=%C|%t|%f|%w|%h|%p&m" > /tmp/weather_detail.txt 2>/dev/null &
+wait
+WEATHER=$(cat /tmp/weather_raw.txt 2>/dev/null || echo "Weather unavailable")
+WEATHER_DETAIL=$(cat /tmp/weather_detail.txt 2>/dev/null || echo "|||||||")
 
 # Parse weather components
 IFS='|' read -r W_COND W_TEMP W_FEELS W_WIND W_HUMID W_PRECIP <<< "$WEATHER_DETAIL"
@@ -39,22 +42,42 @@ else
 fi
 
 # ─── Calendar ────────────────────────────────────────────────
-CAL_TODAY=$(gog calendar events primary --from "${TODAY}T00:00:00Z" --to "${TOMORROW}T00:00:00Z" --json 2>/dev/null || echo '{"events":[]}')
-CAL_TOMORROW=$(gog calendar events primary --from "${TOMORROW}T00:00:00Z" --to "${DAY_AFTER}T00:00:00Z" --json 2>/dev/null || echo '{"events":[]}')
+# Query all relevant calendars (Sophie's, Mike↔Sophie, Mike SlideHeroes, Mike personal)
+CALENDARS=(
+  "primary"
+  "c_8ca5bd26aab60736029ff25bdadca4c72d1302e061a64a5b504d99a659eb2649@group.calendar.google.com"
+  "michael@slideheroes.com"
+  "michael.lorne.smith@gmail.com"
+  "c_10dc7df94029097685011ec009e327370504a62ea79bce9abea83f5b3a934cc4@group.calendar.google.com"
+)
+
+# Collect events from all calendars for today and tomorrow
+ALL_TODAY="[]"
+ALL_TOMORROW="[]"
+for CAL_ID in "${CALENDARS[@]}"; do
+  CT=$(gog calendar events "$CAL_ID" --from "${TODAY}T05:00:00Z" --to "${TOMORROW}T05:00:00Z" --json 2>/dev/null || echo '{"events":[]}')
+  ALL_TODAY=$(echo "$ALL_TODAY" "$CT" | jq -s '.[0] + (.[1].events // [])')
+  CTM=$(gog calendar events "$CAL_ID" --from "${TOMORROW}T05:00:00Z" --to "${DAY_AFTER}T05:00:00Z" --json 2>/dev/null || echo '{"events":[]}')
+  ALL_TOMORROW=$(echo "$ALL_TOMORROW" "$CTM" | jq -s '.[0] + (.[1].events // [])')
+done
+
+# Deduplicate by event ID and sort by start time
+ALL_TODAY=$(echo "$ALL_TODAY" | jq '[unique_by(.id) | sort_by(.start.dateTime // .start.date)[]]')
+ALL_TOMORROW=$(echo "$ALL_TOMORROW" | jq '[unique_by(.id) | sort_by(.start.dateTime // .start.date)[]]')
 
 # Format calendar events
-CAL_TODAY_FMT=$(echo "$CAL_TODAY" | jq -r '
-  if (.events | length) == 0 then "No meetings scheduled."
-  else .events[] | "• \(.start.dateTime // .start.date | split("T")[1][:5] // "All day") — \(.summary)"
+CAL_TODAY_FMT=$(echo "$ALL_TODAY" | jq -r '
+  if length == 0 then "No meetings scheduled."
+  else .[] | "• \(.start.dateTime // .start.date | split("T")[1][:5] // "All day") — \(.summary)"
   end' 2>/dev/null || echo "Calendar unavailable")
 
-CAL_TOMORROW_FMT=$(echo "$CAL_TOMORROW" | jq -r '
-  if (.events | length) == 0 then "No meetings scheduled."
-  else .events[] | "• \(.start.dateTime // .start.date | split("T")[1][:5] // "All day") — \(.summary)"
+CAL_TOMORROW_FMT=$(echo "$ALL_TOMORROW" | jq -r '
+  if length == 0 then "No meetings scheduled."
+  else .[] | "• \(.start.dateTime // .start.date | split("T")[1][:5] // "All day") — \(.summary)"
   end' 2>/dev/null || echo "Calendar unavailable")
 
 # ─── Emails ──────────────────────────────────────────────────
-EMAILS=$(gog gmail list --unread --max 10 --json 2>/dev/null || echo '[]')
+EMAILS=$(gog gmail search "is:unread" --max 10 --json 2>/dev/null || echo '[]')
 EMAIL_COUNT=$(echo "$EMAILS" | jq 'if type == "array" then length else 0 end' 2>/dev/null || echo "0")
 
 # ─── Feed Monitor ────────────────────────────────────────────
@@ -112,6 +135,18 @@ AWS_COSTS=$(~/clawd/scripts/get-ec2-daily-cost.sh 2>/dev/null || echo "Cost data
 DISK_WARNING=$(~/clawd/scripts/check-disk-space.sh 2>/dev/null || true)
 DISK_OK=$?
 
+# ─── Model Usage (Yesterday) ─────────────────────────────────
+MODEL_USAGE=$(~/clawd/scripts/get-model-usage.sh 2>/dev/null || echo '[]')
+
+# ─── Task Progress (Mission Control) ─────────────────────────
+TASK_STATS=$(curl -sf 'http://localhost:3001/api/v1/insights?weeks=1' 2>/dev/null || echo '{}')
+TASKS_TOTAL=$(echo "$TASK_STATS" | jq -r '.summary.totalTasks // 0')
+TASKS_DONE=$(echo "$TASK_STATS" | jq -r '.summary.completedTasks // 0')
+TASKS_IN_PROGRESS=$(echo "$TASK_STATS" | jq -r '.summary.openTasks // 0')
+TASKS_BACKLOG=$(echo "$TASK_STATS" | jq -r '.summary.blockedTasks // 0')
+PRACTICES_COUNT=$(echo "$TASK_STATS" | jq -r '.summary.totalPractices // 0')
+CAPTURES_TOTAL=$(echo "$TASK_STATS" | jq -r '.summary.totalActivities // 0')
+
 # ─── Overnight Work ──────────────────────────────────────────
 # Read current.md for overnight work summary
 CURRENT_STATE=""
@@ -144,7 +179,14 @@ jq -n \
   --arg captures "$CAPTURES" \
   --arg aws_costs "$AWS_COSTS" \
   --arg disk_warning "$DISK_WARNING" \
+  --argjson model_usage "$MODEL_USAGE" \
   --arg current_state "$CURRENT_STATE" \
+  --arg tasks_total "$TASKS_TOTAL" \
+  --arg tasks_done "$TASKS_DONE" \
+  --arg tasks_in_progress "$TASKS_IN_PROGRESS" \
+  --arg tasks_backlog "$TASKS_BACKLOG" \
+  --arg practices_count "$PRACTICES_COUNT" \
+  --arg captures_total "$CAPTURES_TOTAL" \
   '{
     dates: {
       day_of_week: $day_of_week,
@@ -181,5 +223,14 @@ jq -n \
     },
     aws_costs: $aws_costs,
     disk_warning: $disk_warning,
+    model_usage: $model_usage,
+    task_progress: {
+      total: ($tasks_total | tonumber),
+      done: ($tasks_done | tonumber),
+      in_progress: ($tasks_in_progress | tonumber),
+      backlog: ($tasks_backlog | tonumber),
+      practices: ($practices_count | tonumber),
+      captures: ($captures_total | tonumber)
+    },
     current_state: $current_state
   }'
