@@ -14,7 +14,7 @@ permissions:
 
 env:
   NODE_VERSION: '22'
-  PNPM_VERSION: '10.14.0'
+  PNPM_VERSION: '10.29.2'
 
 jobs:
   validate:

@@ -12,7 +12,7 @@ permissions:
 
 env:
   NODE_VERSION: '20'
-  PNPM_VERSION: '10.14.0'
+  PNPM_VERSION: '10.29.2'
 
 jobs:
   bundle-size-alert:
