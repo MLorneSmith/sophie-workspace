@@ -23,6 +23,7 @@ import type {
 	SandboxValidationResult,
 	SpecManifest,
 } from "../types/index.js";
+import { createLogger } from "./logger.js";
 import {
 	E2B_API_KEY,
 	GITHUB_TOKEN,
@@ -350,22 +351,6 @@ export async function executeInstallWithRetry(
 			timeoutMs: config.timeoutMs,
 			lastExitCode,
 			lastStderr: lastStderr?.slice(0, 1000), // Truncate for manifest storage
-		},
-	};
-}
-
-// ============================================================================
-// Logging Helper
-// ============================================================================
-
-/**
-
-* Create a conditional logger that only outputs when UI is disabled.
- */
-function createLogger(uiEnabled: boolean) {
-	return {
-		log: (...args: unknown[]) => {
-			if (!uiEnabled) console.log(...args);
 		},
 	};
 }

@@ -22,26 +22,10 @@ import type {
 	SpecManifest,
 } from "../types/index.js";
 import { transitionFeatureStatus } from "./feature-transitions.js";
+import { createLogger } from "./logger.js";
 import { saveManifest } from "./manifest.js";
 import { getForceKillCommand, getProviderDisplayName } from "./provider.js";
 import { sleep } from "./utils.js";
-
-// ============================================================================
-// Logging Helper
-// ============================================================================
-
-/**
- * Create a conditional logger that only outputs when UI is disabled.
- * When UI is enabled, all console output is suppressed to avoid interfering
- * with the Ink-based dashboard.
- */
-function createLogger(uiEnabled: boolean) {
-	return {
-		log: (...args: unknown[]) => {
-			if (!uiEnabled) console.log(...args);
-		},
-	};
-}
 
 // ============================================================================
 // Startup Timeout Configuration

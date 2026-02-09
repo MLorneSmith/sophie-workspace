@@ -90,6 +90,9 @@ export {
 	VALID_INITIATIVE_TRANSITIONS,
 } from "./feature-transitions.js";
 
+// Shared logger
+export { createLogger } from "./logger.js";
+
 // Lock management
 export {
 	acquireLock,

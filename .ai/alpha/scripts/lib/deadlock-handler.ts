@@ -13,6 +13,7 @@ import {
 	transitionInitiativeStatus,
 } from "./feature-transitions.js";
 import { saveManifest } from "./manifest.js";
+import { createLogger } from "./logger.js";
 import {
 	DEFAULT_MAX_RETRIES,
 	getBlockingFailedFeatures,
@@ -36,21 +37,6 @@ export interface PhantomRecoveryResult {
 	recoveredCount: number;
 	recoveredFeatureIds: string[];
 	completedInitiativeIds: string[];
-}
-
-// ============================================================================
-// Logging Helper
-// ============================================================================
-
-/**
- * Create a conditional logger that only outputs when UI is disabled.
- */
-function createLogger(uiEnabled: boolean) {
-	return {
-		log: (...args: unknown[]) => {
-			if (!uiEnabled) console.log(...args);
-		},
-	};
 }
 
 // ============================================================================

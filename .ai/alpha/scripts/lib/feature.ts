@@ -60,24 +60,9 @@ import {
 	getRetryDelay,
 	updateOutputTracker,
 } from "./startup-monitor.js";
+import { createLogger } from "./logger.js";
 import { stripAnsiCodes } from "./utils.js";
 import { updateNextFeatureId } from "./work-queue.js";
-
-// ============================================================================
-// Logging Helper
-// ============================================================================
-
-/**
-
-* Create a conditional logger that only outputs when UI is disabled.
- */
-function createLogger(uiEnabled: boolean) {
-	return {
-		log: (...args: unknown[]) => {
-			if (!uiEnabled) console.log(...args);
-		},
-	};
-}
 
 // ============================================================================
 // Log File Management
