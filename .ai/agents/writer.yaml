@@ -3,7 +3,7 @@
 
 name: Writer
 description: Creates blog posts and long-form content targeting SlideHeroes personas
-model: anthropic/claude-opus-4-6
+model: zai/glm-4.7
 thinking: high
 
 context_mapping: blog-writing  # references skill-mappings.yaml

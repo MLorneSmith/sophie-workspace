@@ -3,7 +3,7 @@
 
 name: Emailer
 description: Creates email campaigns, sequences, and one-off emails using Andre Chaperon methodology
-model: anthropic/claude-opus-4-6
+model: zai/glm-4.7
 thinking: high
 
 context_mapping: email-marketing  # references skill-mappings.yaml

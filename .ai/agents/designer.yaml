@@ -3,7 +3,7 @@
 
 name: Designer
 description: Designs and implements frontend UI, visual assets, and presentation templates
-model: anthropic/claude-opus-4-6
+model: zai/glm-4.7
 thinking: high
 
 context_mapping: design  # references skill-mappings.yaml
