@@ -33,6 +33,7 @@ import {
 	getAuthMethod,
 	getOpenAIAuthMethod,
 } from "./environment.js";
+import { transitionFeatureStatus } from "./feature-transitions.js";
 import { killClaudeProcess } from "./health.js";
 import { getProjectRoot } from "./lock.js";
 import { saveManifest } from "./manifest.js";
@@ -175,9 +176,10 @@ export async function runFeatureImplementation(
 		feature.status !== "in_progress" ||
 		feature.assigned_sandbox !== instance.label
 	) {
-		feature.status = "in_progress";
 		feature.assigned_sandbox = instance.label;
-		saveManifest(manifest);
+		transitionFeatureStatus(feature, manifest, "in_progress", {
+			reason: "feature execution starting",
+		});
 	}
 
 	// Update instance state
@@ -758,42 +760,23 @@ export async function runFeatureImplementation(
 		}
 
 		// Update feature
-		feature.status = status;
 		feature.tasks_completed = tasksCompleted;
-		feature.assigned_sandbox = undefined;
-		feature.assigned_at = undefined;
 		instance.currentFeature = null;
 		instance.status = "ready";
 		instance.outputLineCount = 0;
 		instance.hasReceivedOutput = false;
+
+		// Transition feature status (handles initiative cascade and manifest save)
+		transitionFeatureStatus(feature, manifest, status, {
+			reason: "feature completion finalization",
+			skipSave: true, // We save below after all updates
+		});
 
 		// Update progress
 		if (status === "completed") {
 			// NOTE: features_completed is now calculated from manifest state in writeOverallProgress()
 			// This prevents counts from exceeding totals when features are retried
 			manifest.progress.last_completed_feature_id = feature.id;
-
-			// Update initiative status
-			const initiative = manifest.initiatives.find(
-				(i) => i.id === feature.initiative_id,
-			);
-			if (initiative) {
-				// Calculate features_completed from state instead of incrementing
-				// This prevents counts from exceeding totals when features are retried
-				const initFeatures = manifest.feature_queue.filter(
-					(f) => f.initiative_id === initiative.id,
-				);
-				initiative.features_completed = initFeatures.filter(
-					(f) => f.status === "completed",
-				).length;
-
-				if (initFeatures.every((f) => f.status === "completed")) {
-					initiative.status = "completed";
-					// NOTE: initiatives_completed is calculated from manifest state in writeOverallProgress()
-				} else {
-					initiative.status = "in_progress";
-				}
-			}
 
 			// CRITICAL: Push after completing feature
 			try {
@@ -896,16 +879,15 @@ export async function runFeatureImplementation(
 			finalError = errorMessage;
 		}
 
-		feature.status = "failed";
 		feature.error = finalError;
-		feature.assigned_sandbox = undefined;
-		feature.assigned_at = undefined;
 		instance.currentFeature = null;
 		instance.status = "ready";
 		instance.outputLineCount = 0;
 		instance.hasReceivedOutput = false;
 		updateNextFeatureId(manifest);
-		saveManifest(manifest);
+		transitionFeatureStatus(feature, manifest, "failed", {
+			reason: "unhandled exception in feature execution",
+		});
 
 		log(`   └── ❌ Error: ${finalError}`);
 

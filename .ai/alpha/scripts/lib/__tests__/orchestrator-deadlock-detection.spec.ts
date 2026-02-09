@@ -397,13 +397,14 @@ describe("resetFailedFeatureForRetry", () => {
 			assigned_sandbox: "sbx-a",
 			assigned_at: Date.now(),
 		};
+		const manifest = createTestManifest([feature]);
 
-		resetFailedFeatureForRetry(feature);
+		resetFailedFeatureForRetry(manifest.feature_queue[0]!, manifest);
 
-		expect(feature.status).toBe("pending");
-		expect(feature.error).toBeUndefined();
-		expect(feature.assigned_sandbox).toBeUndefined();
-		expect(feature.assigned_at).toBeUndefined();
+		expect(manifest.feature_queue[0]!.status).toBe("pending");
+		expect(manifest.feature_queue[0]!.error).toBeUndefined();
+		expect(manifest.feature_queue[0]!.assigned_sandbox).toBeUndefined();
+		expect(manifest.feature_queue[0]!.assigned_at).toBeUndefined();
 	});
 
 	it("increments retry_count from undefined to 1", () => {
@@ -426,10 +427,11 @@ describe("resetFailedFeatureForRetry", () => {
 			database_task_count: 0,
 			// retry_count is undefined
 		};
+		const manifest = createTestManifest([feature]);
 
-		resetFailedFeatureForRetry(feature);
+		resetFailedFeatureForRetry(manifest.feature_queue[0]!, manifest);
 
-		expect(feature.retry_count).toBe(1);
+		expect(manifest.feature_queue[0]!.retry_count).toBe(1);
 	});
 
 	it("increments retry_count from existing value", () => {
@@ -452,10 +454,11 @@ describe("resetFailedFeatureForRetry", () => {
 			database_task_count: 0,
 			retry_count: 2,
 		};
+		const manifest = createTestManifest([feature]);
 
-		resetFailedFeatureForRetry(feature);
+		resetFailedFeatureForRetry(manifest.feature_queue[0]!, manifest);
 
-		expect(feature.retry_count).toBe(3);
+		expect(manifest.feature_queue[0]!.retry_count).toBe(3);
 	});
 });
 

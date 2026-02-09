@@ -27,6 +27,7 @@ import {
 } from "./deadlock-handler.js";
 import { emitOrchestratorEvent } from "./event-emitter.js";
 import { runFeatureImplementation } from "./feature.js";
+import { transitionFeatureStatus } from "./feature-transitions.js";
 import { getGracefulShutdownCommand } from "./provider.js";
 import {
 	type PromiseAgeTracker,
@@ -820,24 +821,22 @@ export class WorkLoop {
 			const currentRetryCount = feature.retry_count ?? 0;
 
 			if (canRetry) {
-				// Increment retry count and reset to pending
+				// Increment retry count and reset to pending for retry
 				feature.retry_count = currentRetryCount + 1;
-				feature.status = "pending";
-				feature.assigned_sandbox = undefined;
-				feature.assigned_at = undefined;
 				feature.error = `Promise timeout (attempt ${feature.retry_count}/${DEFAULT_MAX_RETRIES}): ${Math.round(staleInfo.promiseAgeMs / 1000 / 60)}min elapsed, heartbeat stale`;
-				saveManifest(this.manifest);
+				transitionFeatureStatus(feature, this.manifest, "pending", {
+					reason: "promise timeout retry",
+				});
 
 				this.log(
 					`   🔄 [PROMISE_TIMEOUT] Feature #${staleInfo.featureId} reset to pending (retry ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`,
 				);
 			} else {
 				// Max retries exceeded - mark as permanently failed
-				feature.status = "failed";
-				feature.assigned_sandbox = undefined;
-				feature.assigned_at = undefined;
 				feature.error = `Promise timeout: Max retries (${DEFAULT_MAX_RETRIES}) exceeded after ${Math.round(staleInfo.promiseAgeMs / 1000 / 60)}min timeout`;
-				saveManifest(this.manifest);
+				transitionFeatureStatus(feature, this.manifest, "failed", {
+					reason: "promise timeout max retries exceeded",
+				});
 
 				this.log(
 					`   ❌ [PROMISE_TIMEOUT] Feature #${staleInfo.featureId} marked as FAILED (max retries exceeded)`,
@@ -893,18 +892,14 @@ export class WorkLoop {
 				);
 
 				// Force manifest update to mark feature as completed
-				feature.status = "completed";
 				feature.tasks_completed =
 					progressResult.data.completed_tasks?.length || feature.task_count;
-				feature.assigned_sandbox = undefined;
-				feature.assigned_at = undefined;
-
-				// Update initiative status
-				this.updateInitiativeStatus(feature);
 
 				// Update progress tracking
 				this.manifest.progress.last_completed_feature_id = feature.id;
-				saveManifest(this.manifest);
+				transitionFeatureStatus(feature, this.manifest, "completed", {
+					reason: "PTY fallback - progress file shows completed",
+				});
 
 				// Mark sandbox as ready
 				sandboxInstance.status = "ready";
@@ -998,11 +993,10 @@ export class WorkLoop {
 		feature: FeatureEntry,
 		errorMessage: string,
 	): void {
-		feature.status = "pending";
-		feature.assigned_sandbox = undefined;
-		feature.assigned_at = undefined;
 		feature.error = errorMessage;
-		saveManifest(this.manifest);
+		transitionFeatureStatus(feature, this.manifest, "pending", {
+			reason: `reset for reassignment: ${errorMessage}`,
+		});
 	}
 
 	/**
@@ -1019,54 +1013,27 @@ export class WorkLoop {
 		feature: FeatureEntry,
 		errorMessage: string,
 	): void {
-		const currentRetryCount = feature.retry_count ?? 0;
-
 		if (shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)) {
 			// Increment retry count and reset to pending for reassignment
-			feature.retry_count = currentRetryCount + 1;
-			feature.status = "pending";
-			feature.assigned_sandbox = undefined;
-			feature.assigned_at = undefined;
+			feature.retry_count = (feature.retry_count ?? 0) + 1;
 			feature.error = `${errorMessage} (attempt ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`;
+			transitionFeatureStatus(feature, this.manifest, "pending", {
+				reason: `retry after sandbox death: ${errorMessage}`,
+			});
 
 			this.log(
 				`   🔄 Feature #${feature.id} reset to pending for retry (attempt ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`,
 			);
 		} else {
 			// Max retries exceeded - mark as permanently failed
-			feature.status = "failed";
-			feature.assigned_sandbox = undefined;
-			feature.assigned_at = undefined;
 			feature.error = `${errorMessage} - max retries (${DEFAULT_MAX_RETRIES}) exceeded`;
+			transitionFeatureStatus(feature, this.manifest, "failed", {
+				reason: `sandbox death max retries exceeded: ${errorMessage}`,
+			});
 
 			this.log(
 				`   ❌ Feature #${feature.id} marked as FAILED (max retries exceeded)`,
 			);
-		}
-
-		saveManifest(this.manifest);
-	}
-
-	/**
-	 * Update initiative status after feature completion.
-	 */
-	private updateInitiativeStatus(feature: FeatureEntry): void {
-		const initiative = this.manifest.initiatives.find(
-			(i) => i.id === feature.initiative_id,
-		);
-		if (initiative) {
-			const initFeatures = this.manifest.feature_queue.filter(
-				(f) => f.initiative_id === initiative.id,
-			);
-			initiative.features_completed = initFeatures.filter(
-				(f) => f.status === "completed",
-			).length;
-
-			if (initFeatures.every((f) => f.status === "completed")) {
-				initiative.status = "completed";
-			} else {
-				initiative.status = "in_progress";
-			}
 		}
 	}
 

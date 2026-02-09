@@ -45,6 +45,10 @@ import {
 	stopEventServer,
 	waitForUIReady,
 } from "./event-server.js";
+import {
+	transitionFeatureStatus,
+	updateInitiativeStatusFromFeatures,
+} from "./feature-transitions.js";
 import { acquireLock, getProjectRoot, releaseLock } from "./lock.js";
 import {
 	archiveAndClearPreviousRun,
@@ -797,8 +801,12 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 				// Mark all pending/in_progress features as completed
 				for (const feature of manifest.feature_queue) {
 					if (feature.status !== "completed" && feature.status !== "failed") {
-						feature.status = "completed";
 						feature.tasks_completed = feature.task_count;
+						transitionFeatureStatus(feature, manifest, "completed", {
+							reason: "debug mode: skip-to-completion",
+							skipSave: true,
+							skipInitiativeCascade: true,
+						});
 					}
 				}
 
@@ -811,18 +819,12 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 					0,
 				);
 
-				// Update initiative statuses
-				for (const initiative of manifest.initiatives) {
-					const initFeatures = manifest.feature_queue.filter(
-						(f) => f.initiative_id === initiative.id,
-					);
-					const completedCount = initFeatures.filter(
-						(f) => f.status === "completed",
-					).length;
-					initiative.features_completed = completedCount;
-					if (completedCount === initiative.feature_count) {
-						initiative.status = "completed";
-					}
+				// Update initiative statuses via centralized function
+				const initiativeIds = [
+					...new Set(manifest.initiatives.map((i) => i.id)),
+				];
+				for (const initiativeId of initiativeIds) {
+					updateInitiativeStatusFromFeatures(initiativeId, manifest, true);
 				}
 				manifest.progress.initiatives_completed = manifest.initiatives.filter(
 					(i) => i.status === "completed",
