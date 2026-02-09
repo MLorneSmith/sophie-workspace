@@ -14,10 +14,13 @@ import {
 	EVENT_SERVER_PORT,
 	HEALTH_CHECK_INTERVAL_MS,
 	LOGS_DIR,
+	SANDBOX_CREATION_MAX_RETRIES,
+	SANDBOX_CREATION_RETRY_BASE_DELAY_MS,
 	SANDBOX_STAGGER_DELAY_MS,
 	UI_PROGRESS_DIR,
 } from "../config/index.js";
 import type {
+	AgentProvider,
 	OrchestratorOptions,
 	ReviewUrl,
 	SandboxInstance,
@@ -232,6 +235,64 @@ export function printSummary(
 // Work loop logic is now in work-loop.ts for better separation of concerns
 export { runWorkLoop, WorkLoop } from "./work-loop.js";
 export type { WorkLoopOptions, WorkLoopResult } from "./work-loop.js";
+
+// ============================================================================
+// Sandbox Creation with Retry (Chore #1959)
+// ============================================================================
+
+/**
+ * Create a sandbox with exponential backoff retry on failure.
+ *
+ * Wraps createSandbox() with retry logic for transient failures like
+ * OAuth session limits, E2B API rate limiting, or temporary API errors.
+ * Retries up to SANDBOX_CREATION_MAX_RETRIES times with linear backoff
+ * (base * attempt: 10s, 20s).
+ *
+ * See chore #1959 for details.
+ */
+export async function createSandboxWithRetry(
+	manifest: SpecManifest,
+	label: string,
+	timeout: number,
+	uiEnabled: boolean,
+	runId: string | undefined,
+	provider: AgentProvider,
+	log: (...args: unknown[]) => void,
+): Promise<SandboxInstance> {
+	for (let attempt = 1; attempt <= SANDBOX_CREATION_MAX_RETRIES + 1; attempt++) {
+		try {
+			return await createSandbox(
+				manifest,
+				label,
+				timeout,
+				uiEnabled,
+				runId,
+				provider,
+			);
+		} catch (error) {
+			const isLastAttempt = attempt > SANDBOX_CREATION_MAX_RETRIES;
+			const errorMsg =
+				error instanceof Error ? error.message : String(error);
+
+			if (isLastAttempt) {
+				log(
+					`   ❌ Sandbox ${label} creation failed after ${attempt} attempt(s): ${errorMsg}`,
+				);
+				throw error;
+			}
+
+			const delay = SANDBOX_CREATION_RETRY_BASE_DELAY_MS * attempt;
+			log(
+				`   ⚠️ Sandbox ${label} creation failed (attempt ${attempt}/${SANDBOX_CREATION_MAX_RETRIES + 1}): ${errorMsg}`,
+			);
+			log(`   ⏳ Retrying in ${delay / 1000}s...`);
+			await sleep(delay);
+		}
+	}
+
+	// Unreachable but satisfies TypeScript
+	throw new Error(`Sandbox ${label} creation failed: retry loop exited unexpectedly`);
+}
 
 // ============================================================================
 // Main Orchestration
@@ -650,13 +711,14 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 							if (uiManager) uiManager.stop();
 							process.exit(1);
 						}),
-						createSandbox(
+						createSandboxWithRetry(
 							manifest,
 							firstLabel,
 							options.timeout,
 							options.ui,
 							runId,
 							options.provider,
+							log,
 						),
 					]);
 
@@ -669,13 +731,14 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 							`\n   ⏳ Waiting ${SANDBOX_STAGGER_DELAY_MS / 1000}s before next sandbox...`,
 						);
 						await sleep(SANDBOX_STAGGER_DELAY_MS);
-						const instance = await createSandbox(
+						const instance = await createSandboxWithRetry(
 							manifest,
 							label,
 							options.timeout,
 							options.ui,
 							runId,
 							options.provider,
+							log,
 						);
 						instances.push(instance);
 					}
@@ -692,13 +755,14 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 							await sleep(SANDBOX_STAGGER_DELAY_MS);
 						}
 
-						const instance = await createSandbox(
+						const instance = await createSandboxWithRetry(
 							manifest,
 							label,
 							options.timeout,
 							options.ui,
 							runId,
 							options.provider,
+							log,
 						);
 						instances.push(instance);
 					}
