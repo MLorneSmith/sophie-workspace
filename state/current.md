@@ -9,7 +9,7 @@ When choosing proactive work: Obj 1 > 6 > 7. Objectives 2-5 deferred until post-
 
 ## Active Work
 - All 7 objectives have initiatives defined (35 total)
-- Sophie Loop: Phases 1-5 done, Phase 6 (Orchestrator Wiring) next
+- Sophie Loop: Phases 1-6 done, Phase 7 test run in progress (task #76 — builder done, reviewer running)
 - GLM/ZAI fixed — env var was `GLM_API_KEY`, OpenClaw needs `ZAI_API_KEY`
 
 ## What's Next

@@ -16,6 +16,7 @@
 | **4. Agent Profiles** | 84 | ✅ Done | 8 profiles created: Writer, Emailer, Coder, Designer, Researcher, Reviewer, Planner, DevOps. |
 | **5. Loop Runner** | 85 | ✅ Done | Step-based Python script: prepare → spawn builder → review-prep → spawn reviewer → process verdict. |
 | **6. Orchestrator Wiring** | 86 | ✅ Done | orchestrator.py (plan/batch/consistency/escalate) + orchestrate.sh wrapper. Parallel slots, objective priority, agent heuristics, escalation rules. |
+| **7. Test Run** | 87 | ✅ Done | Full loop validated on task #76. Builder (GLM) → Reviewer (GLM) → FAIL:iterate → re-run with learnings. All components working at $0.00 cost. |
 | **7. Test Run** | 87 | 📋 Backlog | Depends on all previous phases. |
 
 ## Dependencies
