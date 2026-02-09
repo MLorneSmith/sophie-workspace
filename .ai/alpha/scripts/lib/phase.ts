@@ -124,7 +124,7 @@ export function filterManifestByPhase(
 	const phases = manifest.phases;
 	if (!phases || phases.length === 0) {
 		throw new Error(
-			`No phases defined in manifest. Run autoGeneratePhases() first.`,
+			"No phases defined in manifest. Run autoGeneratePhases() first.",
 		);
 	}
 

@@ -398,13 +398,14 @@ describe("resetFailedFeatureForRetry", () => {
 			assigned_at: Date.now(),
 		};
 		const manifest = createTestManifest([feature]);
+		const entry = manifest.feature_queue[0];
 
-		resetFailedFeatureForRetry(manifest.feature_queue[0]!, manifest);
+		resetFailedFeatureForRetry(entry!, manifest);
 
-		expect(manifest.feature_queue[0]!.status).toBe("pending");
-		expect(manifest.feature_queue[0]!.error).toBeUndefined();
-		expect(manifest.feature_queue[0]!.assigned_sandbox).toBeUndefined();
-		expect(manifest.feature_queue[0]!.assigned_at).toBeUndefined();
+		expect(entry?.status).toBe("pending");
+		expect(entry?.error).toBeUndefined();
+		expect(entry?.assigned_sandbox).toBeUndefined();
+		expect(entry?.assigned_at).toBeUndefined();
 	});
 
 	it("increments retry_count from undefined to 1", () => {
@@ -428,10 +429,11 @@ describe("resetFailedFeatureForRetry", () => {
 			// retry_count is undefined
 		};
 		const manifest = createTestManifest([feature]);
+		const entry = manifest.feature_queue[0];
 
-		resetFailedFeatureForRetry(manifest.feature_queue[0]!, manifest);
+		resetFailedFeatureForRetry(entry!, manifest);
 
-		expect(manifest.feature_queue[0]!.retry_count).toBe(1);
+		expect(entry?.retry_count).toBe(1);
 	});
 
 	it("increments retry_count from existing value", () => {
@@ -455,10 +457,11 @@ describe("resetFailedFeatureForRetry", () => {
 			retry_count: 2,
 		};
 		const manifest = createTestManifest([feature]);
+		const entry = manifest.feature_queue[0];
 
-		resetFailedFeatureForRetry(manifest.feature_queue[0]!, manifest);
+		resetFailedFeatureForRetry(entry!, manifest);
 
-		expect(manifest.feature_queue[0]!.retry_count).toBe(3);
+		expect(entry?.retry_count).toBe(3);
 	});
 });
 
