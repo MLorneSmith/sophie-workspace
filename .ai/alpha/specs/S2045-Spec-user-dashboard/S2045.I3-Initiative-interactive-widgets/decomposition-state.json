@@ -1,18 +1,21 @@
 {
   "initiative_id": "S2045.I3",
   "initiative_name": "Interactive Widgets",
-  "status": "in_progress",
-  "current_phase": "decomposition",
+  "status": "completed",
+  "current_phase": "finalization",
   "features": {
-    "S2045.I3.F1": { "name": "Presentation Outlines Table", "status": "pending", "task_count": 0 },
-    "S2045.I3.F2": { "name": "Coaching Sessions Card", "status": "pending", "task_count": 0 },
-    "S2045.I3.F3": { "name": "Quick Actions Panel", "status": "pending", "task_count": 0 },
-    "S2045.I3.F4": { "name": "Recent Activity Feed", "status": "pending", "task_count": 0 }
+    "S2045.I3.F1": { "name": "Presentation Outlines Table", "status": "completed", "task_count": 5 },
+    "S2045.I3.F2": { "name": "Coaching Sessions Card", "status": "completed", "task_count": 4 },
+    "S2045.I3.F3": { "name": "Quick Actions Panel", "status": "completed", "task_count": 7 },
+    "S2045.I3.F4": { "name": "Recent Activity Feed", "status": "completed", "task_count": 8 }
   },
   "total_features": 4,
-  "completed_features": 0,
-  "total_tasks": 0,
+  "completed_features": 4,
+  "total_tasks": 24,
   "total_spikes": 0,
   "spikes_pending": [],
-  "started_at": "2026-02-09T00:00:00Z"
+  "total_hours_sequential": 48,
+  "total_hours_parallel": 36,
+  "started_at": "2026-02-09T00:00:00Z",
+  "completed_at": "2026-02-09T00:00:00Z"
 }
