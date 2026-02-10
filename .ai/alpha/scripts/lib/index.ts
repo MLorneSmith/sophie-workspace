@@ -116,6 +116,7 @@ export {
 	generateSpecManifest,
 	loadManifest,
 	saveManifest,
+	syncSandboxProgressToManifest,
 	writeOverallProgress,
 } from "./manifest.js";
 
