@@ -335,13 +335,17 @@ export function checkFeatureTaskCounts(
 
 	for (const feature of manifest.feature_queue) {
 		if (feature.task_count > MAX_TASKS_PER_FEATURE) {
-			log(`   ⚠️ Feature ${feature.id} has ${feature.task_count} tasks (max: ${MAX_TASKS_PER_FEATURE})`);
+			log(
+				`   ⚠️ Feature ${feature.id} has ${feature.task_count} tasks (max: ${MAX_TASKS_PER_FEATURE})`,
+			);
 			oversizedCount++;
 		}
 	}
 
 	if (oversizedCount > 0) {
-		log(`   ⚠️ ${oversizedCount} feature(s) exceed ${MAX_TASKS_PER_FEATURE} tasks. Consider splitting.`);
+		log(
+			`   ⚠️ ${oversizedCount} feature(s) exceed ${MAX_TASKS_PER_FEATURE} tasks. Consider splitting.`,
+		);
 	} else {
 		log("   ✅ All features within task count limits");
 	}
