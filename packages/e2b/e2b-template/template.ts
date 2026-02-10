@@ -260,7 +260,16 @@ export function createTemplate(
 		// Note: Supabase CLI doesn't support global npm install anymore
 		// It's available via pnpm in the project (pnpm exec supabase)
 		// ========================================
-		.runCmd(["npm install -g turbo@2.6.1 @anthropic-ai/claude-code"], {
+		.runCmd(["npm install -g turbo@2.6.1 @anthropic-ai/claude-code agent-browser"], {
+			user: "root",
+		})
+
+		// ========================================
+		// agent-browser (visual verification)
+		// Bug fix #2048: Install agent-browser for visual validation tasks
+		// Uses Playwright's pre-installed system deps (libnss3, libgbm1, etc.)
+		// ========================================
+		.runCmd(["agent-browser install"], {
 			user: "root",
 		})
 

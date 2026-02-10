@@ -30,6 +30,28 @@ export const VALID_PROGRESS_STATUSES = new Set([
 export type ValidProgressStatus = "in_progress" | "completed" | "failed";
 
 /**
+ * Known terminal statuses that agents may write to the progress file.
+ * These indicate the agent has finished (successfully or partially) and
+ * should NOT be treated as "in_progress".
+ *
+ * Maps non-standard status -> valid orchestrator status.
+ */
+const TERMINAL_STATUS_REMAPPING: Record<string, ValidProgressStatus> = {
+	// Bug fix #1952: GPT agents write "blocked" when a task is blocked
+	blocked: "failed",
+	// Bug fix #2048: GPT agents write "context_limit" when context window exhausted
+	// Treat as completed since the agent exited cleanly with partial work committed
+	context_limit: "completed",
+	// Other known terminal statuses that GPT or future agents might write
+	partial: "completed",
+	context_exceeded: "completed",
+	done: "completed",
+	error: "failed",
+	aborted: "failed",
+	timed_out: "failed",
+};
+
+/**
  * Validate and normalize a progress file status value.
  *
  * TypeScript unions are erased at runtime. External agents can write any
@@ -37,8 +59,8 @@ export type ValidProgressStatus = "in_progress" | "completed" | "failed";
  * propagate into the orchestrator.
  *
  * Remapping rules:
- * - "blocked" -> "failed" (Bug fix #1952: prevents unrecoverable state)
- * - Unknown values -> "in_progress" (safe fallback, health checks will catch stuck features)
+ * - Known terminal statuses -> mapped to appropriate valid status (see TERMINAL_STATUS_REMAPPING)
+ * - Unknown values -> "failed" (safe fallback; "in_progress" is dangerous as it causes retry loops)
  */
 export function validateProgressStatus(
 	rawStatus: unknown,
@@ -50,17 +72,21 @@ export function validateProgressStatus(
 		return rawStatus as ValidProgressStatus;
 	}
 
-	if (rawStatus === "blocked") {
+	if (typeof rawStatus === "string" && rawStatus in TERMINAL_STATUS_REMAPPING) {
+		const mapped = TERMINAL_STATUS_REMAPPING[rawStatus]!;
 		console.warn(
-			'[STATUS_VALIDATION] Remapping "blocked" -> "failed" (agent wrote non-orchestrator status)',
+			`[STATUS_VALIDATION] Remapping "${rawStatus}" -> "${mapped}" (agent wrote non-orchestrator status)`,
 		);
-		return "failed";
+		return mapped;
 	}
 
+	// Bug fix #2048: Default to "failed" instead of "in_progress"
+	// "in_progress" default caused infinite retry loops when agents wrote unknown statuses
+	// "failed" is safer: feature gets retried rather than waiting forever
 	console.warn(
-		`[STATUS_VALIDATION] Unknown progress status "${String(rawStatus)}" -> defaulting to "in_progress"`,
+		`[STATUS_VALIDATION] Unknown progress status "${String(rawStatus)}" -> defaulting to "failed"`,
 	);
-	return "in_progress";
+	return "failed";
 }
 
 // ============================================================================
