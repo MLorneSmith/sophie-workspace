@@ -17,7 +17,7 @@
       "pattern_matched": null
     },
     "requires_database": true,
-    "database_tasks": ["S2045.I1.F2.T1", "S2045.I1.F2.T2", "S2045.I1.F2.T3", "S2045.I1.F2.T4", "S2045.I1.F2.T5", "S2045.I1.F2.T6"],
+    "database_tasks": ["S2045.I1.F2.T1", "S2045.I1.F2.T2", "S2045.I1.F2.T3", "S2045.I1.F2.T4"],
     "requires_ui": false,
     "ui_tasks": [],
     "required_env_vars": [
@@ -238,110 +238,6 @@
       ],
       "dependencies": {
         "blocked_by": ["S2045.I1.F2.T2", "S2045.I1.F2.T3"],
-        "blocks": ["S2045.I1.F2.T5"]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S2045.I1.F2.T5",
-      "type": "task",
-      "name": "Apply migration to local database",
-      "action": {
-        "verb": "Apply",
-        "target": "migration"
-      },
-      "purpose": "Execute migration to create tables, enum, RLS policies, indexes, and triggers in local Supabase instance",
-      "status": "draft",
-      "estimated_hours": 1,
-      "priority": 5,
-      "group": 2,
-      "requires_database": true,
-      "migration_name_prefix": "S2045_I1_F2_T5",
-      "context": {
-        "files": [
-          "apps/web/supabase/migrations/*S2045_I1_F2_activity_events.sql"
-        ],
-        "dependencies": [
-          "pnpm --filter web supabase migration up command",
-          "Local Supabase instance running"
-        ],
-        "constraints": [
-          "Use command: pnpm --filter web supabase migration up",
-          "Verify no errors during migration application",
-          "Verify triggers exist in pg_trigger catalog"
-        ]
-      },
-      "input_state": "Migration file exists but not applied to database",
-      "output_state": "Migration applied successfully, activity_events table and triggers exist in local database",
-      "acceptance_criterion": "Migration command exits 0 and psql query shows 5 triggers with names matching 'activity_event_%'",
-      "verification_command": "pnpm --filter web supabase migration up && psql 'postgresql://postgres:postgres@127.0.0.1:54322/postgres' -c \"SELECT COUNT(*) FROM pg_trigger WHERE tgname LIKE 'activity_event_%';\" | grep -q '5'",
-      "outputs": [
-        {
-          "type": "modified",
-          "path": "apps/web/supabase/.branches/_current_branch"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": ["S2045.I1.F2.T4"],
-        "blocks": ["S2045.I1.F2.T6"]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S2045.I1.F2.T6",
-      "type": "task",
-      "name": "Generate TypeScript types for activity_events",
-      "action": {
-        "verb": "Generate",
-        "target": "TypeScript types"
-      },
-      "purpose": "Create TypeScript type definitions for the new activity_events table and enum to enable type-safe queries",
-      "status": "draft",
-      "estimated_hours": 1,
-      "priority": 6,
-      "group": 2,
-      "requires_database": true,
-      "migration_name_prefix": "S2045_I1_F2_T6",
-      "context": {
-        "files": [
-          "apps/web/lib/database.types.ts"
-        ],
-        "dependencies": [
-          "pnpm supabase:web:typegen command",
-          "Migration already applied"
-        ],
-        "constraints": [
-          "Use command: pnpm supabase:web:typegen",
-          "Verify activity_events table type exists",
-          "Verify activity_event_type enum type exists"
-        ]
-      },
-      "input_state": "Migration applied but TypeScript types not updated",
-      "output_state": "apps/web/lib/database.types.ts contains types for activity_events table and activity_event_type enum",
-      "acceptance_criterion": "database.types.ts file contains 'activity_events' table definition and 'activity_event_type' enum",
-      "verification_command": "pnpm supabase:web:typegen && grep -q 'activity_events' apps/web/lib/database.types.ts && grep -q 'activity_event_type' apps/web/lib/database.types.ts && pnpm typecheck",
-      "outputs": [
-        {
-          "type": "modified",
-          "path": "apps/web/lib/database.types.ts"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": ["S2045.I1.F2.T5"],
         "blocks": []
       },
       "m1_checks": {
@@ -366,21 +262,21 @@
       },
       {
         "id": 2,
-        "name": "Migration and Type Generation",
-        "task_ids": ["S2045.I1.F2.T4", "S2045.I1.F2.T5", "S2045.I1.F2.T6"],
+        "name": "Migration Generation",
+        "task_ids": ["S2045.I1.F2.T4"],
         "depends_on_groups": [1],
-        "estimated_hours": 3,
-        "parallel_hours": 3
+        "estimated_hours": 1,
+        "parallel_hours": 1
       }
     ],
     "critical_path": {
-      "task_ids": ["S2045.I1.F2.T1", "S2045.I1.F2.T3", "S2045.I1.F2.T4", "S2045.I1.F2.T5", "S2045.I1.F2.T6"],
-      "total_hours": 9
+      "task_ids": ["S2045.I1.F2.T1", "S2045.I1.F2.T3", "S2045.I1.F2.T4"],
+      "total_hours": 7
     },
     "duration": {
-      "sequential": 11,
-      "parallel": 7,
-      "time_saved_percent": 36
+      "sequential": 9,
+      "parallel": 5,
+      "time_saved_percent": 44
     }
   },
   "validation": {
