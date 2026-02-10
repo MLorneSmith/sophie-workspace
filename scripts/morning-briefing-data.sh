@@ -147,6 +147,13 @@ TASKS_BACKLOG=$(echo "$TASK_STATS" | jq -r '.summary.blockedTasks // 0')
 PRACTICES_COUNT=$(echo "$TASK_STATS" | jq -r '.summary.totalPractices // 0')
 CAPTURES_TOTAL=$(echo "$TASK_STATS" | jq -r '.summary.totalActivities // 0')
 
+# ─── Review Queue (Mission Control) ──────────────────────────
+REVIEW_QUEUE_RAW=$(curl -sf 'http://localhost:3001/api/v1/tasks?status=mike_review' 2>/dev/null || echo '[]')
+REVIEW_QUEUE=$(echo "$REVIEW_QUEUE_RAW" | jq '[.[] | {id, name, reviewSummary, updatedAt}]' 2>/dev/null || echo '[]')
+
+# ─── Review Queue (tasks awaiting Mike's review) ──────────────
+REVIEW_QUEUE=$(curl -sf 'http://localhost:3001/api/v1/tasks?status=mike_review' 2>/dev/null | jq -c '[.[] | {id, name, reviewSummary, updatedAt}]' 2>/dev/null || echo '[]')
+
 # ─── Overnight Work ──────────────────────────────────────────
 # Read current.md for overnight work summary
 CURRENT_STATE=""
@@ -187,6 +194,8 @@ jq -n \
   --arg tasks_backlog "$TASKS_BACKLOG" \
   --arg practices_count "$PRACTICES_COUNT" \
   --arg captures_total "$CAPTURES_TOTAL" \
+  --argjson review_queue "$REVIEW_QUEUE" \
+  --argjson review_queue "$REVIEW_QUEUE" \
   '{
     dates: {
       day_of_week: $day_of_week,
@@ -232,5 +241,6 @@ jq -n \
       practices: ($practices_count | tonumber),
       captures: ($captures_total | tonumber)
     },
-    current_state: $current_state
+    current_state: $current_state,
+    review_queue: $review_queue
   }'
