@@ -260,9 +260,12 @@ export function createTemplate(
 		// Note: Supabase CLI doesn't support global npm install anymore
 		// It's available via pnpm in the project (pnpm exec supabase)
 		// ========================================
-		.runCmd(["npm install -g turbo@2.6.1 @anthropic-ai/claude-code agent-browser"], {
-			user: "root",
-		})
+		.runCmd(
+			["npm install -g turbo@2.6.1 @anthropic-ai/claude-code agent-browser"],
+			{
+				user: "root",
+			},
+		)
 
 		// ========================================
 		// agent-browser (visual verification)

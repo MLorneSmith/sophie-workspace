@@ -40,14 +40,14 @@ export function buildImplementationPrompt(
 			'PROGRESS FILE STATUS: The ONLY valid values for "status" in .initiative-progress.json are: ' +
 			'"in_progress", "completed", or "failed". NEVER write any other value (not "blocked", ' +
 			'not "context_limit", not "partial", not "done"). ' +
-			"When you finish all tasks, write status: \"completed\". " +
-			"When you reach 60% context usage and need to exit, write status: \"completed\" (NOT \"context_limit\"). " +
-			"When a task fails and you cannot continue, write status: \"failed\".\n\n" +
+			'When you finish all tasks, write status: "completed". ' +
+			'When you reach 60% context usage and need to exit, write status: "completed" (NOT "context_limit"). ' +
+			'When a task fails and you cannot continue, write status: "failed".\n\n' +
 			"GIT OPERATIONS: NEVER use `git add -A` or `git add .`. " +
 			"Always stage specific files: `git add <file1> <file2> ...`. " +
 			"This prevents accidentally staging deletions or unrelated files on retry attempts.\n\n" +
 			"VISUAL VERIFICATION: If a task requires agent-browser and it is not available, " +
-			"skip that task and mark it as completed with a note. Do NOT mark tasks as \"blocked\"."
+			'skip that task and mark it as completed with a note. Do NOT mark tasks as "blocked".'
 		);
 	}
 
