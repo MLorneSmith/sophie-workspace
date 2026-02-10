@@ -30,6 +30,7 @@ vi.mock("../health.js", () => ({
 
 vi.mock("../manifest.js", () => ({
 	saveManifest: vi.fn(),
+	writeOverallProgress: vi.fn(),
 }));
 
 vi.mock("../progress.js", () => ({

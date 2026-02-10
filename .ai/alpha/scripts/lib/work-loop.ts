@@ -34,7 +34,7 @@ import {
 	createPromiseAgeTracker,
 } from "./promise-age-tracker.js";
 import { runHealthChecks } from "./health.js";
-import { saveManifest } from "./manifest.js";
+import { saveManifest, writeOverallProgress } from "./manifest.js";
 import { writeIdleProgress } from "./progress.js";
 import {
 	isFeatureCompleted,
@@ -473,6 +473,13 @@ export class WorkLoop {
 				}
 				continue;
 			}
+
+			// Bug fix #2054: Update overall progress periodically during execution.
+			// writeOverallProgress() calls syncSandboxProgressToManifest() (#2050)
+			// which reads real-time task counts from sandbox progress files.
+			// Without this, overall progress only updates on state transitions
+			// (feature start/complete/fail), staying at 0 during execution.
+			writeOverallProgress(this.manifest);
 
 			// Monitor promise ages and recover stuck promises (Bug fix #1841)
 			await this.monitorPromiseAges();

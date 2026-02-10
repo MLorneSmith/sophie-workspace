@@ -11,6 +11,7 @@ import type { FeatureEntry, SpecManifest } from "../../types/index.js";
 // Mock dependencies
 vi.mock("../manifest.js", () => ({
 	saveManifest: vi.fn(),
+	writeOverallProgress: vi.fn(),
 }));
 
 vi.mock("../event-emitter.js", () => ({
