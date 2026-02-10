@@ -5,7 +5,7 @@
  * Used by both pnpm scripts and the sandbox skill.
  *
  * Features:
- * - Node.js 20, pnpm 10.14.0
+ * - Node.js 20, pnpm 10.29.2
  * - Claude Code CLI
  * - VS Code Web (code-server) for code review
  * - GitHub CLI (gh) for PR automation
@@ -249,9 +249,9 @@ export function createTemplate(
 		)
 
 		// ========================================
-		// pnpm 10.14.0
+		// pnpm 10.29.2
 		// ========================================
-		.runCmd(["corepack enable", "corepack prepare pnpm@10.14.0 --activate"], {
+		.runCmd(["corepack enable", "corepack prepare pnpm@10.29.2 --activate"], {
 			user: "root",
 		})
 

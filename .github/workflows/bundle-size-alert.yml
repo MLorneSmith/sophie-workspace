@@ -12,7 +12,6 @@ permissions:
 
 env:
   NODE_VERSION: '20'
-  PNPM_VERSION: '10.29.2'
 
 jobs:
   bundle-size-alert:
@@ -38,8 +37,6 @@ jobs:
         run: git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v6
         with:
