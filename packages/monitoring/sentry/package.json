@@ -16,7 +16,7 @@
 	},
 	"dependencies": {
 		"@hookform/resolvers": "5.2.2",
-		"@sentry/nextjs": "^10.27.0"
+		"@sentry/nextjs": "^10.38.0"
 	},
 	"devDependencies": {
 		"@kit/monitoring-core": "workspace:*",
