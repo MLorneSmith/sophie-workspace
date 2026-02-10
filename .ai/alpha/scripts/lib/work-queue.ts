@@ -408,6 +408,9 @@ export function getBlockingFailedFeatures(
 		failedFeatures.map((f) => f.initiative_id),
 	);
 
+	// Bug fix #2056: Also track failed feature IDs for feature-level dependency checks
+	const failedFeatureIds = new Set(failedFeatures.map((f) => f.id));
+
 	// Get completed initiatives and features for dependency checking
 	const completedFeatureIds = new Set(
 		manifest.feature_queue
@@ -420,22 +423,25 @@ export function getBlockingFailedFeatures(
 			.map((i) => i.id),
 	);
 
-	// Find features that are blocked by initiatives with failures
+	// Find features that are blocked by failed features or initiatives with failures
 	const featuresBlockedByFailures = manifest.feature_queue.filter((f) => {
 		// Only consider pending/failed features (not completed/in_progress)
 		if (f.status !== "pending" && f.status !== "failed") {
 			return false;
 		}
 
-		// Check if any dependency is an initiative with a failed feature
+		// Check if any dependency is a failed feature or an initiative with failures
 		return f.dependencies.some((depId) => {
 			// If dep is already completed, it doesn't block
 			if (completedFeatureIds.has(depId) || completedInitiativeIds.has(depId)) {
 				return false;
 			}
 
-			// Check if this dep is an initiative with failures
-			return initiativesWithFailures.has(depId);
+			// Bug fix #2056: Check both feature-level and initiative-level deps
+			// depId can be a feature ID (e.g. "S2045.I4.F1") or initiative ID (e.g. "S2045.I4")
+			return (
+				failedFeatureIds.has(depId) || initiativesWithFailures.has(depId)
+			);
 		});
 	});
 

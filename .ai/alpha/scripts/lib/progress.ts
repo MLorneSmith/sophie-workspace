@@ -433,6 +433,16 @@ export function checkForStall(
 	sessionStartTime: Date = new Date(),
 ): StallCheckResult {
 	if (!progress) {
+		// Bug fix #2056: When progress is null (no data for this session yet),
+		// check elapsed time since session start. If enough time has passed
+		// without any progress data, that itself indicates a stall.
+		const timeSinceSessionStart = Date.now() - sessionStartTime.getTime();
+		if (timeSinceSessionStart > STALL_TIMEOUT_MS) {
+			return {
+				stalled: true,
+				reason: `No progress data received for ${Math.round(timeSinceSessionStart / 60000)} minutes since session start`,
+			};
+		}
 		return { stalled: false };
 	}
 

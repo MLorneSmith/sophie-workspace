@@ -129,9 +129,21 @@ export async function checkSandboxHealth(
 			// CRITICAL: Ignore heartbeats from before this feature session started
 			const graceWindow = 5 * 60 * 1000; // 5 minute grace period
 			if (heartbeatTime < featureStartTime - graceWindow) {
-				// Heartbeat is from a previous session - don't flag as stale
+				// Bug fix #2056: Heartbeat is from a previous session.
+				// Instead of always returning healthy, check if enough time has
+				// elapsed since the feature started without a current-session heartbeat.
 				const heartbeatAgeMin = Math.round((now - heartbeatTime) / 60000);
 				const sessionAgeMin = Math.round(timeSinceStart / 60000);
+
+				if (timeSinceStart > HEARTBEAT_STALE_TIMEOUT_MS) {
+					return {
+						healthy: false,
+						issue: "stale_heartbeat",
+						message: `No heartbeat from current session after ${sessionAgeMin} minutes (last heartbeat ${heartbeatAgeMin}m old, from previous session)`,
+						timeSinceStart,
+					};
+				}
+
 				log(
 					`   │   ℹ️ [${instance.label}] Ignoring stale heartbeat (${heartbeatAgeMin}m old, session started ${sessionAgeMin}m ago)`,
 				);
