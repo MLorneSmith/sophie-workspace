@@ -57,6 +57,8 @@ vi.mock("../work-queue.js", () => ({
 	assignFeatureToSandbox: vi.fn().mockReturnValue(true),
 	getBlockedFeatures: vi.fn().mockReturnValue([]),
 	getNextAvailableFeature: vi.fn().mockReturnValue(null),
+	shouldRetryFailedFeature: vi.fn().mockReturnValue(false),
+	DEFAULT_MAX_RETRIES: 3,
 }));
 
 import type { FeatureEntry } from "../../types/index.js";
