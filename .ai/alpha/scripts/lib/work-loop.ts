@@ -10,6 +10,7 @@
 import {
 	HEALTH_CHECK_INTERVAL_MS,
 	HEARTBEAT_TIMEOUT_MS,
+	MIN_FEATURE_AGE_FOR_RECOVERY_MS,
 	PROMISE_TIMEOUT_MS,
 	SANDBOX_KEEPALIVE_INTERVAL_MS,
 	SANDBOX_KEEPALIVE_STAGGER_MS,
@@ -880,13 +881,29 @@ export class WorkLoop {
 
 	/**
 	 * Check and recover feature via progress file when PTY times out.
-	 * Bug fix #1767
+	 * Bug fix #1767, #2063
+	 *
+	 * Three-layer defense against stale progress file race condition (#2063):
+	 * 1. Time-based guard: Skip recovery for features < 90s old
+	 * 2. Feature ID validation: Reject progress files from other features
+	 * 3. Completion threshold: Require 80% task completion for recovery
 	 */
 	private async checkPTYFallbackRecovery(
 		feature: FeatureEntry,
 		sandboxInstance: SandboxInstance,
 	): Promise<boolean> {
 		try {
+			// Layer 1: Time-based guard (Bug fix #2063)
+			// Skip recovery for recently-assigned features to prevent reading
+			// stale progress files from the previous feature.
+			const featureAge = Date.now() - (feature.assigned_at ?? 0);
+			if (featureAge < MIN_FEATURE_AGE_FOR_RECOVERY_MS) {
+				this.log(
+					`   ⏳ [PTY_FALLBACK] Skipping recovery for feature #${feature.id} (age: ${Math.round(featureAge / 1000)}s < ${MIN_FEATURE_AGE_FOR_RECOVERY_MS / 1000}s threshold)`,
+				);
+				return false;
+			}
+
 			const progressResult = await readProgressFile(sandboxInstance.sandbox);
 			if (
 				progressResult.success &&
@@ -894,13 +911,38 @@ export class WorkLoop {
 				!isProgressFileStale(progressResult.data) &&
 				isFeatureCompleted(progressResult.data)
 			) {
+				// Layer 2: Feature ID validation (Bug fix #2063)
+				// Reject progress files that don't match the current feature.
+				if (
+					progressResult.data.feature_id &&
+					progressResult.data.feature_id !== feature.id
+				) {
+					this.log(
+						`   ⚠️ [PTY_FALLBACK] Feature ID mismatch: expected ${feature.id}, got ${progressResult.data.feature_id}. Skipping recovery.`,
+					);
+					return false;
+				}
+
+				// Layer 3: Completion threshold (Bug fix #2063)
+				// Require at least 80% task completion before marking as recovered.
+				const completedCount = progressResult.data.completed_tasks?.length ?? 0;
+				const completionPercent =
+					feature.task_count > 0
+						? (completedCount / feature.task_count) * 100
+						: 0;
+				if (completionPercent < 80) {
+					this.log(
+						`   ⚠️ [PTY_FALLBACK] Feature #${feature.id}: ${Math.round(completionPercent)}% complete (${completedCount}/${feature.task_count} tasks, needs 80% for recovery)`,
+					);
+					return false;
+				}
+
 				this.log(
-					`   🔄 [PTY_FALLBACK] Feature #${feature.id} on ${sandboxInstance.label}: PTY stuck but progress file shows completed`,
+					`   🔄 [PTY_FALLBACK] Feature #${feature.id} on ${sandboxInstance.label}: PTY stuck but progress file shows completed (${completedCount}/${feature.task_count} tasks)`,
 				);
 
 				// Force manifest update to mark feature as completed
-				feature.tasks_completed =
-					progressResult.data.completed_tasks?.length || feature.task_count;
+				feature.tasks_completed = completedCount || feature.task_count;
 
 				// Update progress tracking
 				this.manifest.progress.last_completed_feature_id = feature.id;

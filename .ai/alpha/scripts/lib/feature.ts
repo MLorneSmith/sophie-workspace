@@ -218,6 +218,7 @@ export async function runFeatureImplementation(
 		// Ignore - file may not exist
 	}
 	// Initialize progress file immediately to avoid PTY recovery failures
+	// Bug fix #2063: Include feature_id for recovery validation
 	try {
 		await instance.sandbox.commands.run(
 			`cd ${WORKSPACE_DIR} && python3 - <<'PY'\n` +
@@ -226,6 +227,7 @@ export async function runFeatureImplementation(
 				"progress = {\n" +
 				`  "status": "in_progress",\n` +
 				`  "phase": "starting",\n` +
+				`  "feature_id": "${feature.id}",\n` +
 				`  "completed_tasks": [],\n` +
 				`  "failed_tasks": [],\n` +
 				`  "context_usage_percent": 0,\n` +
@@ -719,11 +721,13 @@ export async function runFeatureImplementation(
 			// DO NOT fallback to feature.task_count - that's the bug we're fixing
 		}
 
-		// Bug fix #1938: Require meaningful evidence before marking completed
+		// Bug fix #1938, #2063: Require meaningful evidence before marking completed
 		// A feature is only "completed" if:
 		// 1. Progress file explicitly says status: "completed", OR
-		// 2. At least 50% of tasks were completed (indicates real progress)
-		const completionThreshold = Math.ceil(feature.task_count * 0.5);
+		// 2. At least 80% of tasks were completed (indicates real progress)
+		// Raised from 50% to 80% to prevent partially-completed features from
+		// being incorrectly marked done during stale progress file races.
+		const completionThreshold = Math.ceil(feature.task_count * 0.8);
 		if (status === "completed" && tasksCompleted < completionThreshold) {
 			// Progress file said completed but we have no evidence of task completion
 			// This likely means the agent exited without doing the work

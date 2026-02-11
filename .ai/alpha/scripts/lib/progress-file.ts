@@ -106,6 +106,8 @@ export interface ProgressFileData {
 	total_tasks?: number;
 	last_heartbeat: string;
 	context_usage_percent?: number;
+	/** Feature ID for recovery validation (Bug fix #2063) */
+	feature_id?: string;
 	current_task?: {
 		id: string;
 		name: string;
