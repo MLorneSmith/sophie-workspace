@@ -409,6 +409,20 @@ export function getOpenAIAuthMethod(): "api_key" | "oauth" | "none" {
 	return "none";
 }
 
+const CLAUDE_MODEL_SHORTHANDS: Record<string, string> = {
+	sonnet: "claude-sonnet-4-5-20250929",
+	opus: "claude-opus-4-6",
+	haiku: "claude-haiku-4-5-20251001",
+};
+
+/**
+ * Resolve a Claude model shorthand (sonnet, opus, haiku) to a full model ID.
+ * If already a full model ID, returns as-is.
+ */
+export function resolveClaudeModel(input: string): string {
+	return CLAUDE_MODEL_SHORTHANDS[input.toLowerCase()] ?? input;
+}
+
 export function getAllEnvVars(): Record<string, string> {
 	const envs: Record<string, string> = {};
 
@@ -422,6 +436,12 @@ export function getAllEnvVars(): Record<string, string> {
 	const oauthToken = getCachedOAuthToken();
 	if (oauthToken) {
 		envs.CLAUDE_CODE_OAUTH_TOKEN = oauthToken;
+	}
+
+	// Claude model override (supports shorthands: sonnet, opus, haiku)
+	const claudeModel = process.env.CLAUDE_MODEL;
+	if (claudeModel) {
+		envs.CLAUDE_MODEL = resolveClaudeModel(claudeModel);
 	}
 
 	// OpenAI/Codex authentication (API key or OAuth access token)

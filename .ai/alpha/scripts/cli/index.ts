@@ -7,6 +7,7 @@
 import process from "node:process";
 
 import { DEFAULT_PROVIDER } from "../config/index.js";
+import { resolveClaudeModel } from "../lib/environment.js";
 import type {
 	AgentProvider,
 	OrchestratorOptions,
@@ -66,6 +67,9 @@ export function parseArgs(): OrchestratorOptions {
 			if (normalized === "gpt" || normalized === "claude") {
 				options.provider = normalized;
 			}
+			i++;
+		} else if (arg === "--model" && nextArg) {
+			process.env.CLAUDE_MODEL = resolveClaudeModel(nextArg);
 			i++;
 		} else if (arg === "--dry-run") {
 			options.dryRun = true;
@@ -127,6 +131,7 @@ Options:
   --sandboxes <n>, -s   Number of sandboxes (default: 3, max: 3)
   --timeout <s>         Sandbox timeout in seconds (default: 3600, max: 3600)
   --provider <name>     Agent provider: claude | gpt (default: claude)
+  --model <name>        Claude model: sonnet | opus | haiku | full-model-id
   --phase <id>          Run only a specific phase (e.g., --phase P1)
   --base-branch <name>  Fork from a previous phase's branch (requires --phase)
   --dry-run             Show execution plan without running
@@ -163,6 +168,9 @@ Examples:
   tsx spec-orchestrator.ts 1362 --skip-db-seed  # Resume without re-seeding
   tsx spec-orchestrator.ts 0                    # Run debug spec
   tsx spec-orchestrator.ts 1362 --skip-to-completion  # Debug completion sequence
+  tsx spec-orchestrator.ts 1362 --model sonnet        # Use Claude Sonnet
+  tsx spec-orchestrator.ts 1362 --model opus          # Use Claude Opus
+  CLAUDE_MODEL=sonnet tsx spec-orchestrator.ts 1362   # Via env var
 
 Phase Execution (for large specs):
   tsx spec-orchestrator.ts 1918 --phase P1                                      # Run phase 1
@@ -181,6 +189,7 @@ Environment Variables (for sandbox database):
 Environment Variables (auth):
   ANTHROPIC_API_KEY              Claude API key (preferred)
   CLAUDE_CODE_OAUTH_TOKEN        Claude OAuth access token
+  CLAUDE_MODEL                   Claude model (sonnet, opus, haiku, or full ID)
   OPENAI_API_KEY                 OpenAI API key (for GPT/Codex)
   OPENAI_ACCESS_TOKEN            OpenAI OAuth access token (optional)
 

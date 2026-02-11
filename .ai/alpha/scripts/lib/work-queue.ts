@@ -439,9 +439,7 @@ export function getBlockingFailedFeatures(
 
 			// Bug fix #2056: Check both feature-level and initiative-level deps
 			// depId can be a feature ID (e.g. "S2045.I4.F1") or initiative ID (e.g. "S2045.I4")
-			return (
-				failedFeatureIds.has(depId) || initiativesWithFailures.has(depId)
-			);
+			return failedFeatureIds.has(depId) || initiativesWithFailures.has(depId);
 		});
 	});
 

@@ -61,6 +61,7 @@ export {
 	getOpenAIApiKey,
 	getOpenAIAuthMethod,
 	OPENAI_API_KEY,
+	resolveClaudeModel,
 } from "./environment.js";
 // Event server management
 export {
