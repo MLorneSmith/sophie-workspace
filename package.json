@@ -59,7 +59,9 @@
 		"a11y:test": "turbo a11y:test",
 		"a11y:report": "turbo a11y:report",
 		"e2b:build:dev": "cd packages/e2b/e2b-template && npx tsx build.dev.ts",
-		"e2b:build:prod": "cd packages/e2b/e2b-template && npx tsx build.prod.ts"
+		"e2b:build:prod": "cd packages/e2b/e2b-template && npx tsx build.prod.ts",
+		"e2b:build:gpt-dev": "cd packages/e2b/e2b-template && npx tsx build.gpt-dev.ts",
+		"e2b:build:gpt-prod": "cd packages/e2b/e2b-template && npx tsx build.gpt-prod.ts"
 	},
 	"lint-staged": {
 		"*": [

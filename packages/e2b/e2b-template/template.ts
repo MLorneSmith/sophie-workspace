@@ -6,7 +6,7 @@
  *
  * Features:
  * - Node.js 20, pnpm 10.29.2
- * - Claude Code CLI
+ * - Claude Code CLI (claude provider) or OpenAI Codex CLI (gpt provider)
  * - VS Code Web (code-server) for code review
  * - GitHub CLI (gh) for PR automation
  * - Turbo CLI (Supabase CLI available via pnpm exec in project)
@@ -14,8 +14,10 @@
  * - Pre-cloned repository with dependencies installed
  *
  * Build scripts:
- * - pnpm e2b:build:dev  → slideheroes-claude-agent-dev
- * - pnpm e2b:build:prod → slideheroes-claude-agent
+ * - pnpm e2b:build:dev      → slideheroes-claude-agent-dev
+ * - pnpm e2b:build:prod     → slideheroes-claude-agent
+ * - pnpm e2b:build:gpt-dev  → slideheroes-gpt-agent-dev
+ * - pnpm e2b:build:gpt-prod → slideheroes-gpt-agent
  */
 
 import { Template } from "e2b";
@@ -24,8 +26,12 @@ import { Template } from "e2b";
 // Configuration
 // ============================================================================
 
+export type TemplateProvider = "claude" | "gpt";
+
 export const TEMPLATE_ALIAS = "slideheroes-claude-agent";
 export const DEV_TEMPLATE_ALIAS = "slideheroes-claude-agent-dev";
+export const GPT_TEMPLATE_ALIAS = "slideheroes-gpt-agent";
+export const GPT_DEV_TEMPLATE_ALIAS = "slideheroes-gpt-agent-dev";
 export const REPO_BRANCH = "dev";
 export const WORKSPACE_DIR = "/home/user/project";
 
@@ -93,6 +99,45 @@ echo "Running Claude Code with prompt: $1"
 # (stdbuf doesn't work on Node.js processes like Claude CLI because Node uses libuv, not libc)
 # unbuffer is more reliable than 'script -qfc' for this purpose
 unbuffer bash -c "echo \\"$1\\" | claude -p --setting-sources user,project --dangerously-skip-permissions"
+`;
+
+const RUN_CODEX_SCRIPT = `#!/bin/bash
+cd ${WORKSPACE_DIR} 2>/dev/null || cd /home/user
+
+# Ensure npm global binaries are in PATH (codex CLI location)
+export PATH="/usr/local/lib/node_modules/.bin:/usr/lib/node_modules/.bin:$PATH"
+
+if [ -z "$1" ]; then
+    echo "Usage: run-codex \\"<prompt or slash command>\\""
+    echo "Example: run-codex \\"Fix the type errors in src/auth.ts\\""
+    exit 1
+fi
+
+# Check authentication
+if [ -z "$OPENAI_API_KEY" ]; then
+    echo "ERROR: No OpenAI authentication found"
+    echo "Set OPENAI_API_KEY"
+    exit 1
+fi
+
+# Verify codex is available
+if ! command -v codex &> /dev/null; then
+    echo "ERROR: codex command not found in PATH"
+    echo "PATH: $PATH"
+    echo "Checking common locations..."
+    ls -la /usr/local/lib/node_modules/.bin/ 2>/dev/null || echo "  /usr/local/lib/node_modules/.bin/ not found"
+    ls -la /usr/lib/node_modules/.bin/ 2>/dev/null || echo "  /usr/lib/node_modules/.bin/ not found"
+    which codex 2>/dev/null || echo "  codex not in PATH"
+    exit 1
+fi
+
+# Set environment variables for reliable terminal handling in containers
+export TERM=dumb
+export NO_COLOR=1
+
+echo "Using OpenAI API key authentication"
+echo "Running Codex with prompt: $1"
+codex exec --full-auto --sandbox workspace-write "$1"
 `;
 
 const RUN_TESTS_SCRIPT = `#!/bin/bash
@@ -172,9 +217,11 @@ echo "Dev server starting on port 3000 (may take 10-30 seconds to compile)"
  *
  * @param cloneRepo - Whether to clone the repository during build (default: true)
  *                    Set to false for faster iteration during template development
+ * @param provider - Which AI CLI to install: "claude" (Claude Code) or "gpt" (OpenAI Codex)
  */
 export function createTemplate(
 	cloneRepo: boolean = true,
+	provider: TemplateProvider = "claude",
 ): ReturnType<typeof Template> {
 	let tmpl = Template()
 		// Start from Ubuntu 24.04 base image
@@ -256,12 +303,16 @@ export function createTemplate(
 		})
 
 		// ========================================
-		// Global npm tools
+		// Global npm tools (provider-specific CLI)
 		// Note: Supabase CLI doesn't support global npm install anymore
 		// It's available via pnpm in the project (pnpm exec supabase)
 		// ========================================
 		.runCmd(
-			["npm install -g turbo@2.6.1 @anthropic-ai/claude-code agent-browser"],
+			[
+				provider === "gpt"
+					? "npm install -g turbo@2.6.1 @openai/codex agent-browser"
+					: "npm install -g turbo@2.6.1 @anthropic-ai/claude-code agent-browser",
+			],
 			{
 				user: "root",
 			},
@@ -289,15 +340,23 @@ export function createTemplate(
 		})
 
 		// ========================================
-		// Helper Scripts
+		// Helper Scripts (provider-specific agent runner)
 		// ========================================
 		.runCmd(
-			[
-				`printf '%s' '${RUN_CLAUDE_SCRIPT.replace(/'/g, "'\\''")}' > /usr/local/bin/run-claude`,
-				"chmod +x /usr/local/bin/run-claude",
-			],
+			provider === "gpt"
+				? [
+						`printf '%s' '${RUN_CODEX_SCRIPT.replace(/'/g, "'\\''")}' > /usr/local/bin/run-codex`,
+						"chmod +x /usr/local/bin/run-codex",
+					]
+				: [
+						`printf '%s' '${RUN_CLAUDE_SCRIPT.replace(/'/g, "'\\''")}' > /usr/local/bin/run-claude`,
+						"chmod +x /usr/local/bin/run-claude",
+					],
 			{ user: "root" },
 		)
+		// ========================================
+		// Helper Scripts (shared)
+		// ========================================
 		.runCmd(
 			[
 				`printf '%s' '${RUN_TESTS_SCRIPT.replace(/'/g, "'\\''")}' > /usr/local/bin/run-tests`,
@@ -379,7 +438,13 @@ export function createTemplate(
 }
 
 /**
- * Default template export with repository cloning enabled.
+ * Default Claude template export with repository cloning enabled.
  * Used by build.dev.ts and build.prod.ts
  */
-export const template = createTemplate(true);
+export const template = createTemplate(true, "claude");
+
+/**
+ * GPT/Codex template export with repository cloning enabled.
+ * Used by build.gpt-dev.ts and build.gpt-prod.ts
+ */
+export const gptTemplate = createTemplate(true, "gpt");
