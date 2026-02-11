@@ -26,6 +26,10 @@ import { createLogger } from "./logger.js";
 import { getProjectRoot } from "./lock.js";
 import { validateProgressStatus } from "./progress-file.js";
 import { ensureUIProgressDir } from "./manifest.js";
+import {
+	SandboxProgressSchema,
+	safeParseProgress,
+} from "./schemas/index.js";
 import { sleep } from "./utils.js";
 
 // ============================================================================
@@ -322,10 +326,15 @@ export function startProgressPolling(
 
 					if (result.stdout?.trim()) {
 						const raw = JSON.parse(result.stdout);
+						const validated = safeParseProgress(
+							SandboxProgressSchema,
+							raw,
+							"progressPolling",
+						);
 						const progress: SandboxProgress = {
-							...raw,
-							status: raw.status
-								? validateProgressStatus(raw.status)
+							...validated,
+							status: validated.status
+								? validateProgressStatus(validated.status)
 								: undefined,
 						};
 

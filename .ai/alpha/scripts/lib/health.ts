@@ -25,6 +25,10 @@ import { transitionFeatureStatus } from "./feature-transitions.js";
 import { validateProgressStatus } from "./progress-file.js";
 import { createLogger } from "./logger.js";
 import { saveManifest } from "./manifest.js";
+import {
+	SandboxProgressSchema,
+	safeParseProgress,
+} from "./schemas/index.js";
 import { getForceKillCommand, getProviderDisplayName } from "./provider.js";
 import { sleep } from "./utils.js";
 
@@ -113,11 +117,18 @@ export async function checkSandboxHealth(
 			return { healthy: true, timeSinceStart };
 		}
 
-		// Parse progress file (validate status to prevent #1952 propagation)
+		// Parse progress file with Zod validation (Feature #2066)
 		const raw = JSON.parse(result.stdout);
+		const validated = safeParseProgress(
+			SandboxProgressSchema,
+			raw,
+			"healthCheck",
+		);
 		const progress: SandboxProgress = {
-			...raw,
-			status: raw.status ? validateProgressStatus(raw.status) : undefined,
+			...validated,
+			status: validated.status
+				? validateProgressStatus(validated.status)
+				: undefined,
 		};
 		instance.lastProgressSeen = new Date();
 

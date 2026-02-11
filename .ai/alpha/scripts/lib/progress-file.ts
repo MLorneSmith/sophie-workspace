@@ -15,6 +15,10 @@ import {
 	PROGRESS_FILE_STALE_THRESHOLD_MS,
 	WORKSPACE_DIR,
 } from "../config/index.js";
+import {
+	ProgressFileDataSchema,
+	safeParseProgress,
+} from "./schemas/index.js";
 
 // ============================================================================
 // Status Validation
@@ -153,9 +157,14 @@ export async function readProgressFile(
 		}
 
 		const raw = JSON.parse(result.stdout);
+		const validated = safeParseProgress(
+			ProgressFileDataSchema,
+			raw,
+			"readProgressFile",
+		);
 		const data: ProgressFileData = {
-			...raw,
-			status: validateProgressStatus(raw.status),
+			...validated,
+			status: validateProgressStatus(validated.status),
 		};
 		return { success: true, data };
 	} catch (error) {

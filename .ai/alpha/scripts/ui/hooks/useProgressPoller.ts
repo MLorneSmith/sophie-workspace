@@ -10,6 +10,11 @@ import type {
 	UIState,
 } from "../types.js";
 import { HEARTBEAT_STALL_THRESHOLD_MS, POLL_INTERVAL_MS } from "../types.js";
+import {
+	OverallProgressFileSchema,
+	SandboxProgressFileSchema,
+	safeParseProgress,
+} from "../../lib/schemas/index.js";
 
 /**
 
@@ -210,7 +215,12 @@ export const createFsProgressReader = (): ProgressReader => {
 
 				const filePath = path.join(progressDir, `${label}-progress.json`);
 				const content = await fs.readFile(filePath, "utf-8");
-				const data = JSON.parse(content) as SandboxProgressFile;
+				const raw = JSON.parse(content);
+				const data = safeParseProgress(
+					SandboxProgressFileSchema,
+					raw,
+					`ui-progress-${label}`,
+				) as SandboxProgressFile;
 
 				return { label, data, error: null };
 			} catch (err) {
@@ -227,7 +237,12 @@ export const createFsProgressReader = (): ProgressReader => {
 
 				const filePath = path.join(progressDir, "overall-progress.json");
 				const content = await fs.readFile(filePath, "utf-8");
-				return JSON.parse(content) as OverallProgressFile;
+				const raw = JSON.parse(content);
+				return safeParseProgress(
+					OverallProgressFileSchema,
+					raw,
+					"ui-overall-progress",
+				) as OverallProgressFile;
 			} catch {
 				// File may not exist yet
 				return null;
@@ -348,11 +363,11 @@ function progressToSandboxState(
 		status = "ready";
 	}
 
-	// Map current feature
+	// Map current feature - defensively default fields from untrusted JSON
 	const currentFeature = progress.feature
 		? {
-				id: progress.feature.issue_number,
-				title: progress.feature.title,
+				id: progress.feature.issue_number || "Unknown",
+				title: progress.feature.title || "Feature",
 			}
 		: null;
 
@@ -360,6 +375,8 @@ function progressToSandboxState(
 	// Fix for issue #1688: Removed fallback ID generation (`T${completedCount + 1}`)
 	// that created misleading task references like "T21". Tasks without explicit IDs
 	// now use "Unknown" to clearly indicate missing metadata.
+	// Fix for crash: GPT/Codex agents may write current_task without `name` field.
+	// All fields from untrusted JSON are now defensively defaulted.
 	let currentTask: TaskInfo | null = null;
 	if (progress.current_task) {
 		// Use explicit task ID or "Unknown" - never generate fallback IDs
@@ -367,8 +384,8 @@ function progressToSandboxState(
 
 		currentTask = {
 			id: taskId,
-			name: progress.current_task.name,
-			status: mapTaskStatus(progress.current_task.status),
+			name: progress.current_task.name || "Working...",
+			status: mapTaskStatus(progress.current_task.status || "in_progress"),
 			verificationAttempts: progress.current_task.verification_attempts,
 			startedAt: progress.current_task.started_at
 				? new Date(progress.current_task.started_at)

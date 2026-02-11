@@ -51,6 +51,10 @@ import {
 } from "./progress.js";
 import { validateProgressStatus } from "./progress-file.js";
 import {
+	SandboxProgressSchema,
+	safeParseProgress,
+} from "./schemas/index.js";
+import {
 	PTYTimeoutError,
 	type WaitWithTimeoutResult,
 	waitWithTimeout,
@@ -680,7 +684,12 @@ export async function runFeatureImplementation(
 		let progressFileStatus: string | undefined;
 
 		try {
-			const parsed = JSON.parse(progressResult.stdout || "{}");
+			const rawParsed = JSON.parse(progressResult.stdout || "{}");
+			const parsed = safeParseProgress(
+				SandboxProgressSchema,
+				rawParsed,
+				"featureResult",
+			);
 			tasksCompleted = parsed.completed_tasks?.length || 0;
 			const validatedStatus = validateProgressStatus(parsed.status);
 			progressFileStatus = validatedStatus;

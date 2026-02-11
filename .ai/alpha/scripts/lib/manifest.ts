@@ -23,6 +23,10 @@ import type {
 import { aggregateRequiredEnvVars } from "./env-requirements.js";
 import { getProjectRoot } from "./lock.js";
 import { autoGeneratePhases } from "./phase.js";
+import {
+	SandboxProgressFileSchema,
+	safeParseProgress,
+} from "./schemas/index.js";
 
 // ============================================================================
 // Types for Manifest Generation
@@ -947,7 +951,12 @@ export function syncSandboxProgressToManifest(
 			if (!fs.existsSync(sandboxProgressFile)) continue;
 
 			const content = fs.readFileSync(sandboxProgressFile, "utf-8");
-			const sandboxProgress = JSON.parse(content);
+			const raw = JSON.parse(content);
+			const sandboxProgress = safeParseProgress(
+				SandboxProgressFileSchema,
+				raw,
+				`manifest-sync-${feature.assigned_sandbox}`,
+			);
 			const completedCount = sandboxProgress.completed_tasks?.length ?? 0;
 
 			// Only update if sandbox shows more progress (never regress)
