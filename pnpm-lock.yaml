@@ -64,6 +64,7 @@ overrides:
   lodash-es: '>=4.17.23'
   '@isaacs/brace-expansion': '>=5.0.1'
   fast-xml-parser: '>=5.3.4'
+  axios: '>=1.13.5'
 
 patchedDependencies:
   payload@3.75.0:
@@ -6860,8 +6861,8 @@ packages:
   axios-proxy-builder@0.1.2:
     resolution: {integrity: sha512-6uBVsBZzkB3tCC8iyx59mCjQckhB8+GQrI9Cop8eC7ybIsvs/KtnNgEBfRMSEa7GqK2VBGUzgjNYMdPIfotyPA==}
 
-  axios@1.13.2:
-    resolution: {integrity: sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==}
+  axios@1.13.5:
+    resolution: {integrity: sha512-cz4ur7Vb0xS4/KUN0tPWe44eqxrIu31me+fbang3ijiNscE129POzipJJA6zniq2C/Z6sJCjMimjS8Lc/GAs8Q==}
 
   b4a@1.7.3:
     resolution: {integrity: sha512-5Q2mfq2WfGuFp3uS//0s6baOJLMoVduPYVeNmDYxu5OUA1/cBfvr2RIS7vi62LdNj/urk1hfmj867I3qt6uZ7Q==}
@@ -13728,7 +13729,7 @@ snapshots:
 
   '@newrelic/security-agent@2.4.4':
     dependencies:
-      axios: 1.13.2
+      axios: 1.13.5
       check-disk-space: 3.4.0
       content-type: 1.0.5
       cron: 3.5.0
@@ -14759,7 +14760,7 @@ snapshots:
 
   '@posthog/cli@0.5.25':
     dependencies:
-      axios: 1.13.2
+      axios: 1.13.5
       axios-proxy-builder: 0.1.2
       console.table: 0.10.0
       detect-libc: 2.1.2
@@ -17498,7 +17499,7 @@ snapshots:
     dependencies:
       tunnel: 0.0.6
 
-  axios@1.13.2:
+  axios@1.13.5:
     dependencies:
       follow-redirects: 1.15.11
       form-data: 4.0.5
