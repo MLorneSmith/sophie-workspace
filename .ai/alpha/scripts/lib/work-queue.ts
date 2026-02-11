@@ -106,6 +106,16 @@ export function getNextAvailableFeature(
 			continue;
 		}
 
+		// Bug fix #2064: Skip permanently-failed features that exceeded max retries
+		// Without this check, failed features with retry_count >= DEFAULT_MAX_RETRIES
+		// get re-assigned indefinitely since transitionFeatureStatus clears assigned_sandbox
+		if (
+			feature.status === "failed" &&
+			!shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)
+		) {
+			continue;
+		}
+
 		// Skip if already assigned to a sandbox
 		if (feature.assigned_sandbox) {
 			continue;

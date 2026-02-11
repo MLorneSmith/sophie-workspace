@@ -213,6 +213,12 @@ export class WorkLoop {
 	private async restartFailedSandbox(instance: SandboxInstance): Promise<void> {
 		this.log(`   🔄 Attempting to restart failed sandbox ${instance.label}...`);
 
+		// Bug fix #2064: Clean up old promise from activeWork BEFORE creating new sandbox
+		// Without this, the old promise's finally block deletes the new promise from activeWork,
+		// causing the new promise to become orphaned (running but untracked)
+		this.activeWork.delete(instance.label);
+		this.promiseTracker.remove(instance.label);
+
 		// Bug fix #1858: Reset any in-progress features on this sandbox to pending
 		// This ensures features can be retried on another sandbox after sandbox death
 		const featureOnSandbox = this.manifest.feature_queue.find(
@@ -449,11 +455,14 @@ export class WorkLoop {
 	private async mainLoop(): Promise<boolean> {
 		while (this.isRunning) {
 			// Check if we're done
+			// Bug fix #2064: Exclude permanently-failed features (retry_count >= max)
+			// from workable set so the loop can exit when only exhausted features remain
 			const workableFeatures = this.manifest.feature_queue.filter(
 				(f) =>
 					f.status === "pending" ||
 					f.status === "in_progress" ||
-					f.status === "failed",
+					(f.status === "failed" &&
+						shouldRetryFailedFeature(f, DEFAULT_MAX_RETRIES)),
 			);
 
 			if (workableFeatures.length === 0) {
@@ -521,6 +530,14 @@ export class WorkLoop {
 		for (const feature of this.manifest.feature_queue) {
 			if (feature.status !== "pending" && feature.status !== "failed") continue;
 			if (feature.assigned_sandbox) continue;
+
+			// Bug fix #2064: Skip permanently-failed features that exceeded max retries
+			if (
+				feature.status === "failed" &&
+				!shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)
+			) {
+				continue;
+			}
 
 			// Check if deps are satisfied
 			const completedFeatureIds = new Set(
