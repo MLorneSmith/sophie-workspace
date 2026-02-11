@@ -1413,6 +1413,23 @@ export async function createReviewSandbox(
 		timeoutMs: 120000,
 	});
 
+	// Bug fix #2067: Check if branch exists on remote before fetching
+	// Matches the pattern from createSandbox() — if branch was deleted or
+	// never pushed, push local state first so fetch/checkout succeeds.
+	const branchExistsResult = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && git ls-remote --heads origin "${branchName}" | wc -l`,
+		{ timeoutMs: 30000 },
+	);
+	const branchExists = branchExistsResult.stdout.trim() === "1";
+
+	if (!branchExists) {
+		log(`   ⚠️ Branch ${branchName} not found on remote, pushing local state...`);
+		await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && git push origin HEAD:refs/heads/${branchName}`,
+			{ timeoutMs: 60000 },
+		);
+	}
+
 	// Checkout the branch - force reset to match remote
 	await sandbox.commands.run(
 		`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git checkout -B "${branchName}" FETCH_HEAD`,
@@ -1440,48 +1457,46 @@ export async function createReviewSandbox(
 		);
 	}
 
-	// Fresh-clone validation (Bug fix #1803)
-	// This simulates what happens when someone checks out the branch locally:
-	// 1. Remove all node_modules (clean slate)
-	// 2. Run pnpm install with provider-specific flags
-	// 3. Run typecheck (ensures TypeScript compiles with clean dependencies)
-	// This catches issues where package.json has new dependencies but they weren't
-	// properly committed to the lockfile or don't install correctly.
+	// Fresh-clone validation (Bug fix #1803, improved #2067)
+	// Validates lockfile consistency without deleting node_modules first.
+	// Previous approach: rm -rf node_modules + reinstall — fragile in E2B due to DNS failures.
+	// New approach: run pnpm install --frozen-lockfile first (no network if deps are cached).
+	// Only fall back to full rm + reinstall if lockfile validation fails.
 	log("   Running fresh-clone validation...");
 
-	// Remove accumulated state to simulate clean checkout
-	await sandbox.commands.run(
-		`cd ${WORKSPACE_DIR} && rm -rf node_modules apps/*/node_modules packages/*/node_modules`,
-		{ timeoutMs: 60000 },
+	const lockfileCheck = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
+		{ timeoutMs: 300000 },
 	);
 
-	// Bug fix #1924: Use provider-aware install with retry logic
-	// GPT templates may have stale dependency cache, requiring --no-frozen-lockfile
-	// Claude templates use --frozen-lockfile for strict validation
-	const installConfig = getProviderInstallConfig(provider);
-	log(
-		`   Installing dependencies (provider: ${providerDisplayName}, ` +
-			`flags: ${installConfig.installFlags.join(" ") || "(none)"})...`,
-	);
-
-	const installResult = await executeInstallWithRetry(
-		sandbox,
-		WORKSPACE_DIR,
-		provider,
-		log,
-	);
-
-	if (!installResult.success) {
-		// Include diagnostic info in the error for troubleshooting
-		const diagnosticStr = installResult.diagnosticInfo
-			? `\nDiagnostics: ${JSON.stringify(installResult.diagnosticInfo, null, 2)}`
-			: "";
-
-		throw new Error(
-			`Fresh-clone validation failed: Dependencies don't install cleanly.\n` +
-				`Provider: ${providerDisplayName}\n` +
-				`Error: ${installResult.error}${diagnosticStr}`,
+	if (lockfileCheck.exitCode !== 0) {
+		// Lockfile inconsistent — need full reinstall
+		log("   Lockfile validation failed, running full reinstall...");
+		await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && rm -rf node_modules apps/*/node_modules packages/*/node_modules`,
+			{ timeoutMs: 60000 },
 		);
+
+		const installResult = await executeInstallWithRetry(
+			sandbox,
+			WORKSPACE_DIR,
+			provider,
+			log,
+		);
+
+		if (!installResult.success) {
+			const diagnosticStr = installResult.diagnosticInfo
+				? `\nDiagnostics: ${JSON.stringify(installResult.diagnosticInfo, null, 2)}`
+				: "";
+
+			throw new Error(
+				`Fresh-clone validation failed: Dependencies don't install cleanly.\n` +
+					`Provider: ${providerDisplayName}\n` +
+					`Error: ${installResult.error}${diagnosticStr}`,
+			);
+		}
+	} else {
+		log("   ✅ Lockfile validation passed (dependencies consistent)");
 	}
 
 	// Verify TypeScript compiles with clean dependencies

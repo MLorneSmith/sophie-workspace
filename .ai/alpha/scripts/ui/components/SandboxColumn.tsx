@@ -66,7 +66,8 @@ export function computeHealthStatus(state: SandboxState): HealthStatus {
 /**
  * Truncate text with ellipsis
  */
-function truncate(str: string, maxLen: number): string {
+function truncate(str: string | undefined | null, maxLen: number): string {
+	if (!str) return "";
 	if (str.length <= maxLen) return str;
 	return `${str.substring(0, maxLen - 3)}...`;
 }
@@ -80,7 +81,8 @@ function truncate(str: string, maxLen: number): string {
  * @param maxLen - Maximum length after stripping ANSI codes
  * @returns Cleaned and truncated string
  */
-function stripAndTruncate(str: string, maxLen: number): string {
+function stripAndTruncate(str: string | undefined | null, maxLen: number): string {
+	if (!str) return "";
 	const cleaned = stripAnsi(str);
 	return truncate(cleaned, maxLen);
 }

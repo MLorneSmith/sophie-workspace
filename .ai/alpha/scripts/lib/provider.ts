@@ -47,7 +47,13 @@ export function buildImplementationPrompt(
 			"Always stage specific files: `git add <file1> <file2> ...`. " +
 			"This prevents accidentally staging deletions or unrelated files on retry attempts.\n\n" +
 			"VISUAL VERIFICATION: If a task requires agent-browser and it is not available, " +
-			'skip that task and mark it as completed with a note. Do NOT mark tasks as "blocked".'
+			'skip that task and mark it as completed with a note. Do NOT mark tasks as "blocked".\n\n' +
+			'HEARTBEAT TIMESTAMPS: When writing .initiative-progress.json, the "last_heartbeat" ' +
+			'field MUST contain an actual ISO timestamp string (e.g., "2026-02-11T14:30:00+00:00"), ' +
+			'NOT a shell expression like "$(date -Iseconds)". To get the current timestamp, run ' +
+			"`date -Iseconds` in a shell command first, capture the output, then write it to the " +
+			"JSON file. Example: TS=$(date -Iseconds) && jq --arg ts \"$TS\" '.last_heartbeat=$ts' " +
+			".initiative-progress.json > /tmp/p.tmp && mv /tmp/p.tmp .initiative-progress.json"
 		);
 	}
 

@@ -146,7 +146,7 @@ export const SandboxProgressFileSchema = z
 		last_commit: z.string().optional(),
 		session_id: z.string().optional(),
 		waiting_reason: z.string().optional(),
-		blocked_by: z.array(z.number()).optional(),
+		blocked_by: z.array(z.union([z.number(), z.string()])).optional(),
 		subagent_count: z.number().optional(),
 		last_subagent_stop: z.string().optional(),
 		checkpoint_type: z
@@ -204,7 +204,7 @@ export const OverallProgressFileSchema = z
 		tasksCompleted: z.number().default(0),
 		tasksTotal: z.number().default(0),
 		lastCheckpoint: z.string().default(""),
-		branchName: z.string().optional(),
+		branchName: z.string().nullish(),
 		reviewUrls: z.array(ReviewUrlFileSchema).optional(),
 	})
 	.loose();
