@@ -2,8 +2,8 @@ import type { AUTH_STATES } from "../utils/auth-state";
 import { expect, type Page, test } from "../utils/base-test";
 import {
 	CI_TIMEOUTS,
-	RETRY_INTERVALS,
 	navigateAndWaitForHydration,
+	RETRY_INTERVALS,
 	waitForContentReady,
 } from "../utils/wait-for-hydration";
 
