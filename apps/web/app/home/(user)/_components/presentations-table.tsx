@@ -11,7 +11,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@kit/ui/card";
-import { Plus } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import Link from "next/link";
 
 import type { PresentationData } from "../_lib/dashboard/types";
@@ -60,8 +60,19 @@ function getColumns(): ColumnDef<PresentationData>[] {
 		{
 			id: "actions",
 			header: "",
-			cell: () => {
-				return null;
+			cell: ({ row }) => {
+				return (
+					<div className="flex justify-end">
+						<Button variant="ghost" size="icon" asChild>
+							<Link
+								href={`/home/ai/storyboard/${row.original.submission.id}`}
+								aria-label="Edit presentation"
+							>
+								<Pencil className="h-4 w-4" />
+							</Link>
+						</Button>
+					</div>
+				);
 			},
 		},
 	];
@@ -88,8 +99,10 @@ export function PresentationsTable({
 				</Button>
 			</CardHeader>
 
-			<CardContent>
-				<DataTable data={presentations} columns={getColumns()} />
+			<CardContent className="w-full">
+				<div className="overflow-x-auto">
+					<DataTable data={presentations} columns={getColumns()} />
+				</div>
 			</CardContent>
 		</Card>
 	);
