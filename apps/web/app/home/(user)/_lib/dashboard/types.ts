@@ -92,6 +92,14 @@ export interface PresentationData {
 	hasStoryboard: boolean;
 }
 
+// -- Quick Actions Context Flags --
+
+export interface QuickActionsContext {
+	courseInProgress: boolean;
+	assessmentCompleted: boolean;
+	hasPresentationDrafts: boolean;
+}
+
 // -- Aggregated Dashboard Data --
 
 export interface DashboardData {
@@ -101,6 +109,7 @@ export interface DashboardData {
 	activities: ActivityItem[];
 	activityFeed: ActivityFeedItem[];
 	quickActions: QuickActionData[];
+	quickActionsContext: QuickActionsContext;
 	coachingSessions: CoachingSessionData[];
 	presentations: PresentationData[];
 }

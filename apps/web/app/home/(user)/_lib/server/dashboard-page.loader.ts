@@ -63,6 +63,12 @@ async function dashboardPageLoader(): Promise<DashboardData> {
 			}),
 		]);
 
+		const courseInProgress =
+			courseProgress !== null &&
+			(courseProgress.courseProgress.completion_percentage ?? 0) < 100;
+		const assessmentCompleted = skillsRadar !== null;
+		const hasPresentationDrafts = presentations.length > 0;
+
 		return {
 			courseProgress,
 			skillsRadar,
@@ -70,6 +76,11 @@ async function dashboardPageLoader(): Promise<DashboardData> {
 			activities,
 			activityFeed: [],
 			quickActions: [],
+			quickActionsContext: {
+				courseInProgress,
+				assessmentCompleted,
+				hasPresentationDrafts,
+			},
 			coachingSessions: [],
 			presentations,
 		};
@@ -83,6 +94,11 @@ async function dashboardPageLoader(): Promise<DashboardData> {
 			activities: [],
 			activityFeed: [],
 			quickActions: [],
+			quickActionsContext: {
+				courseInProgress: false,
+				assessmentCompleted: false,
+				hasPresentationDrafts: false,
+			},
 			coachingSessions: [],
 			presentations: [],
 		};
