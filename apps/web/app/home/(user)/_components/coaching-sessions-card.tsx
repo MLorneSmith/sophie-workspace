@@ -12,7 +12,7 @@ interface CoachingSessionsCardProps {
 
 export function CoachingSessionsCard({ sessions }: CoachingSessionsCardProps) {
 	return (
-		<Card className="flex h-64 flex-col">
+		<Card className="flex h-64 flex-col overflow-hidden">
 			<CardHeader className="pb-3">
 				<CardTitle className="flex items-center gap-2">
 					<Calendar className="h-4 w-4" />
@@ -57,10 +57,10 @@ function SessionsContent({
 
 function SessionRow({ session }: { session: CoachingSessionData }) {
 	return (
-		<div className="flex items-center justify-between rounded-md border p-3">
+		<div className="flex items-start justify-between gap-2 rounded-md border p-3">
 			<div className="min-w-0 flex-1 space-y-1">
 				<p className="truncate text-sm font-medium">{session.title}</p>
-				<div className="flex items-center gap-3 text-xs text-muted-foreground">
+				<div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
 					<span>{session.date}</span>
 					<span className="flex items-center gap-1">
 						<Clock className="h-3 w-3" />
@@ -74,7 +74,7 @@ function SessionRow({ session }: { session: CoachingSessionData }) {
 					href={session.joinLink}
 					target="_blank"
 					rel="noopener noreferrer"
-					className="ml-3 inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline"
+					className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline"
 				>
 					Join Session
 					<ExternalLink className="h-3 w-3" />
