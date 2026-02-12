@@ -81,7 +81,10 @@ function truncate(str: string | undefined | null, maxLen: number): string {
  * @param maxLen - Maximum length after stripping ANSI codes
  * @returns Cleaned and truncated string
  */
-function stripAndTruncate(str: string | undefined | null, maxLen: number): string {
+function stripAndTruncate(
+	str: string | undefined | null,
+	maxLen: number,
+): string {
 	if (!str) return "";
 	const cleaned = stripAnsi(str);
 	return truncate(cleaned, maxLen);

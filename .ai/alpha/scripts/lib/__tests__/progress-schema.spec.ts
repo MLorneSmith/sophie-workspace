@@ -351,6 +351,57 @@ describe("safeParseProgress", () => {
 		expect(result).toBeDefined();
 		warnSpy.mockRestore();
 	});
+
+	it("strips null fields instead of rejecting entire object (GPT current_task: null)", () => {
+		// GPT writes "current_task": null which JSON.parse preserves as null.
+		// Without null-stripping, Zod rejects the entire object and ALL progress
+		// data is replaced with defaults (completed_tasks lost, heartbeat lost, etc.)
+		const input = {
+			status: "in_progress",
+			phase: "executing",
+			completed_tasks: ["T1", "T2", "T3"],
+			last_heartbeat: "2026-02-12T10:00:00Z",
+			context_usage_percent: 45,
+			current_task: null,
+		};
+
+		const result = safeParseProgress(
+			SandboxProgressSchema,
+			input,
+			"null-current-task",
+		);
+
+		// Critical: completed_tasks and other fields must be preserved
+		expect(result.completed_tasks).toEqual(["T1", "T2", "T3"]);
+		expect(result.last_heartbeat).toBe("2026-02-12T10:00:00Z");
+		expect(result.context_usage_percent).toBe(45);
+		expect(result.status).toBe("in_progress");
+		// current_task should be absent (stripped), not cause a fallback
+		expect(result.current_task).toBeUndefined();
+	});
+
+	it("strips multiple null fields from GPT progress data", () => {
+		const input = {
+			status: "completed",
+			completed_tasks: ["T1", "T2"],
+			current_task: null,
+			current_group: null,
+			feature: null,
+			last_heartbeat: "2026-02-12T10:00:00Z",
+		};
+
+		const result = safeParseProgress(
+			SandboxProgressSchema,
+			input,
+			"multi-null",
+		);
+
+		expect(result.completed_tasks).toEqual(["T1", "T2"]);
+		expect(result.status).toBe("completed");
+		expect(result.last_heartbeat).toBe("2026-02-12T10:00:00Z");
+		expect(result.current_task).toBeUndefined();
+		expect(result.feature).toBeUndefined();
+	});
 });
 
 // ============================================================================

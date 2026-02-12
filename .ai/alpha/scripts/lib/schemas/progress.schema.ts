@@ -214,6 +214,30 @@ export const OverallProgressFileSchema = z
 // ============================================================================
 
 /**
+ * Strip top-level null values from a JSON object.
+ *
+ * JSON.parse() produces `null` for absent values, but Zod's `.optional()`
+ * only accepts `undefined`. GPT/Codex agents commonly write `"field": null`
+ * which is semantically equivalent to omitting the field. This preprocessor
+ * converts nulls to undefined so the schema sees them as absent fields.
+ *
+ * Bug fix: Prevents `current_task: null` from causing full progress data
+ * loss via safeParseProgress fallback path.
+ */
+function stripNullValues(raw: unknown): unknown {
+	if (raw === null || raw === undefined) return {};
+	if (typeof raw !== "object" || Array.isArray(raw)) return raw;
+
+	const result: Record<string, unknown> = {};
+	for (const [key, value] of Object.entries(raw as Record<string, unknown>)) {
+		if (value !== null) {
+			result[key] = value;
+		}
+	}
+	return result;
+}
+
+/**
  * Safely parse and validate JSON data against a Zod schema.
  *
  * On success: returns validated (and defaulted) data.
@@ -232,7 +256,13 @@ export function safeParseProgress<T extends z.ZodType>(
 	raw: unknown,
 	label: string,
 ): z.output<T> {
-	const result = schema.safeParse(raw);
+	// Preprocess: strip top-level null values (JSON null → undefined)
+	// GPT agents write "field": null which Zod .optional() rejects.
+	// Without this, a single null field causes the ENTIRE object to be
+	// replaced with defaults via the fallback path below.
+	const preprocessed = stripNullValues(raw);
+
+	const result = schema.safeParse(preprocessed);
 
 	if (result.success) {
 		return result.data;

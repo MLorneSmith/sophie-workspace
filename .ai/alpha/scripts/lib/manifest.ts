@@ -265,7 +265,9 @@ function extractFeatureDependenciesRaw(featureDir: string): RawDependency[] {
 				}
 			}
 
-			const internalMatches = section.match(/(?<!\.)\bF(\d+)\b/g);
+			// Match bare F# references but exclude those preceded by . (part of S#.I#.F#)
+			// or - (part of range notation like F1-F3)
+			const internalMatches = section.match(/(?<![.\-])\bF(\d+)\b/g);
 			if (internalMatches) {
 				for (const internalMatch of internalMatches) {
 					const fNum = internalMatch.slice(1);
@@ -287,6 +289,7 @@ function extractFeatureDependenciesRaw(featureDir: string): RawDependency[] {
  */
 function resolveFeatureDependencies(
 	rawDeps: RawDependency[],
+	currentFeatureId: string,
 	initiativeId: string,
 	featurePriorityMap: Map<string, string>,
 ): string[] {
@@ -294,7 +297,8 @@ function resolveFeatureDependencies(
 
 	for (const dep of rawDeps) {
 		if (dep.type === "semantic") {
-			if (!resolved.includes(dep.value)) {
+			// Filter self-references
+			if (dep.value !== currentFeatureId && !resolved.includes(dep.value)) {
 				resolved.push(dep.value);
 			}
 		} else if (dep.type === "issue") {
@@ -304,7 +308,12 @@ function resolveFeatureDependencies(
 		} else if (dep.type === "internal") {
 			const key = `${initiativeId}-${dep.value}`;
 			const featureId = featurePriorityMap.get(key);
-			if (featureId && !resolved.includes(featureId)) {
+			// Filter self-references
+			if (
+				featureId &&
+				featureId !== currentFeatureId &&
+				!resolved.includes(featureId)
+			) {
 				resolved.push(featureId);
 			}
 		}
@@ -660,6 +669,7 @@ export function generateSpecManifest(
 		if (rawDeps && rawDeps.length > 0) {
 			feature.dependencies = resolveFeatureDependencies(
 				rawDeps,
+				feature.id,
 				feature.initiative_id,
 				featurePriorityMap,
 			);

@@ -180,6 +180,67 @@ Feature dependency graph must show:
 
 ---
 
+## Redundant Feature Detection
+
+Later-initiative features (especially "polish," "accessibility," or "UX refinement" features) often overlap with work already done by earlier features. This causes the orchestrator to re-execute features that are already complete, wasting sandbox time and risking timeout failures.
+
+### Anti-Pattern: Redundant Polish Features
+
+**DO NOT** create features whose tasks are a subset of earlier features' natural outputs.
+
+Ask: **"Would a competent developer implementing [earlier feature] naturally create this artifact?"**
+- If **yes** → the later feature is redundant. Merge its concerns into the earlier feature's acceptance criteria.
+- If **partially** → extract only the genuinely new work into the later feature.
+
+**Examples of redundant features:**
+
+| Redundant Feature | Why It's Redundant | Better Approach |
+|---|---|---|
+| "Add Loading Skeletons" (I4) | Every I1-I3 feature already adds loading states | Add "loading skeleton" to each feature's acceptance criteria |
+| "Dark Mode Support" (I4) | Components built in I1-I3 already use theme tokens | Add "dark mode renders correctly" to each feature's validation |
+| "Responsive Layout" (I4) | Tailwind responsive classes applied during I1-I3 | Add responsive breakpoint checks to each feature |
+| "Error States & Empty States" (I4) | Each feature should handle its own error/empty states | Include error handling in each feature's tasks |
+
+### File-Target Overlap Detection
+
+During decomposition, check whether later features target files already created/modified by earlier features:
+
+```
+For each feature F[n] where n > 1:
+  For each file in F[n].files_to_modify:
+    If file appears in any F[1..n-1].files_to_create OR F[1..n-1].files_to_modify:
+      → FLAG: potential overlap with F[earlier]
+      → VERIFY: Does F[n] add genuinely new functionality, or just polish?
+      → If polish: merge into F[earlier]'s acceptance criteria
+```
+
+### The `verify_only` Flag
+
+If a feature exists purely to validate/verify prior work (not to create new code), mark it:
+
+```json
+{
+  "id": "S2045.I4.F3",
+  "name": "Loading Skeletons & Suspense Boundaries",
+  "verify_only": true,
+  "verification_scope": "Verify all components from I1-I3 have loading states"
+}
+```
+
+Features with `verify_only: true` are handled differently by the orchestrator — they skip the completion threshold validation and are accepted on first pass even when all tasks report "already implemented."
+
+### Decomposition Guidelines
+
+When creating the final initiative of a spec (typically the "polish" or "quality" initiative):
+
+1. **Audit earlier features' outputs** — list what I1-I3 already produce
+2. **Subtract overlap** — remove any task that duplicates earlier work
+3. **Only keep genuinely new work** — e.g., new components, new pages, new integrations
+4. **Prefer fewer, focused features** over many thin polish features
+5. **If <3 genuinely new tasks remain**, demote to tasks within an earlier feature
+
+---
+
 ## Instructions
 
 ### Phase 0: Pre-flight Validation
@@ -629,8 +690,19 @@ For each candidate feature, run through the decision tree:
 
 6. VERTICAL? (spans layers)
    NO  → Expand scope to include all layers
+   YES → Continue
+
+7. UNIQUE? (not redundant with earlier features)
+   NO  → Merge into earlier feature or mark verify_only: true
    YES → Ready for documentation
 ```
+
+**Redundancy Check** (Step 7 detail):
+- List all files this feature will create or modify
+- Compare against files from all earlier features in the same spec
+- If >50% overlap → feature is likely redundant
+- Ask: "Does this feature add NEW code, or just verify/polish existing code?"
+- If verify/polish only → either merge into earlier features or mark `verify_only: true`
 
 **Splitting Patterns** (when feature too large):
 | Pattern | Use When | Example |
@@ -820,6 +892,12 @@ Before finalizing:
 - [ ] No feature exceeds 10 days
 - [ ] No feature touches more than 15 files
 - [ ] Acceptance criteria are specific and testable
+
+### Redundancy
+- [ ] No feature's tasks are a subset of earlier features' outputs
+- [ ] File-target overlap check: no >50% file overlap between features
+- [ ] Polish/refinement features either merged into earlier features or marked `verify_only: true`
+- [ ] Final-initiative features audited against I1-I(n-1) outputs
 
 ### Dependencies
 - [ ] No circular dependencies (using S#.I#.F# references)

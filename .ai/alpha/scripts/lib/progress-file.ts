@@ -15,10 +15,7 @@ import {
 	PROGRESS_FILE_STALE_THRESHOLD_MS,
 	WORKSPACE_DIR,
 } from "../config/index.js";
-import {
-	ProgressFileDataSchema,
-	safeParseProgress,
-} from "./schemas/index.js";
+import { ProgressFileDataSchema, safeParseProgress } from "./schemas/index.js";
 
 // ============================================================================
 // Status Validation

@@ -26,10 +26,7 @@ import { createLogger } from "./logger.js";
 import { getProjectRoot } from "./lock.js";
 import { validateProgressStatus } from "./progress-file.js";
 import { ensureUIProgressDir } from "./manifest.js";
-import {
-	SandboxProgressSchema,
-	safeParseProgress,
-} from "./schemas/index.js";
+import { SandboxProgressSchema, safeParseProgress } from "./schemas/index.js";
 import { sleep } from "./utils.js";
 
 // ============================================================================
