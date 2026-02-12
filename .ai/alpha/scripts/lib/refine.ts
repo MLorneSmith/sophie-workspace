@@ -302,5 +302,5 @@ export function extractVerificationCommands(tasksPath: string): string[] {
  * @returns Array of common verification commands
  */
 export function getCommonVerificationCommands(): string[] {
-	return ["pnpm typecheck", "pnpm lint"];
+	return ["pnpm --filter web typecheck", "pnpm lint"];
 }

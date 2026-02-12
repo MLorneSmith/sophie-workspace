@@ -44,7 +44,7 @@ export function buildImplementationPrompt(
 			'When you reach 60% context usage and need to exit, write status: "completed" (NOT "context_limit"). ' +
 			'When a task fails and you cannot continue, write status: "failed".\n\n' +
 			"GIT OPERATIONS: NEVER use `git add -A` or `git add .`. " +
-			"Always stage specific files: `git add <file1> <file2> ...`. " +
+			"Always stage specific files: `git add src/page.tsx apps/web/lib/file.ts`. " +
 			"This prevents accidentally staging deletions or unrelated files on retry attempts.\n\n" +
 			"VISUAL VERIFICATION: If a task requires agent-browser and it is not available, " +
 			'skip that task and mark it as completed with a note. Do NOT mark tasks as "blocked".\n\n' +

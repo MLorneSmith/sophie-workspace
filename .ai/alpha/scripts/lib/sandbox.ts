@@ -1402,16 +1402,27 @@ export async function createReviewSandbox(
 
 	if (!hasRemote) {
 		log("   Adding git remote origin...");
-		await sandbox.commands.run(
-			`cd ${WORKSPACE_DIR} && git remote add origin https://github.com/slideheroes/2025slideheroes.git`,
+		const addRemoteResult = await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && git remote add origin https://github.com/slideheroes/2025slideheroes.git 2>&1`,
 			{ timeoutMs: 10000 },
 		);
+		if (addRemoteResult.exitCode !== 0) {
+			throw new Error(
+				`Review sandbox failed to add git remote (exit ${addRemoteResult.exitCode}):\n${addRemoteResult.stdout}\n${addRemoteResult.stderr}`,
+			);
+		}
 	}
 
 	// Fetch and checkout the branch
-	await sandbox.commands.run(`cd ${WORKSPACE_DIR} && git fetch origin`, {
-		timeoutMs: 120000,
-	});
+	const fetchResult = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && git fetch origin 2>&1`,
+		{ timeoutMs: 120000 },
+	);
+	if (fetchResult.exitCode !== 0) {
+		throw new Error(
+			`Review sandbox git fetch failed (exit ${fetchResult.exitCode}):\n${fetchResult.stdout}\n${fetchResult.stderr}`,
+		);
+	}
 
 	// Bug fix #2067: Check if branch exists on remote before fetching
 	// Matches the pattern from createSandbox() — if branch was deleted or
@@ -1423,24 +1434,44 @@ export async function createReviewSandbox(
 	const branchExists = branchExistsResult.stdout.trim() === "1";
 
 	if (!branchExists) {
-		log(`   ⚠️ Branch ${branchName} not found on remote, pushing local state...`);
-		await sandbox.commands.run(
-			`cd ${WORKSPACE_DIR} && git push origin HEAD:refs/heads/${branchName}`,
+		log(
+			`   ⚠️ Branch ${branchName} not found on remote, pushing local state...`,
+		);
+		const pushResult = await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && git push origin HEAD:refs/heads/${branchName} 2>&1`,
 			{ timeoutMs: 60000 },
 		);
+		if (pushResult.exitCode !== 0) {
+			throw new Error(
+				`Review sandbox failed to push branch (exit ${pushResult.exitCode}):\n` +
+					`Branch: ${branchName}\n${pushResult.stdout}\n${pushResult.stderr}`,
+			);
+		}
 	}
 
 	// Checkout the branch - force reset to match remote
-	await sandbox.commands.run(
-		`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git checkout -B "${branchName}" FETCH_HEAD`,
+	const checkoutResult = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" 2>&1 && git checkout -B "${branchName}" FETCH_HEAD 2>&1`,
 		{ timeoutMs: 60000 },
 	);
+	if (checkoutResult.exitCode !== 0) {
+		throw new Error(
+			`Review sandbox branch checkout failed (exit ${checkoutResult.exitCode}):\n` +
+				`Branch: ${branchName}\n${checkoutResult.stdout}\n${checkoutResult.stderr}`,
+		);
+	}
 
 	// Pull latest to ensure we have all commits
-	await sandbox.commands.run(
-		`cd ${WORKSPACE_DIR} && git pull origin "${branchName}"`,
+	const pullResult = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && git pull origin "${branchName}" 2>&1`,
 		{ timeoutMs: 60000 },
 	);
+	if (pullResult.exitCode !== 0) {
+		throw new Error(
+			`Review sandbox git pull failed (exit ${pullResult.exitCode}):\n` +
+				`Branch: ${branchName}\n${pullResult.stdout}\n${pullResult.stderr}`,
+		);
+	}
 
 	log("   ✅ Branch checked out");
 
@@ -1502,7 +1533,7 @@ export async function createReviewSandbox(
 	// Verify TypeScript compiles with clean dependencies
 	log("   Running typecheck...");
 	const typecheckResult = await sandbox.commands.run(
-		`cd ${WORKSPACE_DIR} && pnpm typecheck`,
+		`cd ${WORKSPACE_DIR} && pnpm --filter web typecheck`,
 		{ timeoutMs: 300000 },
 	);
 
