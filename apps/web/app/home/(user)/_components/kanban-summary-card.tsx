@@ -100,7 +100,7 @@ function TaskPreview({
 		<div className="space-y-3" data-testid="task-preview">
 			<div className="rounded-md border p-3">
 				<div className="flex items-start justify-between gap-2">
-					<p className="text-sm font-medium leading-tight">{nextTask.title}</p>
+					<p className="truncate text-sm font-medium leading-tight">{nextTask.title}</p>
 					<Badge
 						variant={
 							priorityVariant[
@@ -114,14 +114,14 @@ function TaskPreview({
 				</div>
 			</div>
 			{kanbanSummary && kanbanSummary.totalTasks > 0 && (
-				<div
+				<output
 					className="flex gap-3 text-xs text-muted-foreground"
 					aria-label={`Task status summary: ${kanbanSummary.statusCounts.do ?? 0} to do, ${kanbanSummary.statusCounts.doing ?? 0} doing, ${kanbanSummary.statusCounts.done ?? 0} done`}
 				>
 					<span>{kanbanSummary.statusCounts.do ?? 0} to do</span>
 					<span>{kanbanSummary.statusCounts.doing ?? 0} doing</span>
 					<span>{kanbanSummary.statusCounts.done ?? 0} done</span>
-				</div>
+				</output>
 			)}
 		</div>
 	);

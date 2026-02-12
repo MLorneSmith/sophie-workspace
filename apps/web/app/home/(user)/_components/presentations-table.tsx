@@ -23,7 +23,7 @@ function getColumns(): ColumnDef<PresentationData>[] {
 			header: "Title",
 			cell: ({ row }) => {
 				return (
-					<span className="font-medium">
+					<span className="block max-w-[200px] truncate font-medium sm:max-w-none">
 						{row.original.submission.title ?? "Untitled"}
 					</span>
 				);
@@ -31,17 +31,23 @@ function getColumns(): ColumnDef<PresentationData>[] {
 		},
 		{
 			id: "created_at",
-			header: "Created",
+			header: () => (
+				<span className="hidden sm:inline">Created</span>
+			),
 			cell: ({ row }) => {
 				const date = row.original.submission.created_at;
 
-				if (!date) return <span className="text-muted-foreground">—</span>;
+				if (!date) return <span className="hidden text-muted-foreground sm:inline">—</span>;
 
-				return new Date(date).toLocaleDateString("en-US", {
-					month: "short",
-					day: "numeric",
-					year: "numeric",
-				});
+				return (
+					<span className="hidden sm:inline">
+						{new Date(date).toLocaleDateString("en-US", {
+							month: "short",
+							day: "numeric",
+							year: "numeric",
+						})}
+					</span>
+				);
 			},
 		},
 		{
@@ -100,12 +106,12 @@ export function PresentationsTable({
 			</CardHeader>
 
 			<CardContent className="w-full">
-				<div
+				<section
 					className="overflow-x-auto"
 					aria-label={`Presentations list with ${presentations.length} items`}
 				>
 					<DataTable data={presentations} columns={getColumns()} />
-				</div>
+				</section>
 			</CardContent>
 		</Card>
 	);

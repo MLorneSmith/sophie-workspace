@@ -5,13 +5,15 @@ import { z } from "zod";
 
 import type { CalcomBooking, CalcomBookingsResponse } from "./calcom-types";
 
-const CALCOM_API_KEY = z
-	.string()
-	.startsWith("cal_", "CALCOM_API_KEY must start with cal_ prefix")
-	.parse(process.env.CALCOM_API_KEY);
-
 const CALCOM_BASE_URL = "https://api.cal.com/v2";
 const CALCOM_API_VERSION = "2024-08-13";
+
+function getCalcomApiKey(): string {
+	return z
+		.string()
+		.startsWith("cal_", "CALCOM_API_KEY must start with cal_ prefix")
+		.parse(process.env.CALCOM_API_KEY);
+}
 
 class CalcomClient {
 	private readonly namespace = "calcom.client";
@@ -24,6 +26,7 @@ class CalcomClient {
 		const logger = await getLogger();
 		const ctx = { name: this.namespace, path };
 
+		const apiKey = getCalcomApiKey();
 		const url = new URL(`${this.baseUrl}${path}`);
 
 		if (params) {
@@ -36,7 +39,7 @@ class CalcomClient {
 			const response = await fetch(url.toString(), {
 				method: "GET",
 				headers: {
-					Authorization: `Bearer ${CALCOM_API_KEY}`,
+					Authorization: `Bearer ${apiKey}`,
 					"cal-api-version": CALCOM_API_VERSION,
 					"Content-Type": "application/json",
 				},

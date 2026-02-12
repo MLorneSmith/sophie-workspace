@@ -77,8 +77,11 @@ function SessionRow({ session }: { session: CoachingSessionData }) {
 					aria-label={`Join session: ${session.title} on ${session.date}`}
 					className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline"
 				>
-					Join Session
-					<ExternalLink className="h-3 w-3" aria-hidden="true" />
+					<span className="hidden sm:inline">Join Session</span>
+					<ExternalLink
+						className="h-3.5 w-3.5 sm:h-3 sm:w-3"
+						aria-hidden="true"
+					/>
 				</a>
 			)}
 		</div>
