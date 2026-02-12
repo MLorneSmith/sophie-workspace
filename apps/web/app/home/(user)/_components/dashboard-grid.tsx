@@ -1,8 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
-
 import type { DashboardData } from "../_lib/dashboard/types";
+import { CoachingSessionsCard } from "./coaching-sessions-card";
 import { CourseProgressRadial } from "./dashboard/course-progress-radial";
 import QuickActionsPanel from "./quick-actions-panel";
 import { RecentActivityFeed } from "./recent-activity-feed";
@@ -38,18 +37,7 @@ export function DashboardGrid({ data }: DashboardGridProps) {
 					hasPresentationDrafts={data.quickActionsContext.hasPresentationDrafts}
 				/>
 
-				<Card className="h-64">
-					<CardHeader>
-						<CardTitle>Coaching Sessions</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<p className="text-muted-foreground text-sm">
-							{data.coachingSessions.length > 0
-								? `${data.coachingSessions.length} sessions`
-								: "No upcoming sessions"}
-						</p>
-					</CardContent>
-				</Card>
+				<CoachingSessionsCard sessions={data.coachingSessions} />
 			</div>
 
 			{/* Row 3: Full-Width Presentations Table */}
