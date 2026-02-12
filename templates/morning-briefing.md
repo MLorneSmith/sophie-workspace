@@ -32,6 +32,10 @@
 {{CALENDAR_TOMORROW}}
 <!-- If no meetings: "No meetings scheduled." -->
 
+## 📊 Model Usage (Yesterday)
+{{MODEL_USAGE}}
+<!-- Run ~/clawd/scripts/get-model-usage.sh for JSON data. Show each model with count and percentage. -->
+
 ## 📬 Email Highlights
 {{EMAIL_SUMMARY}}
 <!-- If no urgent emails: "Inbox clear — nothing urgent." -->
@@ -48,8 +52,10 @@
    One-line description of why it's relevant.
    [👍](upvoteUrl) · [👎](downvoteUrl)
 
-   The upvoteUrl and downvoteUrl come from the data JSON (signed worker URLs).
-   These work from both email and Discord — no auth required.
+   ⚠️ NEVER use localhost URLs for feedback links!
+   Generate signed Cloudflare Worker URLs using FEEDBACK_SECRET from ~/.clawdbot/.env:
+   Base: https://slideheroes-feedback.slideheroes.workers.dev/rate?item=<ID>&r=<1|-1>&sig=<HMAC>
+   See ~/clawd/scripts/generate-feedback-urls.sh for the signing process.
 -->
 
 ## 📸 Capture Activity (Yesterday)

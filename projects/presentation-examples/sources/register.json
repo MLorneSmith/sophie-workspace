@@ -1,0 +1,32 @@
+{
+  "processed": {
+    "https://www1.nyc.gov/assets/nycha/downloads/pdf/BCG-report-NYCHA-Key-Findings-and-Recommendations-8-15-12vFinal.pdf": {
+      "status": "stored",
+      "score": 8,
+      "r2Key": "presentations/bcg/bcg-Reshaping-NYCHA-support-functions.pdf",
+      "date": "2026-02-12"
+    },
+    "https://dallascityhall.com/government/Council%20Meeting%20Documents/loose-dogs-in-dallas-strategic-recommendations-to-improve-public-safety-and-animal-welfare_combined_083016.pdf": {
+      "status": "stored",
+      "score": 9,
+      "r2Key": "presentations/bcg/bcg-Loose-Dogs-in-Dallas-Strategic-Recommendations.pdf",
+      "date": "2026-02-12"
+    },
+    "https://creative.vic.gov.au/resources/melbourne-as-a-global-cultural-destination": {
+      "status": "rejected",
+      "score": 0,
+      "notes": "Not a PDF file (text/html)",
+      "date": "2026-02-12"
+    },
+    "https://www.developmentaid.org/api/frontend/cms/file/2023/02/MGI-A-future-that-works_Full-report.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/mckinsey/mckinsey-McKinsey-Global-Institute-A-Future-That-Works-Automation-Employment-and-Productivity.pdf",
+      "date": "2026-02-12"
+    },
+    "https://www.mckinsey.com/~/media/mckinsey/about%20us/social%20responsibility/sustainable%20inclusive%20growth%20report/sustainable-and-inclusive-growth-report-2024.pdf": {
+      "status": "failed",
+      "reason": "http_000000",
+      "date": "2026-02-12"
+    }
+  }
+}

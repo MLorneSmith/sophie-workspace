@@ -31,6 +31,14 @@ Guidelines for creating SlideHeroes blog posts. Focused on SEO, readability, and
 
 ---
 
+## Word Count
+
+- **Target range:** 2000-3000 words
+- **Hard minimum:** 2000 words — no exceptions
+- **No fluff posts.** Every post should be a comprehensive, substantive piece. If a topic can't sustain 2000+ words of genuinely useful content, it's either the wrong topic or needs to be combined with another.
+
+---
+
 ## SEO Requirements
 
 ### Keyword Strategy

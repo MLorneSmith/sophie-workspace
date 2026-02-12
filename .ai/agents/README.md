@@ -6,10 +6,10 @@ Specialized sub-agent profiles for the Sophie Loop autonomous work system.
 
 | Agent | Model | Role | Skills |
 |-------|-------|------|--------|
-| **Writer** | Opus 4.6 | Blog posts, long-form content | blog-writing, blog-post-optimizer |
-| **Emailer** | Opus 4.6 | Email campaigns, sequences | email-marketing |
+| **Writer** | GLM 4.7 | Blog posts, long-form content | blog-writing, blog-post-optimizer |
+| **Emailer** | GLM 4.7 | Email campaigns, sequences | email-marketing |
 | **Coder** | GPT-5.2 Codex | Feature implementation, bug fixes | coding-agent, context7, github |
-| **Designer** | Opus 4.6 | Frontend UI, visual assets | frontend-design, tailwind-design-system |
+| **Designer** | GLM 4.7 | Frontend UI, visual assets | frontend-design, tailwind-design-system |
 | **Researcher** | GLM 4.7 | Web research, competitive analysis | perplexity-research |
 | **Reviewer** | Opus 4.6 | Quality gate for all agent output | (none — evaluates only) |
 | **Planner** | Opus 4.6 | Goal decomposition into tasks | (none — plans only) |

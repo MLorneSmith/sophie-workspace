@@ -47,6 +47,13 @@ Every piece of content should leave the reader able to *do something* differentl
 
 *Example:* Not "structure is important" but "limit lists to 5 items — here's why and how."
 
+### 6. Authentic
+**Real opinions, real experiences, real talk.**
+
+We don't write like a committee or a marketing department. Content should feel like it comes from a person who's actually built presentations, made mistakes, and learned from them. Not polished to the point of sterility, not raw to the point of unprofessional — honest and human. The reader should trust that we mean what we write.
+
+*Example:* "I've rebuilt this slide three times. Here's what I learned each time." — not "Our proprietary methodology delivers optimized outcomes."
+
 ## Tone Variations by Context
 
 | Context | Tone Adjustment |

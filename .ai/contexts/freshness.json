@@ -1,0 +1,191 @@
+{
+  "company/about.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "company/differentiators.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "company/products.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "company/roadmap.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "content/audience-content-map.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "content/content-calendar-framework.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "content/content-pillars.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "content/content-types.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "content/topic-clusters.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "guidelines/blog-guidelines.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "guidelines/email-guidelines.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "guidelines/outbound-guidelines.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "guidelines/social-guidelines.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "messaging/objections.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "messaging/pain-points.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "messaging/positioning.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "messaging/value-props.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "personas/anti-personas.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "personas/boutique-consultancy.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "personas/corporate-professional.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "personas/overview.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "personas/solo-consultant.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "voice/brand-voice.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "voice/mike-style.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "voice/pov-ai.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "voice/pov-presentations.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  },
+  "voice/vocabulary.md": {
+    "lastReviewed": "2026-02-10",
+    "lastUpdated": "2026-02-08",
+    "nextReview": "2026-03-01",
+    "reviewedBy": "sophie",
+    "status": "current"
+  }
+}

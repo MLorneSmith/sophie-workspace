@@ -2,8 +2,9 @@
   "metadata": {
     "source": "Analyst Academy + SEC.gov",
     "extracted_at": "2026-02-05T22:03:03.343932",
-    "total_presentations": 125,
-    "sources": "Analyst Academy + SEC.gov + Slideworks.io + Plus AI"
+    "updated_at": "2026-02-10T04:30:00.000000",
+    "total_presentations": 198,
+    "sources": "Analyst Academy + SEC.gov + Slideworks.io + Plus AI + Additional Research 2026-02-10"
   },
   "presentations": {
     "bcg": [
@@ -288,6 +289,36 @@
         "title": "How companies can capture the veteran opportunity (2012)",
         "url": "https://toolkit.vets.syr.edu/wp-content/uploads/2012/11/Presentation-1-20120911-Veteran-opportunity.pdf",
         "type": "training"
+      },
+      {
+        "title": "McKinsey Global Institute: A Future That Works Automation Employment and Productivity",
+        "url": "https://www.developmentaid.org/api/frontend/cms/file/2023/02/MGI-A-future-that-works_Full-report.pdf",
+        "type": "mgi"
+      },
+      {
+        "title": "McKinsey Sustainable and Inclusive Growth Report 2024",
+        "url": "https://www.mckinsey.com/~/media/mckinsey/about%20us/social%20responsibility/sustainable%20inclusive%20growth%20report/sustainable-and-inclusive-growth-report-2024.pdf",
+        "type": "mgi"
+      },
+      {
+        "title": "McKinsey Global Infrastructure Initiative 2024 Summit",
+        "url": "https://www.mckinsey.com/~/media/mckinsey/business%20functions/operations/our%20insights/gii/summit/2024%20dubai/accelerating-future-ready-infrastructure.pdf",
+        "type": "mgi"
+      },
+      {
+        "title": "McKinsey Geopolitics and the Geometry of Global Trade",
+        "url": "https://www.mckinsey.com/~/media/mckinsey/mckinsey%20global%20institute/our%20research/geopolitics%20and%20the%20geometry%20of%20global%20trade/geopolitics-and-the-geometry-of-global-trade-vf.pdf",
+        "type": "mgi"
+      },
+      {
+        "title": "McKinsey Technology Trends Outlook 2024",
+        "url": "https://www.mckinsey.com/~/media/mckinsey/business%20functions/mckinsey%20digital/our%20insights/the%20top%20trends%20in%20tech%202024/mckinsey-technology-trends-outlook-2024.pdf",
+        "type": "mgi"
+      },
+      {
+        "title": "McKinsey Global Energy Perspective 2024",
+        "url": "https://www.mckinsey.com/~/media/mckinsey/industries/energy%20and%20materials/our%20insights/global%20energy%20perspective%202024/global-energy-perspective-2024.pdf",
+        "type": "mgi"
       }
     ],
     "bain": [
@@ -614,6 +645,366 @@
         "title": "High-Impact Leadership Master Deck",
         "url": "https://www2.deloitte.com/content/dam/Deloitte/ca/Documents/audit/ca-audit-abm-scotia-high-impact-leadership.pdf",
         "type": "training"
+      }
+    ],
+    "accenture": [
+      {
+        "title": "Accenture Q1 Fiscal 2026 Earnings Presentation",
+        "url": "https://investor.accenture.com/~/media/Files/A/accenture-v4/investors/earnings-reports/2026/first-quarter-fiscal-2026-earnings-presentation.pdf",
+        "type": "investor deck"
+      },
+      {
+        "title": "Accenture FY24 Q4 Infographics",
+        "url": "https://investor.accenture.com/~/media/Files/A/accenture-v4/investors/earnings-reports/2024/q4/q4-fy2024-infographics-final.pdf",
+        "type": "investor deck"
+      },
+      {
+        "title": "Accenture Fourth Quarter Fiscal 2024 Supporting Materials",
+        "url": "https://investor.accenture.com/~/media/Files/A/Accenture-IR-V3/quarterly-earnings/2024/q4fy24/accentures-fourth-quarter-fiscal-2024-supporting-materials--.pdf",
+        "type": "investor deck"
+      },
+      {
+        "title": "Accenture Fiscal 2024 Annual Report",
+        "url": "https://investor.accenture.com/~/media/Files/A/Accenture-IR-V3/home/accenture-fiscal-2024-annual-report.pdf",
+        "type": "investor deck"
+      }
+    ],
+    "strategy_pwc": [
+      {
+        "title": "PwC Strategy& eReadiness Study 2023",
+        "url": "https://www.strategyand.pwc.com/it/en/assets/pdf/ereadiness-study-2023.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Strategy& Company Factsheet",
+        "url": "https://www.strategyand.pwc.com/de/en/press/strategyand-factsheet-en.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "The Strategy Crisis Insights from Strategy Profiler",
+        "url": "https://www.strategyand.pwc.com/gx/en/unique-solutions/cds/the-strategy-crisis.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Future of Public-Sector Digital Services",
+        "url": "https://www.strategyand.pwc.com/m1/en/strategic-foresight/sector-strategies/technology/future-of-public-sector/future-of-public-sector-digital-services.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Global Power Strategies: The Future of Utilities Industry",
+        "url": "https://www.strategyand.pwc.com/gx/en/insights/2019/Global-power-strategies/global-power-strategies.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "PwC's Framework for Growth",
+        "url": "https://www.pwc.co.uk/industries/industry-in-focus/framework-for-growth/pwc-framework-for-growth.pdf",
+        "type": "thought leadership"
+      }
+    ],
+    "oliver_wyman": [
+      {
+        "title": "Oliver Wyman InsureTech Connect 2016 Presentation",
+        "url": "https://www.oliverwyman.com/content/dam/oliver-wyman/global/en/2016/nov/InsureTech%20Connect%202016%20-%20Oliver%20Wyman%20Presentation.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Artificial Intelligence: Intelligent Enough for the Real World?",
+        "url": "https://www.suerf.org/wp-content/uploads/2024/01/Panel-Rainer-Glaser_OliverWayman-SUERF_AI-presentation.pdf",
+        "type": "thought leadership"
+      }
+    ],
+    "kpmg": [
+      {
+        "title": "KPMG 2024 Transparency Report",
+        "url": "https://kpmg.com/kpmg-us/content/dam/kpmg/pdf/2025/2024-transparency-report-jan-2025.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Transforming the Enterprise of the Future",
+        "url": "https://kpmg.com/kpmg-us/content/dam/kpmg/pdf/2024/transforming-the-enterprise-of-the-future-report.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "KPMG International Transparency Report 2024",
+        "url": "https://assets.kpmg.com/content/dam/kpmg/lu/pdf/transparency-report-2024-luxembourg.pdf",
+        "type": "thought leadership"
+      }
+    ],
+    "ey_parthenon": [
+      {
+        "title": "EY-Parthenon European Wireless Infrastructure Report 2024",
+        "url": "https://www.ey.com/content/dam/ey-unified-site/ey-com/en-gl/insights/strategy/documents/ey-parthenon-european-wireless-infrastructure-report-05-2024.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Accelerating Value Creation to Realize Strategic Growth",
+        "url": "https://www.ey.com/content/dam/ey-unified-site/ey-com/el-gr/insights/strategy/documents/ey-parthenon-report-2024-fn.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "New Frontiers in Precision Medicine",
+        "url": "https://cdn.ey.com/parthenon/pdf/perspectives/New-Frontiers-in-Precision-Medicine_Key-Themes.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Mind the (Investment) Gap: Funding and Delivering Capital Projects",
+        "url": "https://www.ey.com/content/dam/ey-unified-site/ey-com/en-uk/services/strategy-transactions/documents/ey-parthenon-mind-the-investment-gap-27-sep-2024.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "EY-Parthenon Transitions in Higher Education",
+        "url": "https://www.mass.edu/strategic/documents/EY-Parthenon%20Transitions%20in%20Higher%20Ed.pdf",
+        "type": "thought leadership"
+      }
+    ],
+    "wef": [
+      {
+        "title": "WEF The Future of Growth Report 2024",
+        "url": "https://www3.weforum.org/docs/WEF_Future_of_Growth_Report_2024.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "WEF Global Gender Gap Report 2024",
+        "url": "https://www3.weforum.org/docs/WEF_GGGR_2024.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "WEF Annual Report 2024-2025",
+        "url": "https://reports.weforum.org/docs/WEF_Annual_Report_2024_2025.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "WEF Future of Jobs Report 2025",
+        "url": "https://reports.weforum.org/docs/WEF_Future_of_Jobs_Report_2025.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "WEF Global Economic Futures: Competitiveness in 2030",
+        "url": "https://reports.weforum.org/docs/WEF_Global_Economic_Futures_Competitiveness_in_2030_2025.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "WEF Chief Economists Outlook May 2025",
+        "url": "https://reports.weforum.org/docs/WEF_Chief_Economists_Outlook_May_2025.pdf",
+        "type": "thought leadership"
+      }
+    ],
+    "infosys": [
+      {
+        "title": "Infosys Investor Presentation",
+        "url": "https://www.infosys.com/investors/investorpresentation/ir-presentation.pdf",
+        "type": "investor deck"
+      },
+      {
+        "title": "Infosys GEN AI Highlights Q1 FY26",
+        "url": "https://www.infosys.com/investors/news-events/quarterly-newsletter/gen-ai-highlights-q1fy26.pdf",
+        "type": "investor deck"
+      },
+      {
+        "title": "Infosys Integrated Annual Report 2024-25",
+        "url": "https://www.infosys.com/investors/reports-filings/annual-report/annual/documents/infosys-ar-25.pdf",
+        "type": "investor deck"
+      }
+    ],
+    "wipro": [
+      {
+        "title": "Wipro Investor Presentation Q1 FY25",
+        "url": "https://www.wipro.com/content/dam/nexus/en/investor/quarterly-results/2024-2025/q1fy25/wipro-investor-ppt-q1fy25.pdf",
+        "type": "investor deck"
+      },
+      {
+        "title": "Wipro Investor Presentation Q4 FY24",
+        "url": "https://www.wipro.com/content/dam/nexus/en/investor/quarterly-results/2023-2024/q4fy24/wipro-investor-ppt-q4fy24.pdf",
+        "type": "investor deck"
+      },
+      {
+        "title": "Wipro Investor Presentation Q3 FY25",
+        "url": "https://www.wipro.com/content/dam/nexus/en/investor/quarterly-results/2024-2025/q3fy25/wipro-investor-ppt-q3fy25.pdf",
+        "type": "investor deck"
+      }
+    ],
+    "tcs": [
+      {
+        "title": "TCS Investor Relations Presentation January 2024",
+        "url": "https://www.tcs.com/content/dam/tcs/pdf/discover-tcs/investor-relations/management-commentary/ir_presentations/tcs-investor-relations-presentation-4q24.pdf",
+        "type": "investor deck"
+      },
+      {
+        "title": "TCS Investor Presentation August 2024",
+        "url": "https://www.tcs.com/content/dam/tcs/pdf/discover-tcs/investor-relations/management-commentary/ir_presentations/tcs-investor-relations-presentation-2q25.pdf",
+        "type": "investor deck"
+      },
+      {
+        "title": "TCS Financial Results Q1 2024-25 Fact Sheet",
+        "url": "https://www.tcs.com/content/dam/tcs/investor-relations/financial-statements/2024-25/q1/Presentations/Q1%202024-25%20Fact%20Sheet.pdf",
+        "type": "investor deck"
+      }
+    ],
+    "roland_berger": [
+      {
+        "title": "Roland Berger Foresight 2024 China Annual Trends Report",
+        "url": "https://www.rolandberger.com/publications/publication_pdf/ROLAND-BERGER_FORESIGHT-2024_EN_SC.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Europe Must Tackle Its Growth Problem",
+        "url": "https://www.rolandberger.com/publications/publication_pdf/roland_berger_quarterly_reigniting_european_growth.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Roland Berger Commercial Effectiveness at Modern Airports",
+        "url": "https://www.rolandberger.com/publications/publication_pdf/Roland-Berger_Report-24-2589_Commercial-Improvement-Airports_November-2024_DEF.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Roland Berger IT Study 2024 Part 2: Less Costs More Value",
+        "url": "https://www.rolandberger.com/publications/publication_pdf/Roland_Berger_IT-study-2024_Part-2.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Roland Berger Nearshoring in Mexico Report 2024",
+        "url": "https://www.rolandberger.com/publications/publication_pdf/Nearshoring-in-Mexico_Roland-Berger-Report-2024.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Roland Berger Resilient Supply Chains for Raw Materials",
+        "url": "https://content.rolandberger.com/hubfs/07_presse/24-2258_REP_Critical-raw-materials_DS.pdf",
+        "type": "thought leadership"
+      }
+    ],
+    "lek_consulting": [
+      {
+        "title": "L.E.K. Consulting 2023 US Packaging Report",
+        "url": "https://www.lek.com/sites/default/files/PDFs/combined-packaging-report-2023.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "L.E.K. Consulting Enterprise Digital Impact 2023",
+        "url": "https://www.lek.com/sites/default/files/PDFs/enterprise-digital-impact-2023.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "L.E.K. Consulting Resilience of Global K-12 Education",
+        "url": "https://www.lek.com/sites/default/files/PDFs/apac-k12-gold.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "L.E.K. Consulting 2023 Sustainability Report",
+        "url": "https://www.lek.com/sites/default/files/2024-09/2023-lek-sustainability-report.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "L.E.K. Consulting Growing Revenues Through Commercial Excellence",
+        "url": "https://www.lek.com/sites/default/files/insights/pdf-attachments/1812_Growing_Revenues_Through_Commercial_%20Excellence_LEK_Executive_Insights.pdf",
+        "type": "thought leadership"
+      }
+    ],
+    "arthur_d_little": [
+      {
+        "title": "Arthur D. Little Innovating in the Digital Age",
+        "url": "https://www.adlittle.com/sites/default/files/viewpoints/adl_innovating_in_the_digital_age-min.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Arthur D. Little Future of Automotive Mobility Global Study",
+        "url": "https://www.adlittle.com/sites/default/files/viewpoints/adl_future_of_automotive_mobility_global_study_executive_summary-min_0.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Arthur D. Little Innovation High Ground Report",
+        "url": "https://www.adlittle.com/sites/default/files/viewpoints/ADL_Innovation_High_Ground_report_03.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Arthur D. Little Innovation for Value",
+        "url": "https://www.adlittle.com/sites/default/files/viewpoints/ADL_IFV.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Arthur D. Little Moving Innovation Forward 2025",
+        "url": "https://www.adlittle.com/sites/default/files/2025-02/ADL_Moving_innovation_forward_2025.pdf",
+        "type": "thought leadership"
+      }
+    ],
+    "alixpartners": [
+      {
+        "title": "AlixPartners 2023 Annual Report",
+        "url": "https://www.alixpartners.com/media/0eel14bw/alixpartners-2023-annual-report.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "AlixPartners 2024 Impact Report",
+        "url": "https://www.alixpartners.com/media/q14pqr0l/alixpartners-2024-impact-report.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "AlixPartners Disruption Index 2024",
+        "url": "https://www.alixpartners.com/media/p02h2gzy/2024-alixpartners-disruption-index.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "AlixPartners 2025 Media & Entertainment Industry Predictions",
+        "url": "https://www.alixpartners.com/media/ow1n5vey/2025-media-entertainment-industry-predictions-report.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "AlixPartners Tech Sector Growth and Performance 2024",
+        "url": "https://www.alixpartners.com/media/cxkckpi2/2024-tech-sector-growth-and-performance-report.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "AlixPartners Global Consumer Outlook 2025",
+        "url": "https://www.alixpartners.com/media/k1th1ykq/alixpartners-2025-global-consumer-outlook.pdf",
+        "type": "thought leadership"
+      }
+    ],
+    "kearney": [
+      {
+        "title": "Kearney State of Logistics Report 2024 Executive Summary",
+        "url": "https://www.kearney.com/documents/d/asset-library-291362522/2024-state-of-logistics-report-executive-summary-pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Kearney Sustainability Report 2024",
+        "url": "https://www.kearney.com/documents/d/asset-library-291362522/kearney-sustainability-report-2024-pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Kearney Global State of Luxury 2024",
+        "url": "https://www.luxuryroundtable.com/wp-content/uploads/2024/01/Kearney-Luxury-Outlook-Summit-2024-Jan.-17-Luxury-Roundtable-Presentation-Global-State-of-Luxury-2024.pdf",
+        "type": "thought leadership"
+      },
+      {
+        "title": "Kearney Resurgent in a World at Risk: 2024 Global Cities Report",
+        "url": "https://www.kearney.com/documents/291362523/303682378/Resurgent-in-a-world-at-risk-2024-Global-Cities-Report-PDF.pdf",
+        "type": "thought leadership"
+      }
+    ],
+    "academic_case_studies": [
+      {
+        "title": "Harvard Business School Management Consulting Club Case Interview Guide",
+        "url": "https://www.wallstreetoasis.com/files/hbs_older.pdf",
+        "type": "case study"
+      },
+      {
+        "title": "Wharton Consulting Club Casebook 2017",
+        "url": "https://careerinconsulting.com/wp-content/uploads/2019/12/6.-Wharton-Casebook-2017.pdf",
+        "type": "case study"
+      },
+      {
+        "title": "Wharton Consulting Club Casebook 2022-2023",
+        "url": "https://studylib.net/doc/26968589/wharton-2022.pdf",
+        "type": "case study"
+      },
+      {
+        "title": "INSEAD Consulting Club Handbook 2011",
+        "url": "https://www.wallstreetoasis.com/files/insead_2011.pdf",
+        "type": "case study"
+      },
+      {
+        "title": "INSEAD Family Business at INSEAD",
+        "url": "https://www.insead.edu/sites/default/files/assets/dept/centres/wicfe/docs/family-business-at-insead.pdf",
+        "type": "case study"
       }
     ]
   }

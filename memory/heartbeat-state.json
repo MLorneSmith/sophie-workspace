@@ -1,0 +1,18 @@
+{
+  "lastChecks": {
+    "email": null,
+    "calendar": null,
+    "weather": null,
+    "capture": 1739257620,
+    "memory_maintenance": null,
+    "todoist_reconciliation": null
+  },
+  "cadence": {
+    "email": { "intervalMinutes": 120, "windowStart": 12, "windowEnd": 3 },
+    "calendar": { "intervalMinutes": 240, "windowStart": 12, "windowEnd": 2 },
+    "weather": { "intervalMinutes": 480, "windowStart": 12, "windowEnd": 22 },
+    "capture": { "intervalMinutes": 30, "windowStart": 0, "windowEnd": 23 },
+    "memory_maintenance": { "intervalMinutes": 10080, "windowStart": 2, "windowEnd": 6 },
+    "todoist_reconciliation": { "intervalMinutes": 1440, "windowStart": 3, "windowEnd": 5 }
+  }
+}

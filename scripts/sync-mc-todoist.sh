@@ -20,7 +20,7 @@ fi
 CONFIG="${CONFIG:-/home/ubuntu/clawd/config/todoist-mc-mapping.json}"
 STATE_FILE="${STATE_FILE:-/home/ubuntu/clawd/config/todoist-sync-state.json}"
 MC_API="${MC_API:-http://localhost:3001/api/v1}"
-TODOIST_SYNC_URL="https://api.todoist.com/sync/v9/sync"
+TODOIST_SYNC_URL="https://api.todoist.com/api/v1/sync"
 RATE_LIMIT_SLEEP="${RATE_LIMIT_SLEEP:-0.3}"
 TOMBSTONE_TTL_SECS=$((7*24*60*60))
 
@@ -111,12 +111,23 @@ todoist_sync() {
   curl_json POST "$TODOIST_SYNC_URL" "$payload"
 }
 
+mc_priority_to_todoist() {
+  # MC priority → Todoist priority (Todoist: 4=p1/urgent, 3=p2/high, 2=p3/medium, 1=p4/none)
+  case "${1:-medium}" in
+    high)   echo 4 ;;
+    medium) echo 2 ;;
+    low)    echo 1 ;;
+    *)      echo 1 ;;
+  esac
+}
+
 todoist_cmd_add_item() {
   # add item, echo new item id
   local content="$1"
   local description="$2"
   local project_id="$3"
   local section_id="${4:-}"
+  local todoist_priority="${5:-1}"
 
   local uuid temp_id args cmd commands resp new_id
   uuid="$(python3 - <<'PY'
@@ -131,9 +142,9 @@ PY
 )"
 
   if [[ -n "$section_id" && "$section_id" != "null" ]]; then
-    args="$(jq -nc --arg content "$content" --arg description "$description" --arg project_id "$project_id" --arg section_id "$section_id" '{content:$content, description:$description, project_id:$project_id, section_id:$section_id}')"
+    args="$(jq -nc --arg content "$content" --arg description "$description" --arg project_id "$project_id" --arg section_id "$section_id" --argjson priority "$todoist_priority" '{content:$content, description:$description, project_id:$project_id, section_id:$section_id, priority:$priority}')"
   else
-    args="$(jq -nc --arg content "$content" --arg description "$description" --arg project_id "$project_id" '{content:$content, description:$description, project_id:$project_id}')"
+    args="$(jq -nc --arg content "$content" --arg description "$description" --arg project_id "$project_id" --argjson priority "$todoist_priority" '{content:$content, description:$description, project_id:$project_id, priority:$priority}')"
   fi
 
   cmd="$(jq -nc --arg type "item_add" --arg uuid "$uuid" --arg temp_id "$temp_id" --argjson args "$args" '{type:$type, uuid:$uuid, temp_id:$temp_id, args:$args}')"
@@ -159,6 +170,7 @@ todoist_cmd_update_item() {
   local id="$1"
   local content="$2"
   local description="$3"
+  local todoist_priority="${4:-1}"
 
   local uuid args cmd commands
   uuid="$(python3 - <<'PY'
@@ -167,8 +179,8 @@ print(uuid.uuid4())
 PY
 )"
 
-  args="$(jq -nc --arg content "$content" --arg description "$description" '{content:$content, description:$description}')"
-  cmd="$(jq -nc --arg type "item_update" --arg uuid "$uuid" --argjson args "$args" --arg id "$id" '{type:$type, uuid:$uuid, args:($args + {id:($id|tonumber)})}')"
+  args="$(jq -nc --arg content "$content" --arg description "$description" --argjson priority "$todoist_priority" '{content:$content, description:$description, priority:$priority}')"
+  cmd="$(jq -nc --arg type "item_update" --arg uuid "$uuid" --argjson args "$args" --arg id "$id" '{type:$type, uuid:$uuid, args:($args + {id:$id})}')"
   commands="[$cmd]"
 
   if $DRY_RUN; then
@@ -189,7 +201,7 @@ print(uuid.uuid4())
 PY
 )"
 
-  cmd="$(jq -nc --arg type "item_close" --arg uuid "$uuid" --arg id "$id" '{type:$type, uuid:$uuid, args:{id:($id|tonumber)}}')"
+  cmd="$(jq -nc --arg type "item_close" --arg uuid "$uuid" --arg id "$id" '{type:$type, uuid:$uuid, args:{id:$id}}')"
   commands="[$cmd]"
 
   if $DRY_RUN; then
@@ -212,7 +224,7 @@ init_state_if_missing() {
     return 0
   fi
   mkdir -p "$(dirname "$STATE_FILE")"
-  jq -nc '{sync_token:"*", tombstones:[], known_links:{}}' >"$STATE_FILE"
+  jq -nc '{sync_token:"*", lastSyncAt:null, tombstones:[], taskMappings:{}}' >"$STATE_FILE"
 }
 
 load_state() {
@@ -220,7 +232,7 @@ load_state() {
   if [[ -f "$STATE_FILE" ]]; then
     STATE_JSON="$(cat "$STATE_FILE")"
   else
-    STATE_JSON='{"sync_token":"*","tombstones":[],"known_links":{}}'
+    STATE_JSON='{"sync_token":"*","lastSyncAt":null,"tombstones":[],"taskMappings":{}}'
   fi
 
   SYNC_TOKEN="$(echo "$STATE_JSON" | jq -r '.sync_token // "*"')"
@@ -255,8 +267,11 @@ set_known_link() {
   local mc_id="$2"
   local now
   now="$(date +%s)"
+  # Back-compat: treat old .known_links as .taskMappings
   STATE_JSON="$(echo "$STATE_JSON" | jq --arg tid "$todoist_id" --arg mcid "$mc_id" --argjson now "$now" '
-    .known_links[$tid] = ((.known_links[$tid] // {}) + {mcId:$mcid, lastSeen:$now})
+    .taskMappings = (.taskMappings // (.known_links // {}))
+    | .taskMappings[$tid] = ((.taskMappings[$tid] // {}) + {mcId:$mcid, lastSeen:$now})
+    | del(.known_links)
   ' )"
 }
 
@@ -266,14 +281,16 @@ set_last_pushed_hashes() {
   local ch="$2"
   local dh="$3"
   STATE_JSON="$(echo "$STATE_JSON" | jq --arg tid "$todoist_id" --arg ch "$ch" --arg dh "$dh" '
-    .known_links[$tid] = ((.known_links[$tid] // {}) + {lastPushed:{contentHash:$ch, descHash:$dh}})
+    .taskMappings = (.taskMappings // (.known_links // {}))
+    | .taskMappings[$tid] = ((.taskMappings[$tid] // {}) + {lastPushed:{contentHash:$ch, descHash:$dh}})
+    | del(.known_links)
   ' )"
 }
 
 get_last_pushed_hash() {
   local todoist_id="$1"
   local which="$2" # contentHash|descHash
-  echo "$STATE_JSON" | jq -r --arg tid "$todoist_id" --arg which "$which" '.known_links[$tid].lastPushed[$which] // empty'
+  echo "$STATE_JSON" | jq -r --arg tid "$todoist_id" --arg which "$which" '(.taskMappings // (.known_links // {}))[$tid].lastPushed[$which] // empty'
 }
 
 save_state() {
@@ -363,9 +380,20 @@ fi
 # From here on, use the latest sync token for commands to keep responses small.
 SYNC_TOKEN="$NEW_SYNC_TOKEN"
 
+# Build section → initiative reverse mapping (v1 section IDs from Sync API)
+declare -A INITIATIVE_BY_SECTION
+while IFS='=' read -r sid iid; do
+  INITIATIVE_BY_SECTION["$sid"]="$iid"
+done < <(jq -r '.sectionToInitiative // {} | to_entries[] | "\(.key)=\(.value)"' "$CONFIG" 2>/dev/null)
+# Also include v2 section IDs as fallback
+while IFS='=' read -r sid iid; do
+  INITIATIVE_BY_SECTION["$sid"]="$iid"
+done < <(jq -r '.sectionToInitiativeV2 // {} | to_entries[] | "\(.key)=\(.value)"' "$CONFIG" 2>/dev/null)
+
 # Process changed items
 mc_completed_from_todoist=0
 mc_renamed_from_todoist=0
+mc_moved_from_todoist=0
 
 item_count="$(echo "$TODOIST_DELTA_JSON" | jq '.items | length')"
 for ((i=0; i<item_count; i++)); do
@@ -400,8 +428,11 @@ for ((i=0; i<item_count; i++)); do
   todoist_content="$(echo "$item" | jq -r '.content // ""')"
   mc_name="$(echo "${MC_JSON_BY_TODOIST[$tid]}" | jq -r '.name // ""')"
 
-  if [[ -n "$todoist_content" && "$todoist_content" != "$mc_name" ]]; then
-    payload="$(jq -nc --arg name "$todoist_content" '{name:$name}')"
+  # Strip [#nnn] prefix and bold before comparing/updating MC
+  todoist_clean="$(echo "$todoist_content" | sed -E 's/^\*\*\[#[0-9]+\] (.*)\*\*$/\1/' | sed -E 's/^\[#[0-9]+\] *//')"
+
+  if [[ -n "$todoist_clean" && "$todoist_clean" != "$mc_name" ]]; then
+    payload="$(jq -nc --arg name "$todoist_clean" '{name:$name}')"
     if mc_patch_task "$mc_id" "$payload" 2>/dev/null; then
       note "Renamed MC#$mc_id to match Todoist item $tid"
       mc_renamed_from_todoist=$((mc_renamed_from_todoist+1))
@@ -409,6 +440,22 @@ for ((i=0; i<item_count; i++)); do
       MC_JSON_BY_TODOIST["$tid"]="$(echo "${MC_JSON_BY_TODOIST[$tid]}" | jq --arg name "$todoist_content" '.name=$name')"
     else
       note "ERROR: Failed to rename MC#$mc_id from Todoist item $tid" >&2
+    fi
+  fi
+
+  # Detect section moves → update initiative in MC
+  todoist_section="$(echo "$item" | jq -r '.section_id // ""')"
+  if [[ -n "$todoist_section" && -n "${INITIATIVE_BY_SECTION[$todoist_section]:-}" ]]; then
+    new_initiative="${INITIATIVE_BY_SECTION[$todoist_section]}"
+    current_initiative="$(echo "${MC_JSON_BY_TODOIST[$tid]}" | jq -r '.initiativeId // ""')"
+    if [[ "$new_initiative" != "$current_initiative" ]]; then
+      payload="$(jq -nc --argjson iid "$new_initiative" '{initiativeId:$iid}')"
+      if mc_patch_task "$mc_id" "$payload" 2>/dev/null; then
+        note "Moved MC#$mc_id to initiative $new_initiative (was $current_initiative) from Todoist section move"
+        mc_moved_from_todoist=$((mc_moved_from_todoist+1))
+      else
+        note "ERROR: Failed to move MC#$mc_id to initiative $new_initiative" >&2
+      fi
     fi
   fi
 
@@ -598,7 +645,18 @@ for ((i=0; i<mc_count; i++)); do
 
   mc_id="$(echo "$t" | jq -r '.id')"
   status="$(echo "$t" | jq -r '.status // ""')"
-  name="$(echo "$t" | jq -r '.name // ""')"
+  priority="$(echo "$t" | jq -r '.priority // "medium"')"
+  raw_name="$(echo "$t" | jq -r '.name // ""')"
+
+  # Format name for Todoist: [#id] prefix + bold if high priority
+  # Strip any existing [#nnn] prefix first to avoid duplication
+  clean_name="$(echo "$raw_name" | sed -E 's/^\[#[0-9]+\] *//')"
+  clean_name="$(echo "$clean_name" | sed -E 's/^\*\*(.*)\*\*$/\1/')"  # strip bold
+  if [[ "$priority" == "high" ]]; then
+    name="**[#${mc_id}] ${clean_name}**"
+  else
+    name="[#${mc_id}] ${clean_name}"
+  fi
   desc="$(echo "$t" | jq -r '.description // ""')"
   review="$(echo "$t" | jq -r '.reviewSummary // ""')"
   initiative_id="$(echo "$t" | jq -r '.initiativeId // empty')"
@@ -657,7 +715,8 @@ for ((i=0; i<mc_count; i++)); do
   # Create Todoist task for MC tasks without todoistId
   if [[ -z "$todoist_id" ]]; then
     new_id=""
-    if new_id="$(todoist_cmd_add_item "$name" "$todoist_desc" "$project_id" "$section_id" 2>/dev/null)"; then
+    todoist_pri="$(mc_priority_to_todoist "$priority")"
+    if new_id="$(todoist_cmd_add_item "$name" "$todoist_desc" "$project_id" "$section_id" "$todoist_pri" 2>/dev/null)"; then
       created=$((created+1))
       if [[ "$new_id" != "DRY_RUN_ID" && -n "$new_id" ]]; then
         payload="$(jq -nc --arg todoistId "$new_id" '{todoistId:$todoistId}')"
@@ -680,18 +739,48 @@ for ((i=0; i<mc_count; i++)); do
   fi
 
   # Update Todoist if MC changed since last push (tracked in state)
-  ch_now="$(sha1_str "$name")"
+  ch_now="$(sha1_str "${name}::pri=${priority}")"
   dh_now="$(sha1_str "$todoist_desc")"
   ch_prev="$(get_last_pushed_hash "$todoist_id" "contentHash")"
   dh_prev="$(get_last_pushed_hash "$todoist_id" "descHash")"
 
   if [[ "$ch_now" != "$ch_prev" || "$dh_now" != "$dh_prev" ]]; then
-    if todoist_cmd_update_item "$todoist_id" "$name" "$todoist_desc" 2>/dev/null; then
+    todoist_pri="$(mc_priority_to_todoist "$priority")"
+    if todoist_cmd_update_item "$todoist_id" "$name" "$todoist_desc" "$todoist_pri" 2>/dev/null; then
       updated=$((updated+1))
       note "Updated Todoist item $todoist_id from MC#$mc_id"
       set_last_pushed_hashes "$todoist_id" "$ch_now" "$dh_now"
     else
       note "ERROR: Failed to update Todoist item $todoist_id from MC#$mc_id" >&2
+    fi
+  fi
+
+  # Check if Todoist item needs to move to a different section (initiative changed in MC)
+  # Look up the current Todoist section from the full item data if available
+  if [[ -n "$section_id" && -n "$TODOIST_FULL_JSON" ]]; then
+    current_todoist_section="$(echo "$TODOIST_FULL_JSON" | jq -r --arg tid "$todoist_id" '.items[] | select(.id == $tid) | .section_id // ""' 2>/dev/null)"
+    # Map v1 section ID back to initiative for comparison
+    mapped_initiative=""
+    if [[ -n "$current_todoist_section" ]]; then
+      mapped_initiative="${INITIATIVE_BY_SECTION[$current_todoist_section]:-}"
+    fi
+    if [[ -n "$mapped_initiative" && "$mapped_initiative" != "$initiative_id" ]]; then
+      # The task's Todoist section doesn't match its MC initiative — move it
+      # Find v1 section ID for the target initiative
+      target_v1_section="$(jq -r --arg iid "$initiative_id" '.sectionToInitiative | to_entries[] | select(.value == ($iid | tonumber)) | .key' "$CONFIG" 2>/dev/null | head -1)"
+      if [[ -n "$target_v1_section" ]]; then
+        move_uuid="$(python3 -c 'import uuid; print(uuid.uuid4())')"
+        move_cmd="$(jq -nc --arg type "item_move" --arg uuid "$move_uuid" --arg id "$todoist_id" --arg section_id "$target_v1_section" '{type:$type, uuid:$uuid, args:{id:$id, section_id:$section_id}}')"
+        if ! $DRY_RUN; then
+          if todoist_sync "$SYNC_TOKEN" '[]' "[$move_cmd]" >/dev/null 2>&1; then
+            note "Moved Todoist item $todoist_id to section $target_v1_section (initiative $initiative_id) from MC#$mc_id"
+          else
+            note "ERROR: Failed to move Todoist item $todoist_id to section $target_v1_section" >&2
+          fi
+        else
+          note "DRY-RUN: Would move Todoist item $todoist_id to section $target_v1_section"
+        fi
+      fi
     fi
   fi
 
@@ -722,7 +811,7 @@ done
 mc_present_set="$(echo "$mc_present_set" | sort -u)"
 
 # Iterate known_links keys
-known_ids="$(echo "$STATE_JSON" | jq -r '.known_links | keys[]?')"
+known_ids="$(echo "$STATE_JSON" | jq -r '(.taskMappings // (.known_links // {})) | keys[]?')"
 
 deleted_closed=0
 while IFS= read -r tid; do
@@ -753,7 +842,7 @@ done <<<"$known_ids"
 save_state
 
 note "=== Sync complete ==="
-note "Todoist→MC: completed_in_mc=$mc_completed_from_todoist renamed_in_mc=$mc_renamed_from_todoist created_in_mc=$mc_created_from_todoist linked_existing=$mc_linked_existing"
+note "Todoist→MC: completed_in_mc=$mc_completed_from_todoist renamed_in_mc=$mc_renamed_from_todoist moved_in_mc=$mc_moved_from_todoist created_in_mc=$mc_created_from_todoist linked_existing=$mc_linked_existing"
 note "MC→Todoist: created=$created updated=$updated closed=$closed linked=$linked skipped=$skipped"
 note "MC deletions: closed_in_todoist=$deleted_closed"
 

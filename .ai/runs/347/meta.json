@@ -1,0 +1,35 @@
+{
+  "taskId": 347,
+  "agent": "writer",
+  "persona": "solo-consultant",
+  "iteration": 3,
+  "createdAt": "2026-02-10T20:34:03+00:00",
+  "updatedAt": "2026-02-10T20:39:37+00:00",
+  "status": "mike_review",
+  "checks": {
+    "taskType": "content",
+    "passed": true,
+    "reportFile": "/home/ubuntu/clawd/.ai/runs/347/checks.log"
+  },
+  "contextMapping": "blog-writing",
+  "builderModel": "zai/glm-4.7",
+  "builderThinking": "high",
+  "contextFiles": [
+    "/home/ubuntu/clawd/.ai/contexts/company/about.md",
+    "/home/ubuntu/clawd/.ai/contexts/voice/brand-voice.md",
+    "/home/ubuntu/clawd/.ai/contexts/voice/mike-style.md",
+    "/home/ubuntu/clawd/.ai/contexts/voice/pov-presentations.md",
+    "/home/ubuntu/clawd/.ai/contexts/voice/vocabulary.md",
+    "/home/ubuntu/clawd/.ai/contexts/guidelines/blog-guidelines.md",
+    "/home/ubuntu/clawd/.ai/contexts/messaging/positioning.md",
+    "/home/ubuntu/clawd/.ai/contexts/personas/solo-consultant.md",
+    "/home/ubuntu/clawd/.ai/contexts/messaging/pain-points.md"
+  ],
+  "taskType": "content",
+  "maxIterations": 3,
+  "lastPrepareAt": "2026-02-10T20:37:27+00:00",
+  "lastReviewPrepAt": "2026-02-10T20:38:49+00:00",
+  "verdict": "PASS",
+  "lastProcessReviewAt": "2026-02-10T20:39:37+00:00",
+  "reviewSummary": "Passed on iteration 3. # Review: How to Structure a Boardroom Presentation — Iteration 3 ## Previous Issues: All Fixed ✅ 1. **Internal links (≥2):** ✅ Three internal links present — assertive headlines blog post, DDM course page, and blog index. 2. **External link (≥1):** ✅ Links to Barbara Minto's Py…"
+}

@@ -1,0 +1,5 @@
+Content checks:
+- wordCount: 1981
+- minWords: 300
+- hasHeading: True
+- hasCTA: True

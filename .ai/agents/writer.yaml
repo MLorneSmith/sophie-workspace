@@ -48,3 +48,12 @@ output_format: markdown
 output_location: ~/clawd/deliverables/content/blog/
 
 max_iterations: 3
+
+# Accumulated corrections from feedback loop
+# Each rule was learned from a specific correction — don't remove without reason
+learned_rules:
+  - "Always include at least 2 internal links to SlideHeroes pages — SEO requirement (learned 2026-02-10)"
+  - "Always include at least 1 external link to a credible source (learned 2026-02-10)"
+  - "Always include a meta description in YAML frontmatter (learned 2026-02-10)"
+  - "Always include a featured image suggestion with alt text (learned 2026-02-10)"
+  - "Include a clear CTA — the automated check will flag if missing (learned 2026-02-10)"

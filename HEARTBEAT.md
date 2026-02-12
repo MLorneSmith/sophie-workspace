@@ -6,10 +6,26 @@
 - **During day:** Update `state/current.md` if anything significant happened
 - **Evening (after 22:00 EST):** Run EOD routine if not done yet
 
-## Periodic Checks
-*(rotate through these, 2-4x daily)*
-- [ ] Emails — urgent unread?
-- [ ] Calendar — events in next 24h?
+## Rotating Periodic Checks
+Use `memory/heartbeat-state.json` to track last-run timestamps. On each heartbeat, check which tasks are due based on cadence and time window (EST hours). Update timestamps after each check.
+
+| Check | Cadence | Window (EST) | What to do |
+|-------|---------|--------------|------------|
+| email | 2h | 07:00–22:00 | `gog gmail list --unread` — flag urgent |
+| calendar | 4h | 07:00–21:00 | `gog cal list` — upcoming 24h events |
+| capture | 30min | always | Check #capture channel for new links |
+| weather | 8h | 07:00–17:00 | Check weather for Toronto |
+| memory_maintenance | weekly | 21:00–01:00 | Review daily files → update MEMORY.md |
+| todoist_reconciliation | daily | 22:00–00:00 | Compare MC↔Todoist status for drift |
+
+**How to decide what runs:**
+```bash
+now=$(date +%s)
+last=$(jq -r '.lastChecks.email // 0' memory/heartbeat-state.json)
+interval=$((2 * 60 * 60))  # 2 hours
+if (( now - last > interval )); then # due
+```
+Run 1-3 checks per heartbeat to keep token usage low. Prioritize: capture > email > calendar > others.
 
 ## #capture Channel Monitoring
 **Check every heartbeat:** Look for new links in #capture (id: `1468019433854210259`)

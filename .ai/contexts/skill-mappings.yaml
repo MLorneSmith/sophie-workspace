@@ -148,6 +148,37 @@ review:
     - voice/brand-voice.md
     - voice/vocabulary.md
 
+content-strategy:
+  always:
+    - company/about.md
+    - company/products.md
+    - messaging/positioning.md
+    - voice/brand-voice.md
+  content-system:
+    - content/content-pillars.md
+    - content/content-types.md
+    - content/topic-clusters.md
+    - content/content-calendar-framework.md
+    - content/audience-content-map.md
+  per-persona:
+    solo-consultant:
+      - personas/solo-consultant.md
+      - messaging/pain-points.md    # solo-consultant section
+      - messaging/value-props.md    # solo-consultant section
+    boutique:
+      - personas/boutique-consultancy.md
+      - messaging/pain-points.md    # boutique section
+      - messaging/value-props.md    # boutique section
+    corporate:
+      - personas/corporate-professional.md
+      - messaging/pain-points.md    # corporate section
+      - messaging/value-props.md    # corporate section
+  optional:
+    - company/differentiators.md    # for competitive positioning
+    - company/roadmap.md            # for product-aligned content
+    - voice/pov-ai.md              # for AI-focused content
+    - voice/pov-presentations.md    # for methodology-forward content
+
 # --- Anti-persona filter ---
 # All content-producing agents should have access to anti-personas
 # to avoid writing for the wrong audience. Loaded on demand, not by default.

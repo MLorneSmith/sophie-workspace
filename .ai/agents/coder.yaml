@@ -51,7 +51,13 @@ output_location: ~/2025slideheroes-sophie/
 max_iterations: 3
 
 notes: |
-  Primary execution path: Codex CLI via .ai/bin/codex/implement
+  Primary execution path: Sophie Loop via ~/clawd/.ai/loop-runner.py prepare --agent coder
   Fallback model: zai/glm-4.7
-  Auth: API key (switching to OAuth)
-  Sophie spawns Coder via: exec pty:true workdir:~/2025slideheroes-sophie command:".ai/bin/codex/implement <issue#>"
+  Nightly cron spawns Coder via loop-runner prepare → sessions_spawn with returned model/prompt
+
+# SAFETY: Database operations
+# NEVER run `prisma migrate reset` — this wipes all data
+# NEVER run `prisma db push --force-reset`
+# Use `prisma migrate dev` for new migrations (will fail gracefully if conflicts)
+# Use `prisma migrate deploy` to apply pending migrations to existing data
+# If migration fails, ask for help — do NOT reset

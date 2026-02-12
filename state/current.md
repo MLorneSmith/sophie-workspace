@@ -1,28 +1,28 @@
-# Current State — 2026-02-09
+# Current State
 
-## 🎯 Strategic Priorities (Q1 2026)
-1. **🚀 Obj 1 — Build a Product Customers Love**
-2. **🤖 Obj 6 — Build the AI Systems**
-3. **⚙️ Obj 7 — Build the Business Operating System**
+**Updated:** 2026-02-11 19:55 UTC
 
-When choosing proactive work: Obj 1 > 6 > 7. Objectives 2-5 deferred until post-product.
+## Active Right Now
+- Mike setting up BigQuery GCP project (`slideheroes-data-platform`)
+- Waiting for: GCP project creation, BigQuery API enable, service account key
+- Next: configure BigQuery client, create dataset schema
 
-## Active Work
-- All 7 objectives have initiatives defined (35 total)
-- Sophie Loop: Phases 1-6 done, Phase 7 test run in progress (task #76 — builder done, reviewer running)
-- GLM/ZAI fixed — env var was `GLM_API_KEY`, OpenClaw needs `ZAI_API_KEY`
+## Recently Completed (today)
+- GSC connected (#447 done)
+- Blog pipeline fully built (#441-447 all done)
+- Fallback model changed GLM → GPT 5.2
+- Content pillars rewritten (5 pillars from Mike)
+- Pillar research done (#449) — 3 new candidates
+- Word count requirement: 2000 min, 2000-3000 target
+- DataForSEO keyword research tool installed
 
-## What's Next
-1. Sophie Loop Phase 6: Orchestrator Wiring (MC task #86)
-2. Fill in KR targets for Q1 objectives (#1, #6, #7) — needs Mike
-3. Sophie Loop Phase 7: End-to-end test run
+## Waiting On Mike
+- #448 — App positioning discussion (needed before Presentation Tools blog post)
+- #450 — Brainstorm session to finalize 6-7 content pillars
+- BigQuery service account JSON key
 
-## Completed Tonight (Feb 8-9)
-- Todoist cleanup: 18 dups closed, 3 done tasks closed, "Build App" merged into "App Build"
-- Todoist → MC initiative mapping saved at deliverables/todoist-to-mc-mapping.md
-
-## Recent Completions (Feb 8-9)
-- Created 35 initiatives across all 7 strategic objectives
-- Sorted 49 Obj 7 tasks into 5 initiatives (zero orphans)
-- Fixed ZAI/GLM env var naming (`ZAI_API_KEY`)
-- MC restructured: 7 objectives with 3-level hierarchy (Objective → Initiative → Task)
+## Key Context
+- Blog target: 20 posts/month (1/weekday)
+- Topic backlog: `.ai/content/blog/topic-backlog.md`
+- First blog post: Presentation Tools rewrite (depends on #448)
+- DataForSEO balance depleted (-$0.05) — needs top-up

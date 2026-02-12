@@ -287,11 +287,15 @@ def parse_verdict(review_text: str) -> str:
     if m:
         return m.group(1).upper()
 
-    head = review_text.strip()[:2000]
-    # If both appear, prefer FAIL.
-    if re.search(r"\bFAIL\b", head, flags=re.I):
+    text = review_text.strip()
+    # Search full text for VERDICT: line
+    vm = re.search(r"VERDICT\s*:\s*(PASS|FAIL)", text, flags=re.I)
+    if vm:
+        return vm.group(1).upper()
+    # Fallback: if both appear anywhere, prefer FAIL.
+    if re.search(r"\bFAIL\b", text, flags=re.I):
         return "FAIL"
-    if re.search(r"\bPASS\b", head, flags=re.I):
+    if re.search(r"\bPASS\b", text, flags=re.I):
         return "PASS"
     return "UNKNOWN"
 

@@ -1,0 +1,27 @@
+{
+    "description": "Role-based model dispatch. Maps task roles to models deterministically.",
+    "updated": "2026-02-11",
+    "roles": {
+        "code": {
+            "model": "openai-codex/gpt-5.2",
+            "description": "Implementation, coding, PRs, bug fixes, refactoring"
+        },
+        "research": {
+            "model": "zai/glm-5",
+            "description": "Web search, bulk lookups, competitive analysis, multi-query research"
+        },
+        "bulk": {
+            "model": "zai/glm-5",
+            "description": "Batch processing, data extraction, translation, draft generation, async review"
+        },
+        "default": {
+            "model": "anthropic/claude-opus-4-6",
+            "description": "Conversation, planning, complex reasoning, orchestration"
+        }
+    },
+    "fallbacks": {
+        "openai-codex/gpt-5.2": "zai/glm-5",
+        "zai/glm-5": "zai/glm-4.7",
+        "zai/glm-4.7": "anthropic/claude-opus-4-6"
+    }
+}

@@ -58,6 +58,12 @@ if ! echo "$BRIEFING" | grep -qi "feed\|picks\|📡"; then
   ERRORS=$((ERRORS + 1))
 fi
 
+# Model usage section
+if ! echo "$BRIEFING" | grep -qi "model usage\|📊"; then
+  echo "❌ CRITICAL: Missing Model Usage section"
+  ERRORS=$((ERRORS + 1))
+fi
+
 # ─── WARNING CHECKS (flag but don't block) ──────────────────
 
 # Unfilled placeholders

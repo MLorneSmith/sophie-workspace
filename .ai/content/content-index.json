@@ -1,0 +1,60 @@
+{
+  "lastUpdated": "2026-02-11",
+  "source": "GSC + manual review",
+  "pages": [
+    {
+      "slug": "public-speaking-anxiety",
+      "title": "Public Speaking Anxiety",
+      "type": "guide",
+      "topics": ["public speaking", "anxiety", "stage fright", "nervousness", "presentation fear"]
+    },
+    {
+      "slug": "mckinsey-business-presentations",
+      "title": "McKinsey Business Presentations",
+      "type": "teardown",
+      "topics": ["mckinsey", "consulting presentations", "presentation style", "slide design"]
+    },
+    {
+      "slug": "typology-business-charts",
+      "title": "Typology of Business Charts",
+      "type": "guide",
+      "topics": ["charts", "graphs", "data visualization", "business charts"]
+    },
+    {
+      "slug": "presentation-review-bcg",
+      "title": "BCG Presentation Review/Teardown",
+      "type": "teardown",
+      "topics": ["bcg", "consulting presentations", "slide design", "presentation review"]
+    },
+    {
+      "slug": "pitch-deck",
+      "title": "Pitch Deck",
+      "type": "guide",
+      "topics": ["pitch deck", "investor presentation", "startup pitch", "fundraising"]
+    },
+    {
+      "slug": "presentation-tools",
+      "title": "Presentation Tools",
+      "type": "listicle",
+      "topics": ["presentation software", "tools", "powerpoint alternatives", "slide tools"]
+    },
+    {
+      "slug": "powerpoint-presentations-defense",
+      "title": "PowerPoint Presentations Defense",
+      "type": "thought-leadership",
+      "topics": ["powerpoint", "presentation defense", "slide defense"]
+    },
+    {
+      "slug": "10-business-presentation-tips",
+      "title": "10 Business Presentation Tips",
+      "type": "listicle",
+      "topics": ["presentation tips", "business presentation", "how to present"]
+    },
+    {
+      "slug": "art-craft-business-presentation-creation",
+      "title": "Art & Craft of Business Presentation Creation",
+      "type": "guide",
+      "topics": ["presentation creation", "slide design", "business presentations", "craft"]
+    }
+  ]
+}
