@@ -1,0 +1,87 @@
+import Link from "next/link";
+import {
+	ClipboardList,
+	FileText,
+	PlayCircle,
+	Plus,
+	type LucideIcon,
+} from "lucide-react";
+
+import { Button } from "@kit/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
+
+interface QuickActionsPanelProps {
+	courseInProgress?: boolean;
+	assessmentCompleted?: boolean;
+	hasPresentationDrafts?: boolean;
+}
+
+function ActionButton({
+	icon: Icon,
+	label,
+	href,
+	variant = "outline",
+}: {
+	icon: LucideIcon;
+	label: string;
+	href: string;
+	variant?: "default" | "outline";
+}) {
+	return (
+		<Button asChild variant={variant} className="w-full justify-start gap-2">
+			<Link href={href}>
+				<Icon className="h-4 w-4" />
+				{label}
+			</Link>
+		</Button>
+	);
+}
+
+export default function QuickActionsPanel({
+	courseInProgress = false,
+	assessmentCompleted = false,
+	hasPresentationDrafts = false,
+}: QuickActionsPanelProps) {
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle>Quick Actions</CardTitle>
+			</CardHeader>
+			<CardContent className="flex flex-col gap-2">
+				{courseInProgress && (
+					<ActionButton
+						icon={PlayCircle}
+						label="Continue Course"
+						href="/home/course"
+						variant="default"
+					/>
+				)}
+
+				{!assessmentCompleted && (
+					<ActionButton
+						icon={ClipboardList}
+						label="Take Assessment"
+						href="/home/assessment"
+						variant="outline"
+					/>
+				)}
+
+				<ActionButton
+					icon={Plus}
+					label="New Presentation"
+					href="/home/ai/blocks"
+					variant="outline"
+				/>
+
+				{hasPresentationDrafts && (
+					<ActionButton
+						icon={FileText}
+						label="Review Storyboard"
+						href="/home/ai/storyboard"
+						variant="outline"
+					/>
+				)}
+			</CardContent>
+		</Card>
+	);
+}
