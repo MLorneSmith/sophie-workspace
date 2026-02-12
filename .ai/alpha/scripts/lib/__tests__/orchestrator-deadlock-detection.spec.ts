@@ -32,7 +32,6 @@ import {
 	DEFAULT_MAX_RETRIES,
 	getBlockingFailedFeatures,
 	getPhantomCompletedFeatures,
-	resetFailedFeatureForRetry,
 	shouldRetryFailedFeature,
 } from "../work-queue.js";
 import { detectAndHandleDeadlock } from "../deadlock-handler.js";
@@ -374,103 +373,12 @@ describe("shouldRetryFailedFeature", () => {
 	});
 });
 
-describe("resetFailedFeatureForRetry", () => {
-	it("resets status to pending and clears error", () => {
-		const feature: FeatureEntry = {
-			id: "S1692.I1.F1",
-			initiative_id: "S1692.I1",
-			title: "Test",
-			priority: 1,
-			global_priority: 1,
-			status: "failed",
-			tasks_file: "/test",
-			feature_dir: "/test",
-			task_count: 5,
-			tasks_completed: 0,
-			sequential_hours: 4,
-			parallel_hours: 2,
-			dependencies: [],
-			github_issue: null,
-			requires_database: false,
-			database_task_count: 0,
-			error: "PTY timeout",
-			assigned_sandbox: "sbx-a",
-			assigned_at: Date.now(),
-		};
-		const manifest = createTestManifest([feature]);
-		const entry = manifest.feature_queue[0];
-
-		resetFailedFeatureForRetry(entry!, manifest);
-
-		expect(entry?.status).toBe("pending");
-		expect(entry?.error).toBeUndefined();
-		expect(entry?.assigned_sandbox).toBeUndefined();
-		expect(entry?.assigned_at).toBeUndefined();
-	});
-
-	it("increments retry_count from undefined to 1", () => {
-		const feature: FeatureEntry = {
-			id: "S1692.I1.F1",
-			initiative_id: "S1692.I1",
-			title: "Test",
-			priority: 1,
-			global_priority: 1,
-			status: "failed",
-			tasks_file: "/test",
-			feature_dir: "/test",
-			task_count: 5,
-			tasks_completed: 0,
-			sequential_hours: 4,
-			parallel_hours: 2,
-			dependencies: [],
-			github_issue: null,
-			requires_database: false,
-			database_task_count: 0,
-			// retry_count is undefined
-		};
-		const manifest = createTestManifest([feature]);
-		const entry = manifest.feature_queue[0];
-
-		resetFailedFeatureForRetry(entry!, manifest);
-
-		expect(entry?.retry_count).toBe(1);
-	});
-
-	it("increments retry_count from existing value", () => {
-		const feature: FeatureEntry = {
-			id: "S1692.I1.F1",
-			initiative_id: "S1692.I1",
-			title: "Test",
-			priority: 1,
-			global_priority: 1,
-			status: "failed",
-			tasks_file: "/test",
-			feature_dir: "/test",
-			task_count: 5,
-			tasks_completed: 0,
-			sequential_hours: 4,
-			parallel_hours: 2,
-			dependencies: [],
-			github_issue: null,
-			requires_database: false,
-			database_task_count: 0,
-			retry_count: 2,
-		};
-		const manifest = createTestManifest([feature]);
-		const entry = manifest.feature_queue[0];
-
-		resetFailedFeatureForRetry(entry!, manifest);
-
-		expect(entry?.retry_count).toBe(3);
-	});
-});
-
 describe("detectAndHandleDeadlock", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 	});
 
-	it("returns shouldExit=false when sandboxes are busy", () => {
+	it("returns shouldExit=false when sandboxes are busy", async () => {
 		const manifest = createTestManifest(
 			[
 				{
@@ -484,14 +392,14 @@ describe("detectAndHandleDeadlock", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "busy")];
 
-		const result = detectAndHandleDeadlock(instances, manifest, true);
+		const result = await detectAndHandleDeadlock(instances, manifest, true);
 
 		expect(result.shouldExit).toBe(false);
 		expect(result.retriedCount).toBe(0);
 		expect(result.failedInitiatives).toHaveLength(0);
 	});
 
-	it("returns shouldExit=false when features can be assigned", () => {
+	it("returns shouldExit=false when features can be assigned", async () => {
 		const manifest = createTestManifest(
 			[
 				{ id: "S1692.I1.F1", status: "pending" }, // Available feature
@@ -506,13 +414,13 @@ describe("detectAndHandleDeadlock", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "ready")];
 
-		const result = detectAndHandleDeadlock(instances, manifest, true);
+		const result = await detectAndHandleDeadlock(instances, manifest, true);
 
 		expect(result.shouldExit).toBe(false);
 		expect(result.retriedCount).toBe(0);
 	});
 
-	it("returns shouldExit=false when no failed features exist", () => {
+	it("returns shouldExit=false when no failed features exist", async () => {
 		const manifest = createTestManifest(
 			[
 				{ id: "S1692.I1.F1", status: "completed" },
@@ -527,12 +435,12 @@ describe("detectAndHandleDeadlock", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "ready")];
 
-		const result = detectAndHandleDeadlock(instances, manifest, true);
+		const result = await detectAndHandleDeadlock(instances, manifest, true);
 
 		expect(result.shouldExit).toBe(false);
 	});
 
-	it("retries failed features and returns shouldExit=false when retries available", () => {
+	it("retries failed features and returns shouldExit=false when retries available", async () => {
 		// True deadlock scenario:
 		// - F1 in I1 completed
 		// - F2 in I1 failed (but has no blocking deps of its own - it just failed during execution)
@@ -573,7 +481,7 @@ describe("detectAndHandleDeadlock", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "ready")];
 
-		const result = detectAndHandleDeadlock(instances, manifest, true);
+		const result = await detectAndHandleDeadlock(instances, manifest, true);
 
 		// Deadlock detected: F1 is failed and blocking I2.F1
 		// F1 should be retried
@@ -595,7 +503,7 @@ describe("detectAndHandleDeadlock", () => {
 		);
 	});
 
-	it("marks initiative as failed and returns shouldExit=true when max retries exceeded", () => {
+	it("marks initiative as failed and returns shouldExit=true when max retries exceeded", async () => {
 		// Similar to retry test but with max retries already exceeded
 		const manifest = createTestManifest(
 			[
@@ -624,7 +532,7 @@ describe("detectAndHandleDeadlock", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "ready")];
 
-		const result = detectAndHandleDeadlock(instances, manifest, true);
+		const result = await detectAndHandleDeadlock(instances, manifest, true);
 
 		expect(result.shouldExit).toBe(true);
 		expect(result.retriedCount).toBe(0);
@@ -642,7 +550,7 @@ describe("detectAndHandleDeadlock", () => {
 		);
 	});
 
-	it("handles multiple failed features with different retry counts", () => {
+	it("handles multiple failed features with different retry counts", async () => {
 		// Two failed features in I1, both blocked by unmet dependency
 		// F1 can retry (retry_count: 2), F2 exhausted retries (retry_count: 3)
 		const manifest = createTestManifest(
@@ -679,7 +587,7 @@ describe("detectAndHandleDeadlock", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "ready")];
 
-		const result = detectAndHandleDeadlock(instances, manifest, true);
+		const result = await detectAndHandleDeadlock(instances, manifest, true);
 
 		// F1 can be retried, so shouldExit should be false
 		expect(result.shouldExit).toBe(false);
@@ -688,7 +596,7 @@ describe("detectAndHandleDeadlock", () => {
 		expect(result.failedInitiatives).toContain("S1692.I1");
 	});
 
-	it("does not double-mark initiative as failed", () => {
+	it("does not double-mark initiative as failed", async () => {
 		const manifest = createTestManifest(
 			[
 				{
@@ -715,7 +623,7 @@ describe("detectAndHandleDeadlock", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "ready")];
 
-		const result = detectAndHandleDeadlock(instances, manifest, true);
+		const result = await detectAndHandleDeadlock(instances, manifest, true);
 
 		// Should not double-add the initiative to failedInitiatives
 		expect(result.failedInitiatives).toHaveLength(0);
@@ -723,7 +631,7 @@ describe("detectAndHandleDeadlock", () => {
 });
 
 describe("regression: normal operation not affected", () => {
-	it("does not detect deadlock during normal feature completion", () => {
+	it("does not detect deadlock during normal feature completion", async () => {
 		const manifest = createTestManifest(
 			[
 				{ id: "S1692.I1.F1", status: "completed" },
@@ -735,7 +643,7 @@ describe("regression: normal operation not affected", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "ready")];
 
-		const result = detectAndHandleDeadlock(instances, manifest, true);
+		const result = await detectAndHandleDeadlock(instances, manifest, true);
 
 		// F3 is available, so no deadlock
 		expect(result.shouldExit).toBe(false);
@@ -743,7 +651,7 @@ describe("regression: normal operation not affected", () => {
 		expect(result.failedInitiatives).toHaveLength(0);
 	});
 
-	it("does not detect deadlock when all features are completed", () => {
+	it("does not detect deadlock when all features are completed", async () => {
 		const manifest = createTestManifest(
 			[
 				{ id: "S1692.I1.F1", status: "completed" },
@@ -755,13 +663,13 @@ describe("regression: normal operation not affected", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "ready")];
 
-		const result = detectAndHandleDeadlock(instances, manifest, true);
+		const result = await detectAndHandleDeadlock(instances, manifest, true);
 
 		expect(result.shouldExit).toBe(false);
 		expect(result.retriedCount).toBe(0);
 	});
 
-	it("does not detect deadlock when features are blocked by incomplete dependencies", () => {
+	it("does not detect deadlock when features are blocked by incomplete dependencies", async () => {
 		// Scenario: F2 depends on F1 which is in_progress (not failed)
 		// This is normal operation - not a deadlock
 		const manifest = createTestManifest(
@@ -782,7 +690,7 @@ describe("regression: normal operation not affected", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "busy")];
 
-		const result = detectAndHandleDeadlock(instances, manifest, true);
+		const result = await detectAndHandleDeadlock(instances, manifest, true);
 
 		// Sandbox is busy, so no deadlock check performed
 		expect(result.shouldExit).toBe(false);
@@ -864,7 +772,7 @@ describe("detectAndHandleDeadlock - phantom completion recovery", () => {
 		vi.clearAllMocks();
 	});
 
-	it("recovers phantom-completed features before checking for failed features", () => {
+	it("recovers phantom-completed features before checking for failed features", async () => {
 		// Scenario: Feature has all tasks done but status is in_progress
 		// This should be recovered as phantom completion, not treated as failed
 		const manifest = createTestManifest(
@@ -892,7 +800,7 @@ describe("detectAndHandleDeadlock - phantom completion recovery", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "ready")];
 
-		const result = detectAndHandleDeadlock(instances, manifest, true);
+		const result = await detectAndHandleDeadlock(instances, manifest, true);
 
 		// Phantom completion should be detected and recovered
 		expect(result.shouldExit).toBe(false);
@@ -915,7 +823,7 @@ describe("detectAndHandleDeadlock - phantom completion recovery", () => {
 		);
 	});
 
-	it("updates initiative status when phantom completion makes initiative complete", () => {
+	it("updates initiative status when phantom completion makes initiative complete", async () => {
 		// All features in initiative are either completed or phantom-completed
 		const manifest = createTestManifest(
 			[
@@ -939,14 +847,14 @@ describe("detectAndHandleDeadlock - phantom completion recovery", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "ready")];
 
-		detectAndHandleDeadlock(instances, manifest, true);
+		await detectAndHandleDeadlock(instances, manifest, true);
 
 		// Initiative should now be completed
 		const initiative = manifest.initiatives.find((i) => i.id === "S1692.I1");
 		expect(initiative?.status).toBe("completed");
 	});
 
-	it("processes multiple phantom-completed features", () => {
+	it("processes multiple phantom-completed features", async () => {
 		const manifest = createTestManifest(
 			[
 				{
@@ -969,7 +877,7 @@ describe("detectAndHandleDeadlock - phantom completion recovery", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "ready")];
 
-		const result = detectAndHandleDeadlock(instances, manifest, true);
+		const result = await detectAndHandleDeadlock(instances, manifest, true);
 
 		// Both phantom completions should be recovered
 		expect(result.retriedCount).toBe(2);
@@ -979,7 +887,7 @@ describe("detectAndHandleDeadlock - phantom completion recovery", () => {
 		expect(manifest.feature_queue[1]?.status).toBe("completed");
 	});
 
-	it("does not process phantom completion when sandboxes are busy", () => {
+	it("does not process phantom completion when sandboxes are busy", async () => {
 		const manifest = createTestManifest(
 			[
 				{
@@ -996,7 +904,7 @@ describe("detectAndHandleDeadlock - phantom completion recovery", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "busy")];
 
-		const result = detectAndHandleDeadlock(instances, manifest, true);
+		const result = await detectAndHandleDeadlock(instances, manifest, true);
 
 		// Sandbox is busy - no deadlock detection runs
 		expect(result.shouldExit).toBe(false);
@@ -1006,7 +914,7 @@ describe("detectAndHandleDeadlock - phantom completion recovery", () => {
 		expect(manifest.feature_queue[0]?.status).toBe("in_progress");
 	});
 
-	it("recovers phantom completion even when failed features also exist", () => {
+	it("recovers phantom completion even when failed features also exist", async () => {
 		// Scenario: All features have blocked dependencies OR are phantom/failed
 		// - F1 in I1 is phantom completed (tasks done, status in_progress)
 		// - F2 in I1 failed, with unmet dependency (blocked, can't be picked up)
@@ -1046,7 +954,7 @@ describe("detectAndHandleDeadlock - phantom completion recovery", () => {
 
 		const instances = [createMockSandboxInstance("sbx-a", "ready")];
 
-		const result = detectAndHandleDeadlock(instances, manifest, true);
+		const result = await detectAndHandleDeadlock(instances, manifest, true);
 
 		// Phantom completion should be recovered first
 		expect(manifest.feature_queue[0]?.status).toBe("completed");

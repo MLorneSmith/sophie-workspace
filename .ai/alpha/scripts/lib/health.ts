@@ -21,10 +21,9 @@ import type {
 	SandboxProgress,
 	SpecManifest,
 } from "../types/index.js";
-import { transitionFeatureStatus } from "./feature-transitions.js";
 import { validateProgressStatus } from "./progress-file.js";
 import { createLogger } from "./logger.js";
-import { saveManifest } from "./manifest.js";
+import type { RecoveryCoordinator } from "./recovery-coordinator.js";
 import { SandboxProgressSchema, safeParseProgress } from "./schemas/index.js";
 import { getForceKillCommand, getProviderDisplayName } from "./provider.js";
 import { sleep } from "./utils.js";
@@ -267,19 +266,26 @@ export async function killClaudeProcess(
 // ============================================================================
 
 /**
-
-* Run health checks on all busy sandboxes and handle unhealthy ones.
-* Returns list of sandboxes that need feature reassignment.
-*
-* @param instances - All sandbox instances
-* @param manifest - The spec manifest
-* @returns List of sandboxes that need reassignment
+ * Run health checks on all busy sandboxes and handle unhealthy ones.
+ * Returns list of sandboxes that need feature reassignment.
+ *
+ * Bug fix #2077: Recovery is now delegated to RecoveryCoordinator
+ * which provides per-feature mutex, idempotent recovery, and
+ * centralized retry budget management.
+ *
+ * @param instances - All sandbox instances
+ * @param manifest - The spec manifest
+ * @param uiEnabled - Whether UI mode is enabled
+ * @param provider - Agent provider (claude or gpt)
+ * @param coordinator - Recovery coordinator for centralized recovery
+ * @returns List of sandboxes that need reassignment
  */
 export async function runHealthChecks(
 	instances: SandboxInstance[],
 	manifest: SpecManifest,
 	uiEnabled: boolean = false,
 	provider: AgentProvider = "claude",
+	coordinator?: RecoveryCoordinator,
 ): Promise<SandboxInstance[]> {
 	const { log } = createLogger(uiEnabled);
 	const needsReassignment: SandboxInstance[] = [];
@@ -291,69 +297,36 @@ export async function runHealthChecks(
 
 		const health = await checkSandboxHealth(instance, manifest, uiEnabled);
 
-		if (!health.healthy) {
+		if (!health.healthy && instance.currentFeature) {
 			log(`\n   ⚠️ HEALTH CHECK FAILED [${instance.label}]: ${health.message}`);
 
-			// Check if we can retry
-			if (instance.retryCount < MAX_SANDBOX_RETRIES) {
-				log(
-					`   │   Attempting recovery (retry ${instance.retryCount + 1}/${MAX_SANDBOX_RETRIES})...`,
+			if (coordinator) {
+				// Delegate recovery to coordinator (Bug fix #2077)
+				const result = await coordinator.recoverFeature(
+					instance.currentFeature,
+					`Health check failed: ${health.message}`,
+					"health_check",
 				);
 
-				const killed = await killClaudeProcess(instance, uiEnabled, provider);
-				if (killed) {
+				if (result.executed) {
 					instance.retryCount++;
-					instance.featureStartedAt = undefined;
-					instance.lastProgressSeen = undefined;
-					instance.lastHeartbeat = undefined;
-
-					// Reset feature to pending so it can be retried
-					const feature = manifest.feature_queue.find(
-						(f) => f.id === instance.currentFeature,
-					);
-					if (feature) {
-						transitionFeatureStatus(feature, manifest, "pending", {
-							reason: "health check recovery - retrying",
-							skipSave: true,
-						});
+					if (!result.willRetry) {
+						log(
+							`   │   ✗ Feature #${instance.currentFeature} max retries exceeded`,
+						);
+					} else {
+						log(`   │   ✓ ${instance.label} ready for retry`);
 					}
-
-					instance.currentFeature = null;
-					instance.status = "ready";
-					instance.outputLineCount = 0;
-					instance.hasReceivedOutput = false;
-					saveManifest(manifest);
-
-					log(`   │   ✓ ${instance.label} ready for retry`);
-				} else {
-					// Kill failed - mark sandbox as failed
-					log("   │   ✗ Recovery failed, marking sandbox as failed");
+				}
+			} else {
+				// Sandbox-level retries exhausted — mark sandbox as failed
+				if (instance.retryCount >= MAX_SANDBOX_RETRIES) {
+					log(
+						`   │   ✗ Max sandbox retries (${MAX_SANDBOX_RETRIES}) exceeded, marking sandbox as failed`,
+					);
 					instance.status = "failed";
 					needsReassignment.push(instance);
 				}
-			} else {
-				log(
-					`   │   ✗ Max retries (${MAX_SANDBOX_RETRIES}) exceeded, marking feature as failed`,
-				);
-
-				// Mark feature as failed
-				const feature = manifest.feature_queue.find(
-					(f) => f.id === instance.currentFeature,
-				);
-				if (feature) {
-					feature.error = `Health check failed: ${health.message}`;
-					transitionFeatureStatus(feature, manifest, "failed", {
-						reason: "health check failed - max retries exceeded",
-						skipSave: true,
-					});
-				}
-
-				instance.currentFeature = null;
-				instance.status = "ready"; // Allow sandbox to take new work
-				instance.retryCount = 0; // Reset for next feature
-				instance.outputLineCount = 0;
-				instance.hasReceivedOutput = false;
-				saveManifest(manifest);
 			}
 		}
 	}

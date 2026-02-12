@@ -79,7 +79,10 @@ vi.mock("../work-queue.js", () => ({
 }));
 
 import type { FeatureEntry } from "../../types/index.js";
-import { extendSandboxTimeout, getSandboxesNeedingRestart } from "../sandbox.js";
+import {
+	extendSandboxTimeout,
+	getSandboxesNeedingRestart,
+} from "../sandbox.js";
 import { shouldRetryFailedFeature } from "../work-queue.js";
 
 // Helper factories
@@ -321,9 +324,7 @@ describe("Bug fix #2074: Retry Guard", () => {
 		it("handles boundary: exactly 10s ago still triggers guard", async () => {
 			// At exactly 10s, Date.now() - last_reset_at = 10000, which is NOT < 10000
 			// So this should NOT trigger the guard (boundary test)
-			const exactlyTenSecondsAgo = new Date(
-				Date.now() - 10_000,
-			).toISOString();
+			const exactlyTenSecondsAgo = new Date(Date.now() - 10_000).toISOString();
 			const feature = createTestFeature("F1", {
 				status: "in_progress",
 				assigned_sandbox: "sbx-a",

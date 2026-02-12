@@ -12,7 +12,7 @@ import { runWorkLoop, WorkLoop, type WorkLoopOptions } from "../work-loop.js";
 
 // Mock dependencies
 vi.mock("../deadlock-handler.js", () => ({
-	detectAndHandleDeadlock: vi.fn().mockReturnValue({
+	detectAndHandleDeadlock: vi.fn().mockResolvedValue({
 		shouldExit: false,
 		retriedCount: 0,
 		failedInitiatives: [],
@@ -307,7 +307,7 @@ describe("WorkLoop", () => {
 			const { detectAndHandleDeadlock } = await import(
 				"../deadlock-handler.js"
 			);
-			vi.mocked(detectAndHandleDeadlock).mockReturnValue({
+			vi.mocked(detectAndHandleDeadlock).mockResolvedValue({
 				shouldExit: true,
 				retriedCount: 0,
 				failedInitiatives: ["I1"],
@@ -336,7 +336,7 @@ describe("WorkLoop", () => {
 			const { detectAndHandleDeadlock } = await import(
 				"../deadlock-handler.js"
 			);
-			vi.mocked(detectAndHandleDeadlock).mockReturnValue({
+			vi.mocked(detectAndHandleDeadlock).mockResolvedValue({
 				shouldExit: true, // Force exit to avoid infinite loop
 				retriedCount: 0,
 				failedInitiatives: [],

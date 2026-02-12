@@ -267,7 +267,7 @@ function extractFeatureDependenciesRaw(featureDir: string): RawDependency[] {
 
 			// Match bare F# references but exclude those preceded by . (part of S#.I#.F#)
 			// or - (part of range notation like F1-F3)
-			const internalMatches = section.match(/(?<![.\-])\bF(\d+)\b/g);
+			const internalMatches = section.match(/(?<![.-])\bF(\d+)\b/g);
 			if (internalMatches) {
 				for (const internalMatch of internalMatches) {
 					const fNum = internalMatch.slice(1);
