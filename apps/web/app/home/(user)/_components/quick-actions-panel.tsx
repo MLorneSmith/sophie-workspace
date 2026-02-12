@@ -30,7 +30,7 @@ function ActionButton({
 	return (
 		<Button asChild variant={variant} className="w-full justify-start gap-2">
 			<Link href={href}>
-				<Icon className="h-4 w-4" />
+				<Icon className="h-4 w-4" aria-hidden="true" />
 				{label}
 			</Link>
 		</Button>
@@ -47,7 +47,11 @@ export default function QuickActionsPanel({
 			<CardHeader>
 				<CardTitle>Quick Actions</CardTitle>
 			</CardHeader>
-			<CardContent className="flex flex-col gap-2">
+			<CardContent
+				className="flex flex-col gap-2"
+				role="navigation"
+				aria-label="Quick actions"
+			>
 				{courseInProgress && (
 					<ActionButton
 						icon={PlayCircle}

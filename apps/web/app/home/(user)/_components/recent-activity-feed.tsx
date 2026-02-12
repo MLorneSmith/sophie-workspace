@@ -13,7 +13,7 @@ interface RecentActivityFeedProps {
 export function RecentActivityFeed({ activities }: RecentActivityFeedProps) {
 	if (activities.length === 0) {
 		return (
-			<Card>
+			<Card aria-label="Recent activity">
 				<CardHeader className="pb-2">
 					<CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
 				</CardHeader>
@@ -25,12 +25,16 @@ export function RecentActivityFeed({ activities }: RecentActivityFeedProps) {
 	}
 
 	return (
-		<Card>
+		<Card aria-label="Recent activity timeline">
 			<CardHeader className="pb-2">
 				<CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<ul className="space-y-0">
+				<ul
+					className="space-y-0"
+					aria-live="polite"
+					aria-label="Recent activity timeline"
+				>
 					{activities.map((activity, index) => (
 						<ActivityItem
 							key={activity.id}

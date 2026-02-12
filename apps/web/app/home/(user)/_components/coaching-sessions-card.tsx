@@ -15,7 +15,7 @@ export function CoachingSessionsCard({ sessions }: CoachingSessionsCardProps) {
 		<Card className="flex h-64 flex-col overflow-hidden">
 			<CardHeader className="pb-3">
 				<CardTitle className="flex items-center gap-2">
-					<Calendar className="h-4 w-4" />
+					<Calendar className="h-4 w-4" aria-hidden="true" />
 					Coaching Sessions
 				</CardTitle>
 			</CardHeader>
@@ -63,7 +63,7 @@ function SessionRow({ session }: { session: CoachingSessionData }) {
 				<div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
 					<span>{session.date}</span>
 					<span className="flex items-center gap-1">
-						<Clock className="h-3 w-3" />
+						<Clock className="h-3 w-3" aria-hidden="true" />
 						{session.time}
 					</span>
 				</div>
@@ -74,10 +74,11 @@ function SessionRow({ session }: { session: CoachingSessionData }) {
 					href={session.joinLink}
 					target="_blank"
 					rel="noopener noreferrer"
+					aria-label={`Join session: ${session.title} on ${session.date}`}
 					className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline"
 				>
 					Join Session
-					<ExternalLink className="h-3 w-3" />
+					<ExternalLink className="h-3 w-3" aria-hidden="true" />
 				</a>
 			)}
 		</div>
@@ -97,8 +98,13 @@ function BookingCta() {
 			<p className="text-muted-foreground text-sm">No upcoming sessions</p>
 			{bookingUrl ? (
 				<Button variant="outline" size="sm" asChild>
-					<a href={bookingUrl} target="_blank" rel="noopener noreferrer">
-						<Calendar className="mr-2 h-4 w-4" />
+					<a
+						href={bookingUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label="Book a coaching session"
+					>
+						<Calendar className="mr-2 h-4 w-4" aria-hidden="true" />
 						Book a Session
 					</a>
 				</Button>

@@ -66,9 +66,9 @@ function getColumns(): ColumnDef<PresentationData>[] {
 						<Button variant="ghost" size="icon" asChild>
 							<Link
 								href={`/home/ai/storyboard/${row.original.submission.id}`}
-								aria-label="Edit presentation"
+								aria-label={`Edit presentation: ${row.original.submission.title ?? "Untitled"}`}
 							>
-								<Pencil className="h-4 w-4" />
+								<Pencil className="h-4 w-4" aria-hidden="true" />
 							</Link>
 						</Button>
 					</div>
@@ -92,15 +92,18 @@ export function PresentationsTable({
 				</div>
 
 				<Button asChild>
-					<Link href="/home/ai/storyboard">
-						<Plus className="mr-2 h-4 w-4" />
+					<Link href="/home/ai/storyboard" aria-label="Create new presentation">
+						<Plus className="mr-2 h-4 w-4" aria-hidden="true" />
 						New Presentation
 					</Link>
 				</Button>
 			</CardHeader>
 
 			<CardContent className="w-full">
-				<div className="overflow-x-auto">
+				<div
+					className="overflow-x-auto"
+					aria-label={`Presentations list with ${presentations.length} items`}
+				>
 					<DataTable data={presentations} columns={getColumns()} />
 				</div>
 			</CardContent>

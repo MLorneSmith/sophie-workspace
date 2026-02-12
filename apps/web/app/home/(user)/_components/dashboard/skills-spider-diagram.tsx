@@ -72,21 +72,30 @@ export function SkillsSpiderDiagram({
 				<CardTitle>Skills Assessment</CardTitle>
 			</CardHeader>
 			<CardContent className="pb-0">
-				<ChartContainer
-					config={chartConfig}
-					className="mx-auto aspect-square max-h-[250px]"
+				<div
+					role="img"
+					aria-label={`Skills assessment results across ${chartData.length} categories: ${chartData.map((d) => `${d.category} ${d.score}`).join(", ")}`}
+					aria-describedby="skills-chart-desc"
 				>
-					<RadarChart data={chartData}>
-						<ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-						<PolarAngleAxis dataKey="category" />
-						<PolarGrid />
-						<Radar
-							dataKey="score"
-							fill="var(--color-score)"
-							fillOpacity={0.6}
-						/>
-					</RadarChart>
-				</ChartContainer>
+					<p id="skills-chart-desc" className="sr-only">
+						{`Radar chart showing skill scores: ${chartData.map((d) => `${d.category}: ${d.score} out of 100`).join(". ")}.`}
+					</p>
+					<ChartContainer
+						config={chartConfig}
+						className="mx-auto aspect-square max-h-[250px]"
+					>
+						<RadarChart data={chartData}>
+							<ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+							<PolarAngleAxis dataKey="category" />
+							<PolarGrid />
+							<Radar
+								dataKey="score"
+								fill="var(--color-score)"
+								fillOpacity={0.6}
+							/>
+						</RadarChart>
+					</ChartContainer>
+				</div>
 			</CardContent>
 		</Card>
 	);

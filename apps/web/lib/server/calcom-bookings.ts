@@ -22,9 +22,7 @@ async function _fetchUserBookings(
 				(booking) =>
 					booking.status === "accepted" && new Date(booking.start) > now,
 			)
-			.sort(
-				(a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
-			)
+			.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
 			.slice(0, 2);
 	} catch (error) {
 		logger.error({ ...ctx, error }, "Failed to fetch user bookings");

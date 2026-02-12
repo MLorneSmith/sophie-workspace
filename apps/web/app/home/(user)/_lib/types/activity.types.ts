@@ -43,4 +43,8 @@ export interface PresentationActivity {
 	link: string | null;
 }
 
-export type ActivityItem = LessonActivity | QuizActivity | AssessmentActivity | PresentationActivity;
+export type ActivityItem =
+	| LessonActivity
+	| QuizActivity
+	| AssessmentActivity
+	| PresentationActivity;

@@ -42,7 +42,7 @@ export function KanbanSummaryCard({ kanbanSummary }: KanbanSummaryCardProps) {
 			<CardHeader className="pb-3">
 				<div className="flex items-center justify-between">
 					<CardTitle className="flex items-center gap-2">
-						<ClipboardList className="h-4 w-4" />
+						<ClipboardList className="h-4 w-4" aria-hidden="true" />
 						Current Tasks
 					</CardTitle>
 					{doingCount > 0 && (
@@ -75,6 +75,7 @@ export function KanbanSummaryCard({ kanbanSummary }: KanbanSummaryCardProps) {
 						href="/home/kanban"
 						className="text-muted-foreground hover:text-foreground text-sm transition-colors"
 						data-testid="view-kanban-link"
+						aria-label={`View all ${doingCount} in-progress tasks in Kanban board`}
 					>
 						View Kanban &rarr;
 					</Link>
@@ -113,7 +114,10 @@ function TaskPreview({
 				</div>
 			</div>
 			{kanbanSummary && kanbanSummary.totalTasks > 0 && (
-				<div className="flex gap-3 text-xs text-muted-foreground">
+				<div
+					className="flex gap-3 text-xs text-muted-foreground"
+					aria-label={`Task status summary: ${kanbanSummary.statusCounts.do ?? 0} to do, ${kanbanSummary.statusCounts.doing ?? 0} doing, ${kanbanSummary.statusCounts.done ?? 0} done`}
+				>
 					<span>{kanbanSummary.statusCounts.do ?? 0} to do</span>
 					<span>{kanbanSummary.statusCounts.doing ?? 0} doing</span>
 					<span>{kanbanSummary.statusCounts.done ?? 0} done</span>

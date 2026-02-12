@@ -14,6 +14,7 @@ import { getEnableCourses } from "~/lib/server/feature-flags.server";
 import { withI18n } from "~/lib/i18n/with-i18n";
 
 // home imports
+import { SkipToContent } from "./_components/dashboard/skip-to-content";
 import { HomeMenuNavigation } from "./_components/home-menu-navigation";
 import { HomeMobileNavigation } from "./_components/home-mobile-navigation";
 import { HomeSidebar } from "./_components/home-sidebar";
@@ -39,6 +40,8 @@ function SidebarLayout({ children }: React.PropsWithChildren) {
 
 	return (
 		<UserWorkspaceContextProvider value={workspace}>
+			<SkipToContent />
+
 			<SidebarProvider defaultOpen={state.open}>
 				<Page style={"sidebar"}>
 					<PageNavigation>
@@ -55,7 +58,7 @@ function SidebarLayout({ children }: React.PropsWithChildren) {
 						/>
 					</PageMobileNavigation>
 
-					{children}
+					<main id="main-content">{children}</main>
 				</Page>
 			</SidebarProvider>
 		</UserWorkspaceContextProvider>
@@ -69,6 +72,8 @@ function HeaderLayout({ children }: React.PropsWithChildren) {
 
 	return (
 		<UserWorkspaceContextProvider value={workspace}>
+			<SkipToContent />
+
 			<Page style={"header"}>
 				<PageNavigation>
 					<HomeMenuNavigation
@@ -84,7 +89,7 @@ function HeaderLayout({ children }: React.PropsWithChildren) {
 					/>
 				</PageMobileNavigation>
 
-				{children}
+				<main id="main-content">{children}</main>
 			</Page>
 		</UserWorkspaceContextProvider>
 	);

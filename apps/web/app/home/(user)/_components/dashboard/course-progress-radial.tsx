@@ -35,6 +35,9 @@ export function CourseProgressRadial({ data }: CourseProgressRadialProps) {
 	const percentage = data?.courseProgress.completion_percentage ?? 0;
 	const isZero = percentage === 0;
 	const chartData = toChartData(percentage);
+	const completedLessons = data?.completedLessons ?? 0;
+	const totalLessons = data?.totalLessons ?? 0;
+	const roundedPercentage = Math.round(percentage);
 
 	return (
 		<Card className="h-64">
@@ -42,7 +45,17 @@ export function CourseProgressRadial({ data }: CourseProgressRadialProps) {
 				<CardTitle className="text-sm font-medium">Course Progress</CardTitle>
 			</CardHeader>
 			<CardContent className="flex flex-col items-center justify-center pb-4">
-				<div className="relative">
+				<div
+					className="relative"
+					role="img"
+					aria-label={`Course progress: ${roundedPercentage}% complete, ${completedLessons} of ${totalLessons} lessons`}
+					aria-describedby="course-progress-desc"
+				>
+					<span id="course-progress-desc" className="sr-only">
+						Radial chart showing course completion progress. You have completed{" "}
+						{completedLessons} out of {totalLessons} total lessons, which is{" "}
+						{roundedPercentage} percent of the course.
+					</span>
 					<ChartContainer
 						config={chartConfig}
 						className="mx-auto aspect-square max-h-[150px]"
@@ -65,10 +78,11 @@ export function CourseProgressRadial({ data }: CourseProgressRadialProps) {
 						</PieChart>
 					</ChartContainer>
 
-					<div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-						<span className="text-2xl font-bold">
-							{Math.round(percentage)}%
-						</span>
+					<div
+						className="pointer-events-none absolute inset-0 flex items-center justify-center"
+						aria-hidden="true"
+					>
+						<span className="text-2xl font-bold">{roundedPercentage}%</span>
 					</div>
 				</div>
 
