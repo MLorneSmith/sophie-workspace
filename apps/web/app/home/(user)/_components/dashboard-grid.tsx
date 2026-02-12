@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 import type { DashboardData } from "../_lib/dashboard/types";
 import { CourseProgressRadial } from "./dashboard/course-progress-radial";
 import QuickActionsPanel from "./quick-actions-panel";
+import { RecentActivityFeed } from "./recent-activity-feed";
 import { SkillsSpiderDiagram } from "./dashboard/skills-spider-diagram";
 import { KanbanSummaryCard } from "./kanban-summary-card";
 
@@ -28,18 +29,7 @@ export function DashboardGrid({ data }: DashboardGridProps) {
 
 			{/* Row 2: Activity & Actions Widgets */}
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-				<Card className="h-64">
-					<CardHeader>
-						<CardTitle>Activity Feed</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<p className="text-muted-foreground text-sm">
-							{data.activityFeed.length > 0
-								? `${data.activityFeed.length} recent activities`
-								: "No recent activity"}
-						</p>
-					</CardContent>
-				</Card>
+				<RecentActivityFeed activities={data.activities} />
 
 				<QuickActionsPanel
 					courseInProgress={data.quickActionsContext.courseInProgress}
