@@ -7,6 +7,7 @@ import { withI18n } from "~/lib/i18n/with-i18n";
 // local imports
 import { DashboardGrid } from "./_components/dashboard-grid";
 import { HomeLayoutPageHeader } from "./_components/home-page-header";
+import { loadDashboardPageData } from "./_lib/server/dashboard-page.loader";
 
 export const generateMetadata = async () => {
 	const i18n = await createI18nServerInstance();
@@ -17,7 +18,9 @@ export const generateMetadata = async () => {
 	};
 };
 
-function UserHomePage() {
+async function UserHomePage() {
+	const dashboardData = await loadDashboardPageData();
+
 	return (
 		<>
 			<HomeLayoutPageHeader
@@ -26,7 +29,7 @@ function UserHomePage() {
 			/>
 
 			<PageBody>
-				<DashboardGrid />
+				<DashboardGrid data={dashboardData} />
 			</PageBody>
 		</>
 	);

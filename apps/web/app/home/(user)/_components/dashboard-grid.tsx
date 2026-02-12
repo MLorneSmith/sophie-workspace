@@ -2,7 +2,13 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 
-export function DashboardGrid() {
+import type { DashboardData } from "../_lib/dashboard/types";
+
+interface DashboardGridProps {
+	data: DashboardData;
+}
+
+export function DashboardGrid({ data }: DashboardGridProps) {
 	return (
 		<div className="dashboard-grid space-y-6">
 			{/* Row 1: Progress Widgets */}
@@ -13,7 +19,9 @@ export function DashboardGrid() {
 					</CardHeader>
 					<CardContent>
 						<p className="text-muted-foreground text-sm">
-							Course progress widget placeholder
+							{data.courseProgress
+								? `${data.courseProgress.completedLessons} of ${data.courseProgress.totalLessons} lessons completed`
+								: "No course progress yet"}
 						</p>
 					</CardContent>
 				</Card>
@@ -24,7 +32,9 @@ export function DashboardGrid() {
 					</CardHeader>
 					<CardContent>
 						<p className="text-muted-foreground text-sm">
-							Skills radar widget placeholder
+							{data.skillsRadar
+								? `Strongest: ${data.skillsRadar.highestCategory ?? "N/A"}`
+								: "No assessment data yet"}
 						</p>
 					</CardContent>
 				</Card>
@@ -35,7 +45,9 @@ export function DashboardGrid() {
 					</CardHeader>
 					<CardContent>
 						<p className="text-muted-foreground text-sm">
-							Kanban summary widget placeholder
+							{data.kanbanSummary
+								? `${data.kanbanSummary.doingCount} tasks in progress`
+								: "No tasks yet"}
 						</p>
 					</CardContent>
 				</Card>
@@ -49,7 +61,9 @@ export function DashboardGrid() {
 					</CardHeader>
 					<CardContent>
 						<p className="text-muted-foreground text-sm">
-							Activity feed widget placeholder
+							{data.activityFeed.length > 0
+								? `${data.activityFeed.length} recent activities`
+								: "No recent activity"}
 						</p>
 					</CardContent>
 				</Card>
@@ -60,7 +74,9 @@ export function DashboardGrid() {
 					</CardHeader>
 					<CardContent>
 						<p className="text-muted-foreground text-sm">
-							Quick actions widget placeholder
+							{data.quickActions.length > 0
+								? `${data.quickActions.length} actions available`
+								: "No actions available"}
 						</p>
 					</CardContent>
 				</Card>
@@ -71,7 +87,9 @@ export function DashboardGrid() {
 					</CardHeader>
 					<CardContent>
 						<p className="text-muted-foreground text-sm">
-							Coaching sessions widget placeholder
+							{data.coachingSessions.length > 0
+								? `${data.coachingSessions.length} sessions`
+								: "No upcoming sessions"}
 						</p>
 					</CardContent>
 				</Card>
@@ -85,7 +103,9 @@ export function DashboardGrid() {
 					</CardHeader>
 					<CardContent>
 						<p className="text-muted-foreground text-sm">
-							Presentations table widget placeholder
+							{data.presentations.length > 0
+								? `${data.presentations.length} presentations`
+								: "No presentations yet"}
 						</p>
 					</CardContent>
 				</Card>
