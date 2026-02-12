@@ -8,6 +8,7 @@ import QuickActionsPanel from "./quick-actions-panel";
 import { RecentActivityFeed } from "./recent-activity-feed";
 import { SkillsSpiderDiagram } from "./dashboard/skills-spider-diagram";
 import { KanbanSummaryCard } from "./kanban-summary-card";
+import { PresentationsTable } from "./presentations-table";
 
 interface DashboardGridProps {
 	data: DashboardData;
@@ -53,18 +54,7 @@ export function DashboardGrid({ data }: DashboardGridProps) {
 
 			{/* Row 3: Full-Width Presentations Table */}
 			<div className="grid grid-cols-1">
-				<Card className="h-96">
-					<CardHeader>
-						<CardTitle>Presentations Table</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<p className="text-muted-foreground text-sm">
-							{data.presentations.length > 0
-								? `${data.presentations.length} presentations`
-								: "No presentations yet"}
-						</p>
-					</CardContent>
-				</Card>
+				<PresentationsTable presentations={data.presentations} />
 			</div>
 		</div>
 	);
