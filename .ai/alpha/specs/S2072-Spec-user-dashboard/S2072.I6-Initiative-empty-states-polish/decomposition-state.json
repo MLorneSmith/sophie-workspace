@@ -1,0 +1,31 @@
+{
+  "initiative_id": "S2072.I6",
+  "initiative_name": "Empty States & Polish",
+  "spec_id": "2072",
+  "status": "in_progress",
+  "current_phase": "decomposition",
+  "started_at": "2026-02-12T13:45:00Z",
+  "features": {
+    "S2072.I6.F1": {
+      "name": "Dashboard Loading Orchestrator",
+      "status": "pending",
+      "priority": 1
+    },
+    "S2072.I6.F2": {
+      "name": "Accessibility Compliance",
+      "status": "pending",
+      "priority": 2
+    },
+    "S2072.I6.F3": {
+      "name": "Dashboard Integration Verification",
+      "status": "pending",
+      "priority": 3,
+      "verify_only": true
+    }
+  },
+  "total_features": 3,
+  "completed_features": 0,
+  "total_tasks": 0,
+  "total_spikes": 0,
+  "spikes_pending": []
+}

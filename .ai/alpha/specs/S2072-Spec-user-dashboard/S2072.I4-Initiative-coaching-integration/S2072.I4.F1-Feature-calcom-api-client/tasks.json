@@ -1,0 +1,415 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I4.F1",
+    "feature_name": "Cal.com API Client",
+    "feature_slug": "calcom-api-client",
+    "initiative_id": "S2072.I4",
+    "spec_id": 2072,
+    "created_at": "2026-02-12T12:30:00Z",
+    "complexity": {
+      "score": 40,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": [
+      {
+        "name": "CALCOM_API_KEY",
+        "description": "Cal.com V2 API key with cal_ prefix for Bearer token authentication",
+        "source": "Cal.com dashboard → Settings → API",
+        "required": true,
+        "scope": "server"
+      },
+      {
+        "name": "NEXT_PUBLIC_CALCOM_COACH_USERNAME",
+        "description": "Coach username for building booking URLs",
+        "source": "Cal.com profile settings",
+        "required": true,
+        "scope": "client"
+      },
+      {
+        "name": "NEXT_PUBLIC_CALCOM_EVENT_SLUG",
+        "description": "Event type slug (e.g., 60min) for booking widget",
+        "source": "Cal.com event type configuration",
+        "required": true,
+        "scope": "client"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S2072.I4.F1.T1",
+      "type": "task",
+      "name": "Define Cal.com booking response types",
+      "action": {
+        "verb": "Create",
+        "target": "TypeScript interfaces for Cal.com API responses"
+      },
+      "purpose": "Establish type safety for Cal.com V2 API booking data structures",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "TypeScript"
+        ],
+        "constraints": [
+          "Follow Cal.com V2 API response structure",
+          "Export all types for use in client implementation"
+        ]
+      },
+      "input_state": "No Cal.com types exist in codebase",
+      "output_state": "TypeScript interfaces defined in apps/web/_lib/server/calcom-types.ts for booking responses",
+      "acceptance_criterion": "TypeScript interfaces exist for Cal.comBooking, CalcomAttendee, and CalcomBookingsResponse with proper type exports",
+      "verification_command": "test -f apps/web/_lib/server/calcom-types.ts && grep -E 'export (interface|type)' apps/web/_lib/server/calcom-types.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/_lib/server/calcom-types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S2072.I4.F1.T2",
+          "S2072.I4.F1.T3",
+          "S2072.I4.F1.T4",
+          "S2072.I4.F1.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I4.F1.T2",
+      "type": "task",
+      "name": "Create Cal.com environment validation schema",
+      "action": {
+        "verb": "Create",
+        "target": "Zod validation schema for Cal.com environment variables"
+      },
+      "purpose": "Enable fail-fast validation of required Cal.com configuration at module load time",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "packages/mailers/resend/src/index.ts"
+        ],
+        "dependencies": [
+          "zod package",
+          "process.env"
+        ],
+        "constraints": [
+          "Validate CALCOM_API_KEY has cal_ prefix",
+          "Follow existing pattern from Resend mailer implementation",
+          "Schema should be module-level const (not function-scoped)"
+        ]
+      },
+      "input_state": "calcom-types.ts exists with booking interfaces, no validation schema",
+      "output_state": "Zod schema defined in apps/web/_lib/server/calcom-client.ts validating CALCOM_API_KEY format",
+      "acceptance_criterion": "Zod schema validates CALCOM_API_KEY environment variable with cal_ prefix requirement at module scope",
+      "verification_command": "grep -A 5 'const.*CALCOM_API_KEY.*z\\.' apps/web/_lib/server/calcom-client.ts | grep -q 'cal_' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/_lib/server/calcom-client.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2072.I4.F1.T1"
+        ],
+        "blocks": [
+          "S2072.I4.F1.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I4.F1.T3",
+      "type": "task",
+      "name": "Implement Cal.com client class with authentication",
+      "action": {
+        "verb": "Create",
+        "target": "CalcomClient class with Bearer token authentication and required headers"
+      },
+      "purpose": "Provide authenticated HTTP client for Cal.com V2 API requests",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "packages/mailers/resend/src/index.ts",
+          "apps/web/_lib/server/calcom-types.ts"
+        ],
+        "dependencies": [
+          "native fetch API",
+          "validated CALCOM_API_KEY from T2",
+          "Cal.com booking types from T1"
+        ],
+        "constraints": [
+          "Include 'server-only' import at top of file",
+          "Use Bearer token authentication: Authorization: Bearer cal_<key>",
+          "Include required header: cal-api-version: 2024-08-13",
+          "Base URL: https://api.cal.com/v2",
+          "Follow class-based pattern from Resend mailer"
+        ]
+      },
+      "input_state": "Environment validation exists in calcom-client.ts, no client class",
+      "output_state": "CalcomClient class with private fetch method and authentication headers in calcom-client.ts",
+      "acceptance_criterion": "CalcomClient class exists with constructor, private fetch wrapper that includes Authorization and cal-api-version headers",
+      "verification_command": "grep -A 10 'class CalcomClient' apps/web/_lib/server/calcom-client.ts | grep -E '(Authorization|cal-api-version)' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/_lib/server/calcom-client.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2072.I4.F1.T2"
+        ],
+        "blocks": [
+          "S2072.I4.F1.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I4.F1.T4",
+      "type": "task",
+      "name": "Add structured error handling with logger",
+      "action": {
+        "verb": "Add",
+        "target": "Structured logging integration to CalcomClient for error scenarios"
+      },
+      "purpose": "Enable production debugging with contextual error logging for API failures",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/docs/_lib/server/docs.loader.ts",
+          "packages/billing/stripe/src/services/stripe-billing-strategy.service.ts"
+        ],
+        "dependencies": [
+          "@kit/shared/logger getLogger function",
+          "CalcomClient class from T3"
+        ],
+        "constraints": [
+          "Use async getLogger() pattern",
+          "Create logger context object with name and relevant metadata",
+          "Log errors with logger.error() including error object",
+          "Follow pattern from docs.loader.ts"
+        ]
+      },
+      "input_state": "CalcomClient exists with auth headers, no error handling",
+      "output_state": "CalcomClient methods include try-catch blocks with structured logging for API failures",
+      "acceptance_criterion": "CalcomClient methods wrap fetch calls in try-catch with logger.error calls including context object",
+      "verification_command": "grep -B 2 -A 5 'logger.error' apps/web/_lib/server/calcom-client.ts | grep -E '(getLogger|ctx)' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/_lib/server/calcom-client.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2072.I4.F1.T3"
+        ],
+        "blocks": [
+          "S2072.I4.F1.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I4.F1.T5",
+      "type": "task",
+      "name": "Create fetchUpcomingBookings public function",
+      "action": {
+        "verb": "Create",
+        "target": "Exported fetchUpcomingBookings function that uses CalcomClient"
+      },
+      "purpose": "Provide public API for fetching upcoming coaching sessions from Cal.com",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/_lib/server/calcom-types.ts",
+          "apps/web/_lib/server/calcom-client.ts"
+        ],
+        "dependencies": [
+          "CalcomClient from T3",
+          "CalcomBookingsResponse type from T1",
+          "Logger integration from T4"
+        ],
+        "constraints": [
+          "Function signature: fetchUpcomingBookings(email: string): Promise<CalcomBooking[]>",
+          "Filter by attendeeEmail parameter",
+          "Filter by status=accepted",
+          "Return bookings array from response",
+          "Return empty array on error (graceful degradation)",
+          "Export as top-level function"
+        ]
+      },
+      "input_state": "CalcomClient exists with auth and logging, no public fetch function",
+      "output_state": "fetchUpcomingBookings function exported from calcom-client.ts that queries Cal.com V2 API",
+      "acceptance_criterion": "fetchUpcomingBookings function exists and is exported, accepts email parameter, queries /bookings endpoint with filters, returns CalcomBooking array",
+      "verification_command": "grep -A 15 'export.*fetchUpcomingBookings' apps/web/_lib/server/calcom-client.ts | grep -E '(email.*string|CalcomBooking|status.*accepted)' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/_lib/server/calcom-client.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2072.I4.F1.T4"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation - Types and Validation",
+        "task_ids": [
+          "S2072.I4.F1.T1",
+          "S2072.I4.F1.T2"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Client Implementation",
+        "task_ids": [
+          "S2072.I4.F1.T3"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Error Handling",
+        "task_ids": [
+          "S2072.I4.F1.T4"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Public API",
+        "task_ids": [
+          "S2072.I4.F1.T5"
+        ],
+        "depends_on_groups": [
+          3
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S2072.I4.F1.T1",
+        "S2072.I4.F1.T2",
+        "S2072.I4.F1.T3",
+        "S2072.I4.F1.T4",
+        "S2072.I4.F1.T5"
+      ],
+      "total_hours": 11
+    },
+    "duration": {
+      "sequential": 11,
+      "parallel": 11,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

@@ -1,0 +1,311 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I3.F1",
+    "feature_name": "Activity Aggregation Query",
+    "feature_slug": "activity-aggregation-query",
+    "initiative_id": "S2072.I3",
+    "spec_id": 2072,
+    "created_at": "2026-02-12T13:45:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2072.I3.F1.T1",
+      "type": "task",
+      "name": "Create activity item discriminated union types",
+      "action": {
+        "verb": "Create",
+        "target": "activity item types"
+      },
+      "purpose": "Define TypeScript discriminated union types for activity items from different sources (lessons, quizzes, assessments, presentations)",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Tables<'lesson_progress'>",
+          "Tables<'quiz_attempts'>",
+          "Tables<'survey_responses'>",
+          "Tables<'building_blocks_submissions'>"
+        ],
+        "constraints": [
+          "Must use discriminated union with activity_type field",
+          "Each type must include: id, type, title, timestamp, optional link",
+          "Follow existing type patterns from database.types.ts"
+        ]
+      },
+      "input_state": "No activity types exist. Database types for lesson_progress, quiz_attempts, survey_responses, building_blocks_submissions are available from database.types.ts",
+      "output_state": "ActivityItem discriminated union type defined with LessonActivity, QuizActivity, AssessmentActivity, and PresentationActivity variants. All types exported from activity.types.ts",
+      "acceptance_criterion": "Type file exists with ActivityItem discriminated union. pnpm typecheck passes. All 4 activity variants are exported.",
+      "verification_command": "grep -q 'export type ActivityItem' apps/web/app/home/(user)/_lib/types/activity.types.ts && grep -q 'LessonActivity | QuizActivity | AssessmentActivity | PresentationActivity' apps/web/app/home/(user)/_lib/types/activity.types.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/types/activity.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2072.I3.F1.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F1.T2",
+      "type": "task",
+      "name": "Create activity aggregation loader function",
+      "action": {
+        "verb": "Create",
+        "target": "activity loader function"
+      },
+      "purpose": "Implement server-side loader function that aggregates recent activity from lesson_progress, quiz_attempts, survey_responses, and building_blocks_submissions tables using UNION ALL pattern",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts",
+          "apps/web/supabase/tests/database/rls-performance-benchmarks.test.sql"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient",
+          "cache from React",
+          "ActivityItem type from T1",
+          "UNION ALL query pattern"
+        ],
+        "constraints": [
+          "Must use UNION ALL (not UNION) for performance",
+          "Limit each subquery to 5 items before union",
+          "Slice final result to 10 items",
+          "Must use RLS-aware queries with user_id filtering",
+          "Must wrap with React.cache() for deduplication",
+          "Use subquery pattern: user_id = (select auth.uid()) for performance"
+        ]
+      },
+      "input_state": "Activity types defined in T1. Server directory exists. No activity loader exists yet.",
+      "output_state": "activity.loader.ts created with loadRecentActivities function. Function returns ActivityItem[] sorted by timestamp (newest first). Function wrapped with cache(). Query uses UNION ALL with per-source limits.",
+      "acceptance_criterion": "Loader function exists, returns ActivityItem[], uses UNION ALL pattern, applies RLS filtering, and passes typecheck",
+      "verification_command": "grep -q 'export const loadRecentActivities' apps/web/app/home/(user)/_lib/server/activity.loader.ts && grep -q 'UNION ALL' apps/web/app/home/(user)/_lib/server/activity.loader.ts && grep -q 'cache(' apps/web/app/home/(user)/_lib/server/activity.loader.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/activity.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F1.T1"],
+        "blocks": ["S2072.I3.F1.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F1.T3",
+      "type": "task",
+      "name": "Add activity data to dashboard loader",
+      "action": {
+        "verb": "Add",
+        "target": "activity data to dashboard loader"
+      },
+      "purpose": "Integrate loadRecentActivities into the existing dashboard loader's Promise.all parallel fetch, adding activity data to the DashboardData type",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/app/home/(user)/_lib/dashboard/types.ts"
+        ],
+        "dependencies": [
+          "loadRecentActivities from T2",
+          "loadDashboardPageData function",
+          "DashboardData type"
+        ],
+        "constraints": [
+          "Must add to existing Promise.all for parallel execution",
+          "Must handle errors gracefully with fallback to empty array",
+          "Must update DashboardData type to include activities field"
+        ]
+      },
+      "input_state": "Dashboard loader exists with parallel fetching for other widgets. Activity loader exists from T2. DashboardData type exists but has no activities field.",
+      "output_state": "Dashboard loader calls loadRecentActivities in Promise.all. DashboardData type includes activities: ActivityItem[]. Error handling returns empty array on failure.",
+      "acceptance_criterion": "Dashboard loader includes activity fetching in Promise.all. DashboardData type updated with activities field. Typecheck passes.",
+      "verification_command": "grep -q 'loadRecentActivities' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && grep -q 'activities.*ActivityItem\\[\\]' apps/web/app/home/(user)/_lib/dashboard/types.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/dashboard/types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F1.T2"],
+        "blocks": ["S2072.I3.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F1.T4",
+      "type": "task",
+      "name": "Add unit tests for activity loader",
+      "action": {
+        "verb": "Add",
+        "target": "unit tests for activity loader"
+      },
+      "purpose": "Create unit tests verifying the activity loader returns correct structure, handles empty data gracefully, and applies proper user filtering",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/activity.loader.ts"
+        ],
+        "dependencies": [
+          "vitest",
+          "loadRecentActivities function"
+        ],
+        "constraints": [
+          "Test that loader returns ActivityItem[]",
+          "Test empty data returns empty array",
+          "Test that items are sorted by timestamp (newest first)",
+          "Test that user filtering is applied",
+          "Follow existing test patterns from the codebase"
+        ]
+      },
+      "input_state": "Activity loader function exists from T2. No tests exist for activity loader.",
+      "output_state": "Unit test file created with tests for loadRecentActivities. All tests pass. Tests verify structure, sorting, filtering, and empty state handling.",
+      "acceptance_criterion": "Test file exists with at least 3 test cases. All tests pass with pnpm --filter web test.",
+      "verification_command": "test -f apps/web/app/home/(user)/_lib/server/__tests__/activity.loader.test.ts && pnpm --filter web test -- --grep 'activity' --run",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/__tests__/activity.loader.test.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F1.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Types",
+        "task_ids": ["S2072.I3.F1.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Loader Implementation",
+        "task_ids": ["S2072.I3.F1.T2"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Integration",
+        "task_ids": ["S2072.I3.F1.T3"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Testing",
+        "task_ids": ["S2072.I3.F1.T4"],
+        "depends_on_groups": [2],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2072.I3.F1.T1", "S2072.I3.F1.T2", "S2072.I3.F1.T3"],
+      "total_hours": 8
+    },
+    "duration": {
+      "sequential": 11,
+      "parallel": 9,
+      "time_saved_percent": 18
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": false
+  }
+}
