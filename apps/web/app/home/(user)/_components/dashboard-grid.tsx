@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 
 import type { DashboardData } from "../_lib/dashboard/types";
+import { CourseProgressRadial } from "./dashboard/course-progress-radial";
 import { SkillsSpiderDiagram } from "./dashboard/skills-spider-diagram";
 
 interface DashboardGridProps {
@@ -14,18 +15,7 @@ export function DashboardGrid({ data }: DashboardGridProps) {
 		<div className="dashboard-grid space-y-6">
 			{/* Row 1: Progress Widgets */}
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-				<Card className="h-64">
-					<CardHeader>
-						<CardTitle>Course Progress</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<p className="text-muted-foreground text-sm">
-							{data.courseProgress
-								? `${data.courseProgress.completedLessons} of ${data.courseProgress.totalLessons} lessons completed`
-								: "No course progress yet"}
-						</p>
-					</CardContent>
-				</Card>
+				<CourseProgressRadial data={data.courseProgress} />
 
 				<SkillsSpiderDiagram
 					categoryScores={data.skillsRadar?.categoryScores ?? null}

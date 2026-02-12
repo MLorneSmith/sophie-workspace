@@ -1,8 +1,12 @@
 "use client";
 
+import { Button } from "@kit/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 import { type ChartConfig, ChartContainer } from "@kit/ui/chart";
+import Link from "next/link";
 import { Cell, Pie, PieChart } from "recharts";
+
+import type { CourseProgressData } from "../../_lib/dashboard/types";
 
 const chartConfig = {
 	completed: {
@@ -15,14 +19,23 @@ const chartConfig = {
 	},
 } satisfies ChartConfig;
 
-const MOCK_PROGRESS = 75;
+interface CourseProgressRadialProps {
+	data: CourseProgressData | null;
+}
 
-const mockData = [
-	{ name: "Completed", value: MOCK_PROGRESS },
-	{ name: "Remaining", value: 100 - MOCK_PROGRESS },
-];
+function toChartData(percentage: number) {
+	const clamped = Math.max(0, Math.min(100, Math.round(percentage)));
+	return [
+		{ name: "Completed", value: clamped },
+		{ name: "Remaining", value: 100 - clamped },
+	];
+}
 
-export function CourseProgressRadial() {
+export function CourseProgressRadial({ data }: CourseProgressRadialProps) {
+	const percentage = data?.courseProgress.completion_percentage ?? 0;
+	const isZero = percentage === 0;
+	const chartData = toChartData(percentage);
+
 	return (
 		<Card className="h-64">
 			<CardHeader className="pb-2">
@@ -36,7 +49,7 @@ export function CourseProgressRadial() {
 					>
 						<PieChart>
 							<Pie
-								data={mockData}
+								data={chartData}
 								cx="50%"
 								cy="50%"
 								innerRadius={45}
@@ -53,9 +66,21 @@ export function CourseProgressRadial() {
 					</ChartContainer>
 
 					<div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-						<span className="text-2xl font-bold">{MOCK_PROGRESS}%</span>
+						<span className="text-2xl font-bold">
+							{Math.round(percentage)}%
+						</span>
 					</div>
 				</div>
+
+				{isZero ? (
+					<Button asChild variant="outline" size="sm" className="mt-2">
+						<Link href="/home/course">Start Course</Link>
+					</Button>
+				) : (
+					<p className="text-muted-foreground mt-2 text-sm">
+						{data?.completedLessons ?? 0} of {data?.totalLessons ?? 0} lessons
+					</p>
+				)}
 			</CardContent>
 		</Card>
 	);
