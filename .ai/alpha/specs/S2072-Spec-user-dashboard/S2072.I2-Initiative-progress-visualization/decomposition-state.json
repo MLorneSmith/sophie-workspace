@@ -1,26 +1,29 @@
 {
   "initiative_id": "S2072.I2",
   "initiative_name": "Progress Visualization Widgets",
-  "status": "in_progress",
-  "current_phase": "decomposition",
+  "status": "completed",
+  "current_phase": "finalization",
   "started_at": "2026-02-12T13:00:00Z",
+  "completed_at": "2026-02-12T13:35:00Z",
   "features": {
     "S2072.I2.F1": {
       "name": "Course Progress Radial Widget",
-      "status": "pending",
-      "task_count": 0,
-      "hours_estimate": 0
+      "status": "completed",
+      "task_count": 5,
+      "hours_estimate": 11,
+      "tasks_json": "S2072.I2-Initiative-progress-visualization/S2072.I2.F1-Feature-course-progress-radial/tasks.json"
     },
     "S2072.I2.F2": {
       "name": "Skills Spider Diagram Widget",
-      "status": "pending",
-      "task_count": 0,
-      "hours_estimate": 0
+      "status": "completed",
+      "task_count": 6,
+      "hours_estimate": 13,
+      "tasks_json": "S2072.I2-Initiative-progress-visualization/S2072.I2.F2-Feature-skills-spider-diagram/tasks.json"
     }
   },
   "spikes_pending": [],
-  "total_tasks": 0,
+  "total_tasks": 11,
   "total_spikes": 0,
-  "total_hours_sequential": 0,
-  "total_hours_parallel": 0
+  "total_hours_sequential": 24,
+  "total_hours_parallel": 21
 }

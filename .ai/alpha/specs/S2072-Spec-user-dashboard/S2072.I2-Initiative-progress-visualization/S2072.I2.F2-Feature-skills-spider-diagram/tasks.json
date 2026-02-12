@@ -1,0 +1,416 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I2.F2",
+    "feature_name": "Skills Spider Diagram Widget",
+    "feature_slug": "skills-spider-diagram",
+    "initiative_id": "S2072.I2",
+    "spec_id": "2072",
+    "created_at": "2026-02-12T14:30:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2072.I2.F2.T1",
+      "type": "task",
+      "name": "Create SkillsSpiderDiagram component skeleton with Card wrapper",
+      "action": {
+        "verb": "Create",
+        "target": "SkillsSpiderDiagram component skeleton"
+      },
+      "purpose": "Establish component structure with Card, CardHeader, CardTitle, and ChartContainer wrapper before adding chart logic",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "packages/ui/src/shadcn/chart.tsx",
+          "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx"
+        ],
+        "dependencies": [
+          "Card, CardContent, CardHeader, CardTitle from @kit/ui/card",
+          "ChartContainer from @kit/ui/chart"
+        ],
+        "constraints": [
+          "Must use ChartContainer for CSS variable theming",
+          "Must follow Card wrapper pattern for consistency with other widgets",
+          "Component must be client component ('use client')",
+          "Title should be 'Skills Assessment'"
+        ]
+      },
+      "input_state": "Dashboard page exists but has no widgets. ChartContainer and Card components available from @kit/ui.",
+      "output_state": "Empty SkillsSpiderDiagram component with Card wrapper and placeholder div for chart.",
+      "acceptance_criterion": "Component file exists at apps/web/app/home/(user)/_components/dashboard/skills-spider-diagram.tsx with Card, CardHeader, CardTitle, and ChartContainer structure.",
+      "verification_command": "grep -q 'Card\\|ChartContainer' apps/web/app/home/\\(user\\)/_components/dashboard/skills-spider-diagram.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/dashboard/skills-spider-diagram.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I2.F2.T2",
+      "type": "task",
+      "name": "Add Recharts RadarChart with category labels",
+      "action": {
+        "verb": "Add",
+        "target": "Recharts RadarChart with category labels"
+      },
+      "purpose": "Configure RadarChart with PolarGrid, PolarAngleAxis, and Radar component for skills visualization",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/skills-spider-diagram.tsx",
+          "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx"
+        ],
+        "dependencies": [
+          "RadarChart, Radar, PolarGrid, PolarAngleAxis from recharts",
+          "ChartContainer, ChartTooltip, ChartTooltipContent from @kit/ui/chart",
+          "Existing chartConfig pattern from radar-chart.tsx"
+        ],
+        "constraints": [
+          "Use RadarChart from recharts (not custom implementation)",
+          "PolarAngleAxis must display category names around perimeter",
+          "Chart config must use CSS variables for theming (--chart-2)",
+          "Use aspect-square sizing with max-h-[250px]",
+          "Include ChartTooltip for hover interactions"
+        ]
+      },
+      "input_state": "SkillsSpiderDiagram component skeleton exists with Card and ChartContainer wrapper.",
+      "output_state": "Component renders radar chart with mock data showing 5 skill categories.",
+      "acceptance_criterion": "RadarChart renders with PolarGrid showing spider web pattern. PolarAngleAxis displays 5 category labels. Component works with mock category_scores data.",
+      "verification_command": "grep -q 'RadarChart\\|PolarAngleAxis' apps/web/app/home/\\(user\\)/_components/dashboard/skills-spider-diagram.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/skills-spider-diagram.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I2.F2.T1"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I2.F2.T3",
+      "type": "task",
+      "name": "Add data transformation from category_scores to chart format",
+      "action": {
+        "verb": "Add",
+        "target": "data transformation from category_scores to chart format"
+      },
+      "purpose": "Transform survey_responses.category_scores JSONB data to Recharts radar format with proper null handling",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/skills-spider-diagram.tsx"
+        ],
+        "dependencies": [
+          "CategoryScores interface from radar-chart.tsx",
+          "survey_responses.category_scores structure (JSONB with category names as keys, scores as values)"
+        ],
+        "constraints": [
+          "Accept category_scores prop as Record<string, number>",
+          "Transform to chart format: [{ category: string, score: number }]",
+          "Handle null/undefined category_scores gracefully",
+          "Handle empty object {} gracefully",
+          "Preserve category names exactly as stored (structure, story, substance, style, self-confidence)"
+        ]
+      },
+      "input_state": "RadarChart renders with mock data. Component needs real data transformation logic.",
+      "output_state": "Component accepts category_scores data prop and transforms to chart format correctly.",
+      "acceptance_criterion": "Component transforms category_scores to chart data. Null/undefined/empty states handled gracefully. Categories display correctly on PolarAngleAxis.",
+      "verification_command": "grep -q 'category_scores\\|Object.entries' apps/web/app/home/\\(user\\)/_components/dashboard/skills-spider-diagram.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/skills-spider-diagram.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I2.F2.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I2.F2.T4",
+      "type": "task",
+      "name": "Add no-assessment empty state with Take Assessment CTA",
+      "action": {
+        "verb": "Add",
+        "target": "no-assessment empty state with Take Assessment CTA"
+      },
+      "purpose": "Display engaging empty state when user has no assessment data with clear call-to-action to start assessment",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/skills-spider-diagram.tsx",
+          "packages/ui/src/makerkit/empty-state.tsx"
+        ],
+        "dependencies": [
+          "EmptyState, EmptyStateHeading, EmptyStateText, EmptyStateButton from @kit/ui/makerkit/empty-state",
+          "Link from next/link for navigation to /home/assessment/survey"
+        ],
+        "constraints": [
+          "Use EmptyState component pattern for consistency",
+          "Heading: 'No Assessment Yet'",
+          "Text: 'Complete your self-assessment to see your skills profile'",
+          "CTA: 'Take Assessment' button linking to /home/assessment/survey",
+          "Maintain Card wrapper dimensions (don't collapse)",
+          "Follow positive, encouraging tone from empty state research"
+        ]
+      },
+      "input_state": "Component handles data transformation. Needs empty state for users without assessment.",
+      "output_state": "Component displays engaging empty state with CTA when category_scores is null/undefined/empty.",
+      "acceptance_criterion": "Empty state displays when no assessment data. 'Take Assessment' CTA links to /home/assessment/survey. Follows EmptyState component pattern. Positive, encouraging tone.",
+      "verification_command": "grep -q 'EmptyState\\|Take Assessment' apps/web/app/home/\\(user\\)/_components/dashboard/skills-spider-diagram.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/skills-spider-diagram.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I2.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I2.F2.T5",
+      "type": "task",
+      "name": "Wire SkillsSpiderDiagram to dashboard page",
+      "action": {
+        "verb": "Wire",
+        "target": "SkillsSpiderDiagram to dashboard page"
+      },
+      "purpose": "Import and place SkillsSpiderDiagram widget in Row 1, Column 2 of dashboard grid layout",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Skills Assessment"
+          },
+          {
+            "command": "find role",
+            "target": "img"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/dashboard/skills-spider-diagram.tsx"
+        ],
+        "dependencies": [
+          "Dashboard grid layout from S2072.I1"
+        ],
+        "constraints": [
+          "Place widget in Row 1, Column 2 of dashboard grid",
+          "Pass mock data initially (loader data comes from I1)",
+          "Widget must be responsive on mobile and desktop",
+          "Must be blocked by S2072.I1.F3 (Widget Placeholder Slots)"
+        ]
+      },
+      "input_state": "SkillsSpiderDiagram component complete with data transformation and empty state. Dashboard page exists without widgets.",
+      "output_state": "SkillsSpiderDiagram widget renders on dashboard at /home route in correct grid position (Row 1, Column 2).",
+      "acceptance_criterion": "Widget appears on dashboard page at /home. Renders in Row 1, Column 2. Responsive on all screen sizes.",
+      "verification_command": "grep -q 'SkillsSpiderDiagram' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I2.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I2.F2.T6",
+      "type": "task",
+      "name": "Create unit tests for SkillsSpiderDiagram",
+      "action": {
+        "verb": "Create",
+        "target": "unit tests for SkillsSpiderDiagram"
+      },
+      "purpose": "Add comprehensive tests covering data rendering, empty state, and category label display",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/skills-spider-diagram.tsx"
+        ],
+        "dependencies": [
+          "Vitest testing framework",
+          "@testing-library/react"
+        ],
+        "constraints": [
+          "Test normal data rendering with 5 categories",
+          "Test empty state displays when category_scores is null/undefined/empty",
+          "Test 'Take Assessment' CTA links to correct route",
+          "Test category labels display correctly on PolarAngleAxis",
+          "Test accessibility (chart has proper aria-labels)",
+          "Test responsive rendering (aspect-square constraint)"
+        ]
+      },
+      "input_state": "SkillsSpiderDiagram component complete and integrated on dashboard.",
+      "output_state": "Test file exists with comprehensive coverage of all component states.",
+      "acceptance_criterion": "Test file exists with passing tests for all states. Tests run successfully with 'pnpm --filter web test -- --grep skills-spider-diagram'.",
+      "verification_command": "pnpm --filter web test -- --grep skills-spider-diagram --run && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/dashboard/skills-spider-diagram.test.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I2.F2.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Structure & Chart",
+        "task_ids": ["S2072.I2.F2.T1", "S2072.I2.F2.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 5
+      },
+      {
+        "id": 2,
+        "name": "Data Logic, Empty State & Integration",
+        "task_ids": ["S2072.I2.F2.T3", "S2072.I2.F2.T4", "S2072.I2.F2.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 5,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Testing",
+        "task_ids": ["S2072.I2.F2.T6"],
+        "depends_on_groups": [2],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2072.I2.F2.T1", "S2072.I2.F2.T2", "S2072.I2.F2.T3", "S2072.I2.F2.T4", "S2072.I2.F2.T5", "S2072.I2.F2.T6"],
+      "total_hours": 13
+    },
+    "duration": {
+      "sequential": 13,
+      "parallel": 10,
+      "time_saved_percent": 23
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

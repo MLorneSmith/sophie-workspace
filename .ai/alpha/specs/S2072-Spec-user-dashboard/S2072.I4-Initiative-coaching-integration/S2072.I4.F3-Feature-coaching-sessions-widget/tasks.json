@@ -1,0 +1,524 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I4.F3",
+    "feature_name": "Coaching Sessions Widget",
+    "feature_slug": "coaching-sessions-widget",
+    "initiative_id": "S2072.I4",
+    "spec_id": 2072,
+    "created_at": "2026-02-12T14:30:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": [
+      {
+        "name": "NEXT_PUBLIC_CALCOM_COACH_USERNAME",
+        "description": "Coach's Cal.com username for booking URL",
+        "source": "Cal.com dashboard → Profile settings",
+        "required": true,
+        "scope": "client"
+      },
+      {
+        "name": "NEXT_PUBLIC_CALCOM_EVENT_SLUG",
+        "description": "Event type slug for booking (e.g., 60min)",
+        "source": "Cal.com dashboard → Event types",
+        "required": true,
+        "scope": "client"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S2072.I4.F3.T1",
+      "type": "task",
+      "name": "Create coaching sessions card component structure",
+      "action": {
+        "verb": "Create",
+        "target": "coaching-sessions-card.tsx component with Card shell"
+      },
+      "purpose": "Set up the component file with Card container, header, and content areas following the @kit/ui/card pattern",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "heading"
+          },
+          {
+            "command": "is visible",
+            "target": "Coaching Sessions"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "apps/web/app/home/(user)/kanban/_components/task-card.tsx"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardContent from @kit/ui/card",
+          "Calendar icon from lucide-react"
+        ],
+        "constraints": [
+          "Server component (no 'use client')",
+          "Props interface with optional sessions data",
+          "Use i18n Trans component for text"
+        ]
+      },
+      "input_state": "No coaching sessions card exists. Dashboard page has PageBody but no widgets.",
+      "output_state": "coaching-sessions-card.tsx exists with Card structure, header with 'Coaching Sessions' title, and empty CardContent placeholder.",
+      "acceptance_criterion": "Component file exists with Card/CardHeader/CardContent structure and renders without errors when imported.",
+      "verification_command": "grep -q 'export.*CoachingSessionsCard' apps/web/app/home/(user)/_components/coaching-sessions-card.tsx && grep -q 'CardHeader' apps/web/app/home/(user)/_components/coaching-sessions-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S2072.I4.F3.T2",
+          "S2072.I4.F3.T3",
+          "S2072.I4.F3.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I4.F3.T2",
+      "type": "task",
+      "name": "Add upcoming sessions display to card content",
+      "action": {
+        "verb": "Add",
+        "target": "sessions list rendering with date/time/join link"
+      },
+      "purpose": "Render 1-2 upcoming sessions with formatted date, time, duration, and external join link",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "link"
+          },
+          {
+            "command": "is visible",
+            "target": "Join Session"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-card.tsx"
+        ],
+        "dependencies": [
+          "ExternalLink icon from lucide-react",
+          "Clock icon from lucide-react",
+          "CalcomBooking type from F2"
+        ],
+        "constraints": [
+          "External link to meeting URL (opens in new tab)",
+          "Display relative time (e.g., 'Tomorrow at 2 PM')",
+          "Show duration (e.g., '60 min')",
+          "Limit to 2 sessions max"
+        ]
+      },
+      "input_state": "Card structure exists with empty CardContent. No session rendering logic.",
+      "output_state": "CardContent displays list of sessions with date, time, duration, and 'Join Session' links. Conditional rendering based on sessions array.",
+      "acceptance_criterion": "Sessions render with date, time, duration, and external links. Component handles 1-2 sessions gracefully.",
+      "verification_command": "grep -q 'Join Session' apps/web/app/home/(user)/_components/coaching-sessions-card.tsx && grep -q 'ExternalLink' apps/web/app/home/(user)/_components/coaching-sessions-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2072.I4.F3.T1"
+        ],
+        "blocks": [
+          "S2072.I4.F3.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I4.F3.T3",
+      "type": "task",
+      "name": "Add empty state CTA for booking sessions",
+      "action": {
+        "verb": "Add",
+        "target": "Book a Session CTA when no upcoming sessions"
+      },
+      "purpose": "Display call-to-action with external link to Cal.com booking page when user has no upcoming sessions",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Book a Session"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-card.tsx"
+        ],
+        "dependencies": [
+          "Button component from @kit/ui/button",
+          "Calendar icon from lucide-react"
+        ],
+        "constraints": [
+          "External link to Cal.com booking page (not embed)",
+          "Construct URL from NEXT_PUBLIC_CALCOM_COACH_USERNAME and NEXT_PUBLIC_CALCOM_EVENT_SLUG",
+          "Only show when sessions array is empty (length === 0)"
+        ]
+      },
+      "input_state": "Card structure exists. Sessions rendering added. No empty state handling.",
+      "output_state": "When sessions array is empty, card displays 'Book a Session' button linking to Cal.com.",
+      "acceptance_criterion": "Empty state renders 'Book a Session' button with correct Cal.com URL. Button has proper accessibility attributes.",
+      "verification_command": "grep -q 'Book a Session' apps/web/app/home/(user)/_components/coaching-sessions-card.tsx && grep -q 'NEXT_PUBLIC_CALCOM_COACH_USERNAME' apps/web/app/home/(user)/_components/coaching-sessions-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2072.I4.F3.T1"
+        ],
+        "blocks": [
+          "S2072.I4.F3.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I4.F3.T4",
+      "type": "task",
+      "name": "Add error state for null booking data",
+      "action": {
+        "verb": "Add",
+        "target": "graceful fallback UI when booking data is null"
+      },
+      "purpose": "Handle API failure gracefully by showing booking CTA instead of error when data fetch returns null",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-card.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "When props.sessions is null (API failure), show same CTA as empty state",
+          "Do not throw or show error - graceful degradation",
+          "Log warning to console for debugging (not error)"
+        ]
+      },
+      "input_state": "Card handles sessions and empty array. No null data handling.",
+      "output_state": "Component gracefully handles null sessions prop by showing booking CTA.",
+      "acceptance_criterion": "When sessions prop is null, component renders Book a Session CTA without errors or console.error calls.",
+      "verification_command": "grep -E 'if \\(sessions === null\\)|if \\(!sessions\\)' apps/web/app/home/(user)/_components/coaching-sessions-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2072.I4.F3.T1"
+        ],
+        "blocks": [
+          "S2072.I4.F3.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I4.F3.T5",
+      "type": "task",
+      "name": "Add responsive styling to coaching sessions card",
+      "action": {
+        "verb": "Add",
+        "target": "responsive Tailwind classes for mobile/tablet/desktop grid"
+      },
+      "purpose": "Ensure card adapts to grid layout breakpoints and displays well on all screen sizes",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-card.tsx"
+        ],
+        "dependencies": [
+          "cn utility from @kit/ui/cn"
+        ],
+        "constraints": [
+          "Card should fit within grid column (full width of column)",
+          "Text should remain readable on mobile",
+          "Session list should not overflow card bounds",
+          "Use semantic Tailwind classes (text-muted-foreground, etc.)"
+        ]
+      },
+      "input_state": "Card renders all states but may not fit grid layout properly.",
+      "output_state": "Card displays responsively across breakpoints with proper spacing and text sizing.",
+      "acceptance_criterion": "Card renders correctly in 1-column (mobile), 2-column (tablet), and 3-column (desktop) grid layouts without overflow or readability issues.",
+      "verification_command": "pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2072.I4.F3.T2",
+          "S2072.I4.F3.T3",
+          "S2072.I4.F3.T4"
+        ],
+        "blocks": [
+          "S2072.I4.F3.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I4.F3.T6",
+      "type": "task",
+      "name": "Integrate coaching sessions card into dashboard page",
+      "action": {
+        "verb": "Add",
+        "target": "CoachingSessionsCard to dashboard page grid"
+      },
+      "purpose": "Import and render the widget component in the dashboard page, passing coaching session data from loader",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Coaching Sessions"
+          },
+          {
+            "command": "find role",
+            "target": "region"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/coaching-sessions-card.tsx"
+        ],
+        "dependencies": [
+          "CoachingSessionsCard component",
+          "Dashboard loader from I1.F4 (provides coachingSessions data)"
+        ],
+        "constraints": [
+          "Pass coachingSessions prop from page data",
+          "Position in appropriate grid row/column based on design",
+          "Maintain server component pattern (no 'use client' in page)"
+        ]
+      },
+      "input_state": "Dashboard page exists with PageBody. CoachingSessionsCard component complete but not integrated.",
+      "output_state": "Dashboard page imports and renders CoachingSessionsCard with data from loader.",
+      "acceptance_criterion": "Card renders on /home page with data passed from dashboard loader. No TypeScript errors.",
+      "verification_command": "grep -q 'CoachingSessionsCard' apps/web/app/home/(user)/page.tsx && grep -q 'coachingSessions' apps/web/app/home/(user)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2072.I4.F3.T5"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Foundation",
+        "task_ids": [
+          "S2072.I4.F3.T1"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "State Rendering",
+        "task_ids": [
+          "S2072.I4.F3.T2",
+          "S2072.I4.F3.T3",
+          "S2072.I4.F3.T4"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 7,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Responsive Styling",
+        "task_ids": [
+          "S2072.I4.F3.T5"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Page Integration",
+        "task_ids": [
+          "S2072.I4.F3.T6"
+        ],
+        "depends_on_groups": [
+          3
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S2072.I4.F3.T1",
+        "S2072.I4.F3.T2",
+        "S2072.I4.F3.T5",
+        "S2072.I4.F3.T6"
+      ],
+      "total_hours": 9
+    },
+    "duration": {
+      "sequential": 13,
+      "parallel": 9,
+      "time_saved_percent": 30.77
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

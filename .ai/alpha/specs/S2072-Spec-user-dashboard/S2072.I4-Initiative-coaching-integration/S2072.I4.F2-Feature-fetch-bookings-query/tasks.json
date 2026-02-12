@@ -1,0 +1,436 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I4.F2",
+    "feature_name": "Fetch Bookings Query",
+    "feature_slug": "fetch-bookings-query",
+    "initiative_id": "S2072.I4",
+    "spec_id": 2072,
+    "created_at": "2026-02-12T13:00:00Z",
+    "complexity": {
+      "score": 46,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2072.I4.F2.T1",
+      "type": "task",
+      "name": "Create bookings fetch function with client",
+      "action": {
+        "verb": "Create",
+        "target": "fetchUserBookings function using CalcomClient"
+      },
+      "purpose": "Establish server-side function that fetches bookings from Cal.com API using the client from F1",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/_lib/server/calcom-client.ts"
+        ],
+        "dependencies": [
+          "CalcomClient class from F1",
+          "CalcomBooking type from F1",
+          "fetch API"
+        ],
+        "constraints": [
+          "Import 'server-only' at top of file",
+          "Function must accept email parameter",
+          "Use fetchUpcomingBookings from calcom-client.ts",
+          "File location: apps/web/_lib/server/calcom-bookings.ts"
+        ]
+      },
+      "input_state": "Cal.com client exists in F1 with fetchUpcomingBookings function, no bookings fetch wrapper",
+      "output_state": "fetchUserBookings function in calcom-bookings.ts that calls client.fetchUpcomingBookings with email",
+      "acceptance_criterion": "fetchUserBookings function exists, is exported, accepts email: string, calls client fetch, returns Promise<CalcomBooking[]>",
+      "verification_command": "grep -A 10 'export.*fetchUserBookings' apps/web/_lib/server/calcom-bookings.ts | grep -E '(email.*string|CalcomBooking|fetchUpcomingBookings)' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/_lib/server/calcom-bookings.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2072.I4.F2.T2", "S2072.I4.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I4.F2.T2",
+      "type": "task",
+      "name": "Filter bookings by status and future dates",
+      "action": {
+        "verb": "Add",
+        "target": "filtering logic for accepted status and future bookings"
+      },
+      "purpose": "Ensure only relevant upcoming coaching sessions are returned by filtering out past and non-accepted bookings",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/_lib/server/calcom-bookings.ts",
+          "apps/web/_lib/server/calcom-types.ts"
+        ],
+        "dependencies": [
+          "fetchUserBookings from T1",
+          "CalcomBooking type with status and startTime fields"
+        ],
+        "constraints": [
+          "Filter status === 'accepted'",
+          "Filter startTime > new Date() (future only)",
+          "Sort by startTime ascending",
+          "Limit to 2 results",
+          "Use array filter and sort methods"
+        ]
+      },
+      "input_state": "fetchUserBookings exists but returns unfiltered bookings",
+      "output_state": "fetchUserBookings returns only accepted future bookings, sorted ascending, limited to 2",
+      "acceptance_criterion": "fetchUserBookings filters bookings where status=accepted and startTime > now, sorts by startTime ASC, returns max 2 items",
+      "verification_command": "grep -A 15 'export.*fetchUserBookings' apps/web/_lib/server/calcom-bookings.ts | grep -E '(filter|status.*accepted|startTime|sort|slice.*2)' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/_lib/server/calcom-bookings.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I4.F2.T1"],
+        "blocks": ["S2072.I4.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I4.F2.T3",
+      "type": "task",
+      "name": "Add graceful error handling with null return",
+      "action": {
+        "verb": "Add",
+        "target": "try-catch error handling that returns null on failure"
+      },
+      "purpose": "Enable graceful degradation so widget shows CTA instead of crashing when API is unavailable",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/_lib/server/calcom-bookings.ts"
+        ],
+        "dependencies": [
+          "fetchUserBookings from T2",
+          "getLogger from @kit/shared/logger"
+        ],
+        "constraints": [
+          "Wrap entire function in try-catch",
+          "Log errors with structured logger",
+          "Return null on any error (network, API, parsing)",
+          "Never throw errors to caller",
+          "Follow graceful degradation pattern from feature requirements"
+        ]
+      },
+      "input_state": "fetchUserBookings exists with filtering, no error handling",
+      "output_state": "fetchUserBookings wrapped in try-catch, returns null on error with logged error details",
+      "acceptance_criterion": "fetchUserBookings catches all errors, logs with logger.error including context, returns null instead of throwing",
+      "verification_command": "grep -B 2 -A 5 'catch.*error' apps/web/_lib/server/calcom-bookings.ts | grep -E '(logger\\.error|return null)' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/_lib/server/calcom-bookings.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I4.F2.T2"],
+        "blocks": ["S2072.I4.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I4.F2.T4",
+      "type": "task",
+      "name": "Wrap function with React cache for deduplication",
+      "action": {
+        "verb": "Wrap",
+        "target": "fetchUserBookings with React cache function"
+      },
+      "purpose": "Enable request deduplication within same React render to avoid duplicate API calls",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/_lib/server/calcom-bookings.ts",
+          "apps/web/app/home/(user)/billing/_lib/server/personal-account-billing-page.loader.ts"
+        ],
+        "dependencies": [
+          "fetchUserBookings from T3",
+          "cache function from React"
+        ],
+        "constraints": [
+          "Import cache from 'react'",
+          "Create internal _fetchUserBookings implementation",
+          "Export cached version as fetchUserBookings",
+          "Follow pattern from personal-account-billing-page.loader.ts"
+        ]
+      },
+      "input_state": "fetchUserBookings exists with error handling, not cached",
+      "output_state": "fetchUserBookings wrapped with cache(), deduplicates requests per React render",
+      "acceptance_criterion": "fetchUserBookings is wrapped with React cache() using pattern: export const fetchUserBookings = cache(internalFetcher)",
+      "verification_command": "grep -E '(import.*cache.*from.*react|export.*fetchUserBookings.*cache)' apps/web/_lib/server/calcom-bookings.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/_lib/server/calcom-bookings.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I4.F2.T3"],
+        "blocks": ["S2072.I4.F2.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I4.F2.T5",
+      "type": "task",
+      "name": "Create dashboard loader helper for coaching sessions",
+      "action": {
+        "verb": "Create",
+        "target": "loadCoachingSessions helper function for dashboard loader"
+      },
+      "purpose": "Provide isolated helper function that can be called in parallel from dashboard data loader",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 5,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/_lib/server/calcom-bookings.ts",
+          "apps/web/app/home/(user)/billing/_lib/server/personal-account-billing-page.loader.ts"
+        ],
+        "dependencies": [
+          "fetchUserBookings from T4",
+          "User email from user object"
+        ],
+        "constraints": [
+          "Function signature: loadCoachingSessions(userEmail: string): Promise<CalcomBooking[] | null>",
+          "Export as separate function for composability",
+          "Follow pattern from billing loaders (simple wrapper)",
+          "Return null propagates from fetchUserBookings on error"
+        ]
+      },
+      "input_state": "fetchUserBookings exists with caching, no dashboard-specific helper",
+      "output_state": "loadCoachingSessions helper exported that calls fetchUserBookings with email",
+      "acceptance_criterion": "loadCoachingSessions function exists, exported, accepts userEmail: string, returns Promise<CalcomBooking[] | null>, calls fetchUserBookings",
+      "verification_command": "grep -A 5 'export.*loadCoachingSessions' apps/web/_lib/server/calcom-bookings.ts | grep -E '(userEmail.*string|CalcomBooking.*null|fetchUserBookings)' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/_lib/server/calcom-bookings.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I4.F2.T4"],
+        "blocks": ["S2072.I4.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I4.F2.T6",
+      "type": "task",
+      "name": "Integrate coaching sessions into dashboard loader",
+      "action": {
+        "verb": "Integrate",
+        "target": "loadCoachingSessions into dashboard data loader with parallel fetch"
+      },
+      "purpose": "Add coaching sessions data to dashboard page by including in parallel Promise.all fetch",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 6,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/load-dashboard-data.ts",
+          "apps/web/_lib/server/calcom-bookings.ts",
+          "apps/web/app/home/(user)/billing/_lib/server/personal-account-billing-page.loader.ts"
+        ],
+        "dependencies": [
+          "loadCoachingSessions from T5",
+          "Dashboard loader from I1.F4 (if exists) OR create new loader",
+          "User email from user context"
+        ],
+        "constraints": [
+          "Add coachingSessions to Promise.all array",
+          "Update DashboardData type to include coachingSessions: CalcomBooking[] | null",
+          "File: apps/web/app/home/(user)/_lib/server/load-dashboard-data.ts (may need to be created if I1 not complete)",
+          "Follow Promise.all pattern from billing loaders",
+          "Handle case where loader file doesn't exist yet (create it)"
+        ]
+      },
+      "input_state": "loadCoachingSessions helper exists, dashboard loader may or may not exist from I1.F4",
+      "output_state": "Dashboard loader fetches coachingSessions in parallel with other data, returns in DashboardData",
+      "acceptance_criterion": "load-dashboard-data.ts imports loadCoachingSessions, includes in Promise.all, returns coachingSessions in data structure, typecheck passes",
+      "verification_command": "grep -E 'loadCoachingSessions|coachingSessions' apps/web/app/home/\\(user\\)/_lib/server/load-dashboard-data.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/load-dashboard-data.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I4.F2.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation - Fetch Function",
+        "task_ids": ["S2072.I4.F2.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Filtering Logic",
+        "task_ids": ["S2072.I4.F2.T2"],
+        "depends_on_groups": [1],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Error Handling",
+        "task_ids": ["S2072.I4.F2.T3"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Caching Layer",
+        "task_ids": ["S2072.I4.F2.T4"],
+        "depends_on_groups": [3],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 5,
+        "name": "Dashboard Helper",
+        "task_ids": ["S2072.I4.F2.T5"],
+        "depends_on_groups": [4],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 6,
+        "name": "Integration",
+        "task_ids": ["S2072.I4.F2.T6"],
+        "depends_on_groups": [5],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S2072.I4.F2.T1",
+        "S2072.I4.F2.T2",
+        "S2072.I4.F2.T3",
+        "S2072.I4.F2.T4",
+        "S2072.I4.F2.T5",
+        "S2072.I4.F2.T6"
+      ],
+      "total_hours": 10
+    },
+    "duration": {
+      "sequential": 10,
+      "parallel": 10,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
