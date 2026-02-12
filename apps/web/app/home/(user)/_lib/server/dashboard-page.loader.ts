@@ -9,6 +9,7 @@ import { getLogger } from "@kit/shared/logger";
 import type { Database } from "~/lib/database.types";
 import type {
 	CategoryScores,
+	CoachingSessionData,
 	CourseProgressData,
 	DashboardData,
 	KanbanSummaryData,
@@ -17,7 +18,10 @@ import type {
 	SkillsRadarData,
 } from "../dashboard/types";
 import type { ActivityItem } from "../types/activity.types";
+import type { CalcomBooking } from "~/lib/server/calcom-types";
 import { loadRecentActivities } from "./activity.loader";
+import { loadCoachingSessions } from "~/lib/server/calcom-bookings";
+import { requireUserInServerComponent } from "~/lib/server/require-user-in-server-component";
 
 type Client = SupabaseClient<Database>;
 
@@ -28,6 +32,8 @@ async function dashboardPageLoader(): Promise<DashboardData> {
 	const logger = await getLogger();
 	const ctx = { name: "dashboardPageLoader" };
 
+	const user = await requireUserInServerComponent();
+
 	try {
 		const [
 			courseProgress,
@@ -36,6 +42,7 @@ async function dashboardPageLoader(): Promise<DashboardData> {
 			kanbanSummary,
 			presentations,
 			activities,
+			coachingBookings,
 		] = await Promise.all([
 			loadCourseProgress(client).catch((err) => {
 				logger.warn(ctx, "Failed to load course progress: %o", err);
@@ -61,6 +68,10 @@ async function dashboardPageLoader(): Promise<DashboardData> {
 				logger.warn(ctx, "Failed to load recent activities: %o", err);
 				return [] as ActivityItem[];
 			}),
+			loadCoachingSessions(user.email ?? "").catch((err: unknown) => {
+				logger.warn(ctx, "Failed to load coaching sessions: %o", err);
+				return null;
+			}),
 		]);
 
 		const courseInProgress =
@@ -68,6 +79,7 @@ async function dashboardPageLoader(): Promise<DashboardData> {
 			(courseProgress.courseProgress.completion_percentage ?? 0) < 100;
 		const assessmentCompleted = skillsRadar !== null;
 		const hasPresentationDrafts = presentations.length > 0;
+		const coachingSessions = mapBookingsToSessions(coachingBookings);
 
 		return {
 			courseProgress,
@@ -81,7 +93,7 @@ async function dashboardPageLoader(): Promise<DashboardData> {
 				assessmentCompleted,
 				hasPresentationDrafts,
 			},
-			coachingSessions: [],
+			coachingSessions,
 			presentations,
 		};
 	} catch (err) {
@@ -257,4 +269,29 @@ async function loadPresentations(client: Client): Promise<PresentationData[]> {
 		hasOutline: row.outline !== null && row.outline !== "",
 		hasStoryboard: row.storyboard !== null,
 	}));
+}
+
+function mapBookingsToSessions(
+	bookings: CalcomBooking[] | null,
+): CoachingSessionData[] {
+	if (!bookings) {
+		return [];
+	}
+
+	return bookings.map((booking) => {
+		const startDate = new Date(booking.start);
+
+		return {
+			id: String(booking.id),
+			title: booking.title,
+			date: startDate.toISOString().split("T")[0] ?? booking.start,
+			time: startDate.toLocaleTimeString("en-US", {
+				hour: "2-digit",
+				minute: "2-digit",
+				hour12: true,
+			}),
+			joinLink: booking.meetingUrl ?? null,
+			status: "upcoming" as const,
+		};
+	});
 }
