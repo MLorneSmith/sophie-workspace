@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 
 import type { DashboardData } from "../_lib/dashboard/types";
+import { SkillsSpiderDiagram } from "./dashboard/skills-spider-diagram";
 
 interface DashboardGridProps {
 	data: DashboardData;
@@ -26,18 +27,9 @@ export function DashboardGrid({ data }: DashboardGridProps) {
 					</CardContent>
 				</Card>
 
-				<Card className="h-64">
-					<CardHeader>
-						<CardTitle>Skills Radar</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<p className="text-muted-foreground text-sm">
-							{data.skillsRadar
-								? `Strongest: ${data.skillsRadar.highestCategory ?? "N/A"}`
-								: "No assessment data yet"}
-						</p>
-					</CardContent>
-				</Card>
+				<SkillsSpiderDiagram
+					categoryScores={data.skillsRadar?.categoryScores ?? null}
+				/>
 
 				<Card className="h-64">
 					<CardHeader>

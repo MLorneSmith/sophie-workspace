@@ -7,6 +7,13 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@kit/ui/chart";
+import {
+	EmptyState,
+	EmptyStateButton,
+	EmptyStateHeading,
+	EmptyStateText,
+} from "@kit/ui/empty-state";
+import Link from "next/link";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
 
 const chartConfig = {
@@ -20,23 +27,44 @@ interface SkillsSpiderDiagramProps {
 	categoryScores?: Record<string, number> | null;
 }
 
-const MOCK_DATA = [
-	{ category: "Structure", score: 75 },
-	{ category: "Story", score: 60 },
-	{ category: "Substance", score: 85 },
-	{ category: "Style", score: 70 },
-	{ category: "Self-Confidence", score: 55 },
-];
+function transformCategoryScores(
+	categoryScores: Record<string, number> | null | undefined,
+) {
+	if (!categoryScores || Object.keys(categoryScores).length === 0) {
+		return null;
+	}
+
+	return Object.entries(categoryScores).map(([category, score]) => ({
+		category,
+		score,
+	}));
+}
 
 export function SkillsSpiderDiagram({
 	categoryScores,
 }: SkillsSpiderDiagramProps) {
-	const chartData = categoryScores
-		? Object.entries(categoryScores).map(([category, score]) => ({
-				category,
-				score,
-			}))
-		: MOCK_DATA;
+	const chartData = transformCategoryScores(categoryScores);
+
+	if (!chartData) {
+		return (
+			<Card>
+				<CardHeader className="items-center pb-4">
+					<CardTitle>Skills Assessment</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<EmptyState>
+						<EmptyStateHeading>No Assessment Yet</EmptyStateHeading>
+						<EmptyStateText>
+							Complete your self-assessment to see your skills profile
+						</EmptyStateText>
+						<EmptyStateButton asChild>
+							<Link href="/home/assessment/survey">Take Assessment</Link>
+						</EmptyStateButton>
+					</EmptyState>
+				</CardContent>
+			</Card>
+		);
+	}
 
 	return (
 		<Card>
