@@ -20,7 +20,7 @@ export function ActivityItem({ activity, isLast = false }: ActivityItemProps) {
 
 	const content = (
 		<li
-			className={`relative flex list-none gap-3 pb-4 pl-6 ${!isLast ? "border-l-2 border-border" : ""}`}
+			className={`relative flex list-none gap-3 rounded-md pb-4 pl-6 transition-colors hover:bg-muted/50 ${!isLast ? "border-l-2 border-border" : ""}`}
 			aria-label={`${activity.title} — ${relativeTime}`}
 		>
 			<div
