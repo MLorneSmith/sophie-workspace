@@ -152,6 +152,23 @@ export const SANDBOX_KEEPALIVE_STAGGER_MS = 2 * 60 * 1000;
 export const SANDBOX_MAX_AGE_MS = 60 * 60 * 1000;
 
 // ============================================================================
+// Sandbox Extension Configuration (Bug fix #2074)
+// ============================================================================
+
+/** Duration to extend sandbox timeout when features are actively executing (ms) - 15 minutes
+ * Same as keepalive interval. This gives the in-progress feature another 15 minutes
+ * to complete instead of being killed by the preemptive restart.
+ * See bug fix #2074 for rationale.
+ */
+export const SANDBOX_EXTENSION_MS = 15 * 60 * 1000;
+
+/** Maximum number of sandbox extension attempts before forcing restart.
+ * Prevents infinite extension loops where a feature never completes.
+ * After this many extensions, the sandbox is killed and the feature retried.
+ */
+export const SANDBOX_MAX_EXTENSION_ATTEMPTS = 3;
+
+// ============================================================================
 // Startup Retry Configuration
 // ============================================================================
 

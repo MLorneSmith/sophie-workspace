@@ -12,9 +12,11 @@ import {
 	HEARTBEAT_TIMEOUT_MS,
 	MIN_FEATURE_AGE_FOR_RECOVERY_MS,
 	PROMISE_TIMEOUT_MS,
+	SANDBOX_EXTENSION_MS,
 	SANDBOX_KEEPALIVE_INTERVAL_MS,
 	SANDBOX_KEEPALIVE_STAGGER_MS,
 	SANDBOX_MAX_AGE_MS,
+	SANDBOX_MAX_EXTENSION_ATTEMPTS,
 } from "../config/index.js";
 import type {
 	FeatureEntry,
@@ -44,6 +46,7 @@ import {
 } from "./progress-file.js";
 import {
 	createSandbox,
+	extendSandboxTimeout,
 	getSandboxesNeedingRestart,
 	keepAliveSandboxes,
 } from "./sandbox.js";
@@ -310,6 +313,11 @@ export class WorkLoop {
 
 	/**
 	 * Handle preemptive restarts for sandboxes approaching max age.
+	 *
+	 * Bug fix #2074: Instead of killing sandboxes that are actively executing
+	 * features, attempt to extend the sandbox timeout via the E2B API. Only
+	 * kill if: (1) no features are running, (2) extension fails, or (3) max
+	 * extension attempts exceeded.
 	 */
 	private async handlePreemptiveRestarts(): Promise<void> {
 		const needsPreemptiveRestart = getSandboxesNeedingRestart(
@@ -325,7 +333,7 @@ export class WorkLoop {
 				(Date.now() - instance.createdAt.getTime()) / 60000,
 			);
 
-			// Check if feature is almost done (80%+ tasks completed)
+			// Check if a feature is actively running on this sandbox
 			const feature = this.manifest.feature_queue.find(
 				(f) => f.assigned_sandbox === label && f.status === "in_progress",
 			);
@@ -336,11 +344,39 @@ export class WorkLoop {
 						? (feature.tasks_completed / feature.task_count) * 100
 						: 0;
 
-				if (percentDone >= 80) {
+				// Bug fix #2074: For ANY in-progress feature (not just >80%), attempt
+				// to extend the sandbox lifetime instead of killing it mid-execution.
+				const extensionCount = feature.extension_count ?? 0;
+
+				if (extensionCount >= SANDBOX_MAX_EXTENSION_ATTEMPTS) {
 					this.log(
-						`   ⏰ Sandbox ${label} is ${ageMinutes}min old, but feature #${feature.id} is ${Math.round(percentDone)}% done - skipping preemptive restart`,
+						`   ⏰ Sandbox ${label} is ${ageMinutes}min old, feature #${feature.id} at ${Math.round(percentDone)}% - max extensions (${SANDBOX_MAX_EXTENSION_ATTEMPTS}) reached, forcing restart`,
 					);
-					continue;
+				} else {
+					// Attempt to extend sandbox lifetime
+					this.log(
+						`   ⏰ [SANDBOX_EXTEND] Sandbox ${label} is ${ageMinutes}min old, feature #${feature.id} at ${Math.round(percentDone)}% - extending sandbox (attempt ${extensionCount + 1}/${SANDBOX_MAX_EXTENSION_ATTEMPTS})`,
+					);
+
+					const extended = await extendSandboxTimeout(
+						instance.sandbox,
+						SANDBOX_EXTENSION_MS,
+					);
+
+					if (extended) {
+						feature.extension_count = extensionCount + 1;
+						// Reset createdAt to prevent immediate re-triggering
+						instance.createdAt = new Date();
+						instance.lastKeepaliveAt = new Date();
+						this.log(
+							`   ✅ [SANDBOX_EXTEND] Sandbox ${label} extended by ${SANDBOX_EXTENSION_MS / 60000}min for feature #${feature.id}`,
+						);
+						continue;
+					}
+
+					this.log(
+						`   ⚠️ [SANDBOX_EXTEND] Failed to extend sandbox ${label} (sandbox may be dead) - proceeding with restart`,
+					);
 				}
 			}
 
@@ -1054,12 +1090,17 @@ export class WorkLoop {
 
 	/**
 	 * Reset a feature for reassignment.
+	 *
+	 * Bug fix #2074: Records last_reset_at timestamp so that
+	 * resetFeatureForRetryOnSandboxDeath() can detect when both handlers
+	 * fire for the same sandbox death event and skip the retry increment.
 	 */
 	private resetFeatureForReassignment(
 		feature: FeatureEntry,
 		errorMessage: string,
 	): void {
 		feature.error = errorMessage;
+		feature.last_reset_at = new Date().toISOString();
 		transitionFeatureStatus(feature, this.manifest, "pending", {
 			reason: `reset for reassignment: ${errorMessage}`,
 		});
@@ -1072,6 +1113,12 @@ export class WorkLoop {
 	 * reassignment rather than marking it as failed. Only mark as failed
 	 * if max retries are exceeded.
 	 *
+	 * Bug fix #2074: Guard against double retry-count increment. When a sandbox
+	 * dies, both resetFeatureForReassignment() (keepalive handler) and this method
+	 * (feature error catch) can fire for the same event. If last_reset_at is within
+	 * 10 seconds, the keepalive handler already handled the reset — skip the retry
+	 * increment and mark as infrastructure_reset instead of feature_failure.
+	 *
 	 * @param feature - The feature to reset
 	 * @param errorMessage - Description of why the feature is being reset
 	 */
@@ -1079,9 +1126,26 @@ export class WorkLoop {
 		feature: FeatureEntry,
 		errorMessage: string,
 	): void {
+		// Bug fix #2074: Check if keepalive handler already reset this feature
+		const RACE_GUARD_WINDOW_MS = 10_000;
+		const timeSinceReset = feature.last_reset_at
+			? Date.now() - new Date(feature.last_reset_at).getTime()
+			: null;
+
+		if (timeSinceReset !== null && timeSinceReset < RACE_GUARD_WINDOW_MS) {
+			// Keepalive handler already reset this feature — skip retry increment
+			feature.retry_reason = "infrastructure_reset";
+			feature.error = `${errorMessage} (infrastructure reset, retry not consumed)`;
+			this.log(
+				`   ⚠️ [RETRY_GUARD] Feature #${feature.id}: skipping retry increment (last reset ${Math.round(timeSinceReset / 1000)}s ago < ${RACE_GUARD_WINDOW_MS / 1000}s guard window)`,
+			);
+			return;
+		}
+
 		if (shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)) {
 			// Increment retry count and reset to pending for reassignment
 			feature.retry_count = (feature.retry_count ?? 0) + 1;
+			feature.retry_reason = "feature_failure";
 			feature.error = `${errorMessage} (attempt ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`;
 			transitionFeatureStatus(feature, this.manifest, "pending", {
 				reason: `retry after sandbox death: ${errorMessage}`,
@@ -1092,6 +1156,7 @@ export class WorkLoop {
 			);
 		} else {
 			// Max retries exceeded - mark as permanently failed
+			feature.retry_reason = "feature_failure";
 			feature.error = `${errorMessage} - max retries (${DEFAULT_MAX_RETRIES}) exceeded`;
 			transitionFeatureStatus(feature, this.manifest, "failed", {
 				reason: `sandbox death max retries exceeded: ${errorMessage}`,
