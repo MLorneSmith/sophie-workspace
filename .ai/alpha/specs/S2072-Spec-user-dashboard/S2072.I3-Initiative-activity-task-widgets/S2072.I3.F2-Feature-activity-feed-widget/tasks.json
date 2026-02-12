@@ -1,0 +1,496 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I3.F2",
+    "feature_name": "Activity Feed Widget",
+    "feature_slug": "activity-feed-widget",
+    "initiative_id": "S2072.I3",
+    "spec_id": 2072,
+    "created_at": "2026-02-12T14:30:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": "layer-decomposition"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2072.I3.F2.T1",
+      "type": "task",
+      "name": "Create activity icon mapping utility",
+      "action": {
+        "verb": "Create",
+        "target": "activity icon mapping utility"
+      },
+      "purpose": "Create a utility function that maps activity types (lesson, quiz, assessment, presentation) to their corresponding Lucide icons and colors for visual differentiation",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 0,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["frontend-design"],
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/types/activity.types.ts"
+        ],
+        "dependencies": [
+          "ActivityItem type from S2072.I3.F1 (cross-feature dependency)",
+          "lucide-react icons (BookOpen, HelpCircle, ClipboardCheck, Presentation)",
+          "Tailwind CSS color classes"
+        ],
+        "constraints": [
+          "Must use discriminated union for type-safe mapping",
+          "Icon/color combinations must be distinct and accessible",
+          "Follow existing icon patterns from CourseDashboardClient",
+          "Cross-feature dependency: requires S2072.I3.F1.T1 (activity types) to be complete"
+        ]
+      },
+      "input_state": "Activity types defined in S2072.I3.F1 (ActivityItem discriminated union). No icon mapping utility exists.",
+      "output_state": "activity-icon-map.ts created with getActivityIcon function returning { icon: ReactNode, colorClass: string }. Function uses discriminated union for type safety.",
+      "acceptance_criterion": "Icon mapping file exists. Function returns correct icon/color for each activity type. Typecheck passes.",
+      "verification_command": "grep -q 'export function getActivityIcon' apps/web/app/home/(user)/_lib/utils/activity-icon-map.ts && grep -q 'BookOpen\\|HelpCircle\\|ClipboardCheck\\|Presentation' apps/web/app/home/(user)/_lib/utils/activity-icon-map.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/utils/activity-icon-map.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2072.I3.F2.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F2.T2",
+      "type": "task",
+      "name": "Create activity item component",
+      "action": {
+        "verb": "Create",
+        "target": "activity item component"
+      },
+      "purpose": "Create individual activity item component displaying icon, title, timestamp, and optional link with timeline visual (vertical line with dot)",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["frontend-design"],
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "listitem"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/types/activity.types.ts",
+          "apps/web/app/home/(user)/_lib/utils/activity-icon-map.ts"
+        ],
+        "dependencies": [
+          "ActivityItem type from S2072.I3.F1 (cross-feature dependency)",
+          "getActivityIcon from T1",
+          "formatDistanceToNow from date-fns",
+          "Link from Next.js"
+        ],
+        "constraints": [
+          "Client component with 'use client' directive",
+          "Timeline visual using Tailwind border-left and absolute positioning",
+          "Timestamps formatted as relative time (e.g., '2 hours ago')",
+          "Must be accessible with proper ARIA labels",
+          "Links only rendered when activity has href",
+          "Cross-feature dependency: requires S2072.I3.F1.T1 (activity types) to be complete"
+        ]
+      },
+      "input_state": "Activity types exist from S2072.I3.F1. Icon mapping exists from T1. No activity item component exists.",
+      "output_state": "activity-item.tsx created with ActivityItemProps interface and ActivityItem component. Component displays icon, title, relative timestamp, and optional link. Timeline visual implemented with left border and dot.",
+      "acceptance_criterion": "Activity item component exists. Renders icon, title, timestamp, and optional link. Timeline visual displays correctly. Typecheck passes.",
+      "verification_command": "grep -q 'export function ActivityItem' apps/web/app/home/(user)/_components/activity-item.tsx && grep -q 'formatDistanceToNow' apps/web/app/home/(user)/_components/activity-item.tsx && grep -q 'border-l-2' apps/web/app/home/(user)/_components/activity-item.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/activity-item.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F2.T1"],
+        "blocks": ["S2072.I3.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F2.T3",
+      "type": "task",
+      "name": "Create empty state component",
+      "action": {
+        "verb": "Create",
+        "target": "empty state component"
+      },
+      "purpose": "Create engaging empty state component with friendly message and CTA when user has no recent activities",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 0,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["frontend-design"],
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Start Learning"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/activity-item.tsx"
+        ],
+        "dependencies": [
+          "Activity icon from lucide-react (Sparkles or Zap)",
+          "Link or button for CTA",
+          "Card component from @kit/ui/card"
+        ],
+        "constraints": [
+          "Follow empty state best practices from research (headline + explanation + illustration + single CTA)",
+          "Use friendly, encouraging language (not depressing or accusatory)",
+          "Include single prominent CTA button",
+          "Reference: perplexity-dashboard-empty-states-ux.md research"
+        ]
+      },
+      "input_state": "Activity item component exists. No empty state component exists.",
+      "output_state": "activity-empty-state.tsx created with engaging message, icon, and CTA button. Component follows empty state UX best practices.",
+      "acceptance_criterion": "Empty state component exists. Contains headline, explanation, icon, and single CTA. Uses encouraging language. Typecheck passes.",
+      "verification_command": "grep -q 'export function ActivityEmptyState' apps/web/app/home/(user)/_components/activity-empty-state.tsx && grep -q 'Sparkles\\|Zap' apps/web/app/home/(user)/_components/activity-empty-state.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/activity-empty-state.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2072.I3.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F2.T4",
+      "type": "task",
+      "name": "Create recent activity feed component",
+      "action": {
+        "verb": "Create",
+        "target": "recent activity feed component"
+      },
+      "purpose": "Create main activity feed widget component with card wrapper, header, and list of activity items or empty state",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["frontend-design"],
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Recent Activity"
+          },
+          {
+            "command": "find role",
+            "target": "list"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/types/activity.types.ts",
+          "apps/web/app/home/(user)/_components/activity-item.tsx",
+          "apps/web/app/home/(user)/_components/activity-empty-state.tsx"
+        ],
+        "dependencies": [
+          "ActivityItem type from S2072.I3.F1 (cross-feature dependency)",
+          "ActivityItem component from T2",
+          "ActivityEmptyState from T3",
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Client component with 'use client' directive",
+          "Accept activities prop (ActivityItem[])",
+          "Render empty state when activities.length === 0",
+          "Render activity items in list with proper semantics",
+          "Card header with 'Recent Activity' title",
+          "Responsive design (mobile-friendly)",
+          "Cross-feature dependency: requires S2072.I3.F1.T3 (dashboard loader with activities) to be complete"
+        ]
+      },
+      "input_state": "Activity types, item component, and empty state component exist. No main feed component exists.",
+      "output_state": "recent-activity-feed.tsx created with RecentActivityFeed component. Component accepts activities prop, renders card with header, displays list or empty state.",
+      "acceptance_criterion": "Recent activity feed component exists. Accepts activities prop. Renders card with header. Shows activity list or empty state based on data. Typecheck passes.",
+      "verification_command": "grep -q 'export function RecentActivityFeed' apps/web/app/home/(user)/_components/recent-activity-feed.tsx && grep -q 'Card\\|CardHeader\\|CardTitle' apps/web/app/home/(user)/_components/recent-activity-feed.tsx && grep -q 'activities.length === 0' apps/web/app/home/(user)/_components/recent-activity-feed.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/recent-activity-feed.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F2.T2", "S2072.I3.F2.T3"],
+        "blocks": ["S2072.I3.F2.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F2.T5",
+      "type": "task",
+      "name": "Add activity feed to dashboard page",
+      "action": {
+        "verb": "Add",
+        "target": "activity feed to dashboard page"
+      },
+      "purpose": "Integrate RecentActivityFeed component into dashboard page, passing activities data from dashboard loader",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["frontend-design"],
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Recent Activity"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/recent-activity-feed.tsx",
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        ],
+        "dependencies": [
+          "RecentActivityFeed from T4",
+          "DashboardData type from S2072.I3.F1.T3 (cross-feature dependency)",
+          "loadDashboardPageData from S2072.I3.F1.T3 (cross-feature dependency)",
+          "Grid layout from S2072.I1.F2 (cross-feature dependency)"
+        ],
+        "constraints": [
+          "Page must remain a Server Component",
+          "Fetch activities via dashboard loader",
+          "Pass activities as prop to RecentActivityFeed",
+          "Place widget in appropriate grid slot (follow existing layout patterns)",
+          "Handle loading/error states gracefully",
+          "Cross-feature dependencies: requires S2072.I3.F1.T3 (dashboard loader) and S2072.I1.F2 (grid layout) to be complete"
+        ]
+      },
+      "input_state": "Dashboard page exists with empty PageBody. RecentActivityFeed component exists. Dashboard loader provides activities data from S2072.I3.F1.",
+      "output_state": "Dashboard page imports and renders RecentActivityFeed. Component receives activities from loader. Widget displays in grid layout.",
+      "acceptance_criterion": "Dashboard page renders RecentActivityFeed. Activities data passed from loader. Widget visible on /home route. Typecheck passes.",
+      "verification_command": "grep -q 'RecentActivityFeed' apps/web/app/home/(user)/page.tsx && grep -q 'activities' apps/web/app/home/(user)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F2.T4"],
+        "blocks": ["S2072.I3.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F2.T6",
+      "type": "task",
+      "name": "Add hover effects to activity items",
+      "action": {
+        "verb": "Add",
+        "target": "hover effects to activity items"
+      },
+      "purpose": "Enhance activity items with subtle hover effects (background color change, cursor pointer) for better interactivity and visual feedback",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": ["frontend-design"],
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/activity-item.tsx"
+        ],
+        "dependencies": [
+          "Tailwind CSS hover utilities (hover:bg-*, hover:shadow-*)"
+        ],
+        "constraints": [
+          "Use Tailwind hover classes (no custom CSS)",
+          "Effects should be subtle and non-distracting",
+          "Maintain accessibility (no relying on color alone)",
+          "Consistent with existing hover patterns in the app"
+        ]
+      },
+      "input_state": "Activity item component exists without hover effects.",
+      "output_state": "Activity items have subtle hover effects (background change, shadow). Effects are smooth and accessible.",
+      "acceptance_criterion": "Hover classes added to activity items. Visual feedback present on hover. Typecheck passes.",
+      "verification_command": "grep -q 'hover:bg-' apps/web/app/home/(user)/_components/activity-item.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/activity-item.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F2.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Foundation",
+        "task_ids": ["S2072.I3.F2.T1", "S2072.I3.F2.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 1,
+        "name": "Component Building Blocks",
+        "task_ids": ["S2072.I3.F2.T2"],
+        "depends_on_groups": [0],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Widget Assembly",
+        "task_ids": ["S2072.I3.F2.T4"],
+        "depends_on_groups": [0, 1],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Integration",
+        "task_ids": ["S2072.I3.F2.T5"],
+        "depends_on_groups": [0, 1, 2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Polish",
+        "task_ids": ["S2072.I3.F2.T6"],
+        "depends_on_groups": [0, 1, 2, 3],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2072.I3.F2.T1", "S2072.I3.F2.T2", "S2072.I3.F2.T4", "S2072.I3.F2.T5", "S2072.I3.F2.T6"],
+      "total_hours": 11
+    },
+    "duration": {
+      "sequential": 13,
+      "parallel": 11,
+      "time_saved_percent": 15.4
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

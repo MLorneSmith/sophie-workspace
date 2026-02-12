@@ -306,6 +306,6 @@
   },
   "github": {
     "issues_created": false,
-    "spec_issue_commented": false
+    "spec_issue_commented": true
   }
 }
