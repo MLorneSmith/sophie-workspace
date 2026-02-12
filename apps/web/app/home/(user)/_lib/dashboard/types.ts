@@ -1,4 +1,5 @@
 import type { Database } from "~/lib/database.types";
+import type { ActivityItem } from "../types/activity.types";
 
 type Tables<T extends keyof Database["public"]["Tables"]> =
 	Database["public"]["Tables"][T]["Row"];
@@ -97,6 +98,7 @@ export interface DashboardData {
 	courseProgress: CourseProgressData | null;
 	skillsRadar: SkillsRadarData | null;
 	kanbanSummary: KanbanSummaryData | null;
+	activities: ActivityItem[];
 	activityFeed: ActivityFeedItem[];
 	quickActions: QuickActionData[];
 	coachingSessions: CoachingSessionData[];

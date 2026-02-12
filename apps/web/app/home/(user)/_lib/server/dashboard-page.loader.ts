@@ -16,6 +16,8 @@ import type {
 	SkillCategory,
 	SkillsRadarData,
 } from "../dashboard/types";
+import type { ActivityItem } from "../types/activity.types";
+import { loadRecentActivities } from "./activity.loader";
 
 type Client = SupabaseClient<Database>;
 
@@ -27,34 +29,45 @@ async function dashboardPageLoader(): Promise<DashboardData> {
 	const ctx = { name: "dashboardPageLoader" };
 
 	try {
-		const [courseProgress, , skillsRadar, kanbanSummary, presentations] =
-			await Promise.all([
-				loadCourseProgress(client).catch((err) => {
-					logger.warn(ctx, "Failed to load course progress: %o", err);
-					return null;
-				}),
-				loadQuizAttempts(client).catch((err) => {
-					logger.warn(ctx, "Failed to load quiz attempts: %o", err);
-					return null;
-				}),
-				loadSkillsData(client).catch((err) => {
-					logger.warn(ctx, "Failed to load skills data: %o", err);
-					return null;
-				}),
-				loadTasksSummary(client).catch((err) => {
-					logger.warn(ctx, "Failed to load tasks summary: %o", err);
-					return null;
-				}),
-				loadPresentations(client).catch((err) => {
-					logger.warn(ctx, "Failed to load presentations: %o", err);
-					return [] as PresentationData[];
-				}),
-			]);
+		const [
+			courseProgress,
+			,
+			skillsRadar,
+			kanbanSummary,
+			presentations,
+			activities,
+		] = await Promise.all([
+			loadCourseProgress(client).catch((err) => {
+				logger.warn(ctx, "Failed to load course progress: %o", err);
+				return null;
+			}),
+			loadQuizAttempts(client).catch((err) => {
+				logger.warn(ctx, "Failed to load quiz attempts: %o", err);
+				return null;
+			}),
+			loadSkillsData(client).catch((err) => {
+				logger.warn(ctx, "Failed to load skills data: %o", err);
+				return null;
+			}),
+			loadTasksSummary(client).catch((err) => {
+				logger.warn(ctx, "Failed to load tasks summary: %o", err);
+				return null;
+			}),
+			loadPresentations(client).catch((err) => {
+				logger.warn(ctx, "Failed to load presentations: %o", err);
+				return [] as PresentationData[];
+			}),
+			loadRecentActivities().catch((err) => {
+				logger.warn(ctx, "Failed to load recent activities: %o", err);
+				return [] as ActivityItem[];
+			}),
+		]);
 
 		return {
 			courseProgress,
 			skillsRadar,
 			kanbanSummary,
+			activities,
 			activityFeed: [],
 			quickActions: [],
 			coachingSessions: [],
@@ -67,6 +80,7 @@ async function dashboardPageLoader(): Promise<DashboardData> {
 			courseProgress: null,
 			skillsRadar: null,
 			kanbanSummary: null,
+			activities: [],
 			activityFeed: [],
 			quickActions: [],
 			coachingSessions: [],
