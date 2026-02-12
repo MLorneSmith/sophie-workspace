@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 import type { DashboardData } from "../_lib/dashboard/types";
 import { CourseProgressRadial } from "./dashboard/course-progress-radial";
 import { SkillsSpiderDiagram } from "./dashboard/skills-spider-diagram";
+import { KanbanSummaryCard } from "./kanban-summary-card";
 
 interface DashboardGridProps {
 	data: DashboardData;
@@ -21,18 +22,7 @@ export function DashboardGrid({ data }: DashboardGridProps) {
 					categoryScores={data.skillsRadar?.categoryScores ?? null}
 				/>
 
-				<Card className="h-64">
-					<CardHeader>
-						<CardTitle>Kanban Summary</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<p className="text-muted-foreground text-sm">
-							{data.kanbanSummary
-								? `${data.kanbanSummary.doingCount} tasks in progress`
-								: "No tasks yet"}
-						</p>
-					</CardContent>
-				</Card>
+				<KanbanSummaryCard kanbanSummary={data.kanbanSummary} />
 			</div>
 
 			{/* Row 2: Activity & Actions Widgets */}
