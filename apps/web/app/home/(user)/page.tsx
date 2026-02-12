@@ -5,6 +5,7 @@ import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
 import { withI18n } from "~/lib/i18n/with-i18n";
 
 // local imports
+import { DashboardGrid } from "./_components/dashboard-grid";
 import { HomeLayoutPageHeader } from "./_components/home-page-header";
 
 export const generateMetadata = async () => {
@@ -25,11 +26,7 @@ function UserHomePage() {
 			/>
 
 			<PageBody>
-				<div className="container mx-auto px-4 py-8">
-					<p className="text-muted-foreground">
-						Dashboard content will appear here
-					</p>
-				</div>
+				<DashboardGrid />
 			</PageBody>
 		</>
 	);
