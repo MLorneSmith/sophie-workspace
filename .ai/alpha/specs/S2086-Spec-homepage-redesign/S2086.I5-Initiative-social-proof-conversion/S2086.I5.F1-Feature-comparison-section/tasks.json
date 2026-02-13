@@ -1,0 +1,392 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I5.F1",
+    "feature_name": "Comparison Section",
+    "feature_slug": "comparison-section",
+    "initiative_id": "S2086.I5",
+    "spec_id": "2086",
+    "created_at": "2026-02-13T00:00:00Z",
+    "complexity": {
+      "score": 38,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2086.I5.F1.T1",
+      "type": "task",
+      "name": "Add comparison section content to homepage config",
+      "action": {
+        "verb": "Add",
+        "target": "comparison section content"
+      },
+      "purpose": "Define comparison items in content config to enable data-driven rendering without hardcoding",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "TypeScript interfaces for content config",
+          "Existing homepageContentConfig structure"
+        ],
+        "constraints": [
+          "Content must be externalized (not hardcoded in component)",
+          "Follow existing config structure patterns",
+          "Use arrays for comparison items to enable mapping"
+        ]
+      },
+      "input_state": "homepage-content.config.ts exists with hero, sticky, features, testimonials, essentialReads, pricing sections",
+      "output_state": "homepage-content.config.ts contains new comparison section with title, subtitle, and comparison items array",
+      "acceptance_criterion": "Config file exports comparison object with withoutItems and withItems arrays containing 4-6 items each",
+      "verification_command": "grep -A 50 'comparison:' apps/web/config/homepage-content.config.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/config/homepage-content.config.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I5.F1.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F1.T2",
+      "type": "task",
+      "name": "Create comparison section component with two-card layout",
+      "action": {
+        "verb": "Create",
+        "target": "comparison section component"
+      },
+      "purpose": "Build the visual structure with 'Without SlideHeroes' (muted) and 'With SlideHeroes' (accent) cards side-by-side",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Without SlideHeroes"
+          },
+          {
+            "command": "is visible",
+            "target": "With SlideHeroes"
+          },
+          {
+            "command": "find role",
+            "target": "list"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-comparison-section.tsx",
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "AnimateOnScroll from I1 Design System",
+          "Glass card styling from I1",
+          "Framer Motion (motion/react)",
+          "Lucide React icons (Check, X)",
+          "homepageContentConfig.comparison"
+        ],
+        "constraints": [
+          "Client component with 'use client' directive",
+          "Use glass card styling for card backgrounds",
+          "Muted styling for 'without' card (opacity, red accents)",
+          "Accent styling for 'with' card (cyan #24a9e0)",
+          "Responsive grid (stacked on mobile, side-by-side on desktop)"
+        ]
+      },
+      "input_state": "homepage-content.config.ts contains comparison config, I1 provides AnimateOnScroll and glass card styling",
+      "output_state": "New home-comparison-section.tsx component renders two cards with icons and items from config",
+      "acceptance_criterion": "Component file exists, imports comparison config, renders two cards with 4-6 items each, displays cross icons on 'without' card and checkmark icons on 'with' card",
+      "verification_command": "ls apps/web/app/\\(marketing\\)/_components/home-comparison-section.tsx && grep -q 'homepageContentConfig.comparison' apps/web/app/\\(marketing\\)/_components/home-comparison-section.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/home-comparison-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F1.T1"],
+        "blocks": ["S2086.I5.F1.T3", "S2086.I5.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F1.T3",
+      "type": "task",
+      "name": "Add staggered entrance animation to comparison items",
+      "action": {
+        "verb": "Add",
+        "target": "staggered entrance animation"
+      },
+      "purpose": "Implement Framer Motion stagger animation to reveal comparison items one-by-one on viewport entry",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-comparison-section.tsx"
+        ],
+        "dependencies": [
+          "Framer Motion variants API",
+          "AnimateOnScroll wrapper from I1",
+          "Existing component structure from T2"
+        ],
+        "constraints": [
+          "Use Framer Motion variants with staggerChildren",
+          "Animation triggers on viewport entry (whileInView)",
+          "Stagger delay: 0.1s between items",
+          "Must respect prefers-reduced-motion (handled by MotionProvider)"
+        ]
+      },
+      "input_state": "Comparison section component renders static two-card layout",
+      "output_state": "Comparison items animate sequentially when scrolled into view",
+      "acceptance_criterion": "Component uses Framer Motion variants with staggerChildren, items reveal with 0.1s stagger, whileInView triggers animation",
+      "verification_command": "grep -q 'staggerChildren' apps/web/app/\\(marketing\\)/_components/home-comparison-section.tsx && grep -q 'whileInView' apps/web/app/\\(marketing\\)/_components/home-comparison-section.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-comparison-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F1.T2"],
+        "blocks": ["S2086.I5.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F1.T4",
+      "type": "task",
+      "name": "Wire comparison section into homepage after features section",
+      "action": {
+        "verb": "Wire",
+        "target": "comparison section to homepage"
+      },
+      "purpose": "Integrate the comparison section component into the homepage page.tsx with proper Suspense boundary",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 5000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Without SlideHeroes"
+          },
+          {
+            "command": "is visible",
+            "target": "With SlideHeroes"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-comparison-section.tsx"
+        ],
+        "dependencies": [
+          "HomeComparisonSection component",
+          "Existing page structure",
+          "Suspense from React",
+          "SectionLoader fallback component"
+        ],
+        "constraints": [
+          "Insert after Features Grid section (line ~196)",
+          "Use Suspense boundary with SectionLoader fallback",
+          "Follow existing section spacing patterns",
+          "Maintain dark background styling"
+        ]
+      },
+      "input_state": "Comparison section component exists and is animated, homepage has hero, product preview, logo cloud, sticky scroll, and features sections",
+      "output_state": "Comparison section renders on homepage between Features and Testimonials sections",
+      "acceptance_criterion": "page.tsx imports and renders HomeComparisonSection after Features section with Suspense wrapper",
+      "verification_command": "grep -q 'HomeComparisonSection' apps/web/app/\\(marketing\\)/page.tsx && grep -B 5 -A 5 'HomeComparisonSection' apps/web/app/\\(marketing\\)/page.tsx | grep -q 'Features' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F1.T2"],
+        "blocks": ["S2086.I5.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F1.T5",
+      "type": "task",
+      "name": "Test comparison section responsiveness and animations",
+      "action": {
+        "verb": "Test",
+        "target": "comparison section"
+      },
+      "purpose": "Verify responsive layout, stagger animation timing, and reduced-motion accessibility",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-comparison-section.tsx",
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [
+          "Complete comparison section implementation",
+          "Browser DevTools",
+          "Lighthouse accessibility audit"
+        ],
+        "constraints": [
+          "Test at 375px (mobile), 768px (tablet), 1280px (desktop)",
+          "Verify stagger animation plays on scroll",
+          "Verify prefers-reduced-motion disables animations",
+          "Check WCAG AA contrast for text on dark backgrounds"
+        ]
+      },
+      "input_state": "Comparison section is fully implemented and integrated into homepage",
+      "output_state": "Manual testing confirms responsive layout, animation timing, and accessibility compliance",
+      "acceptance_criterion": "Section renders correctly at all breakpoints, stagger animation works, reduced-motion respected, no console errors",
+      "verification_command": "pnpm typecheck && pnpm lint",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F1.T3", "S2086.I5.F1.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Content Configuration",
+        "task_ids": ["S2086.I5.F1.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Component Development",
+        "task_ids": ["S2086.I5.F1.T2", "S2086.I5.F1.T3"],
+        "depends_on_groups": [1],
+        "estimated_hours": 7,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Integration",
+        "task_ids": ["S2086.I5.F1.T4"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Testing & Validation",
+        "task_ids": ["S2086.I5.F1.T5"],
+        "depends_on_groups": [3],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2086.I5.F1.T1", "S2086.I5.F1.T2", "S2086.I5.F1.T3", "S2086.I5.F1.T4", "S2086.I5.F1.T5"],
+      "total_hours": 13
+    },
+    "duration": {
+      "sequential": 13,
+      "parallel": 11,
+      "time_saved_percent": 15.4
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

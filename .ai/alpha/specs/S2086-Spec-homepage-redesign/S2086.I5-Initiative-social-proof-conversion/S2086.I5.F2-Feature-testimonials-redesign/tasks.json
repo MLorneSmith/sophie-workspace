@@ -1,0 +1,475 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I5.F2",
+    "feature_name": "Testimonials Redesign",
+    "feature_slug": "testimonials-redesign",
+    "initiative_id": "S2086.I5",
+    "spec_id": "2086",
+    "created_at": "2026-02-13T15:30:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": [],
+    "requires_ui": true,
+    "ui_tasks": ["S2086.I5.F2.T4", "S2086.I5.F2.T7"]
+  },
+  "tasks": [
+    {
+      "id": "S2086.I5.F2.T1",
+      "type": "task",
+      "name": "Update testimonials section config",
+      "action": {
+        "verb": "Update",
+        "target": "testimonials section config"
+      },
+      "purpose": "Update testimonials title and subtitle in homepage-content.config.ts to match new copy direction",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Keep existing config structure",
+          "Update only title and subtitle text"
+        ]
+      },
+      "input_state": "homepage-content.config.ts has testimonials config with title: 'What our Users Say'",
+      "output_state": "Config updated with new testimonials section title and subtitle",
+      "acceptance_criterion": "Config file contains updated testimonials.title and testimonials.subtitle values",
+      "verification_command": "grep -A2 'testimonials:' apps/web/config/homepage-content.config.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/config/homepage-content.config.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I5.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F2.T2",
+      "type": "task",
+      "name": "Add glass card variant to masonry grid",
+      "action": {
+        "verb": "Add",
+        "target": "glass card variant to masonry grid"
+      },
+      "purpose": "Add variant prop to TestimonialsMasonaryGrid Card component for glass morphism styling",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/testimonial-masonary-grid.tsx"
+        ],
+        "dependencies": [
+          "I1 design tokens (glass card background, border colors)"
+        ],
+        "constraints": [
+          "Maintain backward compatibility with existing light theme",
+          "Use variant prop (default: 'light', homepage: 'glass')",
+          "Glass variant uses dark background, light text, glass borders"
+        ]
+      },
+      "input_state": "Card component has fixed light styling with white background",
+      "output_state": "Card component supports variant prop with 'glass' option for dark glass morphism",
+      "acceptance_criterion": "Card component renders with glass morphism when variant='glass' prop is passed",
+      "verification_command": "grep -A5 'variant.*glass' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/testimonial-masonary-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I5.F2.T3", "S2086.I5.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F2.T3",
+      "type": "task",
+      "name": "Add decorative quotation marks",
+      "action": {
+        "verb": "Add",
+        "target": "decorative quotation marks"
+      },
+      "purpose": "Add oversized accent-colored (#24a9e0) decorative quotation marks to Card component",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/testimonial-masonary-grid.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Quotation marks use accent color (#24a9e0)",
+          "Oversized (larger than current QuoteIcon)",
+          "Positioned decoratively (not inline with text)",
+          "Only visible on glass variant"
+        ]
+      },
+      "input_state": "Card has small QuoteIcon in top-left corner",
+      "output_state": "Card has large decorative accent-colored quotation marks on glass variant",
+      "acceptance_criterion": "Glass variant cards display oversized #24a9e0 quotation marks decoratively",
+      "verification_command": "grep -B2 -A2 '#24a9e0' packages/ui/src/aceternity/testimonial-masonary-grid.tsx | grep -i quote && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/testimonial-masonary-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F2.T2"],
+        "blocks": ["S2086.I5.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F2.T4",
+      "type": "task",
+      "name": "Create featured spanning card",
+      "action": {
+        "verb": "Create",
+        "target": "featured spanning card"
+      },
+      "purpose": "Add featured card variant that spans 2 columns with larger text and prominent avatar for first testimonial",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Testimonials"
+          },
+          {
+            "command": "find role",
+            "target": "grid"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/testimonial-masonary-grid.tsx"
+        ],
+        "dependencies": [
+          "TestimonialsMasonaryGrid component",
+          "Glass card variant from T2"
+        ],
+        "constraints": [
+          "First testimonial in array is featured",
+          "Featured card spans 2 columns (col-span-2)",
+          "Larger text (text-lg instead of text-base)",
+          "Larger avatar (w-16 h-16 instead of w-10 h-10)",
+          "Only one featured card per grid"
+        ]
+      },
+      "input_state": "All testimonial cards have identical sizing in 4-column masonry grid",
+      "output_state": "First testimonial card spans 2 columns with larger text and avatar",
+      "acceptance_criterion": "First testimonial card has col-span-2 class, larger text, and larger avatar",
+      "verification_command": "grep -A10 'col-span-2' packages/ui/src/aceternity/testimonial-masonary-grid.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/aceternity/testimonial-masonary-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F2.T2", "S2086.I5.F2.T1"],
+        "blocks": ["S2086.I5.F2.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F2.T5",
+      "type": "task",
+      "name": "Update server component for glass variant",
+      "action": {
+        "verb": "Update",
+        "target": "server component for glass variant"
+      },
+      "purpose": "Update TestimonialsMasonaryGridServer to pass variant='glass' prop to masonry grid component",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-testimonials-grid-server.tsx"
+        ],
+        "dependencies": [
+          "TestimonialsMasonaryGrid component with variant prop"
+        ],
+        "constraints": [
+          "Pass variant='glass' prop to TestimonialsMasonaryGrid",
+          "Preserve existing Supabase data fetching logic",
+          "Maintain fallback testimonials"
+        ]
+      },
+      "input_state": "TestimonialsMasonaryGridServer calls TestimonialsMasonaryGrid with testimonials array only",
+      "output_state": "TestimonialsMasonaryGridServer passes variant='glass' prop along with testimonials",
+      "acceptance_criterion": "TestimonialsMasonaryGridServer component passes variant='glass' to TestimonialsMasonaryGrid",
+      "verification_command": "grep 'variant.*glass' apps/web/app/\\(marketing\\)/_components/home-testimonials-grid-server.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-testimonials-grid-server.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F2.T4"],
+        "blocks": ["S2086.I5.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F2.T6",
+      "type": "task",
+      "name": "Create testimonials section wrapper",
+      "action": {
+        "verb": "Create",
+        "target": "testimonials section wrapper"
+      },
+      "purpose": "Create home-testimonials-section.tsx that wraps testimonials grid with SecondaryHero header and AnimateOnScroll",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-testimonials-section.tsx"
+        ],
+        "dependencies": [
+          "SecondaryHero component from @kit/ui/marketing",
+          "AnimateOnScroll component from I1",
+          "homepageContentConfig.testimonials"
+        ],
+        "constraints": [
+          "Use SecondaryHero for section header",
+          "Wrap TestimonialsMasonaryGridServer with AnimateOnScroll",
+          "Apply staggered fade-in animation",
+          "Follow existing section spacing patterns"
+        ]
+      },
+      "input_state": "Testimonials section uses manual h2/p tags and no animation",
+      "output_state": "New wrapper component with SecondaryHero and AnimateOnScroll integration",
+      "acceptance_criterion": "home-testimonials-section.tsx exists with SecondaryHero, AnimateOnScroll, and grid wrapper",
+      "verification_command": "test -f apps/web/app/\\(marketing\\)/_components/home-testimonials-section.tsx && grep -q 'SecondaryHero' apps/web/app/\\(marketing\\)/_components/home-testimonials-section.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/home-testimonials-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F2.T5"],
+        "blocks": ["S2086.I5.F2.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F2.T7",
+      "type": "task",
+      "name": "Wire testimonials section to homepage",
+      "action": {
+        "verb": "Wire",
+        "target": "testimonials section to homepage"
+      },
+      "purpose": "Replace existing testimonials markup in page.tsx with new home-testimonials-section component",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Testimonials"
+          },
+          {
+            "command": "find role",
+            "target": "heading"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [
+          "home-testimonials-section component",
+          "homepageContentConfig.testimonials"
+        ],
+        "constraints": [
+          "Replace existing Testimonials section markup",
+          "Maintain section spacing and container classes",
+          "Keep Suspense boundary for lazy loading"
+        ]
+      },
+      "input_state": "Testimonials section in page.tsx uses manual h2/p tags and TestimonialsMasonaryGridServer directly",
+      "output_state": "Testimonials section uses home-testimonials-section component with SecondaryHero and animation",
+      "acceptance_criterion": "page.tsx imports and renders home-testimonials-section component",
+      "verification_command": "grep -q 'home-testimonials-section' apps/web/app/\\(marketing\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F2.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Config & Component Styling",
+        "task_ids": ["S2086.I5.F2.T1", "S2086.I5.F2.T2", "S2086.I5.F2.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Featured Card & Server Integration",
+        "task_ids": ["S2086.I5.F2.T4", "S2086.I5.F2.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Section Wrapper & Page Integration",
+        "task_ids": ["S2086.I5.F2.T6", "S2086.I5.F2.T7"],
+        "depends_on_groups": [2],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2086.I5.F2.T1", "S2086.I5.F2.T2", "S2086.I5.F2.T3", "S2086.I5.F2.T4", "S2086.I5.F2.T5", "S2086.I5.F2.T6", "S2086.I5.F2.T7"],
+      "total_hours": 12
+    },
+    "duration": {
+      "sequential": 12,
+      "parallel": 7,
+      "time_saved_percent": 42
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
