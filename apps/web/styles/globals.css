@@ -113,4 +113,21 @@
 		color: hsl(0 0% 64%); /* Appropriate contrast for dark mode */
 		opacity: 1;
 	}
+
+	/* Homepage Dark-Mode Design Tokens */
+	[data-marketing] {
+		--homepage-bg: #0a0a0f;
+		--homepage-surface: #12121a;
+		--homepage-surface-elevated: #1a1a25;
+		--homepage-border: #2a2a3a;
+		--homepage-border-subtle: #1e1e2e;
+		--homepage-text: #f5f5f7;
+		--homepage-text-muted: #a0a0b0;
+		--homepage-accent: #24a9e0;
+		--homepage-accent-glow: rgba(36, 169, 224, 0.4);
+
+		/* Gradient tokens */
+		--homepage-gradient-accent: linear-gradient(135deg, var(--homepage-accent), #1a6fb5);
+		--homepage-gradient-surface: linear-gradient(180deg, var(--homepage-surface), transparent);
+	}
 }
