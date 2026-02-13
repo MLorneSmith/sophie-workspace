@@ -194,6 +194,11 @@ export const homepageContentConfig = {
 		heading: "Trusted by professionals at",
 		marqueeSpeed: 30,
 	} satisfies LogoCloudConfig,
+	productPreview: {
+		src: "/images/video-hero-preview.avif",
+		alt: "SlideHeroes AI-powered presentation canvas",
+		title: "SlideHeroes Canvas",
+	},
 	hero: {
 		title: "Write more impactful presentations ",
 		subtitle:
