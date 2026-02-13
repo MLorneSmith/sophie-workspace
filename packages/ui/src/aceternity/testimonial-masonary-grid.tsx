@@ -30,15 +30,49 @@ export function TestimonialsMasonaryGrid({
 	testimonials,
 	variant = "light",
 }: TestimonialsMasonaryGridProps) {
-	// Create a stable grid structure
+	const [featured, ...rest] = testimonials;
+
+	// Create a stable grid structure from remaining testimonials
 	const gridSize = 4; // Number of columns
 	const grid = Array.from({ length: gridSize }, (_, columnIndex) =>
-		testimonials.filter((_, index) => index % gridSize === columnIndex),
+		rest.filter((_, index) => index % gridSize === columnIndex),
 	);
 
 	return (
 		<div>
-			<div className="mx-auto mt-10 grid max-w-7xl grid-cols-1 items-start gap-4 px-4 md:grid-cols-2 md:px-8 lg:grid-cols-4">
+			{/* Featured testimonial spanning 2 columns */}
+			{featured && (
+				<div className="mx-auto mb-4 max-w-7xl px-4 md:px-8">
+					<Card
+						variant={variant}
+						className="col-span-2 md:max-w-[calc(50%-0.5rem)]"
+					>
+						<Quote className="text-lg">{featured.content}</Quote>
+						<div className="mt-8 flex items-center gap-3">
+							<Image
+								src={featured.avatar_url || AVATAR_PLACEHOLDER}
+								alt={featured.name}
+								width={64}
+								height={64}
+								className="h-16 w-16 rounded-full"
+							/>
+							<div className="flex flex-col">
+								<QuoteDescription variant={variant} className="text-sm font-medium">
+									{featured.name}
+								</QuoteDescription>
+								{featured.title && (
+									<QuoteDescription variant={variant} className="text-xs">
+										{featured.title}
+									</QuoteDescription>
+								)}
+							</div>
+						</div>
+					</Card>
+				</div>
+			)}
+
+			{/* Remaining testimonials in masonry grid */}
+			<div className="mx-auto mt-0 grid max-w-7xl grid-cols-1 items-start gap-4 px-4 md:grid-cols-2 md:px-8 lg:grid-cols-4">
 				{grid.map((testimonialsCol, columnIndex) => (
 					<div
 						// biome-ignore lint/suspicious/noArrayIndexKey: Grid structure is stable and won't reorder

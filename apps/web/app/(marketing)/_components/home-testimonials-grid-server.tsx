@@ -77,7 +77,12 @@ export async function TestimonialsMasonaryGridServer() {
 						title: testimonial.customer_company_name || undefined,
 					}));
 
-					return <TestimonialsMasonaryGrid testimonials={testimonials} />;
+					return (
+						<TestimonialsMasonaryGrid
+							testimonials={testimonials}
+							variant="glass"
+						/>
+					);
 				}
 			}
 		} catch (connectionError) {
@@ -93,7 +98,12 @@ export async function TestimonialsMasonaryGridServer() {
 
 		// If we reach here, we're using the fallback data
 		logger.info(ctx, "Using fallback testimonials data");
-		return <TestimonialsMasonaryGrid testimonials={fallbackTestimonials} />;
+		return (
+			<TestimonialsMasonaryGrid
+				testimonials={fallbackTestimonials}
+				variant="glass"
+			/>
+		);
 	} catch (e) {
 		// Catch any unexpected errors
 		const error = e instanceof Error ? e : new Error(String(e));
@@ -101,6 +111,11 @@ export async function TestimonialsMasonaryGridServer() {
 			ctx,
 			`Unexpected error fetching testimonials: ${error.message}`,
 		);
-		return <TestimonialsMasonaryGrid testimonials={fallbackTestimonials} />;
+		return (
+			<TestimonialsMasonaryGrid
+				testimonials={fallbackTestimonials}
+				variant="glass"
+			/>
+		);
 	}
 }
