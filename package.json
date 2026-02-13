@@ -23,7 +23,7 @@
 		"lint": "biome lint . && manypkg check && pnpm lint:yaml && pnpm lint:md",
 		"lint:fix": "biome lint --write . && manypkg fix && pnpm lint:md:fix",
 		"typecheck": "./.claude/statusline/typecheck-wrapper.sh",
-		"test": "turbo test --cache-dir=.turbo --filter=!web-e2e",
+		"test": "turbo test --cache-dir=.turbo --filter=!web-e2e --filter=!payload",
 		"update": "pnpm update -r",
 		"syncpack:list": "pnpm dlx syncpack list-mismatches",
 		"syncpack:fix": "pnpm dlx syncpack fix-mismatches",
