@@ -6,6 +6,7 @@ import { withI18n } from "~/lib/i18n/with-i18n";
 import { AnimateOnScroll } from "./_components/animate-on-scroll";
 import { HomeComparisonSection } from "./_components/home-comparison-section";
 import { HomeFeaturesGrid } from "./_components/home-features-grid-client";
+import { HomeFinalCtaSection } from "./_components/home-final-cta-section";
 import { HeroSection } from "./_components/home-hero-section";
 import { HomeHowItWorks } from "./_components/home-how-it-works-client";
 import LogoCloudMarquee from "./_components/home-logo-cloud-client";
@@ -166,6 +167,15 @@ function Home() {
 					<Suspense fallback={<SectionLoader />}>
 						<HomeBlogSection />
 					</Suspense>
+				</div>
+			</section>
+
+			{/* Final CTA Section */}
+			<section
+				className={`${spacing.section} bg-background dark:bg-background pb-12`}
+			>
+				<div className={`${containerBase} ${widths.content}`}>
+					<HomeFinalCtaSection config={homepageContentConfig.finalCta} />
 				</div>
 			</section>
 		</div>
