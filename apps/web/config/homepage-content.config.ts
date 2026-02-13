@@ -22,11 +22,125 @@ interface StickyContentItem {
 	imageSrc: string;
 }
 
+export interface StatisticItem {
+	value: string;
+	label: string;
+	suffix?: string;
+	prefix?: string;
+}
+
+export interface HowItWorksStep {
+	stepNumber: number;
+	title: string;
+	description: string;
+	iconName: IconName;
+}
+
+export interface ComparisonItem {
+	text: string;
+	included: boolean;
+}
+
+export interface FinalCtaConfig {
+	headline: string;
+	subheadline: string;
+	primaryCta: { label: string; href: string };
+	secondaryCta: { label: string; href: string };
+	trustBadges: string[];
+}
+
 interface FeatureCard {
 	title: string;
 	description: string;
 	iconName: IconName;
 }
+
+const statisticsContent: StatisticItem[] = [
+	{
+		value: "2,000",
+		label: "Professionals trained",
+		suffix: "+",
+	},
+	{
+		value: "50,000",
+		label: "Presentations created",
+		suffix: "+",
+	},
+	{
+		value: "4.9",
+		label: "Average rating",
+		suffix: "/5",
+	},
+	{
+		value: "85",
+		label: "Time saved on average",
+		suffix: "%",
+	},
+];
+
+const howItWorksSteps: HowItWorksStep[] = [
+	{
+		stepNumber: 1,
+		title: "Assemble",
+		description:
+			"Gather your key messages, data points, and supporting evidence into a structured brief.",
+		iconName: "BookOpen",
+	},
+	{
+		stepNumber: 2,
+		title: "Outline",
+		description:
+			"AI generates a logical narrative structure using proven frameworks like SCQ and MECE.",
+		iconName: "LayoutDashboard",
+	},
+	{
+		stepNumber: 3,
+		title: "Storyboard",
+		description:
+			"Transform your outline into a visual storyboard with slide-by-slide recommendations.",
+		iconName: "Presentation",
+	},
+	{
+		stepNumber: 4,
+		title: "Produce",
+		description:
+			"Export polished slides ready for your next high-stakes meeting or pitch.",
+		iconName: "Sparkles",
+	},
+];
+
+const comparisonContent = {
+	without: [
+		{ text: "Hours spent staring at blank slides", included: false },
+		{ text: "Inconsistent messaging across decks", included: false },
+		{ text: "No structured methodology", included: false },
+		{
+			text: "Generic AI that doesn't understand presentations",
+			included: false,
+		},
+		{ text: "Trial and error with slide design", included: false },
+	] satisfies ComparisonItem[],
+	with: [
+		{ text: "AI-powered first draft in minutes", included: true },
+		{ text: "Consistent, compelling narrative structure", included: true },
+		{ text: "Proven frameworks (SCQ, MECE, Pyramid)", included: true },
+		{ text: "Fine-tuned AI built for presentations", included: true },
+		{ text: "Expert coaching and video training", included: true },
+	] satisfies ComparisonItem[],
+};
+
+const finalCtaContent: FinalCtaConfig = {
+	headline: "Ready to create presentations that win?",
+	subheadline:
+		"Join thousands of professionals who deliver high-impact presentations with confidence.",
+	primaryCta: { label: "Get Started Free", href: "/auth/sign-up" },
+	secondaryCta: { label: "See How It Works", href: "#how-it-works" },
+	trustBadges: [
+		"No credit card required",
+		"30-day money-back guarantee",
+		"Cancel anytime",
+	],
+};
 
 const featureCards: FeatureCard[] = [
 	{
@@ -67,6 +181,10 @@ const featureCards: FeatureCard[] = [
 ];
 
 export const homepageContentConfig = {
+	statistics: statisticsContent,
+	howItWorks: howItWorksSteps,
+	comparison: comparisonContent,
+	finalCta: finalCtaContent,
 	hero: {
 		title: "Write more impactful presentations ",
 		subtitle:
