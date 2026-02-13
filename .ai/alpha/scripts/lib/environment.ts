@@ -556,5 +556,10 @@ export function getAllEnvVars(): Record<string, string> {
 	// when running as root/sudo in E2B sandboxes. See: anthropics/claude-code#9184
 	envs.IS_SANDBOX = "1";
 
+	// Signal CI mode so pnpm skips interactive TTY prompts in headless sandboxes.
+	// Without this, pnpm aborts when lockfile changes require module dir removal.
+	// See: #2087
+	envs.CI = "true";
+
 	return envs;
 }
