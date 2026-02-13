@@ -9,7 +9,12 @@ const LogoCloudMarquee = dynamic<
 	React.ComponentProps<typeof BaseLogoCloudMarquee>
 >(() => import("@kit/ui/logo-marquee").then((mod) => mod.LogoCloudMarquee), {
 	ssr: true,
-	loading: () => <div className="h-20 animate-pulse rounded-lg bg-muted" aria-hidden="true" />,
+	loading: () => (
+		<div
+			className="h-20 animate-pulse rounded-lg bg-muted"
+			aria-hidden="true"
+		/>
+	),
 });
 
 export default function HomeLogoCloud() {

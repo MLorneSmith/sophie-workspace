@@ -33,8 +33,8 @@ export function HomeFeaturesGrid() {
 				{subtitle}
 			</p>
 
-			<motion.div
-				role="grid"
+			<motion.ul
+				role="list"
 				className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8"
 				variants={prefersReducedMotion ? undefined : containerVariants}
 				initial={prefersReducedMotion ? "visible" : "hidden"}
@@ -42,16 +42,19 @@ export function HomeFeaturesGrid() {
 				viewport={{ once: true, margin: "-100px" }}
 			>
 				{cards.map((card) => (
-					<motion.div key={card.title} variants={prefersReducedMotion ? undefined : itemVariants}>
+					<motion.li
+						key={card.title}
+						variants={prefersReducedMotion ? undefined : itemVariants}
+					>
 						<BentoFeatureCard
 							title={card.title}
 							description={card.description}
 							iconName={card.iconName}
 							size={card.size}
 						/>
-					</motion.div>
+					</motion.li>
 				))}
-			</motion.div>
+			</motion.ul>
 		</div>
 	);
 }

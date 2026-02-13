@@ -12,6 +12,9 @@ function SiteLayout(props: React.PropsWithChildren) {
 
 	return (
 		<div data-marketing className={"flex min-h-[100vh] flex-col"}>
+			<a href="#main-content" className="skip-to-content">
+				Skip to content
+			</a>
 			<SiteHeader user={user} />
 
 			<MotionProvider>{props.children}</MotionProvider>

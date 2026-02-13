@@ -35,7 +35,10 @@ export function HeroSection() {
 	const prefersReducedMotion = useReducedMotion();
 
 	return (
-		<section className="relative isolate flex min-h-[600px] items-center justify-center overflow-hidden bg-background py-20 lg:min-h-screen">
+		<section
+			aria-label="Hero"
+			className="relative isolate flex min-h-[600px] items-center justify-center overflow-hidden bg-background py-20 lg:min-h-screen"
+		>
 			{/* Gradient Orb Background */}
 			<div
 				aria-hidden="true"

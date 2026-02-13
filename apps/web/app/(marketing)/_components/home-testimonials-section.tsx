@@ -7,7 +7,11 @@ import { AnimateOnScroll } from "./animate-on-scroll";
 import { TestimonialsMasonaryGridServer } from "./home-testimonials-grid-server";
 
 const SectionLoader: React.FC = () => (
-	<div className="animate-pulse space-y-4" role="status" aria-label="Loading testimonials">
+	<div
+		className="animate-pulse space-y-4"
+		role="status"
+		aria-label="Loading testimonials"
+	>
 		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 			<div className="h-48 rounded-xl bg-muted/30" />
 			<div className="h-48 rounded-xl bg-muted/30" />

@@ -243,9 +243,19 @@ export function LogoCloudMarquee({
 				)}
 			>
 				{mode === "single" ? (
-					<div className="relative w-full" role="group" aria-label="Client logos">
-						<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" aria-hidden="true" />
-						<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent" aria-hidden="true" />
+					<div
+						className="relative w-full"
+						role="group"
+						aria-label="Client logos"
+					>
+						<div
+							className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent"
+							aria-hidden="true"
+						/>
+						<div
+							className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent"
+							aria-hidden="true"
+						/>
 						<div className="relative z-[1]">
 							<Marquee
 								pauseOnHover
@@ -265,9 +275,19 @@ export function LogoCloudMarquee({
 					</div>
 				) : (
 					<>
-						<div className="relative w-full" role="group" aria-label="Client logos first row">
-							<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" aria-hidden="true" />
-							<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent" aria-hidden="true" />
+						<div
+							className="relative w-full"
+							role="group"
+							aria-label="Client logos first row"
+						>
+							<div
+								className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent"
+								aria-hidden="true"
+							/>
+							<div
+								className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent"
+								aria-hidden="true"
+							/>
 							<div className="relative z-[1]">
 								<Marquee
 									pauseOnHover
@@ -286,9 +306,19 @@ export function LogoCloudMarquee({
 							</div>
 						</div>
 
-						<div className="relative w-full" role="group" aria-label="Client logos second row">
-							<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" aria-hidden="true" />
-							<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent" aria-hidden="true" />
+						<div
+							className="relative w-full"
+							role="group"
+							aria-label="Client logos second row"
+						>
+							<div
+								className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent"
+								aria-hidden="true"
+							/>
+							<div
+								className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent"
+								aria-hidden="true"
+							/>
 							<div className="relative z-[1]">
 								<Marquee
 									pauseOnHover

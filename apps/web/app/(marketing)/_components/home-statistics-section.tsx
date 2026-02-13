@@ -52,12 +52,21 @@ function StatBlock({
 	const fullValue = `${prefix ?? ""}${value}${suffix ?? ""}`;
 
 	return (
-		<motion.li className="text-center" variants={skipAnimation ? undefined : itemVariants}>
+		<motion.li
+			className="text-center"
+			variants={skipAnimation ? undefined : itemVariants}
+		>
 			<div className="text-4xl font-bold tracking-tight text-[#24a9e0] sm:text-5xl">
 				<span className="sr-only">{fullValue}</span>
 				<span aria-hidden="true">
 					{prefix}
-					<span ref={ref}>{skipAnimation ? (hasDecimal ? numericValue.toFixed(1) : Math.round(numericValue).toLocaleString()) : "0"}</span>
+					<span ref={ref}>
+						{skipAnimation
+							? hasDecimal
+								? numericValue.toFixed(1)
+								: Math.round(numericValue).toLocaleString()
+							: "0"}
+					</span>
 					{suffix}
 				</span>
 			</div>
@@ -73,24 +82,27 @@ export function HomeStatisticsSection() {
 	const { statistics } = homepageContentConfig;
 
 	return (
-		<motion.ul
-			role="list"
-			className="grid grid-cols-2 gap-8 md:grid-cols-4"
-			variants={prefersReducedMotion ? undefined : containerVariants}
-			initial={prefersReducedMotion ? "visible" : "hidden"}
-			whileInView="visible"
-			viewport={{ once: true, amount: 0.3 }}
-		>
-			{statistics.map((stat) => (
-				<StatBlock
-					key={stat.label}
-					value={stat.value}
-					suffix={stat.suffix}
-					prefix={stat.prefix}
-					label={stat.label}
-					skipAnimation={!!prefersReducedMotion}
-				/>
-			))}
-		</motion.ul>
+		<div>
+			<h2 className="sr-only">Platform statistics</h2>
+			<motion.ul
+				role="list"
+				className="grid grid-cols-2 gap-8 md:grid-cols-4"
+				variants={prefersReducedMotion ? undefined : containerVariants}
+				initial={prefersReducedMotion ? "visible" : "hidden"}
+				whileInView="visible"
+				viewport={{ once: true, amount: 0.3 }}
+			>
+				{statistics.map((stat) => (
+					<StatBlock
+						key={stat.label}
+						value={stat.value}
+						suffix={stat.suffix}
+						prefix={stat.prefix}
+						label={stat.label}
+						skipAnimation={!!prefersReducedMotion}
+					/>
+				))}
+			</motion.ul>
+		</div>
 	);
 }

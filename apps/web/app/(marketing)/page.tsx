@@ -83,7 +83,7 @@ const containerBase = "mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden" as const;
 
 function Home() {
 	return (
-		<div className="bg-background dark:bg-background flex flex-col">
+		<main id="main-content" className="bg-background dark:bg-background flex flex-col">
 			{/* Hero Section */}
 			<HeroSection />
 
@@ -93,7 +93,10 @@ function Home() {
 			</div>
 
 			{/* Logo Cloud Section */}
-			<section className={`w-full ${spacing.section} bg-background`}>
+			<section
+				aria-label="Trusted by leading companies"
+				className={`w-full ${spacing.section} bg-background`}
+			>
 				<div className={`${containerBase} ${widths.navigation}`}>
 					<AnimateOnScroll>
 						<Suspense fallback={<LogoCloudSkeleton />}>
@@ -104,7 +107,10 @@ function Home() {
 			</section>
 
 			{/* Statistics Section */}
-			<section className={`w-full ${spacing.section} bg-background`}>
+			<section
+				aria-label="Platform statistics"
+				className={`w-full ${spacing.section} bg-background`}
+			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<AnimateOnScroll>
 						<Suspense fallback={<StatisticsSkeleton />}>
@@ -116,10 +122,14 @@ function Home() {
 
 			{/* Sticky Scroll Section */}
 			<section
+				aria-labelledby="sticky-scroll-heading"
 				className={`w-full ${spacing.section} bg-background dark:bg-background`}
 			>
 				<div className={`${containerBase} ${widths.content} mb-8`}>
-					<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
+					<h2
+						id="sticky-scroll-heading"
+						className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl"
+					>
 						{homepageContentConfig.sticky.title}
 					</h2>
 					<p className="text-body sm:text-body-lg mx-auto max-w-4xl text-center leading-relaxed text-muted-foreground dark:text-muted-foreground">
@@ -133,6 +143,7 @@ function Home() {
 
 			{/* How It Works Section */}
 			<section
+				aria-label="How it works"
 				className={`${spacing.section} bg-background dark:bg-background`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
@@ -148,6 +159,7 @@ function Home() {
 
 			{/* Features Section */}
 			<section
+				aria-label="Features"
 				className={`${spacing.section} dark:bg-background bg-secondary/50`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
@@ -159,6 +171,7 @@ function Home() {
 
 			{/* Comparison Section */}
 			<section
+				aria-label="Comparison"
 				className={`${spacing.section} bg-background dark:bg-background`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
@@ -172,6 +185,7 @@ function Home() {
 
 			{/* Testimonials Section */}
 			<section
+				aria-label="Testimonials"
 				className={`${spacing.section} bg-background dark:bg-background`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
@@ -183,6 +197,7 @@ function Home() {
 
 			{/* Pricing Section */}
 			<section
+				aria-label="Pricing"
 				className={`${spacing.section} dark:bg-background bg-secondary/50`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
@@ -194,6 +209,7 @@ function Home() {
 
 			{/* Blog Posts Section */}
 			<section
+				aria-label="Essential reads"
 				className={`${spacing.section} bg-background dark:bg-background pb-12`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
@@ -205,6 +221,7 @@ function Home() {
 
 			{/* Final CTA Section */}
 			<section
+				aria-label="Get started"
 				className={`${spacing.section} bg-background dark:bg-background pb-12`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
@@ -213,7 +230,7 @@ function Home() {
 					</Suspense>
 				</div>
 			</section>
-		</div>
+		</main>
 	);
 }
 

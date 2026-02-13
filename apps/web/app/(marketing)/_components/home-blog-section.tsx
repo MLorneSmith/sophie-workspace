@@ -40,39 +40,41 @@ function HomeBlogCard({
 	thumbnailSrc,
 }: HomeBlogCardProps) {
 	return (
-		<GlassCard className="group flex h-full flex-col overflow-hidden p-0">
-			{thumbnailSrc && (
-				<div className="overflow-hidden">
-					<Image
-						src={thumbnailSrc}
-						alt={title}
-						width={400}
-						height={225}
-						className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-105"
-					/>
-				</div>
-			)}
-
-			<div className="flex flex-1 flex-col gap-3 p-5 sm:p-6">
-				{categoryBadge && (
-					<Badge variant="secondary" className="w-fit text-xs">
-						{categoryBadge}
-					</Badge>
+		<article>
+			<GlassCard className="group flex h-full flex-col overflow-hidden p-0">
+				{thumbnailSrc && (
+					<div className="overflow-hidden">
+						<Image
+							src={thumbnailSrc}
+							alt={title}
+							width={400}
+							height={225}
+							className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-105"
+						/>
+					</div>
 				)}
 
-				<h3 className="line-clamp-2 text-lg font-semibold leading-snug">
-					{title}
-				</h3>
+				<div className="flex flex-1 flex-col gap-3 p-5 sm:p-6">
+					{categoryBadge && (
+						<Badge variant="secondary" className="w-fit text-xs">
+							{categoryBadge}
+						</Badge>
+					)}
 
-				<p className="line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground">
-					{description}
-				</p>
+					<h3 className="line-clamp-2 text-lg font-semibold leading-snug">
+						{title}
+					</h3>
 
-				<span className="text-xs text-muted-foreground">
-					{readTimeMinutes} min read
-				</span>
-			</div>
-		</GlassCard>
+					<p className="line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground">
+						{description}
+					</p>
+
+					<span className="text-xs text-muted-foreground">
+						{readTimeMinutes} min read
+					</span>
+				</div>
+			</GlassCard>
+		</article>
 	);
 }
 
@@ -95,7 +97,8 @@ export function HomeBlogSection() {
 				}
 			/>
 
-			<motion.div
+			<motion.ul
+				role="list"
 				className="mt-8 grid grid-cols-1 gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8"
 				variants={prefersReducedMotion ? undefined : containerVariants}
 				initial={prefersReducedMotion ? "visible" : "hidden"}
@@ -103,7 +106,10 @@ export function HomeBlogSection() {
 				viewport={{ once: true, margin: "-100px" }}
 			>
 				{posts.map((post) => (
-					<motion.div key={post.title} variants={prefersReducedMotion ? undefined : itemVariants}>
+					<motion.li
+						key={post.title}
+						variants={prefersReducedMotion ? undefined : itemVariants}
+					>
 						<HomeBlogCard
 							title={post.title}
 							description={post.description}
@@ -111,9 +117,9 @@ export function HomeBlogSection() {
 							categoryBadge={post.categoryBadge}
 							thumbnailSrc={post.thumbnailSrc}
 						/>
-					</motion.div>
+					</motion.li>
 				))}
-			</motion.div>
+			</motion.ul>
 		</div>
 	);
 }

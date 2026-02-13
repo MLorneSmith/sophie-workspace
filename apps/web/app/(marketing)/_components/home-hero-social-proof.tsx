@@ -62,7 +62,10 @@ export function SocialProofStrip({
 				))}
 			</div>
 
-			<m.span variants={prefersReducedMotion ? undefined : itemVariants} className="text-sm text-muted-foreground">
+			<m.span
+				variants={prefersReducedMotion ? undefined : itemVariants}
+				className="text-sm text-muted-foreground"
+			>
 				{label}
 			</m.span>
 		</m.div>
