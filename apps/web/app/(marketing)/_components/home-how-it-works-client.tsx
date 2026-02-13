@@ -7,6 +7,13 @@ import {
 	Presentation,
 	Sparkles,
 } from "lucide-react";
+import {
+	type Variants,
+	motion,
+	useInView,
+	useReducedMotion,
+} from "motion/react";
+import { useRef } from "react";
 
 import type { HowItWorksStep } from "~/config/homepage-content.config";
 
@@ -17,6 +24,21 @@ const iconMap: Record<string, LucideIcon> = {
 	Sparkles,
 };
 
+const containerVariants: Variants = {
+	hidden: {},
+	visible: {
+		transition: {
+			staggerChildren: 0.2,
+			delayChildren: 0.3,
+		},
+	},
+};
+
+const itemVariants: Variants = {
+	hidden: { opacity: 0, y: 20 },
+	visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
 interface HowItWorksProps {
 	title: string;
 	subtitle: string;
@@ -24,8 +46,14 @@ interface HowItWorksProps {
 }
 
 export function HomeHowItWorks({ title, subtitle, steps }: HowItWorksProps) {
+	const sectionRef = useRef<HTMLDivElement>(null);
+	const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
+	const prefersReducedMotion = useReducedMotion();
+
+	const showLine = prefersReducedMotion || isInView;
+
 	return (
-		<div className="w-full">
+		<div ref={sectionRef} className="w-full">
 			<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
 				{title}
 			</h2>
@@ -33,14 +61,34 @@ export function HomeHowItWorks({ title, subtitle, steps }: HowItWorksProps) {
 				{subtitle}
 			</p>
 
-			<ol className="relative flex flex-col items-center gap-8 sm:flex-row sm:items-start sm:justify-between sm:gap-4 list-none p-0">
+			<motion.ol
+				className="relative flex flex-col items-center gap-8 list-none p-0 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
+				variants={prefersReducedMotion ? undefined : containerVariants}
+				initial={prefersReducedMotion ? "visible" : "hidden"}
+				whileInView="visible"
+				viewport={{ once: true, amount: 0.3 }}
+			>
+				{/* Connecting line behind steps (hidden on mobile/column layout) */}
+				<div
+					aria-hidden="true"
+					className="pointer-events-none absolute top-7 right-[calc(12.5%)] left-[calc(12.5%)] z-0 hidden h-0.5 bg-border sm:block"
+					style={{
+						transformOrigin: "left",
+						transform: showLine ? "scaleX(1)" : "scaleX(0)",
+						transition: prefersReducedMotion
+							? "none"
+							: "transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+					}}
+				/>
+
 				{steps.map((step) => {
 					const Icon = iconMap[step.iconName];
 
 					return (
-						<li
+						<motion.li
 							key={step.stepNumber}
 							className="relative z-10 flex w-full max-w-[240px] flex-col items-center text-center"
+							variants={prefersReducedMotion ? undefined : itemVariants}
 						>
 							<div className="relative mb-4">
 								<div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary/20 bg-primary/10">
@@ -54,10 +102,10 @@ export function HomeHowItWorks({ title, subtitle, steps }: HowItWorksProps) {
 							<p className="text-sm leading-relaxed text-muted-foreground">
 								{step.description}
 							</p>
-						</li>
+						</motion.li>
 					);
 				})}
-			</ol>
+			</motion.ol>
 		</div>
 	);
 }
