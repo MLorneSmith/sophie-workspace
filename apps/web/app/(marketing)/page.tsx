@@ -14,6 +14,8 @@ import { HeroSection } from "./_components/home-hero-section";
 import { ProductPreviewSection } from "./_components/home-product-preview-section";
 import LogoCloudMarquee from "./_components/home-logo-cloud-client";
 import HomeStickyScroll from "./_components/home-sticky-scroll-client";
+import { HomeHowItWorks } from "./_components/home-how-it-works-client";
+import { HomeStatisticsSection } from "./_components/home-statistics-section";
 import { TestimonialsMasonaryGridServer } from "./_components/home-testimonials-grid-server";
 
 // Width system
@@ -79,6 +81,15 @@ function Home() {
 				</div>
 			</section>
 
+			{/* Statistics Section */}
+			<section className={`w-full ${spacing.section} bg-background`}>
+				<div className={`${containerBase} ${widths.content}`}>
+					<AnimateOnScroll>
+						<HomeStatisticsSection />
+					</AnimateOnScroll>
+				</div>
+			</section>
+
 			{/* Sticky Scroll Section */}
 			<section
 				className={`w-full ${spacing.section} bg-background dark:bg-background`}
@@ -94,6 +105,21 @@ function Home() {
 				<Suspense fallback={<SectionLoader />}>
 					<HomeStickyScroll content={homepageContentConfig.sticky.content} />
 				</Suspense>
+			</section>
+
+			{/* How It Works Section */}
+			<section
+				className={`${spacing.section} bg-background dark:bg-background`}
+			>
+				<div className={`${containerBase} ${widths.content}`}>
+					<Suspense fallback={<SectionLoader />}>
+						<HomeHowItWorks
+							title={homepageContentConfig.howItWorks.title}
+							subtitle={homepageContentConfig.howItWorks.subtitle}
+							steps={homepageContentConfig.howItWorks.steps}
+						/>
+					</Suspense>
+				</div>
 			</section>
 
 			{/* Features Section */}

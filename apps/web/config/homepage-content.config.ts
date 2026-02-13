@@ -38,6 +38,12 @@ export interface HowItWorksStep {
 	iconName: IconName;
 }
 
+export interface HowItWorksConfig {
+	title: string;
+	subtitle: string;
+	steps: HowItWorksStep[];
+}
+
 export interface ComparisonItem {
 	text: string;
 	included: boolean;
@@ -198,7 +204,12 @@ export interface HeroConfig {
 
 export const homepageContentConfig = {
 	statistics: statisticsContent,
-	howItWorks: howItWorksSteps,
+	howItWorks: {
+		title: "How It Works",
+		subtitle:
+			"Four simple steps to create presentations that win over any audience",
+		steps: howItWorksSteps,
+	} satisfies HowItWorksConfig,
 	comparison: comparisonContent,
 	finalCta: finalCtaContent,
 	logoCloud: {
