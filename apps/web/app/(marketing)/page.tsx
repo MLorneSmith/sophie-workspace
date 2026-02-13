@@ -1,8 +1,7 @@
 import { PricingTable } from "@kit/billing-gateway/marketing";
-import { BackgroundBoxes } from "@kit/ui/background-boxes";
 import { BlogPostCard } from "@kit/ui/blog-post-card";
 import { CardSpotlight } from "@kit/ui/card-spotlight";
-import { Hero, Pill, SecondaryHero } from "@kit/ui/marketing";
+import { Pill, SecondaryHero } from "@kit/ui/marketing";
 import { Suspense } from "react";
 
 import billingConfig from "~/config/billing.config";
@@ -11,7 +10,7 @@ import pathsConfig from "~/config/paths.config";
 import { withI18n } from "~/lib/i18n/with-i18n";
 
 import { AnimateOnScroll } from "./_components/animate-on-scroll";
-import { CtaPresentationName } from "./_components/home-cta-presentation-name";
+import { HeroSection } from "./_components/home-hero-section";
 import { ProductPreviewSection } from "./_components/home-product-preview-section";
 import LogoCloudMarquee from "./_components/home-logo-cloud-client";
 import OptimizedImage from "./_components/home-optimized-image";
@@ -59,41 +58,7 @@ function Home() {
 	return (
 		<div className="bg-background dark:bg-background flex flex-col">
 			{/* Hero Section */}
-			<div className="relative isolate h-[90vh] min-h-[600px]">
-				<BackgroundBoxes className="absolute inset-0">
-					<div
-						className={`flex flex-col items-center ${componentSpacing.stack}`}
-					>
-						<div className={`${containerBase} ${widths.focused} text-center`}>
-							<Hero
-								title={
-									<span className="text-display leading-tight tracking-tight">
-										{homepageContentConfig.hero.title}{" "}
-										<i className="relative inline-block">
-											faster
-											<span className="animate-highlight absolute -bottom-2 left-0 h-3 w-full -rotate-1 bg-[#24a9e0]/40 [mask-image:linear-gradient(to_right,transparent,white_4%,white_96%,transparent)]" />
-										</i>
-									</span>
-								}
-								subtitle={
-									<span className="text-body sm:text-body-lg leading-relaxed text-muted-foreground dark:text-muted-foreground">
-										{homepageContentConfig.hero.subtitle}
-									</span>
-								}
-							/>
-						</div>
-						<div className={`${containerBase} ${widths.focused}`}>
-							<Suspense
-								fallback={
-									<div className="h-12 animate-pulse rounded-lg bg-muted dark:bg-muted" />
-								}
-							>
-								<CtaPresentationName />
-							</Suspense>
-						</div>
-					</div>
-				</BackgroundBoxes>
-			</div>
+			<HeroSection />
 
 			{/* Product Preview Section */}
 			<div className="relative z-[1] -mt-[15vh] sm:-mt-[20vh] lg:-mt-[25vh]">
