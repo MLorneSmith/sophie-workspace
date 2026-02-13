@@ -1,3 +1,5 @@
-import { GlobalLoader } from "@kit/ui/global-loader";
+import { DashboardLoadingSkeleton } from "./_components/dashboard/dashboard-loading-skeleton";
 
-export default GlobalLoader;
+export default function Loading() {
+	return <DashboardLoadingSkeleton />;
+}

@@ -1,0 +1,55 @@
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
+
+import type { ActivityItem as ActivityItemType } from "../_lib/types/activity.types";
+import { ActivityEmptyState } from "./activity-empty-state";
+import { ActivityItem } from "./activity-item";
+
+interface RecentActivityFeedProps {
+	activities: ActivityItemType[];
+}
+
+export function RecentActivityFeed({ activities }: RecentActivityFeedProps) {
+	if (activities.length === 0) {
+		return (
+			<Card
+				aria-label="Recent activity"
+				className="border-l-4 border-l-blue-500 bg-blue-50/30 dark:bg-blue-950/15"
+			>
+				<CardHeader className="pb-2">
+					<CardTitle className="font-heading">Recent Activity</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<ActivityEmptyState />
+				</CardContent>
+			</Card>
+		);
+	}
+
+	return (
+		<Card
+			aria-label="Recent activity timeline"
+			className="border-l-4 border-l-blue-500 bg-blue-50/30 dark:bg-blue-950/15"
+		>
+			<CardHeader className="pb-2">
+				<CardTitle className="font-heading">Recent Activity</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<ul
+					className="space-y-0"
+					aria-live="polite"
+					aria-label="Recent activity timeline"
+				>
+					{activities.map((activity, index) => (
+						<ActivityItem
+							key={activity.id}
+							activity={activity}
+							isLast={index === activities.length - 1}
+						/>
+					))}
+				</ul>
+			</CardContent>
+		</Card>
+	);
+}
