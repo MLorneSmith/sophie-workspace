@@ -286,9 +286,9 @@ export const homepageContentConfig = {
 		cards: featureCards,
 	},
 	testimonials: {
-		title: "What our Users Say",
+		title: "Trusted by Professionals Worldwide",
 		subtitle:
-			"Success stories from professionals who transformed their presentation skills",
+			"Hear from the people who use SlideHeroes to deliver high-impact presentations every day",
 	},
 	essentialReads: {
 		title: "Go Deeper, Learn Faster with these Essential Reads",

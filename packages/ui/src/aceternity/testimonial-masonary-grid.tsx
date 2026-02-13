@@ -19,12 +19,16 @@ interface Testimonial {
 	created_at?: string;
 }
 
+type CardVariant = "light" | "glass";
+
 interface TestimonialsMasonaryGridProps {
 	testimonials: Testimonial[];
+	variant?: CardVariant;
 }
 
 export function TestimonialsMasonaryGrid({
 	testimonials,
+	variant = "light",
 }: TestimonialsMasonaryGridProps) {
 	// Create a stable grid structure
 	const gridSize = 4; // Number of columns
@@ -44,6 +48,7 @@ export function TestimonialsMasonaryGrid({
 						{testimonialsCol.map((testimonial, idx) => (
 							<Card
 								key={`testimonial-${testimonial.name}-${columnIndex}-${idx}`}
+								variant={variant}
 							>
 								<Quote>{testimonial.content}</Quote>
 								<div className="mt-8 flex items-center gap-2">
@@ -55,9 +60,9 @@ export function TestimonialsMasonaryGrid({
 										className="rounded-full"
 									/>
 									<div className="flex flex-col">
-										<QuoteDescription>{testimonial.name}</QuoteDescription>
+										<QuoteDescription variant={variant}>{testimonial.name}</QuoteDescription>
 										{testimonial.title && (
-											<QuoteDescription className="text-[10px]">
+											<QuoteDescription variant={variant} className="text-[10px]">
 												{testimonial.title}
 											</QuoteDescription>
 										)}
@@ -75,18 +80,32 @@ export function TestimonialsMasonaryGrid({
 export const Card = ({
 	className,
 	children,
+	variant = "light",
 }: {
 	className?: string;
 	children: React.ReactNode;
+	variant?: CardVariant;
 }) => {
 	return (
 		<div
 			className={cn(
-				"group relative rounded-xl border border-transparent bg-white p-8 shadow-[0_1px_1px_rgba(0,0,0,0.05),0_4px_6px_rgba(34,42,53,0.04),0_24px_68px_rgba(47,48,55,0.05),0_2px_3px_rgba(0,0,0,0.04)] dark:border-[rgba(255,255,255,0.10)] dark:bg-[rgba(40,40,40,0.30)] dark:shadow-[2px_4px_16px_0px_rgba(248,248,248,0.06)_inset]",
+				"group relative rounded-xl border p-8",
+				variant === "glass"
+					? "border-white/10 bg-white/5 text-white shadow-[0_4px_24px_rgba(0,0,0,0.2)] backdrop-blur-md"
+					: "border-transparent bg-white shadow-[0_1px_1px_rgba(0,0,0,0.05),0_4px_6px_rgba(34,42,53,0.04),0_24px_68px_rgba(47,48,55,0.05),0_2px_3px_rgba(0,0,0,0.04)] dark:border-[rgba(255,255,255,0.10)] dark:bg-[rgba(40,40,40,0.30)] dark:shadow-[2px_4px_16px_0px_rgba(248,248,248,0.06)_inset]",
 				className,
 			)}
 		>
-			<QuoteIcon className="absolute top-2 left-2 scale-x-[-1] text-neutral-300" />
+			{variant === "glass" ? (
+				<QuoteIcon
+					className="absolute top-3 left-3 scale-x-[-1]"
+					size={40}
+					strokeWidth={1.5}
+					style={{ color: "#24a9e0" }}
+				/>
+			) : (
+				<QuoteIcon className="absolute top-2 left-2 scale-x-[-1] text-neutral-300" />
+			)}
 			{children}
 		</div>
 	);
@@ -114,14 +133,19 @@ export const Quote = ({
 export const QuoteDescription = ({
 	children,
 	className,
+	variant = "light",
 }: {
 	children: React.ReactNode;
 	className?: string;
+	variant?: CardVariant;
 }) => {
 	return (
 		<p
 			className={cn(
-				"max-w-sm text-xs font-normal text-neutral-600 dark:text-neutral-400",
+				"max-w-sm text-xs font-normal",
+				variant === "glass"
+					? "text-white/70"
+					: "text-neutral-600 dark:text-neutral-400",
 				className,
 			)}
 		>
