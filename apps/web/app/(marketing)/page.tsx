@@ -9,13 +9,14 @@ import pathsConfig from "~/config/paths.config";
 import { withI18n } from "~/lib/i18n/with-i18n";
 
 import { AnimateOnScroll } from "./_components/animate-on-scroll";
+import { HomeComparisonSection } from "./_components/home-comparison-section";
 import { HeroSection } from "./_components/home-hero-section";
-import { ProductPreviewSection } from "./_components/home-product-preview-section";
-import LogoCloudMarquee from "./_components/home-logo-cloud-client";
-import HomeStickyScroll from "./_components/home-sticky-scroll-client";
 import { HomeHowItWorks } from "./_components/home-how-it-works-client";
 import { HomeFeaturesGrid } from "./_components/home-features-grid-client";
+import LogoCloudMarquee from "./_components/home-logo-cloud-client";
+import { ProductPreviewSection } from "./_components/home-product-preview-section";
 import { HomeStatisticsSection } from "./_components/home-statistics-section";
+import HomeStickyScroll from "./_components/home-sticky-scroll-client";
 import { TestimonialsMasonaryGridServer } from "./_components/home-testimonials-grid-server";
 
 // Width system
@@ -130,6 +131,19 @@ function Home() {
 					<Suspense fallback={<SectionLoader />}>
 						<HomeFeaturesGrid />
 					</Suspense>
+				</div>
+			</section>
+
+			{/* Comparison Section */}
+			<section
+				className={`${spacing.section} bg-background dark:bg-background`}
+			>
+				<div className={`${containerBase} ${widths.content}`}>
+					<AnimateOnScroll>
+						<Suspense fallback={<SectionLoader />}>
+							<HomeComparisonSection />
+						</Suspense>
+					</AnimateOnScroll>
 				</div>
 			</section>
 
