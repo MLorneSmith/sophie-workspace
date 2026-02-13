@@ -11,8 +11,8 @@ import pathsConfig from "~/config/paths.config";
 import { withI18n } from "~/lib/i18n/with-i18n";
 
 import { AnimateOnScroll } from "./_components/animate-on-scroll";
-import ContainerScroll from "./_components/home-container-scroll-client";
 import { CtaPresentationName } from "./_components/home-cta-presentation-name";
+import { ProductPreviewSection } from "./_components/home-product-preview-section";
 import LogoCloudMarquee from "./_components/home-logo-cloud-client";
 import OptimizedImage from "./_components/home-optimized-image";
 import StickyScrollReveal from "./_components/home-sticky-scroll-client";
@@ -41,8 +41,6 @@ const componentSpacing = {
 } as const;
 
 const containerBase = "mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden" as const;
-
-const defaultHeroImage = "/images/video-hero-preview.avif";
 
 // Enhanced loading states
 const SectionLoader: React.FC = () => (
@@ -97,23 +95,9 @@ function Home() {
 				</BackgroundBoxes>
 			</div>
 
-			{/* ContainerScroll Section */}
+			{/* Product Preview Section */}
 			<div className="relative z-[1] -mt-[15vh] sm:-mt-[20vh] lg:-mt-[25vh]">
-				<ContainerScroll>
-					<div className="relative h-full w-full">
-						<div className="absolute inset-0 rounded-lg bg-gradient-to-t from-black/20 to-transparent" />
-						<OptimizedImage
-							src={defaultHeroImage}
-							alt="Hero Preview"
-							width={1200}
-							height={800}
-							className="h-full w-full rounded-lg object-cover"
-							priority
-							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
-							quality={85}
-						/>
-					</div>
-				</ContainerScroll>
+				<ProductPreviewSection />
 			</div>
 
 			{/* Logo Cloud Section */}
