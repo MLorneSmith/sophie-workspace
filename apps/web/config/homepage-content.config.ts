@@ -123,8 +123,18 @@ const howItWorksSteps: HowItWorksStep[] = [
 	},
 ];
 
-const comparisonContent = {
-	without: [
+export interface ComparisonConfig {
+	title: string;
+	subtitle: string;
+	withoutItems: ComparisonItem[];
+	withItems: ComparisonItem[];
+}
+
+const comparisonContent: ComparisonConfig = {
+	title: "Why SlideHeroes?",
+	subtitle:
+		"See the difference between struggling with presentations and having the right tools",
+	withoutItems: [
 		{ text: "Hours spent staring at blank slides", included: false },
 		{ text: "Inconsistent messaging across decks", included: false },
 		{ text: "No structured methodology", included: false },
@@ -133,14 +143,14 @@ const comparisonContent = {
 			included: false,
 		},
 		{ text: "Trial and error with slide design", included: false },
-	] satisfies ComparisonItem[],
-	with: [
+	],
+	withItems: [
 		{ text: "AI-powered first draft in minutes", included: true },
 		{ text: "Consistent, compelling narrative structure", included: true },
 		{ text: "Proven frameworks (SCQ, MECE, Pyramid)", included: true },
 		{ text: "Fine-tuned AI built for presentations", included: true },
 		{ text: "Expert coaching and video training", included: true },
-	] satisfies ComparisonItem[],
+	],
 };
 
 const finalCtaContent: FinalCtaConfig = {
@@ -322,8 +332,9 @@ export const homepageContentConfig = {
 		] as BlogPost[],
 	},
 	pricing: {
-		title: "Fair pricing for all types of businesses",
-		subtitle: "Get started on our free plan and upgrade when you are ready",
-		pill: "Get started for free. No credit card required.",
+		title: "Simple, transparent pricing",
+		subtitle:
+			"Choose the plan that fits your needs. Upgrade or downgrade anytime.",
+		pill: "No credit card required to start",
 	},
 };
