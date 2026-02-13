@@ -3,7 +3,10 @@ export type DailyMessageCategory =
 	| "factoid"
 	| "national-day"
 	| "history"
-	| "seasonal";
+	| "seasonal"
+	| "pop-culture"
+	| "shower-thought"
+	| "plot-twist";
 
 export interface DailyMessage {
 	text: string;

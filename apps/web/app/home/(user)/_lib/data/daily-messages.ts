@@ -16,22 +16,16 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"01-02": [
 		{
-			text: "The first patent for a ballpoint pen was issued in 1888",
-			emoji: "🖊️",
-			category: "history",
+			text: "If you rip a hole in a net, it actually has fewer holes than before",
+			emoji: "🤯",
+			category: "shower-thought",
 		},
 	],
 	"01-03": [
 		{
-			text: "Alaska became the 49th US state on this day in 1959",
-			emoji: "🏔️",
-			category: "history",
-			locales: ["US"],
-		},
-		{
-			text: "J.R.R. Tolkien was born on this day in 1892",
-			emoji: "📖",
-			category: "history",
+			text: "J.R.R. Tolkien was born today — one does not simply ignore that",
+			emoji: "🧙",
+			category: "pop-culture",
 		},
 	],
 	"01-04": [
@@ -49,9 +43,9 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			locales: ["GB", "IE"],
 		},
 		{
-			text: "Amelia Earhart became the first woman to fly solo across the Pacific in 1935",
-			emoji: "✈️",
-			category: "history",
+			text: "Your future self is watching you right now through memories",
+			emoji: "🔮",
+			category: "shower-thought",
 		},
 	],
 	"01-06": [
@@ -63,28 +57,28 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"01-07": [
 		{
-			text: "The first commercial transatlantic phone call was made in 1927",
-			emoji: "📞",
-			category: "history",
+			text: "Every book ever written is just a remix of the same 26 letters",
+			emoji: "📚",
+			category: "shower-thought",
 		},
 	],
 	"01-08": [
 		{
-			text: "Elvis Presley was born on this day in 1935",
+			text: "Elvis was born today — thank you, thank you very much",
 			emoji: "🎸",
-			category: "history",
+			category: "pop-culture",
 		},
 	],
 	"01-09": [
 		{
-			text: "The first iPhone was announced on this day in 2007",
+			text: "The first iPhone was announced on this day in 2007 — it didn't even have copy-paste",
 			emoji: "📱",
 			category: "history",
 		},
 	],
 	"01-10": [
 		{
-			text: "The London Underground opened on this day in 1863 — the world's first",
+			text: "The London Underground opened today in 1863 — the world's first subway",
 			emoji: "🚇",
 			category: "history",
 			locales: ["GB"],
@@ -93,13 +87,6 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			text: "It's Houseplant Appreciation Day — give your green friends some love",
 			emoji: "🪴",
 			category: "national-day",
-		},
-	],
-	"01-11": [
-		{
-			text: "Amelia Earhart became the first person to fly solo from Hawaii to California in 1935",
-			emoji: "🌺",
-			category: "history",
 		},
 	],
 	"01-13": [
@@ -111,9 +98,9 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"01-14": [
 		{
-			text: "The Simpsons first aired on this day in 1990",
+			text: "The Simpsons first aired today in 1990 — D'oh!",
 			emoji: "📺",
-			category: "history",
+			category: "pop-culture",
 		},
 	],
 	"01-15": [
@@ -124,16 +111,16 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			locales: ["US"],
 		},
 		{
-			text: "Wikipedia launched on this day in 2001",
+			text: "Wikipedia launched on this day in 2001 — goodbye, encyclopedias",
 			emoji: "📚",
 			category: "history",
 		},
 	],
 	"01-17": [
 		{
-			text: "Benjamin Franklin was born on this day in 1706",
-			emoji: "⚡",
-			category: "history",
+			text: "Woolly mammoths were still alive when the Great Pyramid was being built",
+			emoji: "🦣",
+			category: "plot-twist",
 		},
 	],
 	"01-18": [
@@ -152,16 +139,16 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"01-22": [
 		{
-			text: "The first episode of the TV show Friends aired... wait, no — that's in September",
+			text: "The first episode of Friends aired... wait, no — that's in September",
 			emoji: "😄",
-			category: "factoid",
+			category: "pop-culture",
 		},
 	],
 	"01-24": [
 		{
-			text: "Gold was discovered at Sutter's Mill in 1848, sparking the California Gold Rush",
-			emoji: "⛏️",
-			category: "history",
+			text: "Your stomach thinks all potatoes are mashed",
+			emoji: "🥔",
+			category: "shower-thought",
 		},
 	],
 	"01-25": [
@@ -181,21 +168,21 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			locales: ["AU"],
 		},
 		{
-			text: "It's National Peanut Brittle Day",
-			emoji: "🥜",
-			category: "national-day",
+			text: "Nothing is on fire — fire is on things",
+			emoji: "🔥",
+			category: "shower-thought",
 		},
 	],
 	"01-27": [
 		{
-			text: "Mozart was born on this day in 1756",
-			emoji: "🎵",
-			category: "history",
+			text: "The lighter was invented before the match. Let that sink in",
+			emoji: "🔥",
+			category: "plot-twist",
 		},
 	],
 	"01-28": [
 		{
-			text: "LEGO was patented on this day in 1958",
+			text: "LEGO was patented on this day in 1958 — everything is awesome",
 			emoji: "🧱",
 			category: "history",
 		},
@@ -209,9 +196,9 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"01-30": [
 		{
-			text: "Gandhi was assassinated on this day in 1948",
-			emoji: "🕊️",
-			category: "history",
+			text: "Humans share about 60% of their DNA with bananas",
+			emoji: "🍌",
+			category: "plot-twist",
 		},
 	],
 	"01-31": [
@@ -244,20 +231,24 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			category: "national-day",
 			locales: ["US", "CA"],
 		},
-		{ text: "It's World Wetlands Day", emoji: "🌿", category: "national-day" },
+		{
+			text: "The word 'bed' actually looks like a bed",
+			emoji: "🛏️",
+			category: "shower-thought",
+		},
 	],
 	"02-04": [
 		{
-			text: "Facebook launched on this day in 2004",
+			text: "Facebook launched on this day in 2004 — your parents arrived about 10 years later",
 			emoji: "👍",
 			category: "history",
 		},
 	],
 	"02-05": [
 		{
-			text: "It's National Weatherperson's Day — thank your local forecaster",
-			emoji: "🌦️",
-			category: "national-day",
+			text: "France was still using the guillotine when Star Wars first hit cinemas",
+			emoji: "⚔️",
+			category: "plot-twist",
 		},
 	],
 	"02-06": [
@@ -269,9 +260,9 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"02-07": [
 		{
-			text: "Charles Dickens was born on this day in 1812",
-			emoji: "📚",
-			category: "history",
+			text: "Every pizza is a personal pizza if you believe in yourself",
+			emoji: "🍕",
+			category: "shower-thought",
 		},
 	],
 	"02-09": [
@@ -283,14 +274,14 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"02-11": [
 		{
-			text: "Thomas Edison was born on this day in 1847",
-			emoji: "💡",
-			category: "history",
+			text: "Nintendo was founded in 1889 — during the Ottoman Empire",
+			emoji: "🎮",
+			category: "plot-twist",
 		},
 	],
 	"02-12": [
 		{
-			text: "Abraham Lincoln and Charles Darwin were both born on this day in 1809",
+			text: "Abraham Lincoln and Charles Darwin were both born on this day in 1809 — same day, same year",
 			emoji: "🎩",
 			category: "history",
 		},
@@ -320,13 +311,14 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 		},
 	],
 	"02-22": [
-		{
-			text: "George Washington was born on this day in 1732",
-			emoji: "🇺🇸",
-			category: "history",
-			locales: ["US"],
-		},
 		{ text: "It's World Thinking Day", emoji: "💭", category: "national-day" },
+	],
+	"02-25": [
+		{
+			text: "You've never actually seen your own face — only reflections and photos of it",
+			emoji: "🪞",
+			category: "shower-thought",
+		},
 	],
 	"02-29": [
 		{
@@ -359,10 +351,16 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"03-04": [
 		{
-			text: "The original Star-Spangled Banner was made official on this day in 1931",
-			emoji: "🇺🇸",
-			category: "history",
-			locales: ["US"],
+			text: "You're not stuck in traffic — you are the traffic",
+			emoji: "🚗",
+			category: "shower-thought",
+		},
+	],
+	"03-06": [
+		{
+			text: "The fax machine was invented the same year as the Oregon Trail migration (1843)",
+			emoji: "📠",
+			category: "plot-twist",
 		},
 	],
 	"03-08": [
@@ -374,14 +372,14 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"03-10": [
 		{
-			text: "Chuck Norris was born on this day in 1940",
+			text: "Chuck Norris was born today — the calendar skipped from March 9th straight to the 11th, but Chuck roundhouse-kicked it back",
 			emoji: "🥋",
-			category: "history",
+			category: "pop-culture",
 		},
 	],
 	"03-12": [
 		{
-			text: "The World Wide Web was invented on this day in 1989",
+			text: "The World Wide Web was invented on this day in 1989 — and the first website was incredibly boring",
 			emoji: "🌐",
 			category: "history",
 		},
@@ -391,6 +389,13 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			text: "Happy Pi Day! 3.14159265358979...",
 			emoji: "🥧",
 			category: "national-day",
+		},
+	],
+	"03-16": [
+		{
+			text: "Your alarm clock is arguably the rudest thing you own",
+			emoji: "⏰",
+			category: "shower-thought",
 		},
 	],
 	"03-17": [
@@ -427,6 +432,13 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			category: "national-day",
 		},
 	],
+	"03-24": [
+		{
+			text: "Harvard University was founded before calculus was invented",
+			emoji: "🎓",
+			category: "plot-twist",
+		},
+	],
 	"03-25": [
 		{
 			text: "It's International Waffle Day — crispy on the outside, fluffy on the inside",
@@ -441,9 +453,16 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			category: "national-day",
 		},
 	],
+	"03-28": [
+		{
+			text: "If two mind readers read each other's minds, whose mind are they reading?",
+			emoji: "🧠",
+			category: "shower-thought",
+		},
+	],
 	"03-31": [
 		{
-			text: "The Eiffel Tower was officially opened on this day in 1889",
+			text: "The Eiffel Tower was supposed to be temporary — it was built for the 1889 World's Fair and they just... kept it",
 			emoji: "🗼",
 			category: "history",
 		},
@@ -459,16 +478,23 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"04-02": [
 		{
-			text: "Hans Christian Andersen was born on this day in 1805",
-			emoji: "📖",
-			category: "history",
+			text: "At some point in your life, you were the youngest person on Earth",
+			emoji: "👶",
+			category: "shower-thought",
 		},
 	],
 	"04-03": [
 		{
-			text: "The first mobile phone call was made on this day in 1973",
+			text: "The first mobile phone call was made on this day in 1973 — it weighed 2.4 pounds",
 			emoji: "📱",
 			category: "history",
+		},
+	],
+	"04-05": [
+		{
+			text: "You can fit all the other planets in our solar system between Earth and the Moon",
+			emoji: "🌍",
+			category: "plot-twist",
 		},
 	],
 	"04-07": [
@@ -480,7 +506,7 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"04-10": [
 		{
-			text: "The Titanic set sail on this day in 1912",
+			text: "The Titanic set sail on this day in 1912 — spoiler alert: bring a lifeboat",
 			emoji: "🚢",
 			category: "history",
 		},
@@ -494,23 +520,23 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"04-12": [
 		{
-			text: "Yuri Gagarin became the first human in space on this day in 1961",
+			text: "Yuri Gagarin became the first human in space on this day in 1961 — his entire ship had less computing power than your phone",
 			emoji: "🚀",
 			category: "history",
 		},
 	],
 	"04-15": [
 		{
-			text: "Leonardo da Vinci was born on this day in 1452",
-			emoji: "🎨",
-			category: "history",
+			text: "Pluto was discovered in 1930 and still hasn't completed a single orbit around the Sun",
+			emoji: "🪐",
+			category: "plot-twist",
 		},
 	],
 	"04-16": [
 		{
-			text: "Charlie Chaplin was born on this day in 1889",
-			emoji: "🎬",
-			category: "history",
+			text: "Every time you clean something, you're just making something else dirty",
+			emoji: "🧹",
+			category: "shower-thought",
 		},
 	],
 	"04-22": [
@@ -540,6 +566,11 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			category: "holiday",
 			locales: ["AU"],
 		},
+		{
+			text: "Russia has a larger surface area than Pluto",
+			emoji: "🗺️",
+			category: "plot-twist",
+		},
 	],
 	"04-28": [
 		{
@@ -564,17 +595,21 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			category: "seasonal",
 		},
 	],
-	"05-03": [
+	"05-04": [
 		{
-			text: "It's World Press Freedom Day",
-			emoji: "📰",
-			category: "national-day",
+			text: "May the Fourth be with you",
+			emoji: "⚔️",
+			category: "pop-culture",
 		},
 	],
-	"05-04": [
-		{ text: "May the Fourth be with you", emoji: "⚔️", category: "seasonal" },
-	],
 	"05-05": [{ text: "Happy Cinco de Mayo!", emoji: "🇲🇽", category: "holiday" }],
+	"05-07": [
+		{
+			text: "The brain named itself",
+			emoji: "🧠",
+			category: "shower-thought",
+		},
+	],
 	"05-08": [
 		{
 			text: "VE Day — Victory in Europe, 1945",
@@ -586,30 +621,30 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"05-09": [
 		{
-			text: "The first photograph of a black hole was released on this day in 2019",
+			text: "The first photograph of a black hole was released on this day in 2019 — it took 2 years and 200+ scientists to develop",
 			emoji: "🕳️",
 			category: "history",
 		},
 	],
 	"05-12": [
 		{
-			text: "Florence Nightingale was born on this day in 1820 — it's International Nurses Day",
-			emoji: "🏥",
-			category: "history",
+			text: "Vending machines are statistically more dangerous than sharks",
+			emoji: "🦈",
+			category: "plot-twist",
 		},
 	],
 	"05-15": [
 		{
-			text: "It's International Day of Families",
-			emoji: "👨‍👩‍👧‍👦",
-			category: "national-day",
+			text: "If you clean a vacuum cleaner, you become a vacuum cleaner",
+			emoji: "🧹",
+			category: "shower-thought",
 		},
 	],
 	"05-17": [
 		{
-			text: "It's World Telecommunication Day",
-			emoji: "📡",
-			category: "national-day",
+			text: "The chance of you being born was about 1 in 400 trillion. You're basically a miracle",
+			emoji: "✨",
+			category: "plot-twist",
 		},
 	],
 	"05-20": [
@@ -621,9 +656,9 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"05-21": [
 		{
-			text: "Amelia Earhart completed her transatlantic solo flight on this day in 1932",
-			emoji: "✈️",
-			category: "history",
+			text: "Technically, we're all just fancy house plants with anxiety and schedules",
+			emoji: "🪴",
+			category: "shower-thought",
 		},
 	],
 	"05-24": [
@@ -638,14 +673,14 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 		{
 			text: "It's Towel Day — a tribute to Douglas Adams. Don't panic!",
 			emoji: "🚀",
-			category: "national-day",
+			category: "pop-culture",
 		},
 	],
 	"05-28": [
 		{
-			text: "Ian Fleming, creator of James Bond, was born on this day in 1908",
+			text: "Ian Fleming, creator of James Bond, was born today — shaken, not stirred",
 			emoji: "🍸",
-			category: "history",
+			category: "pop-culture",
 		},
 	],
 
@@ -666,9 +701,9 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"06-05": [
 		{
-			text: "It's World Environment Day",
-			emoji: "🌿",
-			category: "national-day",
+			text: "The letter W is the only letter whose name doesn't contain its own sound",
+			emoji: "🔤",
+			category: "shower-thought",
 		},
 	],
 	"06-06": [
@@ -680,7 +715,7 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"06-07": [
 		{
-			text: "Alan Turing was born on this day in 1912",
+			text: "Alan Turing was born on this day in 1912 — the father of computer science and AI",
 			emoji: "💻",
 			category: "history",
 		},
@@ -692,9 +727,16 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			category: "national-day",
 		},
 	],
+	"06-10": [
+		{
+			text: "The speed of dark is the same as the speed of light",
+			emoji: "🌑",
+			category: "shower-thought",
+		},
+	],
 	"06-12": [
 		{
-			text: "Anne Frank began writing her diary on this day in 1942",
+			text: "Anne Frank began writing her diary on this day in 1942 — it's been translated into 70+ languages",
 			emoji: "📔",
 			category: "history",
 		},
@@ -715,6 +757,13 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			locales: ["IE"],
 		},
 	],
+	"06-18": [
+		{
+			text: "The Great Wall of China is not actually visible from space with the naked eye",
+			emoji: "🧱",
+			category: "plot-twist",
+		},
+	],
 	"06-20": [
 		{
 			text: "It's the summer solstice — the longest day of the year",
@@ -731,23 +780,23 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"06-23": [
 		{
-			text: "Alan Turing's birthday is recognised as a celebration of computing",
-			emoji: "🖥️",
-			category: "history",
+			text: "You've survived 100% of your worst days so far",
+			emoji: "💪",
+			category: "shower-thought",
 		},
 	],
 	"06-25": [
 		{
-			text: "George Orwell's Nineteen Eighty-Four was published on this day in 1949",
-			emoji: "📕",
-			category: "history",
+			text: "The Wizard of Oz and Gone with the Wind both came out in 1939 — imagine that Oscar race",
+			emoji: "🎬",
+			category: "pop-culture",
 		},
 	],
 	"06-30": [
 		{
-			text: "The first leap second was added to UTC on this day in 1972",
-			emoji: "⏱️",
-			category: "history",
+			text: "Procrastination is just the future you dealing with today you's problems",
+			emoji: "⏳",
+			category: "shower-thought",
 		},
 	],
 
@@ -780,16 +829,16 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			locales: ["US"],
 		},
 		{
-			text: "The US Declaration of Independence was adopted on this day in 1776",
+			text: "The US Declaration of Independence was adopted today in 1776 — then they still had to win the war",
 			emoji: "📜",
 			category: "history",
 		},
 	],
 	"07-06": [
 		{
-			text: "The first rabies vaccine was given on this day in 1885 by Louis Pasteur",
-			emoji: "💉",
-			category: "history",
+			text: "More people have been to the Moon than have bowled a perfect 900 series",
+			emoji: "🎳",
+			category: "plot-twist",
 		},
 	],
 	"07-07": [
@@ -799,11 +848,11 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			category: "national-day",
 		},
 	],
-	"07-11": [
+	"07-10": [
 		{
-			text: "It's World Population Day",
-			emoji: "🌍",
-			category: "national-day",
+			text: "If you shuffle a deck of cards properly, the order has probably never existed before in human history",
+			emoji: "🃏",
+			category: "plot-twist",
 		},
 	],
 	"07-12": [
@@ -830,30 +879,37 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"07-18": [
 		{
-			text: "Nelson Mandela was born on this day in 1918",
+			text: "Nelson Mandela was born on this day in 1918 — 27 years in prison, then became president",
 			emoji: "✊",
 			category: "history",
 		},
 	],
 	"07-20": [
 		{
-			text: "On this day in 1969, humans first walked on the Moon",
+			text: "On this day in 1969, humans first walked on the Moon — with less tech than your phone",
 			emoji: "🌕",
 			category: "history",
 		},
 	],
+	"07-23": [
+		{
+			text: "The voice actor for Mickey Mouse married the voice actor for Minnie Mouse. In real life",
+			emoji: "🐭",
+			category: "pop-culture",
+		},
+	],
 	"07-26": [
 		{
-			text: "The FBI was founded on this day in 1908",
-			emoji: "🔍",
-			category: "history",
+			text: "Oxford University is older than the Aztec Empire. Classes started around 1096",
+			emoji: "🎓",
+			category: "plot-twist",
 		},
 	],
 	"07-28": [
 		{
-			text: "Beatrix Potter was born on this day in 1866",
-			emoji: "🐰",
-			category: "history",
+			text: "There are more possible chess games than atoms in the observable universe",
+			emoji: "♟️",
+			category: "plot-twist",
 		},
 	],
 	"07-30": [
@@ -879,16 +935,23 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			category: "national-day",
 		},
 	],
+	"08-04": [
+		{
+			text: "A day on Venus is longer than a year on Venus. Venus is weird",
+			emoji: "🪐",
+			category: "plot-twist",
+		},
+	],
 	"08-05": [
 		{
-			text: "Neil Armstrong was born on this day in 1930",
-			emoji: "👨‍🚀",
-			category: "history",
+			text: "The original Star Wars and the last French guillotine execution happened in the same year: 1977",
+			emoji: "⚔️",
+			category: "plot-twist",
 		},
 	],
 	"08-06": [
 		{
-			text: "The first website went live on this day in 1991",
+			text: "The first website went live on this day in 1991 — it was just a page explaining what the web was",
 			emoji: "💻",
 			category: "history",
 		},
@@ -902,30 +965,23 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"08-10": [
 		{
-			text: "The Smithsonian Institution was established on this day in 1846",
-			emoji: "🏛️",
-			category: "history",
-		},
-	],
-	"08-12": [
-		{
-			text: "It's International Youth Day",
-			emoji: "🌟",
-			category: "national-day",
+			text: "The shortest complete sentence in English is 'I am' — and it's also the most profound",
+			emoji: "📝",
+			category: "shower-thought",
 		},
 	],
 	"08-13": [
 		{
-			text: "Alfred Hitchcock was born on this day in 1899",
-			emoji: "🎬",
-			category: "history",
+			text: "If you dig a hole through the centre of the Earth from the US, you'd end up in the Indian Ocean, not China",
+			emoji: "🌏",
+			category: "plot-twist",
 		},
 	],
-	"08-17": [
+	"08-15": [
 		{
-			text: "It's National Nonprofit Day — celebrate the people making a difference",
-			emoji: "💙",
-			category: "national-day",
+			text: "The theme from Jaws is only two notes. Two notes changed how everyone feels about swimming",
+			emoji: "🦈",
+			category: "pop-culture",
 		},
 	],
 	"08-19": [
@@ -937,10 +993,9 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"08-21": [
 		{
-			text: "Hawaii became the 50th US state on this day in 1959",
-			emoji: "🌺",
-			category: "history",
-			locales: ["US"],
+			text: "Somewhere right now, someone's shower thought became your inspirational quote",
+			emoji: "🚿",
+			category: "shower-thought",
 		},
 	],
 	"08-23": [
@@ -952,15 +1007,16 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"08-26": [
 		{
-			text: "The 19th Amendment was ratified on this day in 1920, granting women the right to vote",
-			emoji: "🗳️",
-			category: "history",
-			locales: ["US"],
-		},
-		{
 			text: "It's International Dog Day",
 			emoji: "🐕",
 			category: "national-day",
+		},
+	],
+	"08-29": [
+		{
+			text: "When you remember something, you're actually remembering the last time you remembered it, not the original event",
+			emoji: "🧠",
+			category: "shower-thought",
 		},
 	],
 
@@ -974,9 +1030,9 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"09-02": [
 		{
-			text: "VJ Day — the end of World War II in 1945",
-			emoji: "🕊️",
-			category: "history",
+			text: "The dot over the letters 'i' and 'j' is called a tittle. You're welcome",
+			emoji: "✏️",
+			category: "shower-thought",
 		},
 	],
 	"09-05": [
@@ -996,23 +1052,30 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"09-08": [
 		{
-			text: "Star Trek first aired on this day in 1966",
+			text: "Star Trek first aired on this day in 1966 — live long and prosper 🖖",
 			emoji: "🖖",
-			category: "history",
+			category: "pop-culture",
+		},
+	],
+	"09-10": [
+		{
+			text: "Sharks have been around for about 400 million years — they're older than trees",
+			emoji: "🦈",
+			category: "plot-twist",
 		},
 	],
 	"09-12": [
 		{
-			text: "The Voyager 1 spacecraft was launched on this day in 1977",
+			text: "The Voyager 1 spacecraft was launched on this day in 1977 — it's now the farthest human-made object from Earth",
 			emoji: "🛰️",
 			category: "history",
 		},
 	],
 	"09-15": [
 		{
-			text: "It's International Day of Democracy",
-			emoji: "🗳️",
-			category: "national-day",
+			text: "The voice of Darth Vader didn't know he was Luke's father until the movie premiered",
+			emoji: "🎬",
+			category: "pop-culture",
 		},
 	],
 	"09-18": [
@@ -1057,24 +1120,10 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			category: "national-day",
 		},
 	],
-	"09-28": [
-		{
-			text: "It's International Right to Know Day",
-			emoji: "📢",
-			category: "national-day",
-		},
-	],
 	"09-29": [
 		{
 			text: "It's World Heart Day — take care of yours",
 			emoji: "❤️",
-			category: "national-day",
-		},
-	],
-	"09-30": [
-		{
-			text: "It's International Translation Day — thank a translator",
-			emoji: "🌍",
 			category: "national-day",
 		},
 	],
@@ -1089,21 +1138,21 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"10-02": [
 		{
-			text: "Peanuts (the comic strip) first appeared on this day in 1950",
+			text: "Peanuts first appeared on this day in 1950 — good grief, that's a long run",
 			emoji: "🐕",
-			category: "history",
+			category: "pop-culture",
 		},
 	],
 	"10-03": [
 		{
-			text: "It's Mean Girls Day — on October 3rd, he asked me what day it was",
+			text: "It's October 3rd — 'On October 3rd, he asked me what day it was'",
 			emoji: "📅",
-			category: "seasonal",
+			category: "pop-culture",
 		},
 	],
 	"10-04": [
 		{
-			text: "Sputnik 1, the first satellite, was launched on this day in 1957",
+			text: "Sputnik 1 was launched on this day in 1957 — the space age began with a beep",
 			emoji: "🛰️",
 			category: "history",
 		},
@@ -1117,9 +1166,9 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"10-09": [
 		{
-			text: "John Lennon was born on this day in 1940",
-			emoji: "🎵",
-			category: "history",
+			text: "The movie The Princess Bride was a box-office flop. It only became beloved through VHS rentals",
+			emoji: "🎬",
+			category: "pop-culture",
 		},
 	],
 	"10-10": [
@@ -1144,15 +1193,26 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			category: "national-day",
 		},
 	],
+	"10-19": [
+		{
+			text: "Honey never spoils — archaeologists found 3,000-year-old honey in Egyptian tombs and it was still good",
+			emoji: "🍯",
+			category: "plot-twist",
+		},
+	],
 	"10-21": [
 		{
 			text: "Back to the Future Day — where we're going, we don't need roads",
 			emoji: "⚡",
-			category: "seasonal",
+			category: "pop-culture",
 		},
 	],
 	"10-24": [
-		{ text: "It's United Nations Day", emoji: "🇺🇳", category: "national-day" },
+		{
+			text: "Cleopatra lived closer in time to the Moon landing than to the building of the Great Pyramid",
+			emoji: "🏛️",
+			category: "plot-twist",
+		},
 	],
 	"10-29": [
 		{
@@ -1188,24 +1248,26 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			category: "holiday",
 			locales: ["GB"],
 		},
+	],
+	"11-07": [
 		{
-			text: "Guy Fawkes and the Gunpowder Plot were foiled on this day in 1605",
-			emoji: "💥",
-			category: "history",
+			text: "The world's oldest known joke is a 4,000-year-old fart joke from ancient Sumer",
+			emoji: "💨",
+			category: "plot-twist",
 		},
 	],
 	"11-09": [
 		{
-			text: "The Berlin Wall fell on this day in 1989",
+			text: "The Berlin Wall fell on this day in 1989 — people literally danced on the rubble",
 			emoji: "🧱",
 			category: "history",
 		},
 	],
 	"11-10": [
 		{
-			text: "Sesame Street first aired on this day in 1969",
+			text: "Sesame Street first aired on this day in 1969 — can you tell me how to get there?",
 			emoji: "🍪",
-			category: "history",
+			category: "pop-culture",
 		},
 	],
 	"11-11": [
@@ -1229,28 +1291,14 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			category: "national-day",
 		},
 	],
-	"11-15": [
-		{
-			text: "It's America Recycles Day",
-			emoji: "♻️",
-			category: "national-day",
-			locales: ["US"],
-		},
-	],
 	"11-16": [
 		{
-			text: "It's International Day for Tolerance",
-			emoji: "🤝",
-			category: "national-day",
+			text: "The inventor of the Pringles can is buried in one. By request",
+			emoji: "🥔",
+			category: "plot-twist",
 		},
 	],
 	"11-19": [
-		{
-			text: "Abraham Lincoln delivered the Gettysburg Address on this day in 1863",
-			emoji: "📜",
-			category: "history",
-			locales: ["US"],
-		},
 		{
 			text: "It's International Men's Day",
 			emoji: "💙",
@@ -1266,10 +1314,17 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"11-23": [
 		{
-			text: "Doctor Who first aired on this day in 1963",
+			text: "Doctor Who first aired on this day in 1963 — it's bigger on the inside",
 			emoji: "🔵",
-			category: "history",
+			category: "pop-culture",
 			locales: ["GB"],
+		},
+	],
+	"11-25": [
+		{
+			text: "A group of flamingos is called a flamboyance. Obviously",
+			emoji: "🦩",
+			category: "shower-thought",
 		},
 	],
 	"11-27": [
@@ -1282,9 +1337,9 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"11-29": [
 		{
-			text: "Louisa May Alcott was born on this day in 1832",
-			emoji: "📖",
-			category: "history",
+			text: "The world's largest desert is Antarctica. Not the Sahara",
+			emoji: "🏔️",
+			category: "plot-twist",
 		},
 	],
 	"11-30": [
@@ -1293,11 +1348,6 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 			emoji: "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
 			category: "holiday",
 			locales: ["GB"],
-		},
-		{
-			text: "Mark Twain was born on this day in 1835",
-			emoji: "📚",
-			category: "history",
 		},
 	],
 
@@ -1318,9 +1368,9 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"12-05": [
 		{
-			text: "Walt Disney was born on this day in 1901",
+			text: "Walt Disney was born today — all it takes is a little pixie dust",
 			emoji: "🏰",
-			category: "history",
+			category: "pop-culture",
 		},
 	],
 	"12-07": [
@@ -1347,21 +1397,21 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 	"12-12": [
 		{
-			text: "The first transatlantic radio signal was received on this day in 1901",
-			emoji: "📡",
-			category: "history",
+			text: "Bananas are technically berries. Strawberries aren't. Botany is chaos",
+			emoji: "🍌",
+			category: "plot-twist",
 		},
 	],
 	"12-14": [
 		{
-			text: "Roald Amundsen reached the South Pole on this day in 1911",
-			emoji: "🧊",
-			category: "history",
+			text: "Alaska is simultaneously the northernmost, westernmost, AND easternmost US state",
+			emoji: "🗺️",
+			category: "plot-twist",
 		},
 	],
 	"12-17": [
 		{
-			text: "The Wright Brothers made the first powered flight on this day in 1903",
+			text: "The Wright Brothers made the first powered flight on this day in 1903 — it lasted 12 seconds",
 			emoji: "✈️",
 			category: "history",
 		},
@@ -1400,7 +1450,7 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 		{
 			text: "Stan Lee was born on this day in 1922 — Excelsior!",
 			emoji: "🦸",
-			category: "history",
+			category: "pop-culture",
 		},
 	],
 	"12-31": [
@@ -1412,31 +1462,27 @@ export const DAILY_MESSAGES: Record<string, DailyMessage[]> = {
 	],
 };
 
-/** General-purpose factoids used when no date-specific entry exists. */
+/** General-purpose messages used when no date-specific entry exists. */
 export const FALLBACK_MESSAGES: DailyMessage[] = [
-	{
-		text: "Honey never spoils — archaeologists found 3,000-year-old honey in Egyptian tombs and it was still edible",
-		emoji: "🍯",
-		category: "factoid",
-	},
+	// ── Factoids ─────────────────────────────────────────────────────────
 	{
 		text: "Octopuses have three hearts, blue blood, and nine brains",
 		emoji: "🐙",
 		category: "factoid",
 	},
 	{
-		text: "A group of flamingos is called a flamboyance",
-		emoji: "🦩",
+		text: "Sea otters hold hands while sleeping so they don't drift apart",
+		emoji: "🦦",
 		category: "factoid",
 	},
 	{
-		text: "Bananas are berries, but strawberries aren't",
-		emoji: "🍌",
+		text: "Cows have best friends and get stressed when they're separated",
+		emoji: "🐄",
 		category: "factoid",
 	},
 	{
-		text: "The shortest war in history lasted 38 minutes (Britain vs Zanzibar, 1896)",
-		emoji: "⏱️",
+		text: "A bolt of lightning is five times hotter than the surface of the Sun",
+		emoji: "⚡",
 		category: "factoid",
 	},
 	{
@@ -1450,153 +1496,13 @@ export const FALLBACK_MESSAGES: DailyMessage[] = [
 		category: "factoid",
 	},
 	{
-		text: "Scotland's national animal is the unicorn",
-		emoji: "🦄",
-		category: "factoid",
-	},
-	{
 		text: "The first computer programmer was Ada Lovelace, in the 1840s",
 		emoji: "💻",
 		category: "factoid",
 	},
 	{
-		text: "The ocean covers 71% of the Earth's surface, but we've explored less than 5% of it",
+		text: "The ocean covers 71% of Earth's surface, but we've explored less than 5% of it",
 		emoji: "🌊",
-		category: "factoid",
-	},
-	{
-		text: "Cows have best friends and get stressed when they're separated",
-		emoji: "🐄",
-		category: "factoid",
-	},
-	{
-		text: "The inventor of the Pringles can is buried in one",
-		emoji: "🥔",
-		category: "factoid",
-	},
-	{
-		text: "A bolt of lightning is five times hotter than the surface of the sun",
-		emoji: "⚡",
-		category: "factoid",
-	},
-	{
-		text: "The average person walks about 100,000 miles in their lifetime",
-		emoji: "🚶",
-		category: "factoid",
-	},
-	{
-		text: "The world's oldest known joke is a 4,000-year-old fart joke from Sumer",
-		emoji: "😄",
-		category: "factoid",
-	},
-	{
-		text: "Sea otters hold hands while sleeping so they don't drift apart",
-		emoji: "🦦",
-		category: "factoid",
-	},
-	{
-		text: "The dot over the letters 'i' and 'j' is called a tittle",
-		emoji: "✏️",
-		category: "factoid",
-	},
-	{
-		text: "A cloud can weigh more than a million pounds",
-		emoji: "☁️",
-		category: "factoid",
-	},
-	{
-		text: "The fingerprints of koalas are virtually indistinguishable from those of humans",
-		emoji: "🐨",
-		category: "factoid",
-	},
-	{
-		text: "Cleopatra lived closer in time to the Moon landing than to the building of the Great Pyramid",
-		emoji: "🏛️",
-		category: "factoid",
-	},
-	{
-		text: "Wombat poop is cube-shaped — nature's most unusual packaging",
-		emoji: "🟫",
-		category: "factoid",
-	},
-	{
-		text: "The heart of a blue whale is so big a small child could swim through its arteries",
-		emoji: "🐋",
-		category: "factoid",
-	},
-	{
-		text: "Sloths can hold their breath longer than dolphins — up to 40 minutes",
-		emoji: "🦥",
-		category: "factoid",
-	},
-	{
-		text: "Oxford University is older than the Aztec Empire",
-		emoji: "🎓",
-		category: "factoid",
-	},
-	{
-		text: "A teaspoon of a neutron star weighs about 6 billion tons",
-		emoji: "⭐",
-		category: "factoid",
-	},
-	{
-		text: "There are more possible iterations of a chess game than atoms in the known universe",
-		emoji: "♟️",
-		category: "factoid",
-	},
-	{
-		text: "The total weight of all ants on Earth is roughly equal to the total weight of all humans",
-		emoji: "🐜",
-		category: "factoid",
-	},
-	{
-		text: "The longest hiccupping spree lasted 68 years",
-		emoji: "😮",
-		category: "factoid",
-	},
-	{
-		text: "The shortest complete sentence in English is 'I am'",
-		emoji: "📝",
-		category: "factoid",
-	},
-	{
-		text: "Light takes 8 minutes and 20 seconds to travel from the Sun to Earth",
-		emoji: "☀️",
-		category: "factoid",
-	},
-	{
-		text: "The great wall of China is not actually visible from space with the naked eye",
-		emoji: "🧱",
-		category: "factoid",
-	},
-	{
-		text: "A day on Venus is longer than a year on Venus",
-		emoji: "🪐",
-		category: "factoid",
-	},
-	{
-		text: "Sharks are older than trees — they've been around for about 400 million years",
-		emoji: "🦈",
-		category: "factoid",
-	},
-	{
-		text: "The human nose can detect over 1 trillion scents",
-		emoji: "👃",
-		category: "factoid",
-	},
-	{
-		text: "Butterflies taste with their feet",
-		emoji: "🦋",
-		category: "factoid",
-	},
-	{
-		text: "A group of owls is called a parliament",
-		emoji: "🦉",
-		category: "factoid",
-	},
-	{
-		text: "Alaska is simultaneously the most northern, western, AND eastern US state",
-		emoji: "🗺️",
 		category: "factoid",
 	},
 	{
@@ -1605,28 +1511,8 @@ export const FALLBACK_MESSAGES: DailyMessage[] = [
 		category: "factoid",
 	},
 	{
-		text: "The world's largest desert is Antarctica",
-		emoji: "🏔️",
-		category: "factoid",
-	},
-	{
-		text: "An astronaut's footprint on the Moon could last for 100 million years",
-		emoji: "👣",
-		category: "factoid",
-	},
-	{
-		text: "There are more stars in the universe than grains of sand on all of Earth's beaches",
-		emoji: "⭐",
-		category: "factoid",
-	},
-	{
 		text: "Crows can recognise individual human faces and hold grudges",
 		emoji: "🐦‍⬛",
-		category: "factoid",
-	},
-	{
-		text: "The average person spends about 2 weeks of their lifetime waiting for traffic lights",
-		emoji: "🚦",
 		category: "factoid",
 	},
 	{
@@ -1635,12 +1521,7 @@ export const FALLBACK_MESSAGES: DailyMessage[] = [
 		category: "factoid",
 	},
 	{
-		text: "The tongue is the only muscle in the body attached at only one end",
-		emoji: "👅",
-		category: "factoid",
-	},
-	{
-		text: "Your brain uses about 20% of your body's energy but makes up only 2% of your weight",
+		text: "Your brain uses 20% of your body's energy but makes up only 2% of your weight",
 		emoji: "🧠",
 		category: "factoid",
 	},
@@ -1650,18 +1531,162 @@ export const FALLBACK_MESSAGES: DailyMessage[] = [
 		category: "factoid",
 	},
 	{
-		text: "A snail can sleep for three years",
-		emoji: "🐌",
+		text: "An astronaut's footprint on the Moon could last for 100 million years",
+		emoji: "👣",
 		category: "factoid",
 	},
 	{
-		text: "The average cumulus cloud weighs about 1.1 million pounds",
-		emoji: "⛅",
+		text: "Butterflies taste with their feet",
+		emoji: "🦋",
 		category: "factoid",
+	},
+	{
+		text: "The fingerprints of koalas are virtually indistinguishable from those of humans",
+		emoji: "🐨",
+		category: "factoid",
+	},
+	{
+		text: "A cloud can weigh more than a million pounds",
+		emoji: "☁️",
+		category: "factoid",
+	},
+	{
+		text: "Light takes 8 minutes and 20 seconds to travel from the Sun to Earth",
+		emoji: "☀️",
+		category: "factoid",
+	},
+
+	// ── Shower Thoughts ─────────────────────────────────────────────────
+	{
+		text: "You have never been in an empty room",
+		emoji: "🚪",
+		category: "shower-thought",
+	},
+	{
+		text: "The person who proofread Hitler's speeches was literally a grammar Nazi",
+		emoji: "📎",
+		category: "shower-thought",
+	},
+	{
+		text: "You are the only person who has been to every single one of your birthdays",
+		emoji: "🎂",
+		category: "shower-thought",
+	},
+	{
+		text: "Every mirror you've ever bought was technically used",
+		emoji: "🪞",
+		category: "shower-thought",
+	},
+	{
+		text: "Your teeth are the only part of your skeleton you clean",
+		emoji: "🦷",
+		category: "shower-thought",
+	},
+	{
+		text: "A group of owls is called a parliament, which explains a lot about parliaments",
+		emoji: "🦉",
+		category: "shower-thought",
+	},
+	{
+		text: "Elevators are just rooms that move. That's it. That's the thought",
+		emoji: "🛗",
+		category: "shower-thought",
+	},
+	{
+		text: "The 'everything bagel' should actually have more stuff on it",
+		emoji: "🥯",
+		category: "shower-thought",
+	},
+	{
+		text: "The youngest photograph of you is a photograph of the oldest you've ever been at the time",
+		emoji: "📸",
+		category: "shower-thought",
+	},
+	{
+		text: "Reading is just staring at a dead tree and hallucinating",
+		emoji: "📖",
+		category: "shower-thought",
+	},
+	{
+		text: "Your dog doesn't know that you can make mistakes — to them, everything you do is on purpose",
+		emoji: "🐕",
+		category: "shower-thought",
+	},
+	{
+		text: "The first person to hear a parrot speak must have absolutely lost it",
+		emoji: "🦜",
+		category: "shower-thought",
+	},
+	{
+		text: "Swans can be gay. And that's beautiful",
+		emoji: "🦢",
+		category: "shower-thought",
+	},
+
+	// ── Plot Twists ─────────────────────────────────────────────────────
+	{
+		text: "Scotland's national animal is the unicorn. Officially",
+		emoji: "🦄",
+		category: "plot-twist",
+	},
+	{
+		text: "A teaspoon of a neutron star weighs about 6 billion tons",
+		emoji: "⭐",
+		category: "plot-twist",
+	},
+	{
+		text: "The total weight of all ants on Earth roughly equals the total weight of all humans",
+		emoji: "🐜",
+		category: "plot-twist",
+	},
+	{
+		text: "The longest hiccupping spree lasted 68 years. Sixty-eight. Years",
+		emoji: "😮",
+		category: "plot-twist",
+	},
+	{
+		text: "Wombat poop is cube-shaped — nature's most unusual packaging",
+		emoji: "🟫",
+		category: "plot-twist",
+	},
+	{
+		text: "The heart of a blue whale is so big a small child could swim through its arteries",
+		emoji: "🐋",
+		category: "plot-twist",
+	},
+	{
+		text: "Sloths can hold their breath longer than dolphins — up to 40 minutes",
+		emoji: "🦥",
+		category: "plot-twist",
+	},
+	{
+		text: "There are more possible iterations of a chess game than atoms in the known universe",
+		emoji: "♟️",
+		category: "plot-twist",
+	},
+	{
+		text: "A snail can sleep for three years. Living the dream",
+		emoji: "🐌",
+		category: "plot-twist",
 	},
 	{
 		text: "Elephants are the only animals that can't jump",
 		emoji: "🐘",
-		category: "factoid",
+		category: "plot-twist",
+	},
+	{
+		text: "There are more stars in the universe than grains of sand on all of Earth's beaches",
+		emoji: "⭐",
+		category: "plot-twist",
+	},
+	{
+		text: "The average person spends about 2 weeks of their lifetime waiting for traffic lights to change",
+		emoji: "🚦",
+		category: "plot-twist",
+	},
+	{
+		text: "The human nose can detect over 1 trillion scents",
+		emoji: "👃",
+		category: "plot-twist",
 	},
 ];
