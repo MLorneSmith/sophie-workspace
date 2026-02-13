@@ -20,6 +20,8 @@ interface StickyContentItem {
 	title: string;
 	description: string[];
 	imageSrc: string;
+	overline: string;
+	deviceFrame?: boolean;
 }
 
 export interface StatisticItem {
@@ -230,6 +232,8 @@ export const homepageContentConfig = {
 					"Automates use of proven, structured methodologies favoured by McKinsey, Google and top investment banks (SCQ, MECE, abstractions)",
 				],
 				imageSrc: "/images/video-hero-preview.avif",
+				overline: "01 / 03",
+				deviceFrame: true,
 			},
 			{
 				title: "Web's premium online training program",
@@ -240,6 +244,8 @@ export const homepageContentConfig = {
 					"Practice with real-world examples and case studies",
 				],
 				imageSrc: "/images/course-chapters.webp",
+				overline: "02 / 03",
+				deviceFrame: true,
 			},
 			{
 				title: "One-to-One Coaching",
@@ -250,6 +256,8 @@ export const homepageContentConfig = {
 					"Prepare for high-stakes meetings and pitches",
 				],
 				imageSrc: "/images/team-life.webp",
+				overline: "03 / 03",
+				deviceFrame: false,
 			},
 		] as StickyContentItem[],
 	},
