@@ -3,13 +3,24 @@
 import type { LogoCloudMarquee as BaseLogoCloudMarquee } from "@kit/ui/logo-marquee";
 import dynamic from "next/dynamic";
 
+import { homepageContentConfig } from "~/config/homepage-content.config";
+
 const LogoCloudMarquee = dynamic<
 	React.ComponentProps<typeof BaseLogoCloudMarquee>
 >(() => import("@kit/ui/logo-marquee").then((mod) => mod.LogoCloudMarquee), {
 	ssr: true,
-	loading: () => (
-		<div className="h-20 animate-pulse bg-gray-200 dark:bg-gray-800 rounded-lg" />
-	),
+	loading: () => <div className="h-20 animate-pulse rounded-lg bg-muted" />,
 });
 
-export default LogoCloudMarquee;
+export default function HomeLogoCloud() {
+	return (
+		<div className="bg-background text-foreground">
+			<LogoCloudMarquee
+				mode="single"
+				title={homepageContentConfig.logoCloud.heading}
+				description=""
+				speed={homepageContentConfig.logoCloud.marqueeSpeed}
+			/>
+		</div>
+	);
+}

@@ -10,6 +10,7 @@ import { homepageContentConfig } from "~/config/homepage-content.config";
 import pathsConfig from "~/config/paths.config";
 import { withI18n } from "~/lib/i18n/with-i18n";
 
+import { AnimateOnScroll } from "./_components/animate-on-scroll";
 import ContainerScroll from "./_components/home-container-scroll-client";
 import { CtaPresentationName } from "./_components/home-cta-presentation-name";
 import LogoCloudMarquee from "./_components/home-logo-cloud-client";
@@ -116,17 +117,19 @@ function Home() {
 			</div>
 
 			{/* Logo Cloud Section */}
-			<div className="bg-background dark:bg-background relative w-full border-y border-border dark:border-border">
+			<section className={`w-full ${spacing.section} bg-background`}>
 				<div className={`${containerBase} ${widths.navigation}`}>
-					<Suspense
-						fallback={
-							<div className="h-20 animate-pulse rounded-lg bg-muted dark:bg-muted" />
-						}
-					>
-						<LogoCloudMarquee className="[&_div[class*='bg-gradient-to-r']]:from-background [&_div[class*='bg-gradient-to-r']]:via-background/90 [&_div[class*='bg-gradient-to-l']]:from-background [&_div[class*='bg-gradient-to-l']]:via-background/90" />
-					</Suspense>
+					<AnimateOnScroll>
+						<Suspense
+							fallback={
+								<div className="h-20 animate-pulse rounded-lg bg-muted" />
+							}
+						>
+							<LogoCloudMarquee />
+						</Suspense>
+					</AnimateOnScroll>
 				</div>
-			</div>
+			</section>
 
 			{/* Sticky Scroll Section */}
 			<section
