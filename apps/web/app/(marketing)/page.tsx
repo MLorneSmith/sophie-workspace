@@ -1,6 +1,5 @@
 import { PricingTable } from "@kit/billing-gateway/marketing";
 import { BlogPostCard } from "@kit/ui/blog-post-card";
-import { CardSpotlight } from "@kit/ui/card-spotlight";
 import { Pill, SecondaryHero } from "@kit/ui/marketing";
 import { Suspense } from "react";
 
@@ -15,6 +14,7 @@ import { ProductPreviewSection } from "./_components/home-product-preview-sectio
 import LogoCloudMarquee from "./_components/home-logo-cloud-client";
 import HomeStickyScroll from "./_components/home-sticky-scroll-client";
 import { HomeHowItWorks } from "./_components/home-how-it-works-client";
+import { HomeFeaturesGrid } from "./_components/home-features-grid-client";
 import { HomeStatisticsSection } from "./_components/home-statistics-section";
 import { TestimonialsMasonaryGridServer } from "./_components/home-testimonials-grid-server";
 
@@ -127,28 +127,9 @@ function Home() {
 				className={`${spacing.section} dark:bg-background bg-secondary/50`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
-					<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
-						{homepageContentConfig.features.title}
-					</h2>
-					<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-muted-foreground sm:mb-12 dark:text-muted-foreground">
-						{homepageContentConfig.features.subtitle}
-					</p>
-					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
-						{homepageContentConfig.features.cards.map((card) => (
-							<Suspense
-								key={`feature-${card.title}`}
-								fallback={
-									<div className="h-64 animate-pulse rounded-lg bg-muted dark:bg-muted" />
-								}
-							>
-								<CardSpotlight
-									heading={card.title}
-									description={card.description}
-									iconName={card.iconName}
-								/>
-							</Suspense>
-						))}
-					</div>
+					<Suspense fallback={<SectionLoader />}>
+						<HomeFeaturesGrid />
+					</Suspense>
 				</div>
 			</section>
 
