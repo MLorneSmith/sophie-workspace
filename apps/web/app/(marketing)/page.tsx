@@ -15,6 +15,7 @@ import { ProductPreviewSection } from "./_components/home-product-preview-sectio
 import LogoCloudMarquee from "./_components/home-logo-cloud-client";
 import OptimizedImage from "./_components/home-optimized-image";
 import StickyScrollReveal from "./_components/home-sticky-scroll-client";
+import { HomeHowItWorks } from "./_components/home-how-it-works-client";
 import { HomeStatisticsSection } from "./_components/home-statistics-section";
 import { TestimonialsMasonaryGridServer } from "./_components/home-testimonials-grid-server";
 
@@ -125,6 +126,21 @@ function Home() {
 						)}
 					/>
 				</Suspense>
+			</section>
+
+			{/* How It Works Section */}
+			<section
+				className={`${spacing.section} bg-background dark:bg-background`}
+			>
+				<div className={`${containerBase} ${widths.content}`}>
+					<Suspense fallback={<SectionLoader />}>
+						<HomeHowItWorks
+							title={homepageContentConfig.howItWorks.title}
+							subtitle={homepageContentConfig.howItWorks.subtitle}
+							steps={homepageContentConfig.howItWorks.steps}
+						/>
+					</Suspense>
+				</div>
 			</section>
 
 			{/* Features Section */}
