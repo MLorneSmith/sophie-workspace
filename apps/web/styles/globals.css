@@ -114,6 +114,13 @@
 		opacity: 1;
 	}
 
+	/* Safari fallback for backdrop-filter glass effects */
+	@supports not (backdrop-filter: blur(1px)) {
+		[data-marketing] [class*="backdrop-blur"] {
+			background-color: var(--homepage-surface, #12121a);
+		}
+	}
+
 	/* Homepage Dark-Mode Design Tokens */
 	[data-marketing] {
 		--homepage-bg: #0a0a0f;
