@@ -72,7 +72,7 @@ export function TestimonialsMasonaryGrid({
 			)}
 
 			{/* Remaining testimonials in masonry grid */}
-			<div className="mx-auto mt-0 grid max-w-7xl grid-cols-1 items-start gap-4 px-4 md:grid-cols-2 md:px-8 lg:grid-cols-4">
+			<div className="mx-auto mt-0 grid max-w-7xl grid-cols-1 items-start gap-4 px-4 sm:grid-cols-2 md:px-8 lg:grid-cols-4">
 				{grid.map((testimonialsCol, columnIndex) => (
 					<div
 						// biome-ignore lint/suspicious/noArrayIndexKey: Grid structure is stable and won't reorder
