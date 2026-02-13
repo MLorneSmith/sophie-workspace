@@ -1,6 +1,6 @@
 type IconType = "presentation" | "chart" | "sparkles" | "book";
 type BlogType = "Guide" | "Tutorial";
-type IconName =
+export type IconName =
 	| "Brain"
 	| "Presentation"
 	| "BookOpen"
@@ -62,10 +62,11 @@ export interface FinalCtaConfig {
 	trustBadges: string[];
 }
 
-interface FeatureCard {
+export interface FeatureCard {
 	title: string;
 	description: string;
 	iconName: IconName;
+	size: "large" | "standard";
 }
 
 const statisticsContent: StatisticItem[] = [
@@ -161,35 +162,41 @@ const featureCards: FeatureCard[] = [
 		description:
 			"AI tailored to the task of creating high-quality presentation content.",
 		iconName: "Brain",
+		size: "large",
 	},
 	{
 		title: "Proven Methodology",
 		description: "AI is automating a proven presentation development approach.",
 		iconName: "Presentation",
+		size: "standard",
 	},
 	{
 		title: "Instant Access",
 		description:
 			"Online video lessons available 24/7 for maximum convenience. Self-paced lessons provide complete flexibility.",
 		iconName: "BookOpen",
+		size: "standard",
 	},
 	{
 		title: "Certification",
 		description:
 			"Earn presentation excellence Certification. Share achievements on LinkedIn.",
 		iconName: "LayoutDashboard",
+		size: "standard",
 	},
 	{
 		title: "Private Coaching",
 		description:
 			"Our one-on-one coaching delivers high touch, custom feedback and support.",
 		iconName: "Sparkles",
+		size: "large",
 	},
 	{
-		title: "•	30-Day Money-Back Guarantee",
+		title: "30-Day Money-Back Guarantee",
 		description:
 			"Cancel anytime in your first 30 days and receive a full refund.",
 		iconName: "BarChart3",
+		size: "standard",
 	},
 ];
 
