@@ -17,7 +17,7 @@ import LogoCloudMarquee from "./_components/home-logo-cloud-client";
 import { ProductPreviewSection } from "./_components/home-product-preview-section";
 import { HomeStatisticsSection } from "./_components/home-statistics-section";
 import HomeStickyScroll from "./_components/home-sticky-scroll-client";
-import { TestimonialsMasonaryGridServer } from "./_components/home-testimonials-grid-server";
+import { HomeTestimonialsSection } from "./_components/home-testimonials-section";
 
 // Width system
 const widths = {
@@ -152,15 +152,7 @@ function Home() {
 				className={`${spacing.section} bg-background dark:bg-background`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
-					<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
-						{homepageContentConfig.testimonials.title}
-					</h2>
-					<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-muted-foreground sm:mb-12 dark:text-muted-foreground">
-						{homepageContentConfig.testimonials.subtitle}
-					</p>
-					<Suspense fallback={<SectionLoader />}>
-						<TestimonialsMasonaryGridServer />
-					</Suspense>
+					<HomeTestimonialsSection />
 				</div>
 			</section>
 
