@@ -180,10 +180,11 @@
 		--homepage-text: #f5f5f7;
 		--homepage-text-muted: #a0a0b0;
 		--homepage-accent: #24a9e0;
+		--homepage-accent-contrast: #0f7ea8; /* WCAG AA: 4.6:1 with white text */
 		--homepage-accent-glow: rgba(36, 169, 224, 0.4);
 
 		/* Gradient tokens */
-		--homepage-gradient-accent: linear-gradient(135deg, var(--homepage-accent), #1a6fb5);
+		--homepage-gradient-accent: linear-gradient(135deg, #1e9dd0, #1a6fb5);
 		--homepage-gradient-surface: linear-gradient(180deg, var(--homepage-surface), transparent);
 	}
 }

@@ -21,7 +21,7 @@ export function DeviceFrame({
 					<span className="size-3 rounded-full bg-yellow-500/80" />
 					<span className="size-3 rounded-full bg-green-500/80" />
 				</div>
-				<span className="ml-2 text-xs text-white/40">{title}</span>
+				<span className="ml-2 text-xs text-white/60">{title}</span>
 			</div>
 			{/* Content area */}
 			<div className="relative">{children}</div>

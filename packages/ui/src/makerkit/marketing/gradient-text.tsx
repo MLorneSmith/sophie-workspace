@@ -11,7 +11,7 @@ const variantStyles: Record<
 	string
 > = {
 	default: "bg-linear-to-r",
-	cyan: "bg-[linear-gradient(135deg,var(--homepage-accent),#1a6fb5)]",
+	cyan: "bg-[linear-gradient(135deg,#1e9dd0,#1a6fb5)]",
 };
 
 export const GradientText: React.FC<GradientTextProps> =

@@ -105,7 +105,7 @@ export function HomePricingSection() {
 						>
 							{/* Most Popular Badge */}
 							{isHighlighted && (
-								<Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--homepage-accent)] text-white hover:bg-[var(--homepage-accent)]">
+								<Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--homepage-accent-contrast)] text-white hover:bg-[var(--homepage-accent-contrast)]">
 									Most Popular
 								</Badge>
 							)}
@@ -148,7 +148,7 @@ export function HomePricingSection() {
 								className={cn(
 									"mb-6 min-h-[44px] w-full",
 									isHighlighted &&
-										"bg-[var(--homepage-accent)] text-white hover:bg-[var(--homepage-accent)]/90 motion-safe:animate-[glowPulse_3s_ease-in-out_infinite]",
+										"bg-[var(--homepage-accent-contrast)] text-white hover:bg-[var(--homepage-accent-contrast)]/90 motion-safe:animate-[glowPulse_3s_ease-in-out_infinite]",
 								)}
 								variant={isHighlighted ? "default" : "outline"}
 								asChild

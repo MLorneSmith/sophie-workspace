@@ -63,7 +63,7 @@ function ComparisonCard({
 					>
 						{isWithout ? (
 							<X
-								className="mt-0.5 h-5 w-5 shrink-0 text-red-400/70"
+								className="mt-0.5 h-5 w-5 shrink-0 text-red-500"
 								aria-label="Not included"
 							/>
 						) : (
@@ -74,7 +74,7 @@ function ComparisonCard({
 						)}
 						<span
 							className={`text-sm leading-relaxed sm:text-base ${
-								isWithout ? "text-muted-foreground/80" : "text-foreground"
+								isWithout ? "text-muted-foreground" : "text-foreground"
 							}`}
 						>
 							{item.text}
