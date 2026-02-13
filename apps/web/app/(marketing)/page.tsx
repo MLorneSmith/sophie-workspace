@@ -1,19 +1,16 @@
-import { PricingTable } from "@kit/billing-gateway/marketing";
 import { BlogPostCard } from "@kit/ui/blog-post-card";
-import { Pill, SecondaryHero } from "@kit/ui/marketing";
 import { Suspense } from "react";
 
-import billingConfig from "~/config/billing.config";
 import { homepageContentConfig } from "~/config/homepage-content.config";
-import pathsConfig from "~/config/paths.config";
 import { withI18n } from "~/lib/i18n/with-i18n";
 
 import { AnimateOnScroll } from "./_components/animate-on-scroll";
 import { HomeComparisonSection } from "./_components/home-comparison-section";
+import { HomeFeaturesGrid } from "./_components/home-features-grid-client";
 import { HeroSection } from "./_components/home-hero-section";
 import { HomeHowItWorks } from "./_components/home-how-it-works-client";
-import { HomeFeaturesGrid } from "./_components/home-features-grid-client";
 import LogoCloudMarquee from "./_components/home-logo-cloud-client";
+import { HomePricingSection } from "./_components/home-pricing-section";
 import { ProductPreviewSection } from "./_components/home-product-preview-section";
 import { HomeStatisticsSection } from "./_components/home-statistics-section";
 import HomeStickyScroll from "./_components/home-sticky-scroll-client";
@@ -33,12 +30,6 @@ const spacing = {
 	lg: "gap-8 my-8",
 	xl: "gap-12 my-12",
 	section: "mt-8 sm:mt-12 md:mt-16 lg:mt-24",
-} as const;
-
-const componentSpacing = {
-	card: "mb-4 sm:mb-6 md:mb-8",
-	grid: "gap-4 sm:gap-6 lg:gap-8",
-	stack: "space-y-4 sm:space-y-6 lg:space-y-8",
 } as const;
 
 const containerBase = "mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden" as const;
@@ -161,35 +152,9 @@ function Home() {
 				className={`${spacing.section} dark:bg-background bg-secondary/50`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
-					<div
-						className={`flex flex-col items-center justify-center ${componentSpacing.stack}`}
-					>
-						<SecondaryHero
-							pill={<Pill>{homepageContentConfig.pricing.pill}</Pill>}
-							heading={
-								<span className="text-h3 sm:text-h2 mb-8 text-center leading-snug sm:mb-12">
-									{homepageContentConfig.pricing.title}
-								</span>
-							}
-							subheading={
-								<p className="text-body sm:text-body-lg max-w-4xl leading-relaxed text-muted-foreground dark:text-muted-foreground">
-									{homepageContentConfig.pricing.subtitle}
-								</p>
-							}
-						/>
-
-						<div className="w-full overflow-x-auto pb-6 sm:pb-0">
-							<Suspense fallback={<SectionLoader />}>
-								<PricingTable
-									config={billingConfig}
-									paths={{
-										signUp: pathsConfig.auth.signUp,
-										return: pathsConfig.app.home,
-									}}
-								/>
-							</Suspense>
-						</div>
-					</div>
+					<Suspense fallback={<SectionLoader />}>
+						<HomePricingSection />
+					</Suspense>
 				</div>
 			</section>
 
