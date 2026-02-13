@@ -6,6 +6,9 @@ import Image from "next/image";
 import { Badge } from "@kit/ui/badge";
 import { SecondaryHero } from "@kit/ui/marketing";
 
+const BLUR_PLACEHOLDER =
+	"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIyNSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48ZmlsdGVyIGlkPSJiIj48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyMCIvPjwvZmlsdGVyPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjYikiIGZpbGw9IiMxYTFhMjUiLz48L3N2Zz4=";
+
 import { homepageContentConfig } from "~/config/homepage-content.config";
 
 import { GlassCard } from "./glass-card";
@@ -49,6 +52,9 @@ function HomeBlogCard({
 							alt={title}
 							width={400}
 							height={225}
+							sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+							placeholder="blur"
+							blurDataURL={BLUR_PLACEHOLDER}
 							className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-105"
 						/>
 					</div>

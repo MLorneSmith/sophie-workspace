@@ -83,7 +83,10 @@ const containerBase = "mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden" as const;
 
 function Home() {
 	return (
-		<main id="main-content" className="bg-background dark:bg-background flex flex-col">
+		<main
+			id="main-content"
+			className="bg-background dark:bg-background flex flex-col"
+		>
 			{/* Hero Section */}
 			<HeroSection />
 
