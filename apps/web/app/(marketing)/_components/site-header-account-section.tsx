@@ -72,13 +72,21 @@ function AuthButtons() {
 			</div>
 
 			<div className={"flex gap-x-2.5"}>
-				<Button className={"hidden md:block"} asChild variant={"ghost"}>
+				<Button
+					className={"hidden min-h-[44px] md:block"}
+					asChild
+					variant={"ghost"}
+				>
 					<Link href={pathsConfig.auth.signIn}>
 						<Trans i18nKey={"auth:signIn"} />
 					</Link>
 				</Button>
 
-				<Button asChild className="text-xs md:text-sm" variant={"default"}>
+				<Button
+					asChild
+					className="min-h-[44px] text-xs md:text-sm"
+					variant={"default"}
+				>
 					<Link href={pathsConfig.auth.signUp}>
 						<Trans i18nKey={"auth:signUp"} />
 					</Link>

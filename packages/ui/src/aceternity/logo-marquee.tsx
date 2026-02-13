@@ -197,7 +197,10 @@ export function LogoCloudMarquee({
 
 	return (
 		<div
-			className={cn("relative px-4 py-10 motion-reduce:*:animate-none md:px-8", className)}
+			className={cn(
+				"relative px-4 py-10 motion-reduce:*:animate-none md:px-8",
+				className,
+			)}
 			style={{ zIndex: 0 }}
 		>
 			<MotionDiv
@@ -230,7 +233,12 @@ export function LogoCloudMarquee({
 				</MotionDiv>
 			)}
 
-			<div className={cn("relative flex w-full flex-col items-center justify-center gap-4", mode === "single" ? "mt-10" : "mt-20")}>
+			<div
+				className={cn(
+					"relative flex w-full flex-col items-center justify-center gap-4",
+					mode === "single" ? "mt-10" : "mt-20",
+				)}
+			>
 				{mode === "single" ? (
 					<div className="relative w-full">
 						<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" />

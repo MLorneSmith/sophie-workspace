@@ -156,7 +156,8 @@
 	}
 
 	@keyframes glowPulse {
-		0%, 100% {
+		0%,
+		100% {
 			opacity: 0.6;
 			transform: scale(1);
 			box-shadow: 0 0 20px rgba(36, 169, 224, 0.3);

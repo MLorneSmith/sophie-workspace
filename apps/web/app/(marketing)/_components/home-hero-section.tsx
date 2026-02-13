@@ -74,11 +74,17 @@ export function HeroSection() {
 				</m.p>
 
 				{/* CTA Buttons */}
-				<m.div variants={fadeUp} className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row">
+				<m.div
+					variants={fadeUp}
+					className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row"
+				>
 					<CtaButton className="min-h-[44px] w-full sm:w-auto">
 						<Link href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</Link>
 					</CtaButton>
-					<CtaButton variant="outline" className="min-h-[44px] w-full sm:w-auto">
+					<CtaButton
+						variant="outline"
+						className="min-h-[44px] w-full sm:w-auto"
+					>
 						<Link href={hero.ctaSecondary.href}>{hero.ctaSecondary.label}</Link>
 					</CtaButton>
 				</m.div>

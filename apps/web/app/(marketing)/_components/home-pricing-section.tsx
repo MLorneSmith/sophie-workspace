@@ -146,7 +146,7 @@ export function HomePricingSection() {
 							{/* CTA Button */}
 							<Button
 								className={cn(
-									"mb-6 w-full",
+									"mb-6 min-h-[44px] w-full",
 									isHighlighted &&
 										"bg-[var(--homepage-accent)] text-white hover:bg-[var(--homepage-accent)]/90 motion-safe:animate-[glowPulse_3s_ease-in-out_infinite]",
 								)}

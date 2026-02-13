@@ -14,7 +14,11 @@ export function FooterLogoSection() {
 		<div className="w-full">
 			<div className="flex items-center justify-between py-6">
 				<AppLogo />
-				<Button asChild className="group font-medium" variant="default">
+				<Button
+					asChild
+					className="group min-h-[44px] font-medium"
+					variant="default"
+				>
 					<Link href={pathsConfig.auth.signUp}>
 						<Trans i18nKey="auth:signUp" />
 						<ArrowRight

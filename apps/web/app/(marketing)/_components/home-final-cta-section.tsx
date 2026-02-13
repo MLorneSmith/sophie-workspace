@@ -37,12 +37,12 @@ export function HomeFinalCtaSection({ config }: HomeFinalCtaSectionProps) {
 
 						{/* CTA buttons */}
 						<div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:gap-4">
-							<CtaButton>
+							<CtaButton className="min-h-[44px]">
 								<Link href={config.primaryCta.href}>
 									{config.primaryCta.label}
 								</Link>
 							</CtaButton>
-							<CtaButton variant="outline">
+							<CtaButton variant="outline" className="min-h-[44px]">
 								<Link href={config.secondaryCta.href}>
 									{config.secondaryCta.label}
 								</Link>

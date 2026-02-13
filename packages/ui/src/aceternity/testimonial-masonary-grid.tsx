@@ -57,7 +57,10 @@ export function TestimonialsMasonaryGrid({
 								className="h-16 w-16 rounded-full"
 							/>
 							<div className="flex flex-col">
-								<QuoteDescription variant={variant} className="text-sm font-medium">
+								<QuoteDescription
+									variant={variant}
+									className="text-sm font-medium"
+								>
 									{featured.name}
 								</QuoteDescription>
 								{featured.title && (
@@ -94,9 +97,14 @@ export function TestimonialsMasonaryGrid({
 										className="rounded-full"
 									/>
 									<div className="flex flex-col">
-										<QuoteDescription variant={variant}>{testimonial.name}</QuoteDescription>
+										<QuoteDescription variant={variant}>
+											{testimonial.name}
+										</QuoteDescription>
 										{testimonial.title && (
-											<QuoteDescription variant={variant} className="text-[10px]">
+											<QuoteDescription
+												variant={variant}
+												className="text-[10px]"
+											>
 												{testimonial.title}
 											</QuoteDescription>
 										)}
