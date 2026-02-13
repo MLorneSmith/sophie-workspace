@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useScroll, useTransform } from "motion/react";
+import {
+	AnimatePresence,
+	motion,
+	useReducedMotion,
+	useScroll,
+	useTransform,
+} from "motion/react";
 
 import { DeviceFrame } from "./device-frame";
 import OptimizedImage from "./home-optimized-image";
@@ -19,6 +25,7 @@ interface HomeStickyScrollProps {
 }
 
 export default function HomeStickyScroll({ content }: HomeStickyScrollProps) {
+	const shouldReduceMotion = useReducedMotion();
 	const containerRef = useRef<HTMLDivElement>(null);
 	const { scrollYProgress } = useScroll({
 		target: containerRef,
@@ -64,6 +71,7 @@ export default function HomeStickyScroll({ content }: HomeStickyScrollProps) {
 									item={item}
 									index={index}
 									activeStepIndex={activeStepIndex}
+									reducedMotion={!!shouldReduceMotion}
 								/>
 							))}
 						</div>
@@ -76,6 +84,7 @@ export default function HomeStickyScroll({ content }: HomeStickyScrollProps) {
 								<ImagePanel
 									content={content}
 									activeStepIndex={activeStepIndex}
+									reducedMotion={!!shouldReduceMotion}
 								/>
 							</AnimatePresence>
 						</div>
@@ -90,20 +99,28 @@ function TextSection({
 	item,
 	index,
 	activeStepIndex,
+	reducedMotion,
 }: {
 	item: StickyContentItem;
 	index: number;
 	activeStepIndex: ReturnType<typeof useTransform<number, number>>;
+	reducedMotion: boolean;
 }) {
 	const opacity = useTransform(activeStepIndex, (latest) => {
 		const rounded = Math.round(latest);
 		return rounded === index ? 1 : 0.3;
 	});
 
+	const isActiveValue = useTransform(activeStepIndex, (latest): number =>
+		Math.round(latest) === index ? 1 : 0,
+	);
+	const isActive = useMotionValueState(isActiveValue);
+
 	return (
 		<motion.div
 			className="mb-8 rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
-			style={{ opacity }}
+			style={reducedMotion ? { opacity: isActive ? 1 : 0.3 } : { opacity }}
+			aria-live={isActive ? "polite" : "off"}
 		>
 			<span className="mb-2 block font-mono text-sm text-muted-foreground">
 				{item.overline}
@@ -128,9 +145,11 @@ function TextSection({
 function ImagePanel({
 	content,
 	activeStepIndex,
+	reducedMotion,
 }: {
 	content: StickyContentItem[];
 	activeStepIndex: ReturnType<typeof useTransform<number, number>>;
+	reducedMotion: boolean;
 }) {
 	const currentIndex = useTransform(activeStepIndex, (latest) =>
 		Math.round(latest),
@@ -157,10 +176,12 @@ function ImagePanel({
 	return (
 		<motion.div
 			key={index}
-			initial={{ opacity: 0 }}
+			initial={reducedMotion ? false : { opacity: 0 }}
 			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
-			transition={{ duration: 0.4, ease: "easeInOut" }}
+			exit={reducedMotion ? { opacity: 1 } : { opacity: 0 }}
+			transition={
+				reducedMotion ? { duration: 0 } : { duration: 0.4, ease: "easeInOut" }
+			}
 			className="absolute inset-0"
 		>
 			{item.deviceFrame ? (

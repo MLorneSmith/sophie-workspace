@@ -13,8 +13,7 @@ import { AnimateOnScroll } from "./_components/animate-on-scroll";
 import { HeroSection } from "./_components/home-hero-section";
 import { ProductPreviewSection } from "./_components/home-product-preview-section";
 import LogoCloudMarquee from "./_components/home-logo-cloud-client";
-import OptimizedImage from "./_components/home-optimized-image";
-import StickyScrollReveal from "./_components/home-sticky-scroll-client";
+import HomeStickyScroll from "./_components/home-sticky-scroll-client";
 import { TestimonialsMasonaryGridServer } from "./_components/home-testimonials-grid-server";
 
 // Width system
@@ -84,7 +83,7 @@ function Home() {
 			<section
 				className={`w-full ${spacing.section} bg-background dark:bg-background`}
 			>
-				<div className={`${containerBase} ${widths.content} mb-[20vh]`}>
+				<div className={`${containerBase} ${widths.content} mb-8`}>
 					<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
 						{homepageContentConfig.sticky.title}
 					</h2>
@@ -93,26 +92,8 @@ function Home() {
 					</p>
 				</div>
 				<Suspense fallback={<SectionLoader />}>
-					<StickyScrollReveal
-						content={homepageContentConfig.sticky.content.map(
-							(item, index) => ({
-								...item,
-								content: (
-									<OptimizedImage
-										key={`sticky-${item.title}`}
-										src={item.imageSrc}
-										alt={item.title}
-										width={1200}
-										height={800}
-										className="h-full w-full rounded-lg object-cover"
-										priority={index === 0}
-										loading={index === 0 ? "eager" : "lazy"}
-										sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
-										quality={85}
-									/>
-								),
-							}),
-						)}
+					<HomeStickyScroll
+						content={homepageContentConfig.sticky.content}
 					/>
 				</Suspense>
 			</section>
