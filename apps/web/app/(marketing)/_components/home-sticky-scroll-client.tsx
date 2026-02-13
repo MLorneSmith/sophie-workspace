@@ -140,12 +140,11 @@ function DesktopStickyScroll({ content }: { content: StickyContentItem[] }) {
 			>
 				<div className="mx-auto grid w-full max-w-7xl grid-cols-5 gap-8 px-4 sm:px-6 lg:px-8">
 					{/* Progress bar - left edge */}
-					<div className="absolute left-4 top-1/2 -translate-y-1/2 sm:left-6 lg:left-8">
+					<div className="absolute left-4 top-1/2 -translate-y-1/2 sm:left-6 lg:left-8" aria-hidden="true">
 						<div className="relative h-48 w-1 overflow-hidden rounded-full bg-white/10">
 							<motion.div
 								className="absolute top-0 left-0 w-full rounded-full bg-gradient-to-b from-blue-500 to-purple-500"
 								style={{ height: progressBarHeight }}
-								aria-label="Scroll progress indicator"
 							/>
 						</div>
 					</div>

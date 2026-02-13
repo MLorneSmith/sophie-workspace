@@ -8,6 +8,7 @@ interface UseCountUpOptions {
 	target: number;
 	duration?: number;
 	formatter?: (value: number) => string;
+	disabled?: boolean;
 }
 
 function defaultFormatter(value: number): string {
@@ -18,12 +19,13 @@ export function useCountUp({
 	target,
 	duration = 2,
 	formatter = defaultFormatter,
+	disabled = false,
 }: UseCountUpOptions): React.RefObject<HTMLSpanElement | null> {
 	const ref = useRef<HTMLSpanElement>(null);
 	const isInView = useInView(ref, { once: true });
 
 	useEffect(() => {
-		if (!isInView || !ref.current) return;
+		if (disabled || !isInView || !ref.current) return;
 
 		const controls = animate(0, target, {
 			duration,
@@ -35,7 +37,7 @@ export function useCountUp({
 		});
 
 		return () => controls.stop();
-	}, [isInView, target, duration, formatter]);
+	}, [disabled, isInView, target, duration, formatter]);
 
 	return ref;
 }

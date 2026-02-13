@@ -56,7 +56,7 @@ export function HomeFinalCtaSection({ config }: HomeFinalCtaSectionProps) {
 									key={badge}
 									className="flex items-center gap-2 text-sm text-muted-foreground"
 								>
-									<Check className="h-4 w-4 text-[var(--homepage-accent)]" />
+									<Check className="h-4 w-4 text-[var(--homepage-accent)]" aria-hidden="true" />
 									<span>{badge}</span>
 								</div>
 							))}

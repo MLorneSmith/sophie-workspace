@@ -1,6 +1,6 @@
 "use client";
 
-import { type Variants, m } from "motion/react";
+import { type Variants, m, useReducedMotion } from "motion/react";
 
 interface SocialProofStripProps {
 	avatarCount?: number;
@@ -32,19 +32,21 @@ export function SocialProofStrip({
 	avatarCount = 5,
 	label,
 }: SocialProofStripProps) {
+	const prefersReducedMotion = useReducedMotion();
+
 	return (
 		<m.div
 			className="flex flex-row items-center gap-3"
-			variants={containerVariants}
-			initial="hidden"
+			variants={prefersReducedMotion ? undefined : containerVariants}
+			initial={prefersReducedMotion ? "visible" : "hidden"}
 			whileInView="visible"
 			viewport={{ once: true }}
 		>
-			<div className="flex flex-row items-center">
+			<div className="flex flex-row items-center" aria-hidden="true">
 				{Array.from({ length: avatarCount }, (_, i) => (
 					<m.div
 						key={i}
-						variants={itemVariants}
+						variants={prefersReducedMotion ? undefined : itemVariants}
 						className={`flex h-10 w-10 items-center justify-center rounded-full ring-2 ring-background ${avatarColors[i % avatarColors.length]} ${i > 0 ? "-ml-3" : ""}`}
 					>
 						<svg
@@ -60,7 +62,7 @@ export function SocialProofStrip({
 				))}
 			</div>
 
-			<m.span variants={itemVariants} className="text-sm text-muted-foreground">
+			<m.span variants={prefersReducedMotion ? undefined : itemVariants} className="text-sm text-muted-foreground">
 				{label}
 			</m.span>
 		</m.div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { m, type Variants } from "motion/react";
+import { m, type Variants, useReducedMotion } from "motion/react";
 import type { ElementType } from "react";
 
 interface LetterRevealProps {
@@ -40,9 +40,19 @@ export function LetterReveal({
 	as = "h1",
 	children,
 }: LetterRevealProps) {
+	const prefersReducedMotion = useReducedMotion();
 	const Component = m[as] as ElementType;
 
 	const letters = text.split("");
+
+	if (prefersReducedMotion) {
+		return (
+			<Component className={className} aria-label={text}>
+				<span aria-hidden="true">{text}</span>
+				{children}
+			</Component>
+		);
+	}
 
 	return (
 		<Component

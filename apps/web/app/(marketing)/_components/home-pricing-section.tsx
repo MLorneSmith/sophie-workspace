@@ -153,17 +153,17 @@ export function HomePricingSection() {
 								variant={isHighlighted ? "default" : "outline"}
 								asChild
 							>
-								<a href="/auth/sign-up">
+								<a href="/auth/sign-up" aria-label={`${isHighlighted ? "Get Started" : "Start Free"} with ${product.name}`}>
 									{isHighlighted ? "Get Started" : "Start Free"}
 								</a>
 							</Button>
 
 							{/* Feature List */}
 							{product.features && product.features.length > 0 && (
-								<ul className="flex flex-col gap-3 border-t border-[var(--homepage-border-subtle)] pt-6">
+								<ul role="list" className="flex flex-col gap-3 border-t border-[var(--homepage-border-subtle)] pt-6">
 									{product.features.map((feature) => (
 										<li key={feature} className="flex items-start gap-2.5">
-											<CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--homepage-accent)]" />
+											<CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--homepage-accent)]" aria-hidden="true" />
 											<span className="text-sm text-muted-foreground">
 												{feature}
 											</span>

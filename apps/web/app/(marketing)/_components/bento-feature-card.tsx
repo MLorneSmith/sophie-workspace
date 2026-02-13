@@ -81,6 +81,7 @@ export function BentoFeatureCard({
 					animate={{ opacity: isHovering ? 1 : 0 }}
 					transition={{ duration: 0.3 }}
 					className="pointer-events-none absolute inset-0 z-0 rounded-xl"
+					aria-hidden="true"
 					style={{
 						background:
 							"radial-gradient(circle, rgba(6, 182, 212, 0.15), transparent 60%)",

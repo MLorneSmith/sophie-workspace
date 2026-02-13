@@ -1,6 +1,6 @@
 "use client";
 
-import { type Variants, motion } from "motion/react";
+import { type Variants, motion, useReducedMotion } from "motion/react";
 import type { ElementType, ReactNode } from "react";
 
 type MotionElement = "div" | "section" | "article" | "aside" | "main" | "span";
@@ -25,7 +25,12 @@ export function AnimateOnScroll({
 	delay = 0,
 	as = "div",
 }: AnimateOnScrollProps) {
+	const prefersReducedMotion = useReducedMotion();
 	const Component = motion[as] as ElementType;
+
+	if (prefersReducedMotion) {
+		return <Component className={className}>{children}</Component>;
+	}
 
 	return (
 		<Component

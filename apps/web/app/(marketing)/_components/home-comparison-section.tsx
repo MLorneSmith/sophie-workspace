@@ -62,9 +62,9 @@ function ComparisonCard({
 						variants={prefersReducedMotion ? undefined : itemVariants}
 					>
 						{isWithout ? (
-							<X className="mt-0.5 h-5 w-5 shrink-0 text-red-400/70" />
+							<X className="mt-0.5 h-5 w-5 shrink-0 text-red-400/70" aria-label="Not included" />
 						) : (
-							<Check className="mt-0.5 h-5 w-5 shrink-0 text-[#24a9e0]" />
+							<Check className="mt-0.5 h-5 w-5 shrink-0 text-[#24a9e0]" aria-label="Included" />
 						)}
 						<span
 							className={`text-sm leading-relaxed sm:text-base ${

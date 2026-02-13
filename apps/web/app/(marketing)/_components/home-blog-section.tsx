@@ -1,6 +1,6 @@
 "use client";
 
-import { type Variants, motion } from "motion/react";
+import { type Variants, motion, useReducedMotion } from "motion/react";
 import Image from "next/image";
 
 import { Badge } from "@kit/ui/badge";
@@ -77,6 +77,7 @@ function HomeBlogCard({
 }
 
 export function HomeBlogSection() {
+	const prefersReducedMotion = useReducedMotion();
 	const { title, subtitle, posts } = homepageContentConfig.essentialReads;
 
 	return (
@@ -96,13 +97,13 @@ export function HomeBlogSection() {
 
 			<motion.div
 				className="mt-8 grid grid-cols-1 gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8"
-				variants={containerVariants}
-				initial="hidden"
+				variants={prefersReducedMotion ? undefined : containerVariants}
+				initial={prefersReducedMotion ? "visible" : "hidden"}
 				whileInView="visible"
 				viewport={{ once: true, margin: "-100px" }}
 			>
 				{posts.map((post) => (
-					<motion.div key={post.title} variants={itemVariants}>
+					<motion.div key={post.title} variants={prefersReducedMotion ? undefined : itemVariants}>
 						<HomeBlogCard
 							title={post.title}
 							description={post.description}

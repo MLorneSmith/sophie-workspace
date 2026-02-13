@@ -144,9 +144,10 @@ export const Card = ({
 					size={40}
 					strokeWidth={1.5}
 					style={{ color: "#24a9e0" }}
+					aria-hidden="true"
 				/>
 			) : (
-				<QuoteIcon className="absolute top-2 left-2 scale-x-[-1] text-neutral-300" />
+				<QuoteIcon className="absolute top-2 left-2 scale-x-[-1] text-neutral-300" aria-hidden="true" />
 			)}
 			{children}
 		</div>

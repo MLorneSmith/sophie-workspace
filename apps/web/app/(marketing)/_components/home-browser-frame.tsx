@@ -37,7 +37,7 @@ export function BrowserFrame({
 				<div className="relative rounded-xl border border-[var(--homepage-border-subtle)] bg-[var(--homepage-surface)]/80 backdrop-blur-[16px] [@supports(not(backdrop-filter:blur(1px)))]:bg-[var(--homepage-surface)]">
 					{/* macOS title bar */}
 					<div className="flex items-center gap-2 border-b border-[var(--homepage-border-subtle)] px-4 py-3">
-						<div className="flex gap-1.5">
+						<div className="flex gap-1.5" aria-hidden="true">
 							<span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
 							<span className="h-3 w-3 rounded-full bg-[#febc2e]" />
 							<span className="h-3 w-3 rounded-full bg-[#28c840]" />
@@ -46,7 +46,7 @@ export function BrowserFrame({
 							{title}
 						</span>
 						{/* Spacer to center title */}
-						<div className="flex gap-1.5 opacity-0">
+						<div className="flex gap-1.5 opacity-0" aria-hidden="true">
 							<span className="h-3 w-3" />
 							<span className="h-3 w-3" />
 							<span className="h-3 w-3" />

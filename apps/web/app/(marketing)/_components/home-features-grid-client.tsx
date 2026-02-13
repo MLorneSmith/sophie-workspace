@@ -1,6 +1,6 @@
 "use client";
 
-import { type Variants, motion } from "motion/react";
+import { type Variants, motion, useReducedMotion } from "motion/react";
 
 import { homepageContentConfig } from "~/config/homepage-content.config";
 
@@ -21,6 +21,7 @@ const itemVariants: Variants = {
 };
 
 export function HomeFeaturesGrid() {
+	const prefersReducedMotion = useReducedMotion();
 	const { title, subtitle, cards } = homepageContentConfig.features;
 
 	return (
@@ -35,13 +36,13 @@ export function HomeFeaturesGrid() {
 			<motion.div
 				role="grid"
 				className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8"
-				variants={containerVariants}
-				initial="hidden"
+				variants={prefersReducedMotion ? undefined : containerVariants}
+				initial={prefersReducedMotion ? "visible" : "hidden"}
 				whileInView="visible"
 				viewport={{ once: true, margin: "-100px" }}
 			>
 				{cards.map((card) => (
-					<motion.div key={card.title} variants={itemVariants}>
+					<motion.div key={card.title} variants={prefersReducedMotion ? undefined : itemVariants}>
 						<BentoFeatureCard
 							title={card.title}
 							description={card.description}

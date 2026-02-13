@@ -1,7 +1,7 @@
 "use client";
 
 import { CtaButton, GradientText, Pill } from "@kit/ui/marketing";
-import { m, type Variants } from "motion/react";
+import { m, type Variants, useReducedMotion } from "motion/react";
 import Link from "next/link";
 
 import { homepageContentConfig } from "~/config/homepage-content.config";
@@ -32,6 +32,8 @@ const fadeUp: Variants = {
 const { hero } = homepageContentConfig;
 
 export function HeroSection() {
+	const prefersReducedMotion = useReducedMotion();
+
 	return (
 		<section className="relative isolate flex min-h-[600px] items-center justify-center overflow-hidden bg-background py-20 lg:min-h-screen">
 			{/* Gradient Orb Background */}
@@ -45,13 +47,13 @@ export function HeroSection() {
 			{/* Content */}
 			<m.div
 				className="relative z-10 mx-auto flex max-w-5xl flex-col items-center gap-6 px-4 text-center sm:px-6 lg:px-8"
-				variants={staggerContainer}
-				initial="hidden"
+				variants={prefersReducedMotion ? undefined : staggerContainer}
+				initial={prefersReducedMotion ? "visible" : "hidden"}
 				whileInView="visible"
 				viewport={{ once: true, amount: 0.3 }}
 			>
 				{/* Pill Badge */}
-				<m.div variants={fadeUp}>
+				<m.div variants={prefersReducedMotion ? undefined : fadeUp}>
 					<Pill>{hero.pillText}</Pill>
 				</m.div>
 
@@ -67,7 +69,7 @@ export function HeroSection() {
 
 				{/* Subtitle */}
 				<m.p
-					variants={fadeUp}
+					variants={prefersReducedMotion ? undefined : fadeUp}
 					className="max-w-3xl text-lg leading-relaxed text-muted-foreground sm:text-xl"
 				>
 					{hero.subtitle}
@@ -75,7 +77,7 @@ export function HeroSection() {
 
 				{/* CTA Buttons */}
 				<m.div
-					variants={fadeUp}
+					variants={prefersReducedMotion ? undefined : fadeUp}
 					className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row"
 				>
 					<CtaButton className="min-h-[44px] w-full sm:w-auto">
@@ -90,7 +92,7 @@ export function HeroSection() {
 				</m.div>
 
 				{/* Social Proof */}
-				<m.div variants={fadeUp}>
+				<m.div variants={prefersReducedMotion ? undefined : fadeUp}>
 					<SocialProofStrip
 						avatarCount={hero.socialProof.avatarCount}
 						label={hero.socialProof.label}

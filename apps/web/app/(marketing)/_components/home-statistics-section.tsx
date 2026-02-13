@@ -1,6 +1,6 @@
 "use client";
 
-import { type Variants, motion } from "motion/react";
+import { type Variants, motion, useReducedMotion } from "motion/react";
 
 import { homepageContentConfig } from "~/config/homepage-content.config";
 
@@ -29,11 +29,13 @@ function StatBlock({
 	suffix,
 	prefix,
 	label,
+	skipAnimation,
 }: {
 	value: string;
 	suffix?: string;
 	prefix?: string;
 	label: string;
+	skipAnimation?: boolean;
 }) {
 	const numericValue = parseNumericValue(value);
 	const hasDecimal = value.includes(".");
@@ -44,14 +46,20 @@ function StatBlock({
 		formatter: hasDecimal
 			? (v) => v.toFixed(1)
 			: (v) => Math.round(v).toLocaleString(),
+		disabled: skipAnimation,
 	});
 
+	const fullValue = `${prefix ?? ""}${value}${suffix ?? ""}`;
+
 	return (
-		<motion.li className="text-center" variants={itemVariants}>
+		<motion.li className="text-center" variants={skipAnimation ? undefined : itemVariants}>
 			<div className="text-4xl font-bold tracking-tight text-[#24a9e0] sm:text-5xl">
-				{prefix}
-				<span ref={ref}>0</span>
-				{suffix}
+				<span className="sr-only">{fullValue}</span>
+				<span aria-hidden="true">
+					{prefix}
+					<span ref={ref}>{skipAnimation ? (hasDecimal ? numericValue.toFixed(1) : Math.round(numericValue).toLocaleString()) : "0"}</span>
+					{suffix}
+				</span>
 			</div>
 			<p className="mt-2 text-sm font-medium text-muted-foreground sm:text-base">
 				{label}
@@ -61,14 +69,15 @@ function StatBlock({
 }
 
 export function HomeStatisticsSection() {
+	const prefersReducedMotion = useReducedMotion();
 	const { statistics } = homepageContentConfig;
 
 	return (
 		<motion.ul
 			role="list"
 			className="grid grid-cols-2 gap-8 md:grid-cols-4"
-			variants={containerVariants}
-			initial="hidden"
+			variants={prefersReducedMotion ? undefined : containerVariants}
+			initial={prefersReducedMotion ? "visible" : "hidden"}
 			whileInView="visible"
 			viewport={{ once: true, amount: 0.3 }}
 		>
@@ -79,6 +88,7 @@ export function HomeStatisticsSection() {
 					suffix={stat.suffix}
 					prefix={stat.prefix}
 					label={stat.label}
+					skipAnimation={!!prefersReducedMotion}
 				/>
 			))}
 		</motion.ul>
