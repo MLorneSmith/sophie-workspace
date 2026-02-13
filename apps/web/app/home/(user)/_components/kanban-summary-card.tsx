@@ -38,10 +38,10 @@ export function KanbanSummaryCard({ kanbanSummary }: KanbanSummaryCardProps) {
 	const doingCount = kanbanSummary?.doingCount ?? 0;
 
 	return (
-		<Card className="flex flex-col border-l-4 border-l-amber-500">
+		<Card className="flex flex-col border-l-4 border-l-amber-500 bg-amber-50/30 dark:bg-amber-950/15">
 			<CardHeader className="pb-3">
 				<div className="flex items-center justify-between">
-					<CardTitle className="flex items-center gap-2">
+					<CardTitle className="font-heading flex items-center gap-2">
 						<ClipboardList className="h-4 w-4" aria-hidden="true" />
 						Current Tasks
 					</CardTitle>
@@ -132,7 +132,7 @@ function TaskPreview({
 function KanbanSummaryCardSkeleton() {
 	return (
 		<Card
-			className="flex flex-col border-l-4 border-l-amber-500"
+			className="flex flex-col border-l-4 border-l-amber-500 bg-amber-50/30 dark:bg-amber-950/15"
 			data-testid="kanban-summary-skeleton"
 		>
 			<CardHeader className="pb-3">

@@ -91,10 +91,10 @@ export function PresentationsTable({
 	presentations: PresentationData[];
 }) {
 	return (
-		<Card className="border-l-4 border-l-violet-500">
+		<Card className="border-l-4 border-l-violet-500 bg-violet-50/30 dark:bg-violet-950/15">
 			<CardHeader className="flex flex-row items-center justify-between">
 				<div>
-					<CardTitle>Your Presentations</CardTitle>
+					<CardTitle className="font-heading">Your Presentations</CardTitle>
 					<CardDescription>Recent presentation outlines</CardDescription>
 				</div>
 

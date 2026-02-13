@@ -15,10 +15,10 @@ export function RecentActivityFeed({ activities }: RecentActivityFeedProps) {
 		return (
 			<Card
 				aria-label="Recent activity"
-				className="border-l-4 border-l-blue-500"
+				className="border-l-4 border-l-blue-500 bg-blue-50/30 dark:bg-blue-950/15"
 			>
 				<CardHeader className="pb-2">
-					<CardTitle>Recent Activity</CardTitle>
+					<CardTitle className="font-heading">Recent Activity</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<ActivityEmptyState />
@@ -30,10 +30,10 @@ export function RecentActivityFeed({ activities }: RecentActivityFeedProps) {
 	return (
 		<Card
 			aria-label="Recent activity timeline"
-			className="border-l-4 border-l-blue-500"
+			className="border-l-4 border-l-blue-500 bg-blue-50/30 dark:bg-blue-950/15"
 		>
 			<CardHeader className="pb-2">
-				<CardTitle>Recent Activity</CardTitle>
+				<CardTitle className="font-heading">Recent Activity</CardTitle>
 			</CardHeader>
 			<CardContent>
 				<ul
