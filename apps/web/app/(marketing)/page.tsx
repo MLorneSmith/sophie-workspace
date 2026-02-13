@@ -15,6 +15,7 @@ import { ProductPreviewSection } from "./_components/home-product-preview-sectio
 import LogoCloudMarquee from "./_components/home-logo-cloud-client";
 import OptimizedImage from "./_components/home-optimized-image";
 import StickyScrollReveal from "./_components/home-sticky-scroll-client";
+import { HomeStatisticsSection } from "./_components/home-statistics-section";
 import { TestimonialsMasonaryGridServer } from "./_components/home-testimonials-grid-server";
 
 // Width system
@@ -76,6 +77,15 @@ function Home() {
 						>
 							<LogoCloudMarquee />
 						</Suspense>
+					</AnimateOnScroll>
+				</div>
+			</section>
+
+			{/* Statistics Section */}
+			<section className={`w-full ${spacing.section} bg-background`}>
+				<div className={`${containerBase} ${widths.content}`}>
+					<AnimateOnScroll>
+						<HomeStatisticsSection />
 					</AnimateOnScroll>
 				</div>
 			</section>
