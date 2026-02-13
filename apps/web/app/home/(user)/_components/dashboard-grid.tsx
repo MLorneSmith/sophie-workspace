@@ -50,7 +50,7 @@ function getSuggestedActions(data: DashboardData): SuggestedAction[] {
 			icon: ClipboardList,
 			label: "Take Assessment",
 			description: "Discover your presentation strengths",
-			href: "/home/assessment/survey",
+			href: "/home/assessment",
 			accentClass: "text-indigo-600 dark:text-indigo-400",
 		});
 	}
