@@ -14,6 +14,8 @@ interface BlogPost {
 	iconType: IconType;
 	blogType: BlogType;
 	readTimeMinutes: number;
+	categoryBadge?: string;
+	thumbnailSrc?: string;
 }
 
 interface StickyContentItem {
@@ -312,6 +314,8 @@ export const homepageContentConfig = {
 				iconType: "presentation" as IconType,
 				blogType: "Guide" as BlogType,
 				readTimeMinutes: 15,
+				categoryBadge: "Strategy",
+				thumbnailSrc: "/images/posts/brainstorming.webp",
 			},
 			{
 				title: "Pitch Decks & Funding Proposals",
@@ -320,6 +324,8 @@ export const homepageContentConfig = {
 				iconType: "chart" as IconType,
 				blogType: "Tutorial" as BlogType,
 				readTimeMinutes: 12,
+				categoryBadge: "Product Launch",
+				thumbnailSrc: "/images/posts/indie-hacker.webp",
 			},
 			{
 				title: "Presentation Teardown: BCG Presentation Review",
@@ -328,6 +334,8 @@ export const homepageContentConfig = {
 				iconType: "sparkles" as IconType,
 				blogType: "Guide" as BlogType,
 				readTimeMinutes: 18,
+				categoryBadge: "Technology",
+				thumbnailSrc: "/images/posts/saas-starter-blog-post.webp",
 			},
 		] as BlogPost[],
 	},

@@ -1,4 +1,3 @@
-import { BlogPostCard } from "@kit/ui/blog-post-card";
 import { Suspense } from "react";
 
 import { homepageContentConfig } from "~/config/homepage-content.config";
@@ -15,6 +14,7 @@ import { ProductPreviewSection } from "./_components/home-product-preview-sectio
 import { HomeStatisticsSection } from "./_components/home-statistics-section";
 import HomeStickyScroll from "./_components/home-sticky-scroll-client";
 import { HomeTestimonialsSection } from "./_components/home-testimonials-section";
+import { HomeBlogSection } from "./_components/home-blog-section";
 
 // Width system
 const widths = {
@@ -163,31 +163,9 @@ function Home() {
 				className={`${spacing.section} bg-background dark:bg-background pb-12`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
-					<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
-						{homepageContentConfig.essentialReads.title}
-					</h2>
-					<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-muted-foreground sm:mb-12 dark:text-muted-foreground">
-						{homepageContentConfig.essentialReads.subtitle}
-					</p>
-					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
-						{homepageContentConfig.essentialReads.posts.map((post) => (
-							<Suspense
-								key={`post-${post.title}`}
-								fallback={
-									<div className="h-64 animate-pulse rounded-lg bg-muted dark:bg-muted" />
-								}
-							>
-								<BlogPostCard
-									title={post.title}
-									description={post.description}
-									backgroundImage="/images/posts/blog-post-placeholder.png"
-									iconType={post.iconType}
-									blogType={post.blogType}
-									readTimeMinutes={post.readTimeMinutes}
-								/>
-							</Suspense>
-						))}
-					</div>
+					<Suspense fallback={<SectionLoader />}>
+						<HomeBlogSection />
+					</Suspense>
 				</div>
 			</section>
 		</div>

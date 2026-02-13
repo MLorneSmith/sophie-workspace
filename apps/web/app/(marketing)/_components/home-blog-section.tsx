@@ -1,0 +1,118 @@
+"use client";
+
+import { type Variants, motion } from "motion/react";
+import Image from "next/image";
+
+import { Badge } from "@kit/ui/badge";
+import { SecondaryHero } from "@kit/ui/marketing";
+
+import { homepageContentConfig } from "~/config/homepage-content.config";
+
+import { GlassCard } from "./glass-card";
+
+const containerVariants: Variants = {
+	hidden: {},
+	visible: {
+		transition: {
+			staggerChildren: 0.1,
+		},
+	},
+};
+
+const itemVariants: Variants = {
+	hidden: { opacity: 0, y: 24 },
+	visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+interface HomeBlogCardProps {
+	title: string;
+	description: string;
+	readTimeMinutes: number;
+	categoryBadge?: string;
+	thumbnailSrc?: string;
+}
+
+function HomeBlogCard({
+	title,
+	description,
+	readTimeMinutes,
+	categoryBadge,
+	thumbnailSrc,
+}: HomeBlogCardProps) {
+	return (
+		<GlassCard className="group flex h-full flex-col overflow-hidden p-0">
+			{thumbnailSrc && (
+				<div className="overflow-hidden">
+					<Image
+						src={thumbnailSrc}
+						alt={title}
+						width={400}
+						height={225}
+						className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-105"
+					/>
+				</div>
+			)}
+
+			<div className="flex flex-1 flex-col gap-3 p-5 sm:p-6">
+				{categoryBadge && (
+					<Badge variant="secondary" className="w-fit text-xs">
+						{categoryBadge}
+					</Badge>
+				)}
+
+				<h3 className="line-clamp-2 text-lg font-semibold leading-snug">
+					{title}
+				</h3>
+
+				<p className="line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground">
+					{description}
+				</p>
+
+				<span className="text-xs text-muted-foreground">
+					{readTimeMinutes} min read
+				</span>
+			</div>
+		</GlassCard>
+	);
+}
+
+export function HomeBlogSection() {
+	const { title, subtitle, posts } = homepageContentConfig.essentialReads;
+
+	return (
+		<div>
+			<SecondaryHero
+				heading={
+					<span className="text-h3 sm:text-h2 mb-8 text-center leading-snug sm:mb-12">
+						{title}
+					</span>
+				}
+				subheading={
+					<p className="text-body sm:text-body-lg max-w-4xl leading-relaxed text-muted-foreground dark:text-muted-foreground">
+						{subtitle}
+					</p>
+				}
+			/>
+
+			<motion.div
+				className="mt-8 grid grid-cols-1 gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8"
+				variants={containerVariants}
+				initial="hidden"
+				whileInView="visible"
+				viewport={{ once: true, margin: "-100px" }}
+			>
+				{posts.map((post) => (
+					<motion.div key={post.title} variants={itemVariants}>
+						<HomeBlogCard
+							title={post.title}
+							description={post.description}
+							readTimeMinutes={post.readTimeMinutes}
+							categoryBadge={post.categoryBadge}
+							thumbnailSrc={post.thumbnailSrc}
+						/>
+					</motion.div>
+				))}
+			</motion.div>
+		</div>
+	);
+}
