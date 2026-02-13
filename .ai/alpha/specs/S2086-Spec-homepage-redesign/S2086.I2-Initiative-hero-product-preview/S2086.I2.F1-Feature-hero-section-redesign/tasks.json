@@ -1,0 +1,471 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I2.F1",
+    "feature_name": "Hero Section Redesign",
+    "feature_slug": "hero-section-redesign",
+    "initiative_id": "S2086.I2",
+    "spec_id": 2086,
+    "created_at": "2026-02-13T12:48:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2086.I2.F1.T1",
+      "type": "task",
+      "name": "Update homepage content config with hero section data",
+      "action": { "verb": "Update", "target": "homepage content config" },
+      "purpose": "Add hero section configuration (pill text, CTA labels/hrefs, social proof data, subtitle) to homepage-content.config.ts for centralized content management",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/config/homepage-content.config.ts"],
+        "dependencies": ["homepageContentConfig object structure"],
+        "constraints": ["Follow existing config pattern", "Add TypeScript interface for hero section data"]
+      },
+      "input_state": "homepage-content.config.ts exists with hero.title and hero.subtitle only",
+      "output_state": "homepage-content.config.ts includes hero.pillText, hero.ctaPrimary, hero.ctaSecondary, hero.socialProof",
+      "acceptance_criterion": "Config file contains hero.pillText, hero.ctaPrimary.label, hero.ctaPrimary.href, hero.ctaSecondary.label, hero.ctaSecondary.href, hero.socialProof.avatarCount, hero.socialProof.label",
+      "verification_command": "grep -c 'pillText\\|ctaPrimary\\|ctaSecondary\\|socialProof' apps/web/config/homepage-content.config.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/config/homepage-content.config.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I2.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I2.F1.T2",
+      "type": "task",
+      "name": "Create letter-by-letter text reveal component",
+      "action": { "verb": "Create", "target": "letter-by-letter text reveal component" },
+      "purpose": "Implement Framer Motion letter-by-letter animation component using variants with stagger, whileInView trigger, and prefers-reduced-motion fallback",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/(marketing)/_components/home-hero-letter-reveal.tsx"],
+        "dependencies": ["motion/react", "MotionProvider from I1"],
+        "constraints": ["Use motion/react import (NOT framer-motion)", "Follow research pattern from context7-framer-motion.md lines 396-425", "Client component with 'use client' directive"]
+      },
+      "input_state": "No home-hero-letter-reveal.tsx exists",
+      "output_state": "home-hero-letter-reveal.tsx exports LetterReveal component with text prop, stagger animation, viewport once, reduced-motion support",
+      "acceptance_criterion": "Component exists, uses motion/react, implements letter variants with stagger delay 0.03s, triggers on whileInView, respects prefers-reduced-motion",
+      "verification_command": "test -f apps/web/app/\\(marketing\\)/_components/home-hero-letter-reveal.tsx && grep 'motion/react' apps/web/app/\\(marketing\\)/_components/home-hero-letter-reveal.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/home-hero-letter-reveal.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I2.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I2.F1.T3",
+      "type": "task",
+      "name": "Create gradient orb background element",
+      "action": { "verb": "Create", "target": "gradient orb background element" },
+      "purpose": "Add decorative gradient orb background as CSS-positioned element with blur and cyan accent color (#24a9e0) for hero section visual appeal",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/(marketing)/_components/home-hero-section.tsx"],
+        "dependencies": ["Tailwind CSS classes"],
+        "constraints": ["CSS-only solution (no JS for decorative effect)", "Use cyan accent #24a9e0", "Blur effect with bg-blur or filter blur", "Create file with client component wrapper and gradient orb element"]
+      },
+      "input_state": "No home-hero-section.tsx file exists",
+      "output_state": "home-hero-section.tsx created with gradient orb background element positioned absolutely within hero container",
+      "acceptance_criterion": "Gradient orb exists with cyan color (#24a9e0), blur effect, absolute positioning, z-index behind content",
+      "verification_command": "grep -c '24a9e0\\|blur' apps/web/app/\\(marketing\\)/_components/home-hero-section.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/home-hero-section.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I2.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I2.F1.T4",
+      "type": "task",
+      "name": "Create social proof micro-strip component",
+      "action": { "verb": "Create", "target": "social proof micro-strip component" },
+      "purpose": "Build avatar stack (5 overlapping circles) + 'Join 2,000+ professionals' text component with staggered fade-in animation for trust signaling",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/(marketing)/_components/home-hero-social-proof.tsx"],
+        "dependencies": ["motion/react", "ProfileAvatar from @kit/ui/profile-avatar or custom avatars"],
+        "constraints": ["Client component with 'use client'", "5 avatar images overlapping with negative margin", "Staggered fade-in animation", "Configurable count and label via props"]
+      },
+      "input_state": "No home-hero-social-proof.tsx exists",
+      "output_state": "home-hero-social-proof.tsx exports SocialProofStrip component with avatarCount and label props, staggered animation",
+      "acceptance_criterion": "Component exists, displays 5 overlapping avatar images, displays configurable label text, uses Framer Motion for staggered fade-in",
+      "verification_command": "test -f apps/web/app/\\(marketing\\)/_components/home-hero-social-proof.tsx && grep 'motion/react' apps/web/app/\\(marketing\\)/_components/home-hero-social-proof.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/home-hero-social-proof.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I2.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I2.F1.T5",
+      "type": "task",
+      "name": "Compose hero section component with layout and placeholders",
+      "action": { "verb": "Compose", "target": "hero section component" },
+      "purpose": "Assemble complete hero section layout with pill badge, letter reveal headline (with gradient text on 'faster'), subtitle, placeholder CTAs, and social proof strip",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "AI-Powered Presentation Platform" },
+          { "command": "is visible", "target": "faster" },
+          { "command": "find role", "target": "button" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-hero-section.tsx",
+          "apps/web/config/homepage-content.config.ts",
+          "packages/ui/src/makerkit/marketing/pill.tsx",
+          "packages/ui/src/makerkit/marketing/gradient-text.tsx"
+        ],
+        "dependencies": ["Pill component", "GradientText component", "LetterReveal component", "SocialProofStrip component", "homepageContentConfig"],
+        "constraints": [
+          "Full-viewport hero (100vh min-h-[600px])",
+          "Gradient text on word 'faster' using cyan #24a9e0",
+          "Centered layout with max-width container",
+          "Staggered entrance: pill → headline → subtitle → CTAs → social proof",
+          "Client component with 'use client'"
+        ]
+      },
+      "input_state": "home-hero-section.tsx has gradient orb background only, T1-T4 completed",
+      "output_state": "home-hero-section.tsx exports complete HeroSection component with all elements composed, placeholder CTA buttons without navigation",
+      "acceptance_criterion": "Component renders pill, animated headline with gradient 'faster', subtitle, two CTA button elements, social proof strip; 100vh height; gradient orb visible in background",
+      "verification_command": "grep -c 'Pill\\|GradientText\\|LetterReveal\\|SocialProofStrip\\|min-h-\\[600px\\]' apps/web/app/\\(marketing\\)/_components/home-hero-section.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/home-hero-section.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I2.F1.T1", "S2086.I2.F1.T2", "S2086.I2.F1.T3", "S2086.I2.F1.T4"],
+        "blocks": ["S2086.I2.F1.T6", "S2086.I2.F1.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S2086.I2.F1.T6",
+      "type": "task",
+      "name": "Wire primary CTA button to sign-up page",
+      "action": { "verb": "Wire", "target": "primary CTA button" },
+      "purpose": "Connect 'Start Writing Free' button to sign-up page navigation using Link component from Next.js",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "link_navigation",
+            "target": "Start Writing Free",
+            "expected_action": "navigate to sign-up page",
+            "file_path": "apps/web/app/(marketing)/_components/home-hero-section.tsx"
+          }
+        ]
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-hero-section.tsx",
+          "apps/web/config/paths.config.ts"
+        ],
+        "dependencies": ["Link from next/link", "homepageContentConfig.hero.ctaPrimary.href"],
+        "constraints": ["Use Link component (not anchor tag)", "Use CtaButton component from @kit/ui/marketing", "Variant: default (primary button)"]
+      },
+      "input_state": "Hero section has placeholder CTA buttons without navigation",
+      "output_state": "Primary CTA button navigates to sign-up page on click",
+      "acceptance_criterion": "Primary CTA has href from config, uses Link component, renders as filled button variant",
+      "verification_command": "grep -Pzo 'Start Writing Free[^<]*href=\\{[^}]+\\}' apps/web/app/\\(marketing\\)/_components/home-hero-section.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/_components/home-hero-section.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I2.F1.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I2.F1.T7",
+      "type": "task",
+      "name": "Wire secondary CTA button for demo interaction",
+      "action": { "verb": "Wire", "target": "secondary CTA button" },
+      "purpose": "Configure 'Watch Demo' button with outline/ghost variant and appropriate href (TBD - could link to demo page or scroll to product preview section)",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "link_navigation",
+            "target": "Watch Demo",
+            "expected_action": "navigate to demo or scroll to section",
+            "file_path": "apps/web/app/(marketing)/_components/home-hero-section.tsx"
+          }
+        ]
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-hero-section.tsx",
+          "apps/web/config/paths.config.ts"
+        ],
+        "dependencies": ["Link from next/link", "homepageContentConfig.hero.ctaSecondary.href"],
+        "constraints": ["Use Link component", "Use CtaButton component", "Variant: outline or ghost (secondary button style)"]
+      },
+      "input_state": "Hero section has placeholder secondary CTA button",
+      "output_state": "Secondary CTA button has href from config and outline/ghost styling",
+      "acceptance_criterion": "Secondary CTA has href from config, uses Link component, renders as outline or ghost variant",
+      "verification_command": "grep -Pzo 'Watch Demo[^<]*(variant=\"outline\"|variant=\"ghost\")' apps/web/app/\\(marketing\\)/_components/home-hero-section.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/_components/home-hero-section.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I2.F1.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I2.F1.T8",
+      "type": "task",
+      "name": "Replace hero block in page.tsx with new component",
+      "action": { "verb": "Replace", "target": "hero block in page.tsx" },
+      "purpose": "Remove current hero section (BackgroundBoxes + Hero + CtaPresentationName, lines 63-97) and replace with new HeroSection component",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/(marketing)/page.tsx"],
+        "dependencies": ["HeroSection component from ./_components/home-hero-section"],
+        "constraints": ["Remove BackgroundBoxes import and usage", "Remove CtaPresentationName import and usage", "Keep existing section structure and spacing"]
+      },
+      "input_state": "page.tsx contains old hero block (lines 63-97) with BackgroundBoxes, Hero, CtaPresentationName",
+      "output_state": "page.tsx contains <HeroSection /> component, no BackgroundBoxes or CtaPresentationName in hero area",
+      "acceptance_criterion": "Old hero block removed, HeroSection component imported and rendered, page still passes typecheck",
+      "verification_command": "grep -c 'HeroSection' apps/web/app/\\(marketing\\)/page.tsx && test $(grep -c 'BackgroundBoxes' apps/web/app/\\(marketing\\)/page.tsx) -eq 0",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I2.F1.T6", "S2086.I2.F1.T7"],
+        "blocks": ["S2086.I2.F1.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I2.F1.T9",
+      "type": "task",
+      "name": "Verify hero animations and responsive layout",
+      "action": { "verb": "Verify", "target": "hero animations and responsive layout" },
+      "purpose": "Run typecheck, lint, and visual verification to ensure animations work correctly, reduced-motion is respected, and hero is responsive across breakpoints",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-hero-section.tsx",
+          "apps/web/app/(marketing)/_components/home-hero-letter-reveal.tsx",
+          "apps/web/app/(marketing)/_components/home-hero-social-proof.tsx"
+        ],
+        "dependencies": ["pnpm typecheck", "pnpm lint", "Visual inspection in browser"],
+        "constraints": ["Typecheck must pass", "Lint must pass", "Test reduced-motion preference in browser dev tools"]
+      },
+      "input_state": "Hero section integrated into page.tsx",
+      "output_state": "All verification commands pass, no type errors, no lint errors, animations confirmed working",
+      "acceptance_criterion": "pnpm typecheck passes, pnpm lint passes, hero renders at 100vh on desktop, 100vh min-h-[600px] on mobile, animations trigger on scroll, reduced-motion disables animations",
+      "verification_command": "pnpm typecheck && pnpm lint",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S2086.I2.F1.T8"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Foundation",
+        "task_ids": ["S2086.I2.F1.T1", "S2086.I2.F1.T2", "S2086.I2.F1.T3", "S2086.I2.F1.T4"],
+        "depends_on_groups": [],
+        "estimated_hours": 11,
+        "parallel_hours": 4
+      },
+      {
+        "id": 1,
+        "name": "Hero Composition",
+        "task_ids": ["S2086.I2.F1.T5"],
+        "depends_on_groups": [0],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "CTA Wiring",
+        "task_ids": ["S2086.I2.F1.T6", "S2086.I2.F1.T7"],
+        "depends_on_groups": [0, 1],
+        "estimated_hours": 2,
+        "parallel_hours": 1
+      },
+      {
+        "id": 3,
+        "name": "Page Integration",
+        "task_ids": ["S2086.I2.F1.T8"],
+        "depends_on_groups": [0, 1, 2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Verification",
+        "task_ids": ["S2086.I2.F1.T9"],
+        "depends_on_groups": [0, 1, 2, 3],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2086.I2.F1.T2", "S2086.I2.F1.T5", "S2086.I2.F1.T6", "S2086.I2.F1.T8", "S2086.I2.F1.T9"],
+      "total_hours": 13
+    },
+    "duration": {
+      "sequential": 21,
+      "parallel": 13,
+      "time_saved_percent": 38.1
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
