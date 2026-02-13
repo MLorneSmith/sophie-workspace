@@ -12,7 +12,7 @@ interface CoachingSessionsCardProps {
 
 export function CoachingSessionsCard({ sessions }: CoachingSessionsCardProps) {
 	return (
-		<Card className="flex h-64 flex-col overflow-hidden">
+		<Card className="flex flex-col overflow-hidden border-l-4 border-l-rose-500">
 			<CardHeader className="pb-3">
 				<CardTitle className="flex items-center gap-2">
 					<Calendar className="h-4 w-4" aria-hidden="true" />

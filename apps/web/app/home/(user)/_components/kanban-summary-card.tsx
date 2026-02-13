@@ -38,7 +38,7 @@ export function KanbanSummaryCard({ kanbanSummary }: KanbanSummaryCardProps) {
 	const doingCount = kanbanSummary?.doingCount ?? 0;
 
 	return (
-		<Card className="flex h-64 flex-col">
+		<Card className="flex flex-col border-l-4 border-l-amber-500">
 			<CardHeader className="pb-3">
 				<div className="flex items-center justify-between">
 					<CardTitle className="flex items-center gap-2">
@@ -100,7 +100,9 @@ function TaskPreview({
 		<div className="space-y-3" data-testid="task-preview">
 			<div className="rounded-md border p-3">
 				<div className="flex items-start justify-between gap-2">
-					<p className="truncate text-sm font-medium leading-tight">{nextTask.title}</p>
+					<p className="truncate text-sm font-medium leading-tight">
+						{nextTask.title}
+					</p>
 					<Badge
 						variant={
 							priorityVariant[
@@ -129,7 +131,10 @@ function TaskPreview({
 
 function KanbanSummaryCardSkeleton() {
 	return (
-		<Card className="flex h-64 flex-col" data-testid="kanban-summary-skeleton">
+		<Card
+			className="flex flex-col border-l-4 border-l-amber-500"
+			data-testid="kanban-summary-skeleton"
+		>
 			<CardHeader className="pb-3">
 				<div className="flex items-center justify-between">
 					<Skeleton className="h-5 w-32" />

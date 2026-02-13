@@ -7,12 +7,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@kit/ui/chart";
-import {
-	EmptyState,
-	EmptyStateButton,
-	EmptyStateHeading,
-	EmptyStateText,
-} from "@kit/ui/empty-state";
+import { EmptyStateButton } from "@kit/ui/empty-state";
 import Link from "next/link";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
 
@@ -47,27 +42,24 @@ export function SkillsSpiderDiagram({
 
 	if (!chartData) {
 		return (
-			<Card>
-				<CardHeader className="items-center pb-4">
+			<Card className="border-l-4 border-l-indigo-500">
+				<CardHeader className="pb-2">
 					<CardTitle>Skills Assessment</CardTitle>
 				</CardHeader>
-				<CardContent>
-					<EmptyState>
-						<EmptyStateHeading>No Assessment Yet</EmptyStateHeading>
-						<EmptyStateText>
-							Complete your self-assessment to see your skills profile
-						</EmptyStateText>
-						<EmptyStateButton asChild>
-							<Link href="/home/assessment/survey">Take Assessment</Link>
-						</EmptyStateButton>
-					</EmptyState>
+				<CardContent className="flex flex-col items-center justify-center gap-3 py-6 text-center">
+					<p className="text-sm text-muted-foreground">
+						Discover your strengths across 5 presentation skill categories.
+					</p>
+					<EmptyStateButton asChild>
+						<Link href="/home/assessment/survey">Take Assessment</Link>
+					</EmptyStateButton>
 				</CardContent>
 			</Card>
 		);
 	}
 
 	return (
-		<Card>
+		<Card className="border-l-4 border-l-indigo-500">
 			<CardHeader className="items-center pb-4">
 				<CardTitle>Skills Assessment</CardTitle>
 			</CardHeader>

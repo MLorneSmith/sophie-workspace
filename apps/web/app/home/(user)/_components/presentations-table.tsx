@@ -31,13 +31,14 @@ function getColumns(): ColumnDef<PresentationData>[] {
 		},
 		{
 			id: "created_at",
-			header: () => (
-				<span className="hidden sm:inline">Created</span>
-			),
+			header: () => <span className="hidden sm:inline">Created</span>,
 			cell: ({ row }) => {
 				const date = row.original.submission.created_at;
 
-				if (!date) return <span className="hidden text-muted-foreground sm:inline">—</span>;
+				if (!date)
+					return (
+						<span className="hidden text-muted-foreground sm:inline">—</span>
+					);
 
 				return (
 					<span className="hidden sm:inline">
@@ -90,14 +91,14 @@ export function PresentationsTable({
 	presentations: PresentationData[];
 }) {
 	return (
-		<Card>
+		<Card className="border-l-4 border-l-violet-500">
 			<CardHeader className="flex flex-row items-center justify-between">
 				<div>
 					<CardTitle>Your Presentations</CardTitle>
 					<CardDescription>Recent presentation outlines</CardDescription>
 				</div>
 
-				<Button asChild>
+				<Button asChild size="sm">
 					<Link href="/home/ai/storyboard" aria-label="Create new presentation">
 						<Plus className="mr-2 h-4 w-4" aria-hidden="true" />
 						New Presentation

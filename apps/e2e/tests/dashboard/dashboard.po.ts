@@ -9,8 +9,7 @@ import {
 
 /**
  * Page Object for the user dashboard.
- * Provides methods for navigating to the dashboard and verifying
- * all 7 widgets across their various states (loaded, empty, loading).
+ * Handles both new-user (welcome hero) and active-user (widgets) states.
  */
 export class DashboardPageObject {
 	private readonly page: Page;
@@ -38,21 +37,19 @@ export class DashboardPageObject {
 		});
 	}
 
-	// ─── Widget Locators ────────────────────────────────────────
+	// ─── State Detection ───────────────────────────────────────
 
-	get courseProgressCard() {
-		return this.page.locator('[aria-label*="Course progress"]').first();
+	async isNewUserState(): Promise<boolean> {
+		return this.page
+			.getByRole("heading", { name: "Welcome to SlideHeroes" })
+			.isVisible()
+			.catch(() => false);
 	}
+
+	// ─── Widget Locators ────────────────────────────────────────
 
 	get courseProgressTitle() {
 		return this.page.getByRole("heading", { name: "Course Progress" });
-	}
-
-	get skillsSpiderCard() {
-		return this.page
-			.locator('[aria-label*="Skills assessment"]')
-			.or(this.page.getByRole("heading", { name: "Skills Assessment" }))
-			.first();
 	}
 
 	get skillsSpiderTitle() {
@@ -71,23 +68,8 @@ export class DashboardPageObject {
 		return this.page.locator('[data-testid="view-kanban-link"]');
 	}
 
-	get activityFeedCard() {
-		return this.page
-			.locator('[aria-label*="Recent activity"]')
-			.or(this.page.getByRole("heading", { name: "Recent Activity" }))
-			.first();
-	}
-
 	get activityFeedTitle() {
 		return this.page.getByRole("heading", { name: "Recent Activity" });
-	}
-
-	get quickActionsCard() {
-		return this.page.getByRole("heading", { name: "Quick Actions" }).first();
-	}
-
-	get quickActionsNav() {
-		return this.page.locator('[aria-label="Quick actions"]');
 	}
 
 	get coachingSessionsCard() {
@@ -104,6 +86,10 @@ export class DashboardPageObject {
 
 	get presentationsTableContent() {
 		return this.page.locator('[aria-label*="Presentations list"]');
+	}
+
+	get welcomeHero() {
+		return this.page.getByRole("heading", { name: "Welcome to SlideHeroes" });
 	}
 
 	// ─── Loading Skeleton Locators ──────────────────────────────
@@ -128,7 +114,12 @@ export class DashboardPageObject {
 
 	// ─── Widget Visibility Assertions ───────────────────────────
 
-	async expectAllWidgetsVisible() {
+	/**
+	 * Checks that core widgets are visible. In active-user state,
+	 * course progress, skills, kanban, and activity are always present.
+	 * Coaching and presentations are conditional on data.
+	 */
+	async expectCoreWidgetsVisible() {
 		await expect(async () => {
 			await expect(this.courseProgressTitle).toBeVisible({
 				timeout: CI_TIMEOUTS.short,
@@ -140,15 +131,6 @@ export class DashboardPageObject {
 				timeout: CI_TIMEOUTS.short,
 			});
 			await expect(this.activityFeedTitle).toBeVisible({
-				timeout: CI_TIMEOUTS.short,
-			});
-			await expect(this.quickActionsCard).toBeVisible({
-				timeout: CI_TIMEOUTS.short,
-			});
-			await expect(this.coachingSessionsCard).toBeVisible({
-				timeout: CI_TIMEOUTS.short,
-			});
-			await expect(this.presentationsTable).toBeVisible({
 				timeout: CI_TIMEOUTS.short,
 			});
 		}).toPass({
@@ -163,7 +145,6 @@ export class DashboardPageObject {
 			| "skillsSpider"
 			| "kanbanSummary"
 			| "activityFeed"
-			| "quickActions"
 			| "coachingSessions"
 			| "presentationsTable",
 	) {
@@ -172,7 +153,6 @@ export class DashboardPageObject {
 			skillsSpider: this.skillsSpiderTitle,
 			kanbanSummary: this.kanbanSummaryCard,
 			activityFeed: this.activityFeedTitle,
-			quickActions: this.quickActionsCard,
 			coachingSessions: this.coachingSessionsCard,
 			presentationsTable: this.presentationsTable,
 		};
@@ -197,7 +177,7 @@ export class DashboardPageObject {
 			| "coachingSessions",
 	) {
 		const emptyStateMap = {
-			skillsSpider: this.page.getByText("No Assessment Yet"),
+			skillsSpider: this.page.getByText("Discover your strengths"),
 			kanbanSummary: this.page.getByText("No tasks in progress"),
 			activityFeed: this.page.getByText("No activity yet"),
 			coachingSessions: this.page.getByText("No upcoming sessions"),
@@ -206,18 +186,6 @@ export class DashboardPageObject {
 		await expect(emptyStateMap[widgetName]).toBeVisible({
 			timeout: CI_TIMEOUTS.element,
 		});
-	}
-
-	// ─── Quick Action Checks ────────────────────────────────────
-
-	async getQuickActionLinks() {
-		return this.quickActionsNav.locator("a");
-	}
-
-	async expectQuickActionVisible(name: string) {
-		const link = this.quickActionsNav.getByText(name);
-		await expect(link).toBeVisible({ timeout: CI_TIMEOUTS.short });
-		return link;
 	}
 
 	// ─── Navigation Checks ──────────────────────────────────────

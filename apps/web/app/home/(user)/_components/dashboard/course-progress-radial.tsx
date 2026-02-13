@@ -39,10 +39,28 @@ export function CourseProgressRadial({ data }: CourseProgressRadialProps) {
 	const totalLessons = data?.totalLessons ?? 0;
 	const roundedPercentage = Math.round(percentage);
 
+	if (isZero) {
+		return (
+			<Card className="border-l-4 border-l-teal-500">
+				<CardHeader className="pb-2">
+					<CardTitle>Course Progress</CardTitle>
+				</CardHeader>
+				<CardContent className="flex flex-col items-center justify-center gap-3 py-6 text-center">
+					<p className="text-sm text-muted-foreground">
+						Start your first lesson to track progress here.
+					</p>
+					<Button asChild size="sm">
+						<Link href="/home/course">Start Course</Link>
+					</Button>
+				</CardContent>
+			</Card>
+		);
+	}
+
 	return (
-		<Card className="h-64">
+		<Card className="border-l-4 border-l-teal-500">
 			<CardHeader className="pb-2">
-				<CardTitle className="text-sm font-medium">Course Progress</CardTitle>
+				<CardTitle>Course Progress</CardTitle>
 			</CardHeader>
 			<CardContent className="flex flex-col items-center justify-center pb-4">
 				<div
@@ -86,15 +104,9 @@ export function CourseProgressRadial({ data }: CourseProgressRadialProps) {
 					</div>
 				</div>
 
-				{isZero ? (
-					<Button asChild variant="outline" size="sm" className="mt-2">
-						<Link href="/home/course">Start Course</Link>
-					</Button>
-				) : (
-					<p className="text-muted-foreground mt-2 text-sm">
-						{data?.completedLessons ?? 0} of {data?.totalLessons ?? 0} lessons
-					</p>
-				)}
+				<p className="mt-2 text-sm text-muted-foreground">
+					{completedLessons} of {totalLessons} lessons
+				</p>
 			</CardContent>
 		</Card>
 	);
