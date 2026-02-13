@@ -24,7 +24,95 @@ interface HomeStickyScrollProps {
 	content: StickyContentItem[];
 }
 
+function useIsMobile(breakpoint = 1024) {
+	const [isMobile, setIsMobile] = useState<boolean | undefined>(undefined);
+
+	useEffect(() => {
+		const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+		const onChange = () => {
+			setIsMobile(window.innerWidth < breakpoint);
+		};
+		mql.addEventListener("change", onChange);
+		setIsMobile(window.innerWidth < breakpoint);
+		return () => mql.removeEventListener("change", onChange);
+	}, [breakpoint]);
+
+	return isMobile;
+}
+
 export default function HomeStickyScroll({ content }: HomeStickyScrollProps) {
+	const isMobile = useIsMobile();
+
+	// Show nothing during SSR to avoid hydration mismatch
+	if (isMobile === undefined) {
+		return <MobileStackedView content={content} />;
+	}
+
+	if (isMobile) {
+		return <MobileStackedView content={content} />;
+	}
+
+	return <DesktopStickyScroll content={content} />;
+}
+
+function MobileStackedView({ content }: { content: StickyContentItem[] }) {
+	return (
+		<div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6">
+			{content.map((item) => (
+				<article
+					key={item.title}
+					className="overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm"
+				>
+					<div className="aspect-video w-full">
+						{item.deviceFrame ? (
+							<DeviceFrame>
+								<OptimizedImage
+									src={item.imageSrc}
+									alt={item.title}
+									width={1200}
+									height={800}
+									className="h-full w-full object-cover"
+									sizes="100vw"
+									quality={85}
+								/>
+							</DeviceFrame>
+						) : (
+							<OptimizedImage
+								src={item.imageSrc}
+								alt={item.title}
+								width={1200}
+								height={800}
+								className="h-full w-full object-cover"
+								sizes="100vw"
+								quality={85}
+							/>
+						)}
+					</div>
+					<div className="p-5">
+						<span className="mb-2 block font-mono text-sm text-muted-foreground">
+							{item.overline}
+						</span>
+						<h3 className="mb-3 text-xl font-bold text-foreground">
+							{item.title}
+						</h3>
+						<div className="space-y-2">
+							{item.description.map((desc) => (
+								<p
+									key={desc}
+									className="text-sm leading-relaxed text-muted-foreground"
+								>
+									{desc}
+								</p>
+							))}
+						</div>
+					</div>
+				</article>
+			))}
+		</div>
+	);
+}
+
+function DesktopStickyScroll({ content }: { content: StickyContentItem[] }) {
 	const shouldReduceMotion = useReducedMotion();
 	const containerRef = useRef<HTMLDivElement>(null);
 	const { scrollYProgress } = useScroll({
@@ -63,7 +151,7 @@ export default function HomeStickyScroll({ content }: HomeStickyScrollProps) {
 					</div>
 
 					{/* Left column - Text content (2/5) */}
-					<div className="col-span-5 flex items-center md:col-span-2">
+					<div className="col-span-2 flex items-center">
 						<div className="relative w-full">
 							{content.map((item, index) => (
 								<TextSection
@@ -78,7 +166,7 @@ export default function HomeStickyScroll({ content }: HomeStickyScrollProps) {
 					</div>
 
 					{/* Right column - Images (3/5) */}
-					<div className="col-span-5 flex items-center justify-center md:col-span-3">
+					<div className="col-span-3 flex items-center justify-center">
 						<div className="relative aspect-video w-full">
 							<AnimatePresence mode="wait">
 								<ImagePanel
@@ -168,7 +256,7 @@ function ImagePanel({
 			className="h-full w-full rounded-lg object-cover"
 			priority={index === 0}
 			loading={index === 0 ? "eager" : "lazy"}
-			sizes="(max-width: 768px) 100vw, 60vw"
+			sizes="60vw"
 			quality={85}
 		/>
 	);

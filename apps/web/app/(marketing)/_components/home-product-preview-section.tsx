@@ -11,7 +11,7 @@ const { src, alt, title } = homepageContentConfig.productPreview;
 export function ProductPreviewSection() {
 	return (
 		<AnimateOnScroll
-			className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8"
+			className="mx-auto w-full max-w-full px-2 sm:max-w-5xl sm:px-6 lg:px-8"
 			as="div"
 		>
 			<BrowserFrame title={title}>
