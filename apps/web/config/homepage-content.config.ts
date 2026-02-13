@@ -185,6 +185,15 @@ const featureCards: FeatureCard[] = [
 	},
 ];
 
+export interface HeroConfig {
+	title: string;
+	subtitle: string;
+	pillText: string;
+	ctaPrimary: { label: string; href: string };
+	ctaSecondary: { label: string; href: string };
+	socialProof: { avatarCount: number; label: string };
+}
+
 export const homepageContentConfig = {
 	statistics: statisticsContent,
 	howItWorks: howItWorksSteps,
@@ -203,7 +212,11 @@ export const homepageContentConfig = {
 		title: "Write more impactful presentations ",
 		subtitle:
 			"AI-powered writing canvas, video training, private coaching for high-stakes consulting, sales & investor presentations",
-	},
+		pillText: "AI-Powered Presentation Platform",
+		ctaPrimary: { label: "Start Writing Free", href: "/auth/sign-up" },
+		ctaSecondary: { label: "Watch Demo", href: "#product-preview" },
+		socialProof: { avatarCount: 5, label: "Join 2,000+ professionals" },
+	} satisfies HeroConfig,
 	sticky: {
 		title: "Everything you need to create winning presentations",
 		subtitle:
