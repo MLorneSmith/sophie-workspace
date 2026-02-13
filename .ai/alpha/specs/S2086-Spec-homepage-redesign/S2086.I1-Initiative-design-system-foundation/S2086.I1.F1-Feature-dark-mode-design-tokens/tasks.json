@@ -1,0 +1,379 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I1.F1",
+    "feature_name": "Dark-Mode Design Tokens & Keyframes",
+    "feature_slug": "dark-mode-design-tokens",
+    "initiative_id": "S2086.I1",
+    "spec_id": "2086",
+    "created_at": "2026-02-13T12:45:00Z",
+    "complexity": {
+      "score": 25,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2086.I1.F1.T1",
+      "type": "task",
+      "name": "Add homepage dark-mode color tokens",
+      "action": {
+        "verb": "Add",
+        "target": "homepage dark-mode color tokens"
+      },
+      "purpose": "Define CSS custom properties for the homepage dark-mode palette under [data-marketing] scope",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/styles/globals.css"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Tokens must be scoped under [data-marketing] selector",
+          "Use CSS custom properties (not Tailwind config)",
+          "Follow existing token naming pattern from shadcn-ui.css"
+        ]
+      },
+      "input_state": "globals.css contains typography tokens but no dark-mode color tokens for homepage",
+      "output_state": "globals.css contains [data-marketing] scoped CSS custom properties for: --homepage-bg (#0a0a0f), --homepage-surface, --homepage-surface-elevated, --homepage-border, --homepage-border-subtle, --homepage-text (#f5f5f7), --homepage-text-muted, --homepage-accent (#24a9e0), --homepage-accent-glow",
+      "acceptance_criterion": "All 9 homepage color tokens exist in globals.css under [data-marketing] selector with exact color values specified",
+      "verification_command": "grep -E '(--homepage-bg|--homepage-surface|--homepage-border|--homepage-text|--homepage-accent)' apps/web/styles/globals.css && grep '#0a0a0f' apps/web/styles/globals.css && grep '#24a9e0' apps/web/styles/globals.css && grep '#f5f5f7' apps/web/styles/globals.css && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/globals.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I1.F1.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F1.T2",
+      "type": "task",
+      "name": "Add homepage gradient token definitions",
+      "action": {
+        "verb": "Add",
+        "target": "homepage gradient token definitions"
+      },
+      "purpose": "Define CSS custom properties for gradient effects used throughout the homepage",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/styles/globals.css"
+        ],
+        "dependencies": ["T1 color tokens"],
+        "constraints": [
+          "Tokens must be scoped under [data-marketing] selector",
+          "Gradients must reference color tokens from T1",
+          "Use CSS custom properties for gradient definitions"
+        ]
+      },
+      "input_state": "globals.css has homepage color tokens but no gradient definitions",
+      "output_state": "globals.css contains --homepage-gradient-accent (cyan-to-blue gradient) and --homepage-gradient-surface (surface-to-transparent gradient) under [data-marketing]",
+      "acceptance_criterion": "Both gradient tokens exist in globals.css and reference T1 color tokens",
+      "verification_command": "grep -E '(--homepage-gradient-accent|--homepage-gradient-surface)' apps/web/styles/globals.css && grep 'linear-gradient' apps/web/styles/globals.css && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/globals.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I1.F1.T1"],
+        "blocks": ["S2086.I1.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F1.T3",
+      "type": "task",
+      "name": "Create glowPulse keyframe animation",
+      "action": {
+        "verb": "Create",
+        "target": "glowPulse keyframe animation"
+      },
+      "purpose": "Add pulsing glow animation for CTAs and highlights using the homepage accent color",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/styles/theme.css"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Follow existing keyframe pattern from accordion/fade animations",
+          "Add --animate-glow-pulse utility in @theme block",
+          "Use transform and opacity for GPU acceleration",
+          "Duration should be 2-3 seconds for subtle effect"
+        ]
+      },
+      "input_state": "theme.css has existing keyframes (accordion, fade) but no glowPulse animation",
+      "output_state": "theme.css contains @keyframes glowPulse definition and --animate-glow-pulse utility class",
+      "acceptance_criterion": "glowPulse keyframe exists in theme.css with pulsing glow effect using accent color, and --animate-glow-pulse utility is defined",
+      "verification_command": "grep 'glowPulse' apps/web/styles/theme.css && grep '--animate-glow-pulse' apps/web/styles/theme.css && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/theme.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F1.T4",
+      "type": "task",
+      "name": "Create borderRotate keyframe animation",
+      "action": {
+        "verb": "Create",
+        "target": "borderRotate keyframe animation"
+      },
+      "purpose": "Add rotating gradient border animation for featured cards",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/styles/theme.css"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Follow existing keyframe pattern from accordion/fade animations",
+          "Add --animate-border-rotate utility in @theme block",
+          "Use transform for GPU acceleration",
+          "Duration should be 3-4 seconds for smooth rotation"
+        ]
+      },
+      "input_state": "theme.css has glowPulse keyframe but no borderRotate animation",
+      "output_state": "theme.css contains @keyframes borderRotate definition and --animate-border-rotate utility class",
+      "acceptance_criterion": "borderRotate keyframe exists in theme.css with rotating gradient border effect, and --animate-border-rotate utility is defined",
+      "verification_command": "grep 'borderRotate' apps/web/styles/theme.css && grep '--animate-border-rotate' apps/web/styles/theme.css && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/theme.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F1.T5",
+      "type": "task",
+      "name": "Extend GradientText with cyan variant",
+      "action": {
+        "verb": "Extend",
+        "target": "GradientText with cyan variant"
+      },
+      "purpose": "Add variant prop to GradientText component supporting cyan-to-blue gradient for homepage",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/marketing/gradient-text.tsx"
+        ],
+        "dependencies": ["T2 gradient tokens"],
+        "constraints": [
+          "Maintain backward compatibility (default variant)",
+          "Use union type for variant prop: 'default' | 'cyan'",
+          "Cyan variant should use --homepage-gradient-accent token",
+          "Follow existing component patterns from other UI components"
+        ]
+      },
+      "input_state": "GradientText component exists with single default gradient style, no variant prop",
+      "output_state": "GradientText component has variant prop with 'default' and 'cyan' options, cyan variant uses homepage accent gradient",
+      "acceptance_criterion": "GradientText has TypeScript variant prop with 'default' | 'cyan' options, cyan variant applies cyan-to-blue gradient",
+      "verification_command": "grep 'variant' packages/ui/src/makerkit/marketing/gradient-text.tsx && grep -E \"('default'|'cyan')\" packages/ui/src/makerkit/marketing/gradient-text.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "packages/ui/src/makerkit/marketing/gradient-text.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I1.F1.T2"],
+        "blocks": ["S2086.I1.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F1.T6",
+      "type": "task",
+      "name": "Verify text contrast ratios",
+      "action": {
+        "verb": "Verify",
+        "target": "text contrast ratios"
+      },
+      "purpose": "Ensure all text/background combinations meet WCAG AA accessibility standards",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": ["All color tokens from T1"],
+        "constraints": [
+          "Primary text on background must be >= 17:1 contrast ratio",
+          "Muted text on background must be >= 4.5:1 contrast ratio (WCAG AA)",
+          "Document results in feature.md or tasks.json metadata",
+          "Use contrast checker tool or manual calculation"
+        ]
+      },
+      "input_state": "Homepage color tokens defined but contrast ratios not verified",
+      "output_state": "Contrast ratios verified and documented: #f5f5f7 on #0a0a0f meets 17:1+, muted text on #0a0a0f meets 4.5:1+",
+      "acceptance_criterion": "Contrast ratios documented with pass/fail status for all text/background combinations",
+      "verification_command": "grep -E '(contrast|WCAG|17:1|4.5:1)' /home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I1-Initiative-design-system-foundation/S2086.I1.F1-Feature-dark-mode-design-tokens/tasks.json && pnpm lint",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I1-Initiative-design-system-foundation/S2086.I1.F1-Feature-dark-mode-design-tokens/tasks.json"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I1.F1.T1", "S2086.I1.F1.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "CSS Tokens & Animations",
+        "task_ids": ["S2086.I1.F1.T1", "S2086.I1.F1.T2", "S2086.I1.F1.T3", "S2086.I1.F1.T4"],
+        "depends_on_groups": [],
+        "estimated_hours": 7,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Component Extension",
+        "task_ids": ["S2086.I1.F1.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Validation & Documentation",
+        "task_ids": ["S2086.I1.F1.T6"],
+        "depends_on_groups": [1, 2],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2086.I1.F1.T1", "S2086.I1.F1.T2", "S2086.I1.F1.T5", "S2086.I1.F1.T6"],
+      "total_hours": 6
+    },
+    "duration": {
+      "sequential": 10,
+      "parallel": 7,
+      "time_saved_percent": 30
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

@@ -1,0 +1,359 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I1.F4",
+    "feature_name": "Section Container & Content Config",
+    "feature_slug": "section-container-content-config",
+    "initiative_id": "S2086.I1",
+    "spec_id": "2086",
+    "created_at": "2026-02-13T14:15:00Z",
+    "complexity": {
+      "score": 45,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2086.I1.F4.T1",
+      "type": "task",
+      "name": "Create SectionContainer component",
+      "action": { "verb": "Create", "target": "SectionContainer component" },
+      "purpose": "Provide standardized section wrapper with consistent spacing, width, and background variants for all homepage sections",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/styles/globals.css"
+        ],
+        "dependencies": [
+          "React server component pattern",
+          "Tailwind CSS utilities",
+          "Design tokens from F1 (background variants)"
+        ],
+        "constraints": [
+          "Must be server component by default",
+          "Background variants use CSS custom properties from F1",
+          "Follow existing containerBase pattern from page.tsx"
+        ]
+      },
+      "input_state": "No SectionContainer component exists. Individual sections duplicate spacing/width patterns.",
+      "output_state": "SectionContainer component created with standardized spacing (py-16 md:py-24 lg:py-32), max-width (max-w-7xl), horizontal padding (px-4 sm:px-6 lg:px-8), mx-auto, id prop, className prop, and background variant prop ('default' | 'surface' | 'transparent').",
+      "acceptance_criterion": "SectionContainer component exists, exports correctly, and has props for id, className, background, and children.",
+      "verification_command": "ls apps/web/app/\\(marketing\\)/_components/section-container.tsx && grep -E 'background.*default.*surface.*transparent' apps/web/app/\\(marketing\\)/_components/section-container.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/section-container.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I1.F4.T2", "S2086.I1.F4.T3", "S2086.I1.F4.T4", "S2086.I1.F4.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F4.T2",
+      "type": "task",
+      "name": "Define Statistics content interface and data",
+      "action": { "verb": "Define", "target": "Statistics content interface and data" },
+      "purpose": "Provide TypeScript interface and placeholder data for the Statistics section (4 animated stat blocks)",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "Existing interface patterns (BlogPost, StickyContentItem, FeatureCard)",
+          "Spec content: 2,000+ professionals, 50,000+ presentations, 4.9/5 rating, 85% time saved"
+        ],
+        "constraints": [
+          "Interfaces colocated in homepage-content.config.ts",
+          "Follow existing pattern of inline interface definitions",
+          "Use hardcoded placeholder values (no database)"
+        ]
+      },
+      "input_state": "homepage-content.config.ts exists with existing interfaces (BlogPost, StickyContentItem, FeatureCard) and section configs (hero, sticky, features, testimonials, essentialReads, pricing).",
+      "output_state": "StatisticItem interface defined (value, label, suffix?, prefix?) and statisticsContent array added with 4 stat items (2,000+ professionals, 50,000+ presentations, 4.9/5 rating, 85% time saved).",
+      "acceptance_criterion": "StatisticItem interface exported, statisticsContent array exists with 4 items matching spec values.",
+      "verification_command": "grep 'interface StatisticItem' apps/web/config/homepage-content.config.ts && grep 'statisticsContent' apps/web/config/homepage-content.config.ts | grep -c '2,000\\|50,000\\|4.9' | xargs test 3 -le && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/config/homepage-content.config.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I1.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F4.T3",
+      "type": "task",
+      "name": "Define How It Works content interface and data",
+      "action": { "verb": "Define", "target": "How It Works content interface and data" },
+      "purpose": "Provide TypeScript interface and placeholder data for the How It Works section (4-step horizontal stepper)",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "Existing interface patterns",
+          "Spec content: Assemble, Outline, Storyboard, Produce (4 steps with titles, descriptions, iconName)"
+        ],
+        "constraints": [
+          "Interfaces colocated in homepage-content.config.ts",
+          "Follow existing pattern of inline interface definitions",
+          "Use Lucide icon names matching existing FeatureCard pattern"
+        ]
+      },
+      "input_state": "homepage-content.config.ts has StatisticItem interface and statisticsContent data added.",
+      "output_state": "HowItWorksStep interface defined (stepNumber, title, description, iconName) and howItWorksSteps array added with 4 steps (Assemble, Outline, Storyboard, Produce).",
+      "acceptance_criterion": "HowItWorksStep interface exported, howItWorksSteps array exists with 4 steps matching spec names.",
+      "verification_command": "grep 'interface HowItWorksStep' apps/web/config/homepage-content.config.ts && grep 'howItWorksSteps' apps/web/config/homepage-content.config.ts | grep -c 'Assemble\\|Outline\\|Storyboard\\|Produce' | xargs test 4 -le && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/config/homepage-content.config.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I1.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F4.T4",
+      "type": "task",
+      "name": "Define Comparison content interface and data",
+      "action": { "verb": "Define", "target": "Comparison content interface and data" },
+      "purpose": "Provide TypeScript interface and placeholder data for the Comparison section (Without vs With SlideHeroes)",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "Existing interface patterns",
+          "Spec content: comparison items with text and included boolean"
+        ],
+        "constraints": [
+          "Interfaces colocated in homepage-content.config.ts",
+          "Two-sided data structure (without/with arrays)",
+          "Use realistic comparison text matching spec examples"
+        ]
+      },
+      "input_state": "homepage-content.config.ts has StatisticItem and HowItWorksStep interfaces added.",
+      "output_state": "ComparisonItem interface defined (text, included) and comparisonContent object added with 'without' and 'with' arrays containing comparison items.",
+      "acceptance_criterion": "ComparisonItem interface exported, comparisonContent object exists with without/with arrays.",
+      "verification_command": "grep 'interface ComparisonItem' apps/web/config/homepage-content.config.ts && grep 'comparisonContent' apps/web/config/homepage-content.config.ts | grep -E 'without.*with' && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/config/homepage-content.config.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I1.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F4.T5",
+      "type": "task",
+      "name": "Define Final CTA content interface and data",
+      "action": { "verb": "Define", "target": "Final CTA content interface and data" },
+      "purpose": "Provide TypeScript interface and placeholder data for the Final CTA section (closing conversion section)",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "Existing interface patterns",
+          "Spec content: headline, subheadline, primaryCta, secondaryCta, trustBadges"
+        ],
+        "constraints": [
+          "Interfaces colocated in homepage-content.config.ts",
+          "Nested object structure for CTA config",
+          "Trust badges as string array"
+        ]
+      },
+      "input_state": "homepage-content.config.ts has StatisticItem, HowItWorksStep, and ComparisonItem interfaces added.",
+      "output_state": "FinalCtaConfig interface defined (headline, subheadline, primaryCta, secondaryCta, trustBadges) and finalCtaContent object added with complete data.",
+      "acceptance_criterion": "FinalCtaConfig interface exported, finalCtaContent object exists with headline, CTAs, and trustBadges.",
+      "verification_command": "grep 'interface FinalCtaConfig' apps/web/config/homepage-content.config.ts && grep 'finalCtaContent' apps/web/config/homepage-content.config.ts | grep -E 'headline.*primaryCta.*trustBadges' && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/config/homepage-content.config.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I1.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F4.T6",
+      "type": "task",
+      "name": "Verify content config exports and typecheck",
+      "action": { "verb": "Verify", "target": "content config exports and typecheck" },
+      "purpose": "Ensure all new interfaces are properly exported, homepageContentConfig object includes new section data, and typecheck passes",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "All 4 new interfaces (StatisticItem, HowItWorksStep, ComparisonItem, FinalCtaConfig)",
+          "All 4 new content arrays (statisticsContent, howItWorksSteps, comparisonContent, finalCtaContent)",
+          "TypeScript type checking"
+        ],
+        "constraints": [
+          "Interfaces must be exported for use by other components",
+          "Content must be added to homepageContentConfig export object",
+          "TypeScript must compile without errors"
+        ]
+      },
+      "input_state": "All 4 interfaces and content arrays defined but not necessarily exported or integrated into homepageContentConfig object.",
+      "output_state": "All interfaces exported, all content arrays integrated into homepageContentConfig export, pnpm typecheck passes, pnpm lint passes.",
+      "acceptance_criterion": "Typecheck passes, lint passes, all interfaces exported, all content accessible via homepageContentConfig.",
+      "verification_command": "pnpm typecheck && pnpm lint && grep -E 'export (interface|type) (StatisticItem|HowItWorksStep|ComparisonItem|FinalCtaConfig)' apps/web/config/homepage-content.config.ts | wc -l | xargs test 4 -le",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/config/homepage-content.config.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I1.F4.T2", "S2086.I1.F4.T3", "S2086.I1.F4.T4", "S2086.I1.F4.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Section Container Component",
+        "task_ids": ["S2086.I1.F4.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Content Interfaces & Data (Parallel)",
+        "task_ids": ["S2086.I1.F4.T2", "S2086.I1.F4.T3", "S2086.I1.F4.T4", "S2086.I1.F4.T5"],
+        "depends_on_groups": [],
+        "estimated_hours": 8,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Integration & Validation",
+        "task_ids": ["S2086.I1.F4.T6"],
+        "depends_on_groups": [2],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2086.I1.F4.T2", "S2086.I1.F4.T6"],
+      "total_hours": 3
+    },
+    "duration": {
+      "sequential": 12,
+      "parallel": 6,
+      "time_saved_percent": 50
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": false
+  }
+}

@@ -1,0 +1,832 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I4.F1",
+    "feature_name": "Sticky Scroll Features Redesign",
+    "feature_slug": "sticky-scroll-redesign",
+    "initiative_id": "S2086.I4",
+    "spec_id": "2086",
+    "created_at": "2026-02-13T12:48:00Z",
+    "complexity": {
+      "score": 68.75,
+      "level": "HIGH",
+      "target_steps": {
+        "min": 10,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "type": "task",
+      "name": "Update content config with numbered overlines",
+      "action": {
+        "verb": "Update",
+        "target": "homepage-content.config.ts sticky section structure"
+      },
+      "purpose": "Add numbered overlines (01/03, 02/03, 03/03) and device frame metadata to sticky content items",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "TypeScript types",
+          "Existing sticky content structure"
+        ],
+        "constraints": [
+          "Must maintain backward compatibility",
+          "Add overline field to StickyContentItem interface",
+          "Add deviceFrame boolean field for images requiring frame"
+        ]
+      },
+      "input_state": "Current sticky content has title, description array, and imageSrc fields",
+      "output_state": "Sticky content items have overline field (e.g., '01 / 03') and optional deviceFrame boolean",
+      "acceptance_criterion": "Content config exports sticky content with overline and deviceFrame fields, types updated",
+      "verification_command": "grep -E 'overline.*:|deviceFrame.*:' apps/web/config/homepage-content.config.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/config/homepage-content.config.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["T6", "T8", "T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T2",
+      "type": "task",
+      "name": "Create device frame component",
+      "action": {
+        "verb": "Create",
+        "target": "device-frame.tsx reusable wrapper"
+      },
+      "purpose": "Build CSS-only browser chrome with traffic light dots, title bar, and rounded corners for image framing",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Browser Frame"
+          }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/device-frame.tsx"
+        ],
+        "dependencies": [
+          "React",
+          "Tailwind CSS",
+          "Dark theme design tokens from S2086.I1"
+        ],
+        "constraints": [
+          "CSS-only implementation (no images)",
+          "Must support responsive sizing",
+          "Dark theme compatible",
+          "Accept children as prop for image/content"
+        ]
+      },
+      "input_state": "No device frame component exists",
+      "output_state": "DeviceFrame component renders browser chrome wrapper around children",
+      "acceptance_criterion": "DeviceFrame component exists, exports correctly, renders frame with traffic light dots and title bar",
+      "verification_command": "ls apps/web/app/\\(marketing\\)/_components/device-frame.tsx && grep -q 'export.*DeviceFrame' apps/web/app/\\(marketing\\)/_components/device-frame.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/device-frame.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T3",
+      "type": "task",
+      "name": "Create sticky scroll layout skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "home-sticky-scroll-client.tsx two-column layout"
+      },
+      "purpose": "Build the basic two-column layout structure (40% text / 60% image) with sticky positioning",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Sticky Section"
+          },
+          {
+            "command": "find role",
+            "target": "region"
+          }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        ],
+        "dependencies": [
+          "React",
+          "Tailwind CSS",
+          "Next.js client component",
+          "Framer Motion (motion package)"
+        ],
+        "constraints": [
+          "Use 'use client' directive",
+          "Two-column grid: w-2/5 (left) / w-3/5 (right)",
+          "Left column sticky: position sticky top-0",
+          "Container height: 300vh (3x viewport)",
+          "Section-scoped scroll container with ref"
+        ]
+      },
+      "input_state": "Existing home-sticky-scroll-client.tsx wraps StickyScrollReveal from Aceternity",
+      "output_state": "New component has two-column layout structure with sticky left column and scrollable right column",
+      "acceptance_criterion": "Component renders two-column layout, left column sticky, accepts content prop",
+      "verification_command": "grep -E 'w-2/5|w-3/5|sticky' apps/web/app/\\(marketing\\)/_components/home-sticky-scroll-client.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["T4", "T6", "T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T4",
+      "type": "task",
+      "name": "Add scroll progress tracking hooks",
+      "action": {
+        "verb": "Add",
+        "target": "useScroll and useTransform hooks to sticky component"
+      },
+      "purpose": "Implement section-scoped scroll tracking using Framer Motion's useScroll with containerRef",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        ],
+        "dependencies": [
+          "motion package (Framer Motion)",
+          "useScroll hook from motion/react",
+          "useTransform hook from motion/react",
+          "useRef hook from React"
+        ],
+        "constraints": [
+          "Use useScroll({ target: containerRef, offset: ['start start', 'end end'] })",
+          "Extract scrollYProgress from useScroll",
+          "Map progress to active step index: [0, 0.33] -> 0, [0.33, 0.66] -> 1, [0.66, 1] -> 2",
+          "Use useTransform for reactive progress mapping"
+        ]
+      },
+      "input_state": "Layout skeleton exists without scroll tracking",
+      "output_state": "Component tracks scroll progress within container, calculates activeStepIndex reactively",
+      "acceptance_criterion": "useScroll and useTransform hooks imported and used, scrollYProgress and activeStepIndex defined",
+      "verification_command": "grep -E 'useScroll|useTransform|scrollYProgress|activeStepIndex' apps/web/app/\\(marketing\\)/_components/home-sticky-scroll-client.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["T3"],
+        "blocks": ["T5", "T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T5",
+      "type": "task",
+      "name": "Wire progress indicator to scroll",
+      "action": {
+        "verb": "Wire",
+        "target": "vertical progress bar to scrollYProgress"
+      },
+      "purpose": "Create vertical progress bar that fills from 0% to 100% based on scroll position within section",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        ],
+        "dependencies": [
+          "scrollYProgress from T4",
+          "useTransform from motion/react",
+          "motion.div for animated progress bar"
+        ],
+        "constraints": [
+          "Progress bar height: useTransform(scrollYProgress, [0, 1], ['0%', '100%'])",
+          "Position: fixed or absolute on left side",
+          "Style: thin bar (2-4px wide), accent color",
+          "Use motion.div with style prop for reactive height"
+        ]
+      },
+      "input_state": "Scroll tracking hooks exist but no progress indicator UI",
+      "output_state": "Vertical progress bar rendered, height animated based on scroll progress",
+      "acceptance_criterion": "Progress bar component exists, uses motion.div, height transforms from 0% to 100%",
+      "verification_command": "grep -A5 -B5 'progress.*bar\\|progressBarHeight' apps/web/app/\\(marketing\\)/_components/home-sticky-scroll-client.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["T4"],
+        "blocks": ["T11"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T6",
+      "type": "task",
+      "name": "Create text content sections",
+      "action": {
+        "verb": "Create",
+        "target": "sticky text content with titles and descriptions"
+      },
+      "purpose": "Render three text sections in left sticky column with titles, descriptions, and glass card styling",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "AI-Powered writing canvas"
+          },
+          {
+            "command": "is visible",
+            "target": "Web's premium online training program"
+          }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        ],
+        "dependencies": [
+          "homepageContentConfig from T1",
+          "Glass card styling from S2086.I1",
+          "activeStepIndex from T4",
+          "Framer Motion for opacity transitions"
+        ],
+        "constraints": [
+          "Render all 3 content items from config",
+          "Each section: overline (01/03), title (h3), description list (p tags)",
+          "Active section: opacity 1, inactive: opacity 0.3",
+          "Use motion.div for smooth opacity transitions",
+          "Apply glass card styling (backdrop-blur, bg-white/10, border, rounded)"
+        ]
+      },
+      "input_state": "Layout skeleton exists, content config has overlines, no text content rendering",
+      "output_state": "Three text sections rendered in left column, opacity changes based on activeStepIndex",
+      "acceptance_criterion": "Text sections render with overlines, titles, descriptions, opacity transitions work",
+      "verification_command": "grep -E 'overline|opacity|activeStepIndex' apps/web/app/\\(marketing\\)/_components/home-sticky-scroll-client.tsx | head -20 && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["T1", "T3"],
+        "blocks": ["T8", "T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T7",
+      "type": "task",
+      "name": "Create image swap animation",
+      "action": {
+        "verb": "Create",
+        "target": "image transition animation with AnimatePresence"
+      },
+      "purpose": "Implement smooth image transitions in right column using Framer Motion's AnimatePresence",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 5000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "video-hero-preview"
+          }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        ],
+        "dependencies": [
+          "AnimatePresence, motion from motion/react",
+          "activeStepIndex from T4",
+          "DeviceFrame component from T2",
+          "OptimizedImage component (existing)"
+        ],
+        "constraints": [
+          "Use AnimatePresence mode='wait' for exit animations",
+          "Each image: key={index}, initial opacity 0, animate opacity 1, exit opacity 0",
+          "Transition: duration 0.4s, ease 'easeInOut'",
+          "Wrap images in DeviceFrame when deviceFrame=true in config",
+          "Position absolute for overlap during transition"
+        ]
+      },
+      "input_state": "Right column layout exists, no image rendering or transitions",
+      "output_state": "Images swap smoothly based on scroll position, wrapped in device frames when configured",
+      "acceptance_criterion": "AnimatePresence renders images, transitions trigger on activeStepIndex change, DeviceFrame wraps images",
+      "verification_command": "grep -E 'AnimatePresence|mode.*wait|DeviceFrame' apps/web/app/\\(marketing\\)/_components/home-sticky-scroll-client.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["T2", "T3"],
+        "blocks": ["T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T8",
+      "type": "task",
+      "name": "Add numbered overlines display",
+      "action": {
+        "verb": "Add",
+        "target": "numbered overlines to text sections"
+      },
+      "purpose": "Display overline text (01 / 03, 02 / 03, 03 / 03) above each text section title",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "01 / 03"
+          }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        ],
+        "dependencies": [
+          "overline field from homepageContentConfig (T1)",
+          "Tailwind CSS for styling"
+        ],
+        "constraints": [
+          "Position above title",
+          "Style: text-sm, font-mono, muted-foreground color",
+          "Spacing: mb-2 or mb-3",
+          "Render overline from config data"
+        ]
+      },
+      "input_state": "Text sections exist without overline display",
+      "output_state": "Overline rendered above each section title, styled appropriately",
+      "acceptance_criterion": "Overline text displays above titles, uses mono font, correct spacing",
+      "verification_command": "grep -E 'overline|font-mono' apps/web/app/\\(marketing\\)/_components/home-sticky-scroll-client.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["T1", "T6"],
+        "blocks": ["T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T9",
+      "type": "task",
+      "name": "Wire all sections together",
+      "action": {
+        "verb": "Wire",
+        "target": "text content, images, and progress indicator"
+      },
+      "purpose": "Connect all components into cohesive scroll-linked experience with proper data flow",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 5,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        ],
+        "dependencies": [
+          "T1 (content config)",
+          "T2 (device frame)",
+          "T4 (scroll tracking)",
+          "T5 (progress indicator)",
+          "T6 (text sections)",
+          "T7 (image animations)",
+          "T8 (overlines)"
+        ],
+        "constraints": [
+          "Ensure activeStepIndex correctly controls opacity of text sections",
+          "Verify image swap timing matches text section changes",
+          "Test progress bar sync with scroll",
+          "All three content items render correctly"
+        ]
+      },
+      "input_state": "Individual components exist but not fully integrated",
+      "output_state": "All sections work together cohesively, scroll triggers coordinated transitions",
+      "acceptance_criterion": "Scrolling through section triggers: progress bar fills, text opacity changes, images swap, overlines display",
+      "verification_command": "grep -E 'activeStepIndex|scrollYProgress|AnimatePresence' apps/web/app/\\(marketing\\)/_components/home-sticky-scroll-client.tsx | wc -l | awk '{print $1 >= 5}' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["T1", "T2", "T4", "T5", "T6", "T7", "T8"],
+        "blocks": ["T10"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T10",
+      "type": "task",
+      "name": "Update homepage integration",
+      "action": {
+        "verb": "Update",
+        "target": "page.tsx sticky scroll section"
+      },
+      "purpose": "Replace existing StickyScrollReveal usage with new custom home-sticky-scroll-client component",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 10,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 5000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Everything you need"
+          },
+          {
+            "command": "is visible",
+            "target": "01 / 03"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [
+          "New home-sticky-scroll-client from T9",
+          "homepageContentConfig with updated structure (T1)"
+        ],
+        "constraints": [
+          "Replace existing StickyScrollReveal import and usage",
+          "Pass content prop directly (no content mapping needed)",
+          "Maintain section container and spacing",
+          "Keep existing Suspense boundary"
+        ]
+      },
+      "input_state": "Homepage uses old StickyScrollReveal wrapper component",
+      "output_state": "Homepage uses new custom sticky scroll component directly",
+      "acceptance_criterion": "Old StickyScrollReveal replaced, new component renders correctly on homepage",
+      "verification_command": "grep -v 'StickyScrollReveal\\|content.map' apps/web/app/\\(marketing\\)/page.tsx | grep -q 'home-sticky-scroll-client' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["T9"],
+        "blocks": ["T11"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T11",
+      "type": "task",
+      "name": "Add accessibility support",
+      "action": {
+        "verb": "Add",
+        "target": "prefers-reduced-motion and ARIA support"
+      },
+      "purpose": "Respect user motion preferences and add proper ARIA labels for screen readers",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 11,
+      "group": 6,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        ],
+        "dependencies": [
+          "useReducedMotion from motion/react",
+          "MotionConfig reducedMotion='user' from S2086.I1"
+        ],
+        "constraints": [
+          "Use useReducedMotion hook to detect preference",
+          "If reduced motion: disable animations, instant opacity swap (no transitions)",
+          "Add aria-label to progress bar: 'Scroll progress indicator'",
+          "Add role='region' and aria-label to sticky section container",
+          "Add aria-live='polite' to active text section for screen reader announcements"
+        ]
+      },
+      "input_state": "Component works but ignores motion preferences and lacks ARIA",
+      "output_state": "Component respects prefers-reduced-motion, has proper ARIA attributes",
+      "acceptance_criterion": "useReducedMotion used, transitions disabled when true, ARIA labels present",
+      "verification_command": "grep -E 'useReducedMotion|aria-label|aria-live|prefers-reduced-motion' apps/web/app/\\(marketing\\)/_components/home-sticky-scroll-client.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["T5", "T10"],
+        "blocks": ["T12"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T12",
+      "type": "task",
+      "name": "Test implementation quality",
+      "action": {
+        "verb": "Test",
+        "target": "type safety, linting, visual verification"
+      },
+      "purpose": "Run comprehensive quality checks to ensure code quality and visual correctness",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 12,
+      "group": 6,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx",
+          "apps/web/app/(marketing)/_components/device-frame.tsx",
+          "apps/web/config/homepage-content.config.ts",
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [
+          "All previous tasks completed"
+        ],
+        "constraints": [
+          "pnpm typecheck must pass",
+          "pnpm lint must pass (or lint:fix applied)",
+          "pnpm format must pass (or format:fix applied)",
+          "Manual visual verification in browser",
+          "Test scroll behavior at different viewport sizes",
+          "Verify reduced motion preference works"
+        ]
+      },
+      "input_state": "All code written, quality checks not run",
+      "output_state": "Typecheck passes, lint passes, format correct, visually verified",
+      "acceptance_criterion": "All quality checks pass, section renders correctly on homepage, scroll animations work",
+      "verification_command": "pnpm typecheck && pnpm lint && pnpm format",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["T11"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation - Config and Reusable Components",
+        "task_ids": ["T1", "T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Layout and Scroll Tracking",
+        "task_ids": ["T3", "T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "UI Components - Progress and Text",
+        "task_ids": ["T5", "T6"],
+        "depends_on_groups": [2],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 4,
+        "name": "UI Components - Images and Overlines",
+        "task_ids": ["T7", "T8"],
+        "depends_on_groups": [3],
+        "estimated_hours": 4,
+        "parallel_hours": 3
+      },
+      {
+        "id": 5,
+        "name": "Integration - Components and Page",
+        "task_ids": ["T9", "T10"],
+        "depends_on_groups": [4],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      },
+      {
+        "id": 6,
+        "name": "Polish - Accessibility and Validation",
+        "task_ids": ["T11", "T12"],
+        "depends_on_groups": [5],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["T1", "T3", "T4", "T5", "T9", "T10", "T11", "T12"],
+      "total_hours": 14
+    },
+    "duration": {
+      "sequential": 23,
+      "parallel": 15,
+      "time_saved_percent": 35
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

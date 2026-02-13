@@ -1,0 +1,697 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I4.F2",
+    "feature_name": "How It Works Section",
+    "feature_slug": "how-it-works-stepper",
+    "initiative_id": "S2086.I4",
+    "spec_id": 2086,
+    "created_at": "2026-02-13T12:45:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2086.I4.F2.T1",
+      "type": "task",
+      "name": "Add howItWorks section to homepage content config",
+      "action": {
+        "verb": "Add",
+        "target": "howItWorks section to config"
+      },
+      "purpose": "Define content data structure for 4-step process (Assemble → Outline → Storyboard → Produce) with icons, titles, and descriptions",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "Lucide React icons (LayoutList, FileText, Layers, Play)"
+        ],
+        "constraints": [
+          "Follow existing config structure pattern",
+          "Use Lucide icon names as strings for type safety",
+          "Include section heading and subtitle"
+        ]
+      },
+      "input_state": "homepage-content.config.ts exists with hero, sticky, features, testimonials, essentialReads, pricing sections",
+      "output_state": "howItWorks section added with steps array containing 4 steps (icon, title, description), plus section heading and subtitle",
+      "acceptance_criterion": "Config exports howItWorks object with title, subtitle, and steps array containing 4 step objects",
+      "verification_command": "grep -A 30 'howItWorks:' apps/web/config/homepage-content.config.ts | grep -c 'icon\\|title\\|description' | xargs echo | grep -q '12' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/config/homepage-content.config.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S2086.I4.F2.T2"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I4.F2.T2",
+      "type": "task",
+      "name": "Create HowItWorks stepper component structure",
+      "action": {
+        "verb": "Create",
+        "target": "component structure"
+      },
+      "purpose": "Set up client component with section container, heading, and horizontal stepper layout skeleton",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "How It Works"
+          },
+          {
+            "command": "find role",
+            "target": "list"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx"
+        ],
+        "dependencies": [
+          "homepageContentConfig.howItWorks",
+          "Section spacing from page.tsx",
+          "Container width utilities"
+        ],
+        "constraints": [
+          "Use 'use client' directive",
+          "Accept steps data as prop",
+          "Use flexbox with justify-between for step spacing",
+          "Apply dark theme styling",
+          "No animation logic yet (structure only)"
+        ]
+      },
+      "input_state": "No how-it-works component exists, content config has howItWorks data available",
+      "output_state": "home-how-it-works-client.tsx exists with section heading, subtitle, and horizontal step container (no step rendering yet)",
+      "acceptance_criterion": "Component renders section with heading, subtitle, and empty flex container for steps",
+      "verification_command": "ls apps/web/app/\\(marketing\\)/_components/home-how-it-works-client.tsx && grep -q 'use client' apps/web/app/\\(marketing\\)/_components/home-how-it-works-client.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I4.F2.T1"
+        ],
+        "blocks": [
+          "S2086.I4.F2.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I4.F2.T3",
+      "type": "task",
+      "name": "Add step card rendering with numbered icons",
+      "action": {
+        "verb": "Add",
+        "target": "step card rendering"
+      },
+      "purpose": "Render 4 step cards with numbered circles, titles, and descriptions using map over steps array",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Assemble"
+          },
+          {
+            "command": "is visible",
+            "target": "Outline"
+          },
+          {
+            "command": "is visible",
+            "target": "Storyboard"
+          },
+          {
+            "command": "is visible",
+            "target": "Produce"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx"
+        ],
+        "dependencies": [
+          "Lucide React icons from config",
+          "Steps array from homepageContentConfig.howItWorks.steps"
+        ],
+        "constraints": [
+          "Each step shows: numbered circle, icon, title, description",
+          "Numbered circles use 1-4",
+          "Icons from Lucide React mapped by icon name string",
+          "Responsive text sizing",
+          "No animation yet (static rendering)"
+        ]
+      },
+      "input_state": "Component structure exists with empty step container",
+      "output_state": "4 step cards rendered with numbered icons, titles, descriptions in horizontal layout",
+      "acceptance_criterion": "Component renders 4 visible step cards with correct titles and descriptions from config",
+      "verification_command": "grep -q 'steps.map\\|.map(steps' apps/web/app/\\(marketing\\)/_components/home-how-it-works-client.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I4.F2.T2"
+        ],
+        "blocks": [
+          "S2086.I4.F2.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I4.F2.T4",
+      "type": "task",
+      "name": "Add connecting line element behind steps",
+      "action": {
+        "verb": "Add",
+        "target": "connecting line element"
+      },
+      "purpose": "Render horizontal line connecting step cards, positioned absolutely behind the stepper",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "How It Works"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Line is absolute positioned",
+          "Line spans between first and last step",
+          "Line is visually behind step cards (z-index)",
+          "No animation yet (static line)",
+          "Use border or div with background color"
+        ]
+      },
+      "input_state": "4 step cards rendered in horizontal layout",
+      "output_state": "Horizontal connecting line visible behind steps, connecting all 4 steps",
+      "acceptance_criterion": "Line element exists in DOM behind step cards with correct positioning",
+      "verification_command": "grep -q 'absolute\\|z-\\[-10\\]\\|z-index' apps/web/app/\\(marketing\\)/_components/home-how-it-works-client.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I4.F2.T3"
+        ],
+        "blocks": [
+          "S2086.I4.F2.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I4.F2.T5",
+      "type": "task",
+      "name": "Wire connecting line animation with useInView",
+      "action": {
+        "verb": "Wire",
+        "target": "connecting line animation"
+      },
+      "purpose": "Add useInView hook to trigger scaleX animation on line when section enters viewport",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "How It Works"
+          }
+        ],
+        "screenshot": true
+      },
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "env_var_graceful",
+            "target": "prefers-reduced-motion",
+            "expected_action": "skip animation if reduced motion preferred",
+            "file_path": "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx"
+          }
+        ],
+        "validation_command": "grep -E 'useInView|prefers-reduced-motion|scaleX' apps/web/app/\\(marketing\\)/_components/home-how-it-works-client.tsx"
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx"
+        ],
+        "dependencies": [
+          "useInView from motion/react",
+          "CSS transition property"
+        ],
+        "constraints": [
+          "Line uses scaleX transform (0 to 1)",
+          "Animation triggers on viewport entry",
+          "Respect prefers-reduced-motion (show line immediately if reduced motion)",
+          "Use CSS transition, not Framer Motion for line",
+          "transform-origin: left for line"
+        ]
+      },
+      "input_state": "Static connecting line exists behind steps",
+      "output_state": "Line animates from scaleX(0) to scaleX(1) when section enters viewport",
+      "acceptance_criterion": "Line animation triggers on scroll with useInView, respects reduced motion preference",
+      "verification_command": "grep -q 'useInView' apps/web/app/\\(marketing\\)/_components/home-how-it-works-client.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I4.F2.T4"
+        ],
+        "blocks": [
+          "S2086.I4.F2.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I4.F2.T6",
+      "type": "task",
+      "name": "Wire stagger animation to step cards",
+      "action": {
+        "verb": "Wire",
+        "target": "stagger animation to steps"
+      },
+      "purpose": "Add Framer Motion variants with staggerChildren to animate step cards on viewport entry",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "How It Works"
+          }
+        ],
+        "screenshot": true
+      },
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "env_var_graceful",
+            "target": "prefers-reduced-motion",
+            "expected_action": "skip animation if reduced motion preferred",
+            "file_path": "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx"
+          }
+        ],
+        "validation_command": "grep -E 'variants|staggerChildren|whileInView|prefers-reduced-motion' apps/web/app/\\(marketing\\)/_components/home-how-it-works-client.tsx"
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx"
+        ],
+        "dependencies": [
+          "motion from motion/react",
+          "useReducedMotion hook from motion/react"
+        ],
+        "constraints": [
+          "Container variants: staggerChildren: 0.2, delayChildren: 0.3",
+          "Item variants: opacity 0→1, y 20→0",
+          "Use whileInView='visible' with viewport: { once: true }",
+          "Respect prefers-reduced-motion (show steps immediately)",
+          "Wrap step cards in motion.div with variants"
+        ]
+      },
+      "input_state": "Static step cards exist, line has animation",
+      "output_state": "Step cards animate with stagger effect on viewport entry",
+      "acceptance_criterion": "Steps fade in with stagger animation on scroll, respects reduced motion preference",
+      "verification_command": "grep -q 'staggerChildren\\|whileInView' apps/web/app/\\(marketing\\)/_components/home-how-it-works-client.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I4.F2.T5"
+        ],
+        "blocks": [
+          "S2086.I4.F2.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I4.F2.T7",
+      "type": "task",
+      "name": "Integrate HowItWorks section on homepage",
+      "action": {
+        "verb": "Add",
+        "target": "section to homepage"
+      },
+      "purpose": "Import and render HowItWorks component between Sticky Scroll and Features Grid sections on marketing homepage",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "How It Works"
+          },
+          {
+            "command": "find role",
+            "target": "list"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx"
+        ],
+        "dependencies": [
+          "homepageContentConfig.howItWorks",
+          "Existing section spacing and container utilities"
+        ],
+        "constraints": [
+          "Add import for HowItWorks component",
+          "Place section between Sticky Scroll (line 166) and Features Grid (line 168)",
+          "Use same spacing pattern as other sections",
+          "Wrap in Suspense with loading fallback",
+          "Pass howItWorks data as prop"
+        ]
+      },
+      "input_state": "HowItWorks component complete with animations, homepage has no how-it-works section",
+      "output_state": "HowItWorks section visible on homepage between sticky scroll and features grid",
+      "acceptance_criterion": "Section renders on homepage in correct position with correct data from config",
+      "verification_command": "grep -q 'HowItWorks\\|how-it-works' apps/web/app/\\(marketing\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I4.F2.T6"
+        ],
+        "blocks": [
+          "S2086.I4.F2.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I4.F2.T8",
+      "type": "task",
+      "name": "Run typecheck, lint, and format",
+      "action": {
+        "verb": "Test",
+        "target": "code quality validation"
+      },
+      "purpose": "Validate implementation passes all code quality checks before marking feature complete",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 5,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts",
+          "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx",
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Fix any type errors",
+          "Fix any lint errors",
+          "Run auto-fix for formatting",
+          "Verify no regressions in other files"
+        ]
+      },
+      "input_state": "All feature files created/modified, code may have lint/format issues",
+      "output_state": "All code quality checks pass with zero errors",
+      "acceptance_criterion": "pnpm typecheck && pnpm lint && pnpm format all pass without errors",
+      "verification_command": "pnpm typecheck && pnpm lint && pnpm format",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/config/homepage-content.config.ts"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-how-it-works-client.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I4.F2.T7"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Data Layer",
+        "task_ids": [
+          "S2086.I4.F2.T1"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "UI Structure",
+        "task_ids": [
+          "S2086.I4.F2.T2",
+          "S2086.I4.F2.T3"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 6,
+        "parallel_hours": 6
+      },
+      {
+        "id": 3,
+        "name": "Animation Logic",
+        "task_ids": [
+          "S2086.I4.F2.T4",
+          "S2086.I4.F2.T5",
+          "S2086.I4.F2.T6"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 7,
+        "parallel_hours": 7
+      },
+      {
+        "id": 4,
+        "name": "Integration",
+        "task_ids": [
+          "S2086.I4.F2.T7"
+        ],
+        "depends_on_groups": [
+          3
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 5,
+        "name": "Validation",
+        "task_ids": [
+          "S2086.I4.F2.T8"
+        ],
+        "depends_on_groups": [
+          4
+        ],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S2086.I4.F2.T1",
+        "S2086.I4.F2.T2",
+        "S2086.I4.F2.T3",
+        "S2086.I4.F2.T4",
+        "S2086.I4.F2.T5",
+        "S2086.I4.F2.T6",
+        "S2086.I4.F2.T7",
+        "S2086.I4.F2.T8"
+      ],
+      "total_hours": 18
+    },
+    "duration": {
+      "sequential": 18,
+      "parallel": 18,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
