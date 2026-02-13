@@ -92,9 +92,7 @@ function Home() {
 					</p>
 				</div>
 				<Suspense fallback={<SectionLoader />}>
-					<HomeStickyScroll
-						content={homepageContentConfig.sticky.content}
-					/>
+					<HomeStickyScroll content={homepageContentConfig.sticky.content} />
 				</Suspense>
 			</section>
 
