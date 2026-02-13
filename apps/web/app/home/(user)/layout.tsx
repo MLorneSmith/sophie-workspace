@@ -58,6 +58,7 @@ function SidebarLayout({ children }: React.PropsWithChildren) {
 						/>
 					</PageMobileNavigation>
 
+					{/* biome-ignore lint/correctness/useUniqueElementIds: layout renders once per page, skip-to-content targets this ID */}
 					<main id="main-content">{children}</main>
 				</Page>
 			</SidebarProvider>
@@ -89,6 +90,7 @@ function HeaderLayout({ children }: React.PropsWithChildren) {
 					/>
 				</PageMobileNavigation>
 
+				{/* biome-ignore lint/correctness/useUniqueElementIds: layout renders once per page, skip-to-content targets this ID */}
 				<main id="main-content">{children}</main>
 			</Page>
 		</UserWorkspaceContextProvider>

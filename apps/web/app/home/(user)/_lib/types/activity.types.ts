@@ -1,8 +1,3 @@
-import type { Database } from "~/lib/database.types";
-
-type Tables<T extends keyof Database["public"]["Tables"]> =
-	Database["public"]["Tables"][T]["Row"];
-
 export interface LessonActivity {
 	activity_type: "lesson_completed";
 	id: string;

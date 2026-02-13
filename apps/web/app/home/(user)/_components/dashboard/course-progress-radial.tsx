@@ -4,6 +4,7 @@ import { Button } from "@kit/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 import { type ChartConfig, ChartContainer } from "@kit/ui/chart";
 import Link from "next/link";
+import { useId } from "react";
 import { Cell, Pie, PieChart } from "recharts";
 
 import type { CourseProgressData } from "../../_lib/dashboard/types";
@@ -32,6 +33,7 @@ function toChartData(percentage: number) {
 }
 
 export function CourseProgressRadial({ data }: CourseProgressRadialProps) {
+	const descId = useId();
 	const percentage = data?.courseProgress.completion_percentage ?? 0;
 	const isZero = percentage === 0;
 	const chartData = toChartData(percentage);
@@ -67,9 +69,9 @@ export function CourseProgressRadial({ data }: CourseProgressRadialProps) {
 					className="relative"
 					role="img"
 					aria-label={`Course progress: ${roundedPercentage}% complete, ${completedLessons} of ${totalLessons} lessons`}
-					aria-describedby="course-progress-desc"
+					aria-describedby={descId}
 				>
-					<span id="course-progress-desc" className="sr-only">
+					<span id={descId} className="sr-only">
 						Radial chart showing course completion progress. You have completed{" "}
 						{completedLessons} out of {totalLessons} total lessons, which is{" "}
 						{roundedPercentage} percent of the course.

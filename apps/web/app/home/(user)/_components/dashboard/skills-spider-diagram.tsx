@@ -9,6 +9,7 @@ import {
 } from "@kit/ui/chart";
 import { EmptyStateButton } from "@kit/ui/empty-state";
 import Link from "next/link";
+import { useId } from "react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
 
 const chartConfig = {
@@ -38,6 +39,7 @@ function transformCategoryScores(
 export function SkillsSpiderDiagram({
 	categoryScores,
 }: SkillsSpiderDiagramProps) {
+	const descId = useId();
 	const chartData = transformCategoryScores(categoryScores);
 
 	if (!chartData) {
@@ -67,9 +69,9 @@ export function SkillsSpiderDiagram({
 				<div
 					role="img"
 					aria-label={`Skills assessment results across ${chartData.length} categories: ${chartData.map((d) => `${d.category} ${d.score}`).join(", ")}`}
-					aria-describedby="skills-chart-desc"
+					aria-describedby={descId}
 				>
-					<p id="skills-chart-desc" className="sr-only">
+					<p id={descId} className="sr-only">
 						{`Radar chart showing skill scores: ${chartData.map((d) => `${d.category}: ${d.score} out of 100`).join(". ")}.`}
 					</p>
 					<ChartContainer
