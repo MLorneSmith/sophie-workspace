@@ -114,10 +114,59 @@
 		opacity: 1;
 	}
 
+	/* Keyboard focus indicators - only visible on keyboard navigation */
+	:focus-visible {
+		outline: 2px solid var(--homepage-accent, #24a9e0);
+		outline-offset: 2px;
+		border-radius: 4px;
+	}
+
+	/* Enhanced focus for dark marketing pages */
+	[data-marketing] :focus-visible {
+		outline: 2px solid #24a9e0;
+		outline-offset: 3px;
+		box-shadow: 0 0 0 4px rgba(36, 169, 224, 0.25);
+	}
+
+	/* Skip to content link */
+	.skip-to-content {
+		position: absolute;
+		top: -100%;
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 9999;
+		padding: 0.75rem 1.5rem;
+		background: var(--homepage-accent, #24a9e0);
+		color: #fff;
+		font-weight: 600;
+		border-radius: 0 0 8px 8px;
+		transition: top 0.2s;
+	}
+
+	.skip-to-content:focus {
+		top: 0;
+	}
+
 	/* Safari fallback for backdrop-filter glass effects */
 	@supports not (backdrop-filter: blur(1px)) {
 		[data-marketing] [class*="backdrop-blur"] {
 			background-color: var(--homepage-surface, #12121a);
+		}
+	}
+
+	/* Reduced motion: disable all CSS animations and transitions */
+	@media (prefers-reduced-motion: reduce) {
+		*,
+		*::before,
+		*::after {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.01ms !important;
+			scroll-behavior: auto !important;
+		}
+
+		[data-marketing] [class*="animate-"] {
+			animation: none !important;
 		}
 	}
 
