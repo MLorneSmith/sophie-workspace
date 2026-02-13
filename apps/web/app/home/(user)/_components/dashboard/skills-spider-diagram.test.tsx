@@ -96,10 +96,9 @@ describe("SkillsSpiderDiagram", () => {
 		it("displays empty state when categoryScores is null", () => {
 			render(<SkillsSpiderDiagram categoryScores={null} />);
 
-			expect(screen.getByText("No Assessment Yet")).toBeInTheDocument();
 			expect(
 				screen.getByText(
-					"Complete your self-assessment to see your skills profile",
+					"Discover your strengths across 5 presentation skill categories.",
 				),
 			).toBeInTheDocument();
 		});
@@ -107,13 +106,21 @@ describe("SkillsSpiderDiagram", () => {
 		it("displays empty state when categoryScores is undefined", () => {
 			render(<SkillsSpiderDiagram />);
 
-			expect(screen.getByText("No Assessment Yet")).toBeInTheDocument();
+			expect(
+				screen.getByText(
+					"Discover your strengths across 5 presentation skill categories.",
+				),
+			).toBeInTheDocument();
 		});
 
 		it("displays empty state when categoryScores is empty object", () => {
 			render(<SkillsSpiderDiagram categoryScores={{}} />);
 
-			expect(screen.getByText("No Assessment Yet")).toBeInTheDocument();
+			expect(
+				screen.getByText(
+					"Discover your strengths across 5 presentation skill categories.",
+				),
+			).toBeInTheDocument();
 		});
 
 		it("renders Take Assessment CTA linking to survey page", () => {

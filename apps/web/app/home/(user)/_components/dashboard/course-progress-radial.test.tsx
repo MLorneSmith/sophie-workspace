@@ -93,7 +93,9 @@ describe("CourseProgressRadial", () => {
 		render(<CourseProgressRadial data={zeroData} />);
 
 		expect(screen.getByText("Start Course")).toBeInTheDocument();
-		expect(screen.getByText("0%")).toBeInTheDocument();
+		expect(
+			screen.getByText("Start your first lesson to track progress here."),
+		).toBeInTheDocument();
 		expect(screen.queryByText(/of.*lessons/)).not.toBeInTheDocument();
 	});
 
@@ -101,7 +103,9 @@ describe("CourseProgressRadial", () => {
 		render(<CourseProgressRadial data={null} />);
 
 		expect(screen.getByText("Start Course")).toBeInTheDocument();
-		expect(screen.getByText("0%")).toBeInTheDocument();
+		expect(
+			screen.getByText("Start your first lesson to track progress here."),
+		).toBeInTheDocument();
 	});
 
 	it("clamps percentage between 0 and 100", () => {
