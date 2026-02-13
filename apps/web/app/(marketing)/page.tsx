@@ -1,21 +1,67 @@
+import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
 import { homepageContentConfig } from "~/config/homepage-content.config";
 import { withI18n } from "~/lib/i18n/with-i18n";
 
 import { AnimateOnScroll } from "./_components/animate-on-scroll";
-import { HomeComparisonSection } from "./_components/home-comparison-section";
-import { HomeFeaturesGrid } from "./_components/home-features-grid-client";
-import { HomeFinalCtaSection } from "./_components/home-final-cta-section";
 import { HeroSection } from "./_components/home-hero-section";
-import { HomeHowItWorks } from "./_components/home-how-it-works-client";
-import LogoCloudMarquee from "./_components/home-logo-cloud-client";
-import { HomePricingSection } from "./_components/home-pricing-section";
 import { ProductPreviewSection } from "./_components/home-product-preview-section";
-import { HomeStatisticsSection } from "./_components/home-statistics-section";
-import HomeStickyScroll from "./_components/home-sticky-scroll-client";
+import {
+	BlogSkeleton,
+	ComparisonSkeleton,
+	CtaSkeleton,
+	FeaturesSkeleton,
+	HowItWorksSkeleton,
+	LogoCloudSkeleton,
+	PricingSkeleton,
+	StatisticsSkeleton,
+	StickyScrollSkeleton,
+	TestimonialsSkeleton,
+} from "./_components/section-skeleton";
+
+const LogoCloudMarquee = dynamic(
+	() => import("./_components/home-logo-cloud-client"),
+);
+const HomeStatisticsSection = dynamic(() =>
+	import("./_components/home-statistics-section").then((m) => ({
+		default: m.HomeStatisticsSection,
+	})),
+);
+const HomeStickyScroll = dynamic(
+	() => import("./_components/home-sticky-scroll-client"),
+);
+const HomeHowItWorks = dynamic(() =>
+	import("./_components/home-how-it-works-client").then((m) => ({
+		default: m.HomeHowItWorks,
+	})),
+);
+const HomeFeaturesGrid = dynamic(() =>
+	import("./_components/home-features-grid-client").then((m) => ({
+		default: m.HomeFeaturesGrid,
+	})),
+);
+const HomeComparisonSection = dynamic(() =>
+	import("./_components/home-comparison-section").then((m) => ({
+		default: m.HomeComparisonSection,
+	})),
+);
 import { HomeTestimonialsSection } from "./_components/home-testimonials-section";
-import { HomeBlogSection } from "./_components/home-blog-section";
+const HomePricingSection = dynamic(() =>
+	import("./_components/home-pricing-section").then((m) => ({
+		default: m.HomePricingSection,
+	})),
+);
+const HomeBlogSection = dynamic(() =>
+	import("./_components/home-blog-section").then((m) => ({
+		default: m.HomeBlogSection,
+	})),
+);
+const HomeFinalCtaSection = dynamic(() =>
+	import("./_components/home-final-cta-section").then((m) => ({
+		default: m.HomeFinalCtaSection,
+	})),
+);
 
 // Width system
 const widths = {
@@ -35,19 +81,6 @@ const spacing = {
 
 const containerBase = "mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden" as const;
 
-// Enhanced loading states
-const SectionLoader: React.FC = () => (
-	<div className="animate-pulse space-y-4">
-		<div className="mx-auto h-8 w-2/3 rounded-md bg-muted dark:bg-muted" />
-		<div className="mx-auto h-4 w-1/2 rounded-md bg-muted dark:bg-muted" />
-		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-			<div className="h-64 rounded-lg bg-muted dark:bg-muted" />
-			<div className="h-64 rounded-lg bg-muted dark:bg-muted" />
-			<div className="h-64 rounded-lg bg-muted dark:bg-muted" />
-		</div>
-	</div>
-);
-
 function Home() {
 	return (
 		<div className="bg-background dark:bg-background flex flex-col">
@@ -63,11 +96,7 @@ function Home() {
 			<section className={`w-full ${spacing.section} bg-background`}>
 				<div className={`${containerBase} ${widths.navigation}`}>
 					<AnimateOnScroll>
-						<Suspense
-							fallback={
-								<div className="h-20 animate-pulse rounded-lg bg-muted" />
-							}
-						>
+						<Suspense fallback={<LogoCloudSkeleton />}>
 							<LogoCloudMarquee />
 						</Suspense>
 					</AnimateOnScroll>
@@ -78,7 +107,9 @@ function Home() {
 			<section className={`w-full ${spacing.section} bg-background`}>
 				<div className={`${containerBase} ${widths.content}`}>
 					<AnimateOnScroll>
-						<HomeStatisticsSection />
+						<Suspense fallback={<StatisticsSkeleton />}>
+							<HomeStatisticsSection />
+						</Suspense>
 					</AnimateOnScroll>
 				</div>
 			</section>
@@ -95,7 +126,7 @@ function Home() {
 						{homepageContentConfig.sticky.subtitle}
 					</p>
 				</div>
-				<Suspense fallback={<SectionLoader />}>
+				<Suspense fallback={<StickyScrollSkeleton />}>
 					<HomeStickyScroll content={homepageContentConfig.sticky.content} />
 				</Suspense>
 			</section>
@@ -105,7 +136,7 @@ function Home() {
 				className={`${spacing.section} bg-background dark:bg-background`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
-					<Suspense fallback={<SectionLoader />}>
+					<Suspense fallback={<HowItWorksSkeleton />}>
 						<HomeHowItWorks
 							title={homepageContentConfig.howItWorks.title}
 							subtitle={homepageContentConfig.howItWorks.subtitle}
@@ -120,7 +151,7 @@ function Home() {
 				className={`${spacing.section} dark:bg-background bg-secondary/50`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
-					<Suspense fallback={<SectionLoader />}>
+					<Suspense fallback={<FeaturesSkeleton />}>
 						<HomeFeaturesGrid />
 					</Suspense>
 				</div>
@@ -132,7 +163,7 @@ function Home() {
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<AnimateOnScroll>
-						<Suspense fallback={<SectionLoader />}>
+						<Suspense fallback={<ComparisonSkeleton />}>
 							<HomeComparisonSection />
 						</Suspense>
 					</AnimateOnScroll>
@@ -144,7 +175,9 @@ function Home() {
 				className={`${spacing.section} bg-background dark:bg-background`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
-					<HomeTestimonialsSection />
+					<Suspense fallback={<TestimonialsSkeleton />}>
+						<HomeTestimonialsSection />
+					</Suspense>
 				</div>
 			</section>
 
@@ -153,7 +186,7 @@ function Home() {
 				className={`${spacing.section} dark:bg-background bg-secondary/50`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
-					<Suspense fallback={<SectionLoader />}>
+					<Suspense fallback={<PricingSkeleton />}>
 						<HomePricingSection />
 					</Suspense>
 				</div>
@@ -164,7 +197,7 @@ function Home() {
 				className={`${spacing.section} bg-background dark:bg-background pb-12`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
-					<Suspense fallback={<SectionLoader />}>
+					<Suspense fallback={<BlogSkeleton />}>
 						<HomeBlogSection />
 					</Suspense>
 				</div>
@@ -175,7 +208,9 @@ function Home() {
 				className={`${spacing.section} bg-background dark:bg-background pb-12`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
-					<HomeFinalCtaSection config={homepageContentConfig.finalCta} />
+					<Suspense fallback={<CtaSkeleton />}>
+						<HomeFinalCtaSection config={homepageContentConfig.finalCta} />
+					</Suspense>
 				</div>
 			</section>
 		</div>
