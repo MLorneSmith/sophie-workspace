@@ -41,6 +41,11 @@ export interface ComparisonItem {
 	included: boolean;
 }
 
+export interface LogoCloudConfig {
+	heading: string;
+	marqueeSpeed: number;
+}
+
 export interface FinalCtaConfig {
 	headline: string;
 	subheadline: string;
@@ -185,6 +190,10 @@ export const homepageContentConfig = {
 	howItWorks: howItWorksSteps,
 	comparison: comparisonContent,
 	finalCta: finalCtaContent,
+	logoCloud: {
+		heading: "Trusted by professionals at",
+		marqueeSpeed: 30,
+	} satisfies LogoCloudConfig,
 	hero: {
 		title: "Write more impactful presentations ",
 		subtitle:

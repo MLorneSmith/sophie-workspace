@@ -18,6 +18,8 @@ interface LogoCloudMarqueeProps {
 	title?: string;
 	description?: string;
 	logos?: Logo[];
+	mode?: "single" | "dual";
+	speed?: number;
 }
 
 const springConfig = {
@@ -169,6 +171,8 @@ export function LogoCloudMarquee({
 	title = "Trusted by the world's best teams",
 	description = "Teams from some of the world's greatest companies use our tools & training to create pursuasive presentations.",
 	logos = defaultLogos,
+	mode = "dual",
+	speed = 30,
 }: LogoCloudMarqueeProps) {
 	const midPoint = Math.ceil(logos.length / 2);
 	const firstHalf = logos.slice(0, midPoint);
@@ -194,59 +198,85 @@ export function LogoCloudMarquee({
 				</h2>
 			</MotionDiv>
 
-			<MotionDiv
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{
-					...springConfig,
-					delay: 0.1,
-				}}
-			>
-				<p className="body mt-4 text-center text-muted-foreground">
-					{description}
-				</p>
-			</MotionDiv>
+			{description && (
+				<MotionDiv
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{
+						...springConfig,
+						delay: 0.1,
+					}}
+				>
+					<p className="body mt-4 text-center text-muted-foreground">
+						{description}
+					</p>
+				</MotionDiv>
+			)}
 
-			<div className="relative mt-20 flex w-full flex-col items-center justify-center gap-4">
-				<div className="relative w-full">
-					<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" />
-					<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent" />
-					<div className="relative z-[1]">
-						<Marquee
-							pauseOnHover
-							direction="right"
-							gradient={false}
-							speed={30}
-							aria-label="Logo marquee first row"
-						>
-							<div className="flex items-center justify-center gap-4">
-								{firstHalf.map((logo) => (
-									<LogoItem key={logo.name} logo={logo} />
-								))}
-							</div>
-						</Marquee>
+			<div className={cn("relative flex w-full flex-col items-center justify-center gap-4", mode === "single" ? "mt-10" : "mt-20")}>
+				{mode === "single" ? (
+					<div className="relative w-full">
+						<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" />
+						<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent" />
+						<div className="relative z-[1]">
+							<Marquee
+								pauseOnHover
+								direction="right"
+								gradient={false}
+								speed={speed}
+								aria-label="Logo marquee"
+							>
+								<div className="flex items-center justify-center gap-4">
+									{logos.map((logo) => (
+										<LogoItem key={logo.name} logo={logo} />
+									))}
+								</div>
+							</Marquee>
+						</div>
 					</div>
-				</div>
+				) : (
+					<>
+						<div className="relative w-full">
+							<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" />
+							<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent" />
+							<div className="relative z-[1]">
+								<Marquee
+									pauseOnHover
+									direction="right"
+									gradient={false}
+									speed={speed}
+									aria-label="Logo marquee first row"
+								>
+									<div className="flex items-center justify-center gap-4">
+										{firstHalf.map((logo) => (
+											<LogoItem key={logo.name} logo={logo} />
+										))}
+									</div>
+								</Marquee>
+							</div>
+						</div>
 
-				<div className="relative w-full">
-					<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" />
-					<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent" />
-					<div className="relative z-[1]">
-						<Marquee
-							pauseOnHover
-							direction="left"
-							speed={25}
-							gradient={false}
-							aria-label="Logo marquee second row"
-						>
-							<div className="flex items-center justify-center gap-4">
-								{secondHalf.map((logo) => (
-									<LogoItem key={`${logo.name}-second`} logo={logo} />
-								))}
+						<div className="relative w-full">
+							<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" />
+							<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent" />
+							<div className="relative z-[1]">
+								<Marquee
+									pauseOnHover
+									direction="left"
+									speed={Math.round(speed * 0.83)}
+									gradient={false}
+									aria-label="Logo marquee second row"
+								>
+									<div className="flex items-center justify-center gap-4">
+										{secondHalf.map((logo) => (
+											<LogoItem key={`${logo.name}-second`} logo={logo} />
+										))}
+									</div>
+								</Marquee>
 							</div>
-						</Marquee>
-					</div>
-				</div>
+						</div>
+					</>
+				)}
 			</div>
 		</div>
 	);
