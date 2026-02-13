@@ -2,9 +2,25 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
 
 import { cn } from "../lib/utils";
+
+function usePrefersReducedMotion() {
+	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+	useEffect(() => {
+		const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+		setPrefersReducedMotion(mql.matches);
+		const handler = (e: MediaQueryListEvent) =>
+			setPrefersReducedMotion(e.matches);
+		mql.addEventListener("change", handler);
+		return () => mql.removeEventListener("change", handler);
+	}, []);
+
+	return prefersReducedMotion;
+}
 
 interface Logo {
 	name: string;
@@ -127,7 +143,7 @@ const MotionDiv = motion.div;
 
 const LogoItem = ({ logo }: { logo: Logo }) => {
 	return (
-		<div className="mx-8 flex h-16 items-center md:mx-12">
+		<div className="mx-6 flex min-h-[44px] min-w-[44px] items-center md:mx-12">
 			<MotionDiv
 				whileHover={{
 					scale: 1.1,
@@ -174,13 +190,14 @@ export function LogoCloudMarquee({
 	mode = "dual",
 	speed = 30,
 }: LogoCloudMarqueeProps) {
+	const prefersReducedMotion = usePrefersReducedMotion();
 	const midPoint = Math.ceil(logos.length / 2);
 	const firstHalf = logos.slice(0, midPoint);
 	const secondHalf = logos.slice(midPoint);
 
 	return (
 		<div
-			className={cn("relative px-4 py-10 md:px-8", className)}
+			className={cn("relative px-4 py-10 motion-reduce:*:animate-none md:px-8", className)}
 			style={{ zIndex: 0 }}
 		>
 			<MotionDiv
@@ -221,6 +238,7 @@ export function LogoCloudMarquee({
 						<div className="relative z-[1]">
 							<Marquee
 								pauseOnHover
+								play={!prefersReducedMotion}
 								direction="right"
 								gradient={false}
 								speed={speed}
@@ -242,6 +260,7 @@ export function LogoCloudMarquee({
 							<div className="relative z-[1]">
 								<Marquee
 									pauseOnHover
+									play={!prefersReducedMotion}
 									direction="right"
 									gradient={false}
 									speed={speed}
@@ -262,6 +281,7 @@ export function LogoCloudMarquee({
 							<div className="relative z-[1]">
 								<Marquee
 									pauseOnHover
+									play={!prefersReducedMotion}
 									direction="left"
 									speed={Math.round(speed * 0.83)}
 									gradient={false}
