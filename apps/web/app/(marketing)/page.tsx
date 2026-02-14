@@ -81,8 +81,22 @@ const spacing = {
 
 const containerBase = "mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden" as const;
 
+function SectionDivider() {
+	return (
+		<div
+			aria-hidden="true"
+			className="mx-auto hidden h-px w-full max-w-7xl px-4 dark:block sm:px-6 lg:px-8"
+			style={{
+				background:
+					"radial-gradient(ellipse at center, var(--homepage-border, #2a2a3a) 0%, transparent 70%)",
+			}}
+		/>
+	);
+}
+
 function Home() {
 	return (
+		// biome-ignore lint/correctness/useUniqueElementIds: skip-to-content anchor target, only rendered once
 		<main
 			id="main-content"
 			className="bg-background dark:bg-background flex flex-col"
@@ -91,9 +105,11 @@ function Home() {
 			<HeroSection />
 
 			{/* Product Preview Section */}
-			<div className="relative z-[1] -mt-[15vh] sm:-mt-[20vh] lg:-mt-[25vh]">
+			<div className="relative z-[1] -mt-[22vh] sm:-mt-[28vh] lg:-mt-[35vh]">
 				<ProductPreviewSection />
 			</div>
+
+			<SectionDivider />
 
 			{/* Logo Cloud Section */}
 			<section
@@ -108,6 +124,8 @@ function Home() {
 					</AnimateOnScroll>
 				</div>
 			</section>
+
+			<SectionDivider />
 
 			{/* Statistics Section */}
 			<section
@@ -129,6 +147,7 @@ function Home() {
 				className={`w-full ${spacing.section} bg-background dark:bg-background`}
 			>
 				<div className={`${containerBase} ${widths.content} mb-8`}>
+					{/* biome-ignore lint/correctness/useUniqueElementIds: aria-labelledby target, page rendered once */}
 					<h2
 						id="sticky-scroll-heading"
 						className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl"
@@ -143,6 +162,8 @@ function Home() {
 					<HomeStickyScroll content={homepageContentConfig.sticky.content} />
 				</Suspense>
 			</section>
+
+			<SectionDivider />
 
 			{/* How It Works Section */}
 			<section
@@ -159,6 +180,8 @@ function Home() {
 					</Suspense>
 				</div>
 			</section>
+
+			<SectionDivider />
 
 			{/* Features Section */}
 			<section
@@ -185,6 +208,8 @@ function Home() {
 					</AnimateOnScroll>
 				</div>
 			</section>
+
+			<SectionDivider />
 
 			{/* Testimonials Section */}
 			<section
