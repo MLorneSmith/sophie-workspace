@@ -14,13 +14,15 @@ interface FooterLinkListProps {
 export function FooterLinkList({ title, items }: FooterLinkListProps) {
 	return (
 		<ul>
-			<li className={cn("mb-3 text-base font-medium")}>{title}</li>
+			<li className={cn("mb-3 text-base font-normal dark:text-white")}>
+				{title}
+			</li>
 			{items.map((item) => (
 				<li key={`footer-link-${item.href}`} className="mb-2">
 					<Link
 						href={item.href}
 						className={cn(
-							"text-sm text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white",
+							"text-sm text-gray-600 hover:text-gray-900 dark:text-white/70 dark:hover:text-white",
 						)}
 					>
 						{item.title}
