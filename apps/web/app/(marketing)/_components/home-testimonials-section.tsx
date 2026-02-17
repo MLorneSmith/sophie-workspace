@@ -1,41 +1,219 @@
-import { Suspense } from "react";
+"use client";
+
+import { useCallback, useState } from "react";
+
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@kit/ui/tabs";
 
 import { homepageContentConfig } from "~/config/homepage-content.config";
 
-import { AnimateOnScroll } from "./animate-on-scroll";
-import { TestimonialsMasonaryGridServer } from "./home-testimonials-grid-server";
+function highlightContent(content: string, highlights: string[]) {
+	if (highlights.length === 0) {
+		return <>{content}</>;
+	}
 
-const SectionLoader: React.FC = () => (
-	<div
-		className="animate-pulse space-y-4"
-		role="status"
-		aria-label="Loading testimonials"
-	>
-		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-			<div className="h-48 rounded-xl bg-muted/30" />
-			<div className="h-48 rounded-xl bg-muted/30" />
-			<div className="h-48 rounded-xl bg-muted/30" />
-			<div className="h-48 rounded-xl bg-muted/30" />
+	const pattern = highlights
+		.map((h) => h.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+		.join("|");
+	const regex = new RegExp(`(${pattern})`, "gi");
+	const parts = content.split(regex);
+
+	return (
+		<>
+			{parts.map((part, i) => {
+				const isHighlight = highlights.some(
+					(h) => h.toLowerCase() === part.toLowerCase(),
+				);
+				if (isHighlight) {
+					return (
+						<strong
+							key={i}
+							className="font-semibold"
+							style={{ color: "var(--homepage-text, #f5f5f7)" }}
+						>
+							{part}
+						</strong>
+					);
+				}
+				return <span key={i}>{part}</span>;
+			})}
+		</>
+	);
+}
+
+function getInitials(name: string) {
+	return name
+		.split(" ")
+		.map((n) => n[0])
+		.join("")
+		.toUpperCase()
+		.slice(0, 2);
+}
+
+function TestimonialCarousel({
+	testimonials,
+}: {
+	testimonials: (typeof homepageContentConfig.testimonials.categories)[number]["testimonials"];
+}) {
+	const [index, setIndex] = useState(0);
+	const current = testimonials[index]!;
+	const count = testimonials.length;
+
+	const prev = useCallback(
+		() => setIndex((i) => (i - 1 + count) % count),
+		[count],
+	);
+	const next = useCallback(() => setIndex((i) => (i + 1) % count), [count]);
+
+	return (
+		<div className="flex flex-col items-center">
+			{/* Company logo */}
+			<div className="mb-8 h-10 sm:mb-10">
+				<img
+					src={current.logo}
+					alt={current.company}
+					className="h-full w-auto object-contain"
+				/>
+			</div>
+
+			{/* Quote with navigation arrows */}
+			<div className="mb-8 flex w-full max-w-4xl items-center gap-4 sm:mb-10 sm:gap-6">
+				<button
+					type="button"
+					onClick={prev}
+					aria-label="Previous testimonial"
+					className="flex-shrink-0 cursor-pointer rounded-full border p-2 transition-colors hover:bg-[var(--homepage-surface-elevated,#1a1a25)] sm:p-3"
+					style={{
+						borderColor: "var(--homepage-border-subtle, #1e1e2e)",
+						color: "var(--homepage-text-muted, #a0a0b0)",
+					}}
+				>
+					<ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+				</button>
+
+				<blockquote className="flex-1 text-center">
+					<p
+						className="text-lg font-light leading-relaxed sm:text-xl md:text-2xl"
+						style={{ color: "var(--homepage-text-muted, #a0a0b0)" }}
+					>
+						&ldquo;{highlightContent(current.content, current.highlights)}
+						&rdquo;
+					</p>
+				</blockquote>
+
+				<button
+					type="button"
+					onClick={next}
+					aria-label="Next testimonial"
+					className="flex-shrink-0 cursor-pointer rounded-full border p-2 transition-colors hover:bg-[var(--homepage-surface-elevated,#1a1a25)] sm:p-3"
+					style={{
+						borderColor: "var(--homepage-border-subtle, #1e1e2e)",
+						color: "var(--homepage-text-muted, #a0a0b0)",
+					}}
+				>
+					<ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
+				</button>
+			</div>
+
+			{/* Script signature */}
+			<p
+				className="mb-6 text-3xl sm:mb-8 sm:text-4xl"
+				style={{
+					fontFamily: "var(--font-script), cursive",
+					color: "var(--homepage-text, #f5f5f7)",
+				}}
+			>
+				{current.name}
+			</p>
+
+			{/* Avatar + name + title */}
+			<div className="flex items-center gap-4">
+				<div
+					className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-sm font-medium"
+					style={{
+						backgroundColor: "var(--homepage-surface-elevated, #1a1a25)",
+						border: "1px solid var(--homepage-border-subtle, #1e1e2e)",
+						color: "var(--homepage-text, #f5f5f7)",
+					}}
+				>
+					{getInitials(current.name)}
+				</div>
+				<div>
+					<p
+						className="text-sm font-semibold"
+						style={{ color: "var(--homepage-text, #f5f5f7)" }}
+					>
+						{current.name}
+					</p>
+					<p
+						className="text-sm"
+						style={{ color: "var(--homepage-text-muted, #a0a0b0)" }}
+					>
+						{current.role}
+					</p>
+				</div>
+			</div>
+
+			{/* Dot indicators */}
+			{count > 1 && (
+				<div className="mt-6 flex gap-2 sm:mt-8" aria-hidden="true">
+					{testimonials.map((_, i) => (
+						<button
+							key={testimonials[i]!.name}
+							type="button"
+							onClick={() => setIndex(i)}
+							className="h-1.5 rounded-full transition-all"
+							style={{
+								width: i === index ? "24px" : "6px",
+								backgroundColor:
+									i === index
+										? "var(--homepage-text, #f5f5f7)"
+										: "var(--homepage-border, #2a2a3a)",
+							}}
+							aria-label={`Go to testimonial ${i + 1}`}
+						/>
+					))}
+				</div>
+			)}
 		</div>
-	</div>
-);
+	);
+}
 
 export function HomeTestimonialsSection() {
 	const { testimonials } = homepageContentConfig;
+	const categories = testimonials.categories;
 
 	return (
 		<div className="w-full">
-			<h2 className="text-h3 sm:text-h2 mb-3 text-center sm:mb-4">
-				{testimonials.title}
+			<h2
+				className="text-h3 sm:text-h2 mb-8 text-center sm:mb-12"
+				style={{ color: "var(--homepage-text, #f5f5f7)" }}
+			>
+				{testimonials.title} {testimonials.titleMuted}
 			</h2>
-			<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-muted-foreground sm:mb-12 dark:text-muted-foreground">
-				{testimonials.subtitle}
-			</p>
-			<AnimateOnScroll delay={0.2}>
-				<Suspense fallback={<SectionLoader />}>
-					<TestimonialsMasonaryGridServer />
-				</Suspense>
-			</AnimateOnScroll>
+
+			<Tabs defaultValue={categories[0]!.value} className="w-full">
+				<div className="mb-10 flex justify-center sm:mb-14">
+					<TabsList className="h-auto gap-2 rounded-full border border-[var(--homepage-border-subtle,#1e1e2e)] bg-[var(--homepage-bg,#0a0a0f)] p-1.5">
+						{categories.map((cat) => (
+							<TabsTrigger
+								key={cat.value}
+								value={cat.value}
+								className="cursor-pointer rounded-full px-4 py-2 text-sm font-medium text-[var(--homepage-text-muted,#a0a0b0)] transition-all data-[state=active]:bg-[var(--homepage-surface-elevated,#1a1a25)] data-[state=active]:text-[var(--homepage-text,#f5f5f7)] data-[state=active]:shadow-none"
+							>
+								{cat.label}
+							</TabsTrigger>
+						))}
+					</TabsList>
+				</div>
+
+				{categories.map((cat) => (
+					<TabsContent key={cat.value} value={cat.value} className="mt-0">
+						<TestimonialCarousel testimonials={cat.testimonials} />
+					</TabsContent>
+				))}
+			</Tabs>
 		</div>
 	);
 }

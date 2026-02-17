@@ -14,6 +14,7 @@ import { ProductPreviewSection } from "./_components/home-product-preview-sectio
 import {
 	BlogSkeleton,
 	CtaSkeleton,
+	FaqSkeleton,
 	FeaturesSkeleton,
 	HowItWorksSkeleton,
 	LogoCloudSkeleton,
@@ -49,6 +50,11 @@ import { HomeTestimonialsSection } from "./_components/home-testimonials-section
 const HomeBlogSection = dynamic(() =>
 	import("./_components/home-blog-section").then((m) => ({
 		default: m.HomeBlogSection,
+	})),
+);
+const HomeFaqSection = dynamic(() =>
+	import("./_components/home-faq-section").then((m) => ({
+		default: m.HomeFaqSection,
 	})),
 );
 const HomeFinalCtaSection = dynamic(() =>
@@ -202,7 +208,7 @@ function Home() {
 			{/* Testimonials Section */}
 			<section
 				aria-label="Testimonials"
-				className={`${spacing.section} bg-background dark:bg-background`}
+				className={`${spacing.section} w-full bg-black py-10 sm:py-12 md:py-16 lg:py-20`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<Suspense fallback={<TestimonialsSkeleton />}>
@@ -219,6 +225,18 @@ function Home() {
 				<div className={`${containerBase} ${widths.content}`}>
 					<Suspense fallback={<BlogSkeleton />}>
 						<HomeBlogSection />
+					</Suspense>
+				</div>
+			</section>
+
+			{/* FAQ Section */}
+			<section
+				aria-label="Frequently asked questions"
+				className={`${spacing.section} bg-background dark:bg-background pb-12`}
+			>
+				<div className={`${containerBase} ${widths.content}`}>
+					<Suspense fallback={<FaqSkeleton />}>
+						<HomeFaqSection />
 					</Suspense>
 				</div>
 			</section>

@@ -313,9 +313,129 @@ export const homepageContentConfig = {
 		cards: featureCards,
 	},
 	testimonials: {
-		title: "Trusted by Professionals Worldwide",
-		subtitle:
-			"Hear from the people who use SlideHeroes to deliver high-impact presentations every day",
+		title: "What our users",
+		titleMuted: "are saying",
+		categories: [
+			{
+				label: "Boutique Consultancies",
+				value: "boutique",
+				testimonials: [
+					{
+						name: "Rachel Wei",
+						role: "Managing Partner",
+						company: "Apex Strategy Group",
+						logo: "/images/logos/testimonials/apex-strategy-group.svg",
+						content:
+							"We went from spending two full days on a pitch deck to having a polished first draft in under an hour. The AI understands consulting frameworks natively.",
+						highlights: [
+							"polished first draft in under an hour",
+							"understands consulting frameworks natively",
+						],
+					},
+					{
+						name: "James Okafor",
+						role: "Senior Consultant",
+						company: "Northbridge Advisory",
+						logo: "/images/logos/testimonials/northbridge-advisory.svg",
+						content:
+							"Our four-person team now produces client-ready decks that rival what Big Four firms deliver. SlideHeroes leveled the playing field for us.",
+						highlights: [
+							"client-ready decks that rival what Big Four firms deliver",
+						],
+					},
+					{
+						name: "Anna Lindström",
+						role: "Founder",
+						company: "Clarion Consulting",
+						logo: "/images/logos/testimonials/clarion-consulting.svg",
+						content:
+							"The structured methodology is what sold me. SCQ frameworks, MECE logic trees — it is all built in. My clients notice the difference immediately.",
+						highlights: [
+							"SCQ frameworks, MECE logic trees",
+							"notice the difference immediately",
+						],
+					},
+				],
+			},
+			{
+				label: "Corporate Strategy Teams",
+				value: "corporate",
+				testimonials: [
+					{
+						name: "David Park",
+						role: "VP of Strategy",
+						company: "Meridian Financial",
+						logo: "/images/logos/testimonials/meridian-financial.svg",
+						content:
+							"We rolled this out to 40 strategists and saw a 60% reduction in deck prep time. Brand consistency across the team improved overnight.",
+						highlights: [
+							"60% reduction in deck prep time",
+							"Brand consistency across the team improved overnight",
+						],
+					},
+					{
+						name: "Isabelle Moreau",
+						role: "Director of Corporate Development",
+						company: "Vantage Industries",
+						logo: "/images/logos/testimonials/vantage-industries.svg",
+						content:
+							"Board presentations used to take a week of back-and-forth. Now our executive team self-serves with confidence. The time savings are enormous.",
+						highlights: ["executive team self-serves with confidence"],
+					},
+					{
+						name: "Marcus Chen",
+						role: "Chief of Staff",
+						company: "Atlas Health Group",
+						logo: "/images/logos/testimonials/atlas-health-group.svg",
+						content:
+							"SlideHeroes became the standard tool for our quarterly business reviews. The collaboration features keep everyone aligned without endless email chains.",
+						highlights: [
+							"standard tool for our quarterly business reviews",
+							"everyone aligned",
+						],
+					},
+				],
+			},
+			{
+				label: "Freelancers",
+				value: "freelancers",
+				testimonials: [
+					{
+						name: "Sophie Tanaka",
+						role: "Independent Brand Strategist",
+						company: "Self-employed",
+						logo: "/images/logos/testimonials/independent.svg",
+						content:
+							"As a solo freelancer, I need to look like a full agency. SlideHeroes gives me that polish without the overhead. It paid for itself on the first project.",
+						highlights: [
+							"look like a full agency",
+							"paid for itself on the first project",
+						],
+					},
+					{
+						name: "Liam Gallagher",
+						role: "Freelance Pitch Consultant",
+						company: "Self-employed",
+						logo: "/images/logos/testimonials/independent.svg",
+						content:
+							"I juggle five to six clients a week across wildly different industries. The AI adapts to each brief instantly — startup pitch decks, nonprofit annual reports, you name it.",
+						highlights: ["adapts to each brief instantly"],
+					},
+					{
+						name: "Priya Sharma",
+						role: "Freelance Management Consultant",
+						company: "Self-employed",
+						logo: "/images/logos/testimonials/independent.svg",
+						content:
+							"I used to outsource slide design and wait days for revisions. Now I handle everything in-house and deliver faster than agencies twice my size.",
+						highlights: [
+							"handle everything in-house",
+							"deliver faster than agencies twice my size",
+						],
+					},
+				],
+			},
+		],
 	},
 	essentialReads: {
 		title: "Go Deeper, Learn Faster",
@@ -353,6 +473,47 @@ export const homepageContentConfig = {
 				thumbnailSrc: "/images/posts/saas-starter-blog-post.webp",
 			},
 		] as BlogPost[],
+	},
+	faq: {
+		title: "Frequently Asked Questions",
+		items: [
+			{
+				question: "How does the AI know how to structure my presentation?",
+				answer:
+					"SlideHeroes is fine-tuned on proven consulting frameworks like SCQ, MECE, and the Pyramid Principle. When you provide your brief, the AI applies the most appropriate framework to create a logical narrative structure — the same methodologies used by McKinsey, BCG, and top investment banks.",
+			},
+			{
+				question: "Can I use SlideHeroes for different types of presentations?",
+				answer:
+					"Absolutely. SlideHeroes works for board presentations, pitch decks, quarterly business reviews, sales proposals, funding rounds, and more. The AI adapts its approach based on your audience, objective, and industry context.",
+			},
+			{
+				question: "Do I need design skills to create professional slides?",
+				answer:
+					"Not at all. SlideHeroes handles the visual design for you with professionally designed templates and layouts. You focus on your message and content — the platform ensures it looks polished and client-ready.",
+			},
+			{
+				question:
+					"How is SlideHeroes different from generic AI tools like ChatGPT?",
+				answer:
+					"Generic AI tools produce generic output. SlideHeroes is purpose-built for presentations with a fine-tuned model that understands slide structure, visual hierarchy, data visualization, and narrative flow. It also includes expert video training and private coaching that no general-purpose tool offers.",
+			},
+			{
+				question: "Is my data secure?",
+				answer:
+					"Yes. All data is encrypted in transit and at rest. We never use your content to train our models. Enterprise customers can opt for dedicated infrastructure with additional compliance certifications including SOC 2 and GDPR.",
+			},
+			{
+				question: "Can my team collaborate on presentations?",
+				answer:
+					"Yes. Team plans include shared workspaces, brand template libraries, and real-time collaboration. Admins can manage permissions, enforce brand consistency, and track usage across the organization.",
+			},
+			{
+				question: "What if I'm not satisfied?",
+				answer:
+					"We offer a 30-day money-back guarantee on all plans. If SlideHeroes doesn't meet your expectations, contact us within 30 days for a full refund — no questions asked.",
+			},
+		],
 	},
 	pricing: {
 		title: "Simple, transparent pricing",
