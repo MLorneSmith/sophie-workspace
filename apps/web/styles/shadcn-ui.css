@@ -64,7 +64,7 @@
 	}
 
 	.dark {
-		--background: var(--color-neutral-900);
+		--background: var(--color-black);
 		--foreground: var(--color-white);
 
 		--card: var(--color-neutral-900);

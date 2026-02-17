@@ -27,7 +27,7 @@ export function HomeFinalCtaSection({ config }: HomeFinalCtaSectionProps) {
 			<div className="relative z-10">
 				<AnimateOnScroll>
 					<div className="flex flex-col items-center text-center">
-						<h2 className="mb-4 text-3xl leading-tight font-bold sm:mb-6 sm:text-4xl lg:text-5xl">
+						<h2 className="text-h3 sm:text-h2 mb-4 sm:mb-6">
 							<GradientText variant="cyan">{config.headline}</GradientText>
 						</h2>
 

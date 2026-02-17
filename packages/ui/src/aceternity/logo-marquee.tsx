@@ -198,10 +198,7 @@ export function LogoCloudMarquee({
 
 	return (
 		<div
-			className={cn(
-				"relative py-10 motion-reduce:*:animate-none",
-				className,
-			)}
+			className={cn("relative py-10 motion-reduce:*:animate-none", className)}
 			style={{ zIndex: 0 }}
 			role="region"
 			aria-label={title || "Client logos"}
@@ -213,7 +210,7 @@ export function LogoCloudMarquee({
 			>
 				<h2
 					className={cn(
-						"font-heading text-center text-3xl font-bold md:text-4xl lg:text-5xl",
+						"text-h3 sm:text-h2 text-center",
 						"text-white",
 					)}
 				>

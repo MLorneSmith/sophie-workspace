@@ -5,10 +5,16 @@ import {
 	BarChart3,
 	BookOpen,
 	Brain,
+	GitBranch,
 	LayoutDashboard,
+	LayoutPanelTop,
+	Layers,
 	type LucideIcon,
 	Presentation,
+	Rocket,
 	Sparkles,
+	Target,
+	UserCircle,
 } from "lucide-react";
 import { type MouseEvent as ReactMouseEvent, useState } from "react";
 
@@ -23,6 +29,12 @@ const IconMap: Record<IconName, LucideIcon> = {
 	LayoutDashboard,
 	Sparkles,
 	BarChart3,
+	UserCircle,
+	Target,
+	Layers,
+	GitBranch,
+	LayoutPanelTop,
+	Rocket,
 };
 
 interface BentoFeatureCardProps {

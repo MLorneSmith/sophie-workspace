@@ -13,7 +13,7 @@ const PRODUCT_BASE = [
 	},
 	{
 		title: "Pricing",
-		href: "/#pricing",
+		href: "/pricing",
 	},
 	{
 		title: "AI Presentation Builder",

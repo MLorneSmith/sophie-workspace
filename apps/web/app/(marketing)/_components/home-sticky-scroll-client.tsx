@@ -1,16 +1,24 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import {
-	AnimatePresence,
-	motion,
-	useReducedMotion,
-	useScroll,
-	useTransform,
-} from "motion/react";
+import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { ChevronRight } from "lucide-react";
 
-import { DeviceFrame } from "./device-frame";
+import {
+	AIWritingPanel,
+	CoachingPanel,
+	TrainingPanel,
+} from "./home-feature-panels";
 import OptimizedImage from "./home-optimized-image";
+
+const AUTO_ADVANCE_MS = 6000;
+
+/** Panel components keyed by content index */
+const PANELS: ReactNode[] = [
+	<AIWritingPanel key="ai" />,
+	<TrainingPanel key="training" />,
+	<CoachingPanel key="coaching" />,
+];
 
 interface StickyContentItem {
 	title: string;
@@ -18,6 +26,7 @@ interface StickyContentItem {
 	imageSrc: string;
 	overline: string;
 	deviceFrame?: boolean;
+	learnMoreHref?: string;
 }
 
 interface HomeStickyScrollProps {
@@ -43,7 +52,6 @@ function useIsMobile(breakpoint = 1024) {
 export default function HomeStickyScroll({ content }: HomeStickyScrollProps) {
 	const isMobile = useIsMobile();
 
-	// Show nothing during SSR to avoid hydration mismatch
 	if (isMobile === undefined) {
 		return <MobileStackedView content={content} />;
 	}
@@ -52,31 +60,199 @@ export default function HomeStickyScroll({ content }: HomeStickyScrollProps) {
 		return <MobileStackedView content={content} />;
 	}
 
-	return <DesktopStickyScroll content={content} />;
+	return <DesktopFeatureTabs content={content} />;
 }
+
+/* ------------------------------------------------------------------ */
+/*  Desktop: click + auto-advance tabs (Framer-style)                 */
+/* ------------------------------------------------------------------ */
+
+function DesktopFeatureTabs({ content }: { content: StickyContentItem[] }) {
+	const shouldReduceMotion = useReducedMotion();
+	const [activeIndex, setActiveIndex] = useState(0);
+	const [timerKey, setTimerKey] = useState(0);
+	const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
+
+	const startTimer = useCallback(() => {
+		clearInterval(intervalRef.current);
+		intervalRef.current = setInterval(() => {
+			setActiveIndex((prev) => (prev + 1) % content.length);
+			setTimerKey((k) => k + 1);
+		}, AUTO_ADVANCE_MS);
+	}, [content.length]);
+
+	useEffect(() => {
+		if (shouldReduceMotion) return;
+		startTimer();
+		return () => clearInterval(intervalRef.current);
+	}, [startTimer, shouldReduceMotion]);
+
+	const handleTabClick = (index: number) => {
+		setActiveIndex(index);
+		setTimerKey((k) => k + 1);
+		if (!shouldReduceMotion) startTimer();
+	};
+
+	return (
+		<div
+			className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+			aria-label="Feature showcase"
+		>
+			<div className="grid grid-cols-12 items-center gap-8 lg:gap-12">
+				{/* Left sidebar — flat tab list with dividers */}
+				<div className="col-span-4 flex flex-col" role="tablist">
+					{content.map((item, index) => (
+						<TabItem
+							key={item.title}
+							item={item}
+							isActive={index === activeIndex}
+							isLast={index === content.length - 1}
+							onClick={() => handleTabClick(index)}
+							timerKey={timerKey}
+							showProgress={!shouldReduceMotion && index === activeIndex}
+							reducedMotion={!!shouldReduceMotion}
+						/>
+					))}
+				</div>
+
+				{/* Right — HTML panel with crossfade */}
+				<div className="col-span-8" role="tabpanel">
+					<div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl">
+						<AnimatePresence mode="wait">
+							<motion.div
+								key={activeIndex}
+								initial={
+									shouldReduceMotion ? false : { opacity: 0, scale: 0.98 }
+								}
+								animate={{ opacity: 1, scale: 1 }}
+								exit={
+									shouldReduceMotion
+										? { opacity: 1 }
+										: { opacity: 0, scale: 0.98 }
+								}
+								transition={
+									shouldReduceMotion
+										? { duration: 0 }
+										: { duration: 0.4, ease: "easeInOut" }
+								}
+								className="absolute inset-0"
+							>
+								{PANELS[activeIndex]}
+							</motion.div>
+						</AnimatePresence>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Tab item — accordion expand for active, dimmed when inactive      */
+/* ------------------------------------------------------------------ */
+
+function TabItem({
+	item,
+	isActive,
+	isLast,
+	onClick,
+	timerKey,
+	showProgress,
+	reducedMotion,
+}: {
+	item: StickyContentItem;
+	isActive: boolean;
+	isLast: boolean;
+	onClick: () => void;
+	timerKey: number;
+	showProgress: boolean;
+	reducedMotion: boolean;
+}) {
+	return (
+		<button
+			type="button"
+			role="tab"
+			aria-selected={isActive}
+			onClick={onClick}
+			className={`relative w-full cursor-pointer text-left transition-all duration-300 ${
+				!isLast ? "border-b border-white/10" : ""
+			}`}
+		>
+			<div className="py-5">
+				<h3
+					className={`text-xl font-semibold transition-colors duration-300 lg:text-2xl ${
+						isActive
+							? "text-white"
+							: "text-white/30 hover:text-white/50"
+					}`}
+				>
+					{item.title}
+				</h3>
+
+				{/* Accordion — description only visible when active */}
+				<AnimatePresence initial={false}>
+					{isActive && (
+						<motion.div
+							initial={reducedMotion ? false : { height: 0, opacity: 0 }}
+							animate={{ height: "auto", opacity: 1 }}
+							exit={reducedMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+							transition={
+								reducedMotion
+									? { duration: 0 }
+									: { duration: 0.3, ease: "easeInOut" }
+							}
+							className="overflow-hidden"
+						>
+							<p className="mt-3 text-sm leading-relaxed text-white/50">
+								{item.description.join(". ")}
+							</p>
+							{item.learnMoreHref && (
+								<a
+									href={item.learnMoreHref}
+									className="mt-3 inline-flex items-center gap-1 text-sm text-white/70 transition-colors hover:text-white"
+									onClick={(e) => e.stopPropagation()}
+								>
+									Learn more
+									<ChevronRight className="h-3.5 w-3.5" />
+								</a>
+							)}
+						</motion.div>
+					)}
+				</AnimatePresence>
+			</div>
+
+			{/* Progress line — fills the bottom border during auto-advance */}
+			{showProgress && (
+				<motion.div
+					key={timerKey}
+					className="absolute bottom-0 left-0 h-px bg-[#24a9e0]"
+					initial={{ width: "0%" }}
+					animate={{ width: "100%" }}
+					transition={{
+						duration: AUTO_ADVANCE_MS / 1000,
+						ease: "linear",
+					}}
+				/>
+			)}
+		</button>
+	);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Mobile: stacked cards                                              */
+/* ------------------------------------------------------------------ */
 
 function MobileStackedView({ content }: { content: StickyContentItem[] }) {
 	return (
 		<div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6">
-			{content.map((item) => (
+			{content.map((item, index) => (
 				<article
 					key={item.title}
-					className="overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm"
+					className="overflow-hidden rounded-xl border border-white/10"
 				>
+					{/* Use HTML panels on mobile too */}
 					<div className="aspect-video w-full">
-						{item.deviceFrame ? (
-							<DeviceFrame>
-								<OptimizedImage
-									src={item.imageSrc}
-									alt={item.title}
-									width={1200}
-									height={800}
-									className="h-full w-full object-cover"
-									sizes="100vw"
-									quality={85}
-								/>
-							</DeviceFrame>
-						) : (
+						{PANELS[index] ?? (
 							<OptimizedImage
 								src={item.imageSrc}
 								alt={item.title}
@@ -89,210 +265,15 @@ function MobileStackedView({ content }: { content: StickyContentItem[] }) {
 						)}
 					</div>
 					<div className="p-5">
-						<span className="mb-2 block font-mono text-sm text-muted-foreground">
-							{item.overline}
-						</span>
-						<h3 className="mb-3 text-xl font-bold text-foreground">
+						<h3 className="mb-3 text-xl font-semibold text-white">
 							{item.title}
 						</h3>
-						<div className="space-y-2">
-							{item.description.map((desc) => (
-								<p
-									key={desc}
-									className="text-sm leading-relaxed text-muted-foreground"
-								>
-									{desc}
-								</p>
-							))}
-						</div>
+						<p className="text-sm leading-relaxed text-white/50">
+							{item.description.join(". ")}
+						</p>
 					</div>
 				</article>
 			))}
 		</div>
 	);
-}
-
-function DesktopStickyScroll({ content }: { content: StickyContentItem[] }) {
-	const shouldReduceMotion = useReducedMotion();
-	const containerRef = useRef<HTMLDivElement>(null);
-	const { scrollYProgress } = useScroll({
-		target: containerRef,
-		offset: ["start start", "end end"],
-	});
-
-	const activeStepIndex = useTransform(
-		scrollYProgress,
-		[0, 0.33, 0.66, 1],
-		[0, 1, 2, 2],
-	);
-
-	const progressBarHeight = useTransform(
-		scrollYProgress,
-		[0, 1],
-		["0%", "100%"],
-	);
-
-	return (
-		<div ref={containerRef} className="relative h-[300vh]">
-			<section
-				className="sticky top-0 flex h-screen items-center"
-				aria-label="Feature showcase"
-			>
-				<div className="mx-auto grid w-full max-w-7xl grid-cols-5 gap-8 px-4 sm:px-6 lg:px-8">
-					{/* Progress bar - left edge */}
-					<div
-						className="absolute left-4 top-1/2 -translate-y-1/2 sm:left-6 lg:left-8"
-						aria-hidden="true"
-					>
-						<div className="relative h-48 w-1 overflow-hidden rounded-full bg-white/10">
-							<motion.div
-								className="absolute top-0 left-0 w-full rounded-full bg-gradient-to-b from-blue-500 to-purple-500"
-								style={{ height: progressBarHeight }}
-							/>
-						</div>
-					</div>
-
-					{/* Left column - Text content (2/5) */}
-					<div className="col-span-2 flex items-center">
-						<div className="relative w-full">
-							{content.map((item, index) => (
-								<TextSection
-									key={item.title}
-									item={item}
-									index={index}
-									activeStepIndex={activeStepIndex}
-									reducedMotion={!!shouldReduceMotion}
-								/>
-							))}
-						</div>
-					</div>
-
-					{/* Right column - Images (3/5) */}
-					<div className="col-span-3 flex items-center justify-center">
-						<div className="relative aspect-video w-full">
-							<AnimatePresence mode="wait">
-								<ImagePanel
-									content={content}
-									activeStepIndex={activeStepIndex}
-									reducedMotion={!!shouldReduceMotion}
-								/>
-							</AnimatePresence>
-						</div>
-					</div>
-				</div>
-			</section>
-		</div>
-	);
-}
-
-function TextSection({
-	item,
-	index,
-	activeStepIndex,
-	reducedMotion,
-}: {
-	item: StickyContentItem;
-	index: number;
-	activeStepIndex: ReturnType<typeof useTransform<number, number>>;
-	reducedMotion: boolean;
-}) {
-	const opacity = useTransform(activeStepIndex, (latest) => {
-		const rounded = Math.round(latest);
-		return rounded === index ? 1 : 0.3;
-	});
-
-	const isActiveValue = useTransform(activeStepIndex, (latest): number =>
-		Math.round(latest) === index ? 1 : 0,
-	);
-	const isActive = useMotionValueState(isActiveValue);
-
-	return (
-		<motion.div
-			className="mb-8 rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
-			style={reducedMotion ? { opacity: isActive ? 1 : 0.3 } : { opacity }}
-			aria-live={isActive ? "polite" : "off"}
-		>
-			<span className="mb-2 block font-mono text-sm text-muted-foreground">
-				{item.overline}
-			</span>
-			<h3 className="mb-3 text-xl font-bold text-foreground lg:text-2xl">
-				{item.title}
-			</h3>
-			<div className="space-y-2">
-				{item.description.map((desc) => (
-					<p
-						key={desc}
-						className="text-sm leading-relaxed text-muted-foreground"
-					>
-						{desc}
-					</p>
-				))}
-			</div>
-		</motion.div>
-	);
-}
-
-function ImagePanel({
-	content,
-	activeStepIndex,
-	reducedMotion,
-}: {
-	content: StickyContentItem[];
-	activeStepIndex: ReturnType<typeof useTransform<number, number>>;
-	reducedMotion: boolean;
-}) {
-	const currentIndex = useTransform(activeStepIndex, (latest) =>
-		Math.round(latest),
-	);
-	const index = useMotionValueState(currentIndex);
-	const item = content[index] ?? content[0];
-
-	if (!item) return null;
-
-	const image = (
-		<OptimizedImage
-			src={item.imageSrc}
-			alt={item.title}
-			width={1200}
-			height={800}
-			className="h-full w-full rounded-lg object-cover"
-			priority={index === 0}
-			loading={index === 0 ? "eager" : "lazy"}
-			sizes="60vw"
-			quality={85}
-		/>
-	);
-
-	return (
-		<motion.div
-			key={index}
-			initial={reducedMotion ? false : { opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={reducedMotion ? { opacity: 1 } : { opacity: 0 }}
-			transition={
-				reducedMotion ? { duration: 0 } : { duration: 0.4, ease: "easeInOut" }
-			}
-			className="absolute inset-0"
-		>
-			{item.deviceFrame ? (
-				<DeviceFrame>{image}</DeviceFrame>
-			) : (
-				<div className="overflow-hidden rounded-xl">{image}</div>
-			)}
-		</motion.div>
-	);
-}
-
-function useMotionValueState(
-	motionValue: ReturnType<typeof useTransform<number, number>>,
-) {
-	const [value, setValue] = useState(0);
-	useEffect(() => {
-		setValue(motionValue.get());
-		const unsubscribe = motionValue.on("change", (latest) => {
-			setValue(latest);
-		});
-		return unsubscribe;
-	}, [motionValue]);
-	return value;
 }

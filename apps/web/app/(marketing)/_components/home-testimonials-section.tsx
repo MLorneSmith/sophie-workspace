@@ -1,4 +1,3 @@
-import { SecondaryHero } from "@kit/ui/marketing";
 import { Suspense } from "react";
 
 import { homepageContentConfig } from "~/config/homepage-content.config";
@@ -26,18 +25,12 @@ export function HomeTestimonialsSection() {
 
 	return (
 		<div className="w-full">
-			<SecondaryHero
-				heading={
-					<span className="text-h3 sm:text-h2 mb-4 text-center leading-snug sm:mb-6">
-						{testimonials.title}
-					</span>
-				}
-				subheading={
-					<p className="text-body sm:text-body-lg max-w-4xl leading-relaxed text-muted-foreground dark:text-muted-foreground">
-						{testimonials.subtitle}
-					</p>
-				}
-			/>
+			<h2 className="text-h3 sm:text-h2 mb-3 text-center sm:mb-4">
+				{testimonials.title}
+			</h2>
+			<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-muted-foreground sm:mb-12 dark:text-muted-foreground">
+				{testimonials.subtitle}
+			</p>
 			<AnimateOnScroll delay={0.2}>
 				<Suspense fallback={<SectionLoader />}>
 					<TestimonialsMasonaryGridServer />

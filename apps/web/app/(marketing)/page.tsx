@@ -18,7 +18,6 @@ import {
 	FeaturesSkeleton,
 	HowItWorksSkeleton,
 	LogoCloudSkeleton,
-	PricingSkeleton,
 	StatisticsSkeleton,
 	StickyScrollSkeleton,
 	TestimonialsSkeleton,
@@ -53,11 +52,6 @@ const HomeComparisonSection = dynamic(() =>
 
 import { HomeTestimonialsSection } from "./_components/home-testimonials-section";
 
-const HomePricingSection = dynamic(() =>
-	import("./_components/home-pricing-section").then((m) => ({
-		default: m.HomePricingSection,
-	})),
-);
 const HomeBlogSection = dynamic(() =>
 	import("./_components/home-blog-section").then((m) => ({
 		default: m.HomeBlogSection,
@@ -85,7 +79,7 @@ const spacing = {
 	section: "mt-8 sm:mt-12 md:mt-16 lg:mt-24",
 } as const;
 
-const containerBase = "mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden" as const;
+const containerBase = "mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden" as const;
 
 function SectionDivider() {
 	return (
@@ -146,7 +140,7 @@ function Home() {
 			{/* Statistics Section */}
 			<section
 				aria-label="Platform statistics"
-				className={`w-full bg-black py-10 sm:py-12 md:py-16 lg:py-20`}
+				className={"w-full bg-black py-10 sm:py-12 md:py-16 lg:py-20"}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<AnimateOnScroll>
@@ -160,13 +154,13 @@ function Home() {
 			{/* Sticky Scroll Section */}
 			<section
 				aria-labelledby="sticky-scroll-heading"
-				className={`w-full ${spacing.section} bg-background dark:bg-background`}
+				className="w-full bg-black pt-8 sm:pt-12 md:pt-16 lg:pt-24 pb-8 sm:pb-12 md:pb-16 lg:pb-24"
 			>
 				<div className={`${containerBase} ${widths.content} mb-8`}>
 					{/* biome-ignore lint/correctness/useUniqueElementIds: aria-labelledby target, page rendered once */}
 					<h2
 						id="sticky-scroll-heading"
-						className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl"
+						className="text-h3 sm:text-h2 mb-3 text-center sm:mb-4"
 					>
 						{homepageContentConfig.sticky.title}
 					</h2>
@@ -184,7 +178,7 @@ function Home() {
 			{/* How It Works Section */}
 			<section
 				aria-label="How it works"
-				className={`${spacing.section} bg-background dark:bg-background`}
+				className={`${spacing.section} relative z-10 overflow-hidden bg-black`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<Suspense fallback={<HowItWorksSkeleton />}>
@@ -235,18 +229,6 @@ function Home() {
 				<div className={`${containerBase} ${widths.content}`}>
 					<Suspense fallback={<TestimonialsSkeleton />}>
 						<HomeTestimonialsSection />
-					</Suspense>
-				</div>
-			</section>
-
-			{/* Pricing Section */}
-			<section
-				aria-label="Pricing"
-				className={`${spacing.section} dark:bg-background bg-secondary/50`}
-			>
-				<div className={`${containerBase} ${widths.content}`}>
-					<Suspense fallback={<PricingSkeleton />}>
-						<HomePricingSection />
 					</Suspense>
 				</div>
 			</section>

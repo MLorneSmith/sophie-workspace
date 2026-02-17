@@ -6,7 +6,13 @@ export type IconName =
 	| "BookOpen"
 	| "LayoutDashboard"
 	| "Sparkles"
-	| "BarChart3";
+	| "BarChart3"
+	| "UserCircle"
+	| "Target"
+	| "Layers"
+	| "GitBranch"
+	| "LayoutPanelTop"
+	| "Rocket";
 
 interface BlogPost {
 	title: string;
@@ -97,31 +103,38 @@ const statisticsContent: StatisticItem[] = [
 const howItWorksSteps: HowItWorksStep[] = [
 	{
 		stepNumber: 1,
-		title: "Assemble",
+		title: "Profile",
 		description:
-			"Gather your key messages, data points, and supporting evidence into a structured brief.",
-		iconName: "BookOpen",
+			"Identify, research and consider how we ensure the needs of our audience take center stage",
+		iconName: "Target",
 	},
 	{
 		stepNumber: 2,
-		title: "Outline",
+		title: "Assemble",
 		description:
-			"AI generates a logical narrative structure using proven frameworks like SCQ and MECE.",
-		iconName: "LayoutDashboard",
+			"Gather your key messages, data points, and supporting evidence into a structured brief.",
+		iconName: "Layers",
 	},
 	{
 		stepNumber: 3,
-		title: "Storyboard",
+		title: "Outline",
 		description:
-			"Transform your outline into a visual storyboard with slide-by-slide recommendations.",
-		iconName: "Presentation",
+			"AI generates a logical narrative structure using proven frameworks like SCQ and MECE.",
+		iconName: "GitBranch",
 	},
 	{
 		stepNumber: 4,
-		title: "Produce",
+		title: "Storyboard",
+		description:
+			"Transform your outline into a visual storyboard with slide-by-slide recommendations.",
+		iconName: "LayoutPanelTop",
+	},
+	{
+		stepNumber: 5,
+		title: "Generate",
 		description:
 			"Export polished slides ready for your next high-stakes meeting or pitch.",
-		iconName: "Sparkles",
+		iconName: "Rocket",
 	},
 ];
 
@@ -224,9 +237,9 @@ export interface HeroConfig {
 export const homepageContentConfig = {
 	statistics: statisticsContent,
 	howItWorks: {
-		title: "How It Works",
+		title: "From Brief to Boardroom in 5 Steps",
 		subtitle:
-			"Four simple steps to create presentations that win over any audience",
+			"A proven workflow for creating presentations that convince the C-Suite and close the toughest deals",
 		steps: howItWorksSteps,
 	} satisfies HowItWorksConfig,
 	comparison: comparisonContent,
@@ -250,7 +263,7 @@ export const homepageContentConfig = {
 		socialProof: { avatarCount: 5, label: "Join 2,000+ professionals" },
 	} satisfies HeroConfig,
 	sticky: {
-		title: "Everything you need to create winning presentations",
+		title: "AI Writing Tools, Expert Training & Private Coaching",
 		subtitle:
 			"Comprehensive tools and training to elevate your presentation skills",
 		content: [
@@ -292,7 +305,7 @@ export const homepageContentConfig = {
 		] as StickyContentItem[],
 	},
 	features: {
-		title: "How we are different",
+		title: "What Makes SlideHeroes Different",
 		subtitle:
 			"Unique features that set us apart from traditional presentation tools",
 		cards: featureCards,
@@ -303,7 +316,7 @@ export const homepageContentConfig = {
 			"Hear from the people who use SlideHeroes to deliver high-impact presentations every day",
 	},
 	essentialReads: {
-		title: "Go Deeper, Learn Faster with these Essential Reads",
+		title: "Go Deeper, Learn Faster",
 		subtitle:
 			"Expert insights and practical guides to master presentation excellence",
 		posts: [

@@ -91,7 +91,7 @@ export function HomeComparisonSection() {
 
 	return (
 		<div className="w-full">
-			<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
+			<h2 className="text-h3 sm:text-h2 mb-3 text-center sm:mb-4">
 				{comparison.title}
 			</h2>
 			<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-muted-foreground sm:mb-12 dark:text-muted-foreground">

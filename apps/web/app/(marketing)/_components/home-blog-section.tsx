@@ -4,7 +4,6 @@ import { type Variants, motion, useReducedMotion } from "motion/react";
 import Image from "next/image";
 
 import { Badge } from "@kit/ui/badge";
-import { SecondaryHero } from "@kit/ui/marketing";
 
 const BLUR_PLACEHOLDER =
 	"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIyNSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48ZmlsdGVyIGlkPSJiIj48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyMCIvPjwvZmlsdGVyPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjYikiIGZpbGw9IiMxYTFhMjUiLz48L3N2Zz4=";
@@ -90,18 +89,12 @@ export function HomeBlogSection() {
 
 	return (
 		<div>
-			<SecondaryHero
-				heading={
-					<span className="text-h3 sm:text-h2 mb-8 text-center leading-snug sm:mb-12">
-						{title}
-					</span>
-				}
-				subheading={
-					<p className="text-body sm:text-body-lg max-w-4xl leading-relaxed text-muted-foreground dark:text-muted-foreground">
-						{subtitle}
-					</p>
-				}
-			/>
+			<h2 className="text-h3 sm:text-h2 mb-3 text-center sm:mb-4">
+				{title}
+			</h2>
+			<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-muted-foreground sm:mb-12 dark:text-muted-foreground">
+				{subtitle}
+			</p>
 
 			<motion.ul
 				role="list"
