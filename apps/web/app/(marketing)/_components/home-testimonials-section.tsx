@@ -148,10 +148,10 @@ export function HomeTestimonialsSection() {
 
 	return (
 		<div className="w-full">
-			<h2 className="text-h3 sm:text-h2 mb-3 text-center text-foreground sm:mb-4">
+			<h2 className="text-h3 sm:text-h2 mb-4 text-center text-foreground sm:mb-6">
 				{testimonials.title} {testimonials.titleMuted}
 			</h2>
-			<p className="mx-auto mb-8 max-w-4xl text-center text-lg leading-relaxed text-muted-foreground sm:mb-12 sm:text-xl">
+			<p className="mx-auto mb-10 max-w-4xl text-center text-lg leading-relaxed text-muted-foreground sm:mb-14 sm:text-xl">
 				{testimonials.subtitle}
 			</p>
 

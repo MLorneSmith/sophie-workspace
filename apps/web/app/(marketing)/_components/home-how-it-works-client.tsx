@@ -103,7 +103,7 @@ export function HomeHowItWorks({ title, subtitle, steps }: HowItWorksProps) {
 
 	return (
 		<div className="w-full">
-			<h2 className="text-h3 sm:text-h2 mb-3 text-center text-foreground sm:mb-4">
+			<h2 className="text-h3 sm:text-h2 mb-4 text-center text-foreground sm:mb-6">
 				{title}
 			</h2>
 			<p className="mx-auto mb-10 max-w-3xl text-center text-lg leading-relaxed text-muted-foreground sm:mb-14 sm:text-xl">

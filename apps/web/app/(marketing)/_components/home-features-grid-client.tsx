@@ -26,8 +26,8 @@ export function HomeFeaturesGrid() {
 
 	return (
 		<div>
-			<h2 className="text-h3 sm:text-h2 mb-3 text-center sm:mb-4">{title}</h2>
-			<p className="mx-auto mb-8 max-w-4xl text-center text-lg leading-relaxed text-muted-foreground sm:mb-12 sm:text-xl">
+			<h2 className="text-h3 sm:text-h2 mb-4 text-center sm:mb-6">{title}</h2>
+			<p className="mx-auto mb-10 max-w-4xl text-center text-lg leading-relaxed text-muted-foreground sm:mb-14 sm:text-xl">
 				{subtitle}
 			</p>
 

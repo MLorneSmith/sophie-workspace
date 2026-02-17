@@ -14,7 +14,7 @@ interface HomeFinalCtaSectionProps {
 
 export function HomeFinalCtaSection({ config }: HomeFinalCtaSectionProps) {
 	return (
-		<div className="relative isolate overflow-hidden py-16 sm:py-20 lg:py-28">
+		<div className="relative isolate overflow-hidden py-12 sm:py-16 md:py-20 lg:py-28">
 			{/* Gradient orb background */}
 			<div
 				aria-hidden="true"

@@ -89,14 +89,14 @@ export function HomeBlogSection() {
 
 	return (
 		<div>
-			<h2 className="text-h3 sm:text-h2 mb-3 text-center sm:mb-4">{title}</h2>
-			<p className="mx-auto mb-8 max-w-4xl text-center text-lg leading-relaxed text-muted-foreground sm:mb-12 sm:text-xl">
+			<h2 className="text-h3 sm:text-h2 mb-4 text-center sm:mb-6">{title}</h2>
+			<p className="mx-auto mb-10 max-w-4xl text-center text-lg leading-relaxed text-muted-foreground sm:mb-14 sm:text-xl">
 				{subtitle}
 			</p>
 
 			<motion.ul
 				role="list"
-				className="mt-8 grid grid-cols-1 gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8"
+				className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8"
 				variants={prefersReducedMotion ? undefined : containerVariants}
 				initial={prefersReducedMotion ? "visible" : "hidden"}
 				whileInView="visible"

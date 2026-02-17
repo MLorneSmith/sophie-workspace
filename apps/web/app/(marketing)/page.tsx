@@ -76,7 +76,7 @@ const spacing = {
 	md: "gap-6 my-6",
 	lg: "gap-8 my-8",
 	xl: "gap-12 my-12",
-	section: "mt-8 sm:mt-12 md:mt-16 lg:mt-24",
+	section: "py-12 sm:py-16 md:py-20 lg:py-28",
 } as const;
 
 const containerBase = "mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden" as const;
@@ -123,7 +123,7 @@ function Home() {
 			{/* Logo Cloud Section */}
 			<section
 				aria-label="Trusted by leading companies"
-				className="w-full bg-black py-10 sm:py-12 md:py-16 lg:py-20"
+				className={`${spacing.section} w-full bg-black`}
 			>
 				<AnimateOnScroll>
 					<Suspense fallback={<LogoCloudSkeleton />}>
@@ -137,7 +137,7 @@ function Home() {
 			{/* Statistics Section */}
 			<section
 				aria-label="Platform statistics"
-				className={"w-full bg-black py-10 sm:py-12 md:py-16 lg:py-20"}
+				className={`${spacing.section} w-full bg-black`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<AnimateOnScroll>
@@ -151,13 +151,13 @@ function Home() {
 			{/* Sticky Scroll Section */}
 			<section
 				aria-labelledby="sticky-scroll-heading"
-				className="w-full bg-black pt-8 sm:pt-12 md:pt-16 lg:pt-24 pb-8 sm:pb-12 md:pb-16 lg:pb-24"
+				className={`${spacing.section} w-full bg-black`}
 			>
-				<div className={`${containerBase} ${widths.content} mb-8`}>
+				<div className={`${containerBase} ${widths.content} mb-10 sm:mb-14`}>
 					{/* biome-ignore lint/correctness/useUniqueElementIds: aria-labelledby target, page rendered once */}
 					<h2
 						id="sticky-scroll-heading"
-						className="text-h3 sm:text-h2 mb-3 text-center sm:mb-4"
+						className="text-h3 sm:text-h2 mb-4 text-center sm:mb-6"
 					>
 						{homepageContentConfig.sticky.title}
 					</h2>
@@ -205,7 +205,7 @@ function Home() {
 			{/* Testimonials Section */}
 			<section
 				aria-label="Testimonials"
-				className={`${spacing.section} w-full bg-black py-10 sm:py-12 md:py-16 lg:py-20`}
+				className={`${spacing.section} w-full bg-black`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<Suspense fallback={<TestimonialsSkeleton />}>
@@ -217,7 +217,7 @@ function Home() {
 			{/* Blog Posts Section */}
 			<section
 				aria-label="Essential reads"
-				className={`${spacing.section} bg-background pb-12`}
+				className={`${spacing.section} bg-background`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<Suspense fallback={<BlogSkeleton />}>
@@ -229,7 +229,7 @@ function Home() {
 			{/* FAQ Section */}
 			<section
 				aria-label="Frequently asked questions"
-				className={`${spacing.section} bg-background pb-12`}
+				className={`${spacing.section} bg-background`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<Suspense fallback={<FaqSkeleton />}>
@@ -239,10 +239,7 @@ function Home() {
 			</section>
 
 			{/* Final CTA Section */}
-			<section
-				aria-label="Get started"
-				className={`${spacing.section} bg-background pb-12`}
-			>
+			<section aria-label="Get started" className="bg-background">
 				<div className={`${containerBase} ${widths.content}`}>
 					<Suspense fallback={<CtaSkeleton />}>
 						<HomeFinalCtaSection config={homepageContentConfig.finalCta} />

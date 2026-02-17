@@ -4,7 +4,7 @@ export function HomeFoundersMessage() {
 	return (
 		<section
 			aria-label="A message from our founder"
-			className="relative w-full bg-black py-16 sm:py-20 md:py-28 lg:py-32"
+			className="relative w-full bg-black py-16 sm:py-20 md:py-28 lg:py-36"
 		>
 			{/* Subtle top accent line */}
 			<div

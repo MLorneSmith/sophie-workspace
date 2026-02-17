@@ -14,7 +14,7 @@ export function HomeFaqSection() {
 
 	return (
 		<div className="w-full">
-			<h2 className="text-h3 sm:text-h2 mb-8 text-center sm:mb-12">
+			<h2 className="text-h3 sm:text-h2 mb-10 text-center sm:mb-14">
 				{faq.title}
 			</h2>
 
