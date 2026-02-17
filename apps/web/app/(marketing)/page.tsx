@@ -5,7 +5,10 @@ import { homepageContentConfig } from "~/config/homepage-content.config";
 import { withI18n } from "~/lib/i18n/with-i18n";
 
 import { AnimateOnScroll } from "./_components/animate-on-scroll";
+import { CausticsBackground } from "./_components/caustics-background";
+import { HeroGradientEffect } from "./_components/hero-gradient-effect";
 import { HeroSection } from "./_components/home-hero-section";
+import { PresentationShowcase } from "./_components/home-presentation-showcase";
 import { ProductPreviewSection } from "./_components/home-product-preview-section";
 import {
 	BlogSkeleton,
@@ -46,7 +49,9 @@ const HomeComparisonSection = dynamic(() =>
 		default: m.HomeComparisonSection,
 	})),
 );
+
 import { HomeTestimonialsSection } from "./_components/home-testimonials-section";
+
 const HomePricingSection = dynamic(() =>
 	import("./_components/home-pricing-section").then((m) => ({
 		default: m.HomePricingSection,
@@ -101,12 +106,23 @@ function Home() {
 			id="main-content"
 			className="bg-background dark:bg-background flex flex-col"
 		>
-			{/* Hero Section */}
-			<HeroSection />
+			{/* Hero + Product Preview + Showcase — unified caustics background */}
+			<div className="relative overflow-hidden bg-black">
+				{/* Caustics background covers entire dark zone */}
+				<CausticsBackground fallback={<HeroGradientEffect />} />
 
-			{/* Product Preview Section */}
-			<div className="relative z-[1] -mt-[22vh] sm:-mt-[28vh] lg:-mt-[35vh]">
-				<ProductPreviewSection />
+				{/* Hero Section */}
+				<HeroSection />
+
+				{/* Product Preview — overlaps hero */}
+				<div className="relative z-[2] -mt-[22vh] sm:-mt-[28vh] lg:-mt-[35vh]">
+					<ProductPreviewSection />
+				</div>
+
+				{/* Presentation Showcase */}
+				<div className="relative z-[5]">
+					<PresentationShowcase />
+				</div>
 			</div>
 
 			<SectionDivider />

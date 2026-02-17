@@ -68,6 +68,7 @@
 		font-size: var(--text-display);
 		line-height: var(--text-display--line-height);
 		letter-spacing: var(--text-display--letter-spacing);
+		font-weight: 500;
 	}
 
 	[data-marketing] h2,
@@ -168,6 +169,24 @@
 		[data-marketing] [class*="animate-"] {
 			animation: none !important;
 		}
+	}
+
+	/* Payload-style gradient shift animation for showcase section */
+	@keyframes gradientShift {
+		0% { transform: translate(0%, 0%) scale(1); }
+		50% { transform: translate(3%, -2%) scale(1.05); }
+		100% { transform: translate(0%, 0%) scale(1); }
+	}
+
+	/* Presentation showcase marquee animations */
+	@keyframes marquee-left {
+		from { transform: translateX(0); }
+		to { transform: translateX(-50%); }
+	}
+
+	@keyframes marquee-right {
+		from { transform: translateX(-50%); }
+		to { transform: translateX(0); }
 	}
 
 	/* Homepage Dark-Mode Design Tokens */
