@@ -1,4 +1,5 @@
 import { cn } from "@kit/ui/utils";
+import { Whisper } from "next/font/google";
 import localFont from "next/font/local";
 
 /**
@@ -92,8 +93,19 @@ const heading = localFont({
 	preload: true,
 });
 
+/**
+ * @script
+ * @description Whisper - Realistic handwritten signature font.
+ */
+const script = Whisper({
+	subsets: ["latin"],
+	weight: "400",
+	variable: "--font-script",
+	display: "swap",
+});
+
 // we export these fonts into the root layout
-export { sans, heading };
+export { sans, heading, script };
 
 /**
  * @name getFontsClassName
@@ -104,15 +116,14 @@ export function getFontsClassName(theme?: string) {
 	const dark = theme === "dark";
 	const light = !dark;
 
-	const font = [sans.variable, heading.variable].reduce<string[]>(
-		(acc, curr) => {
-			if (acc.includes(curr)) return acc;
+	const font = [sans.variable, heading.variable, script.variable].reduce<
+		string[]
+	>((acc, curr) => {
+		if (acc.includes(curr)) return acc;
 
-			acc.push(curr);
-			return acc;
-		},
-		[],
-	);
+		acc.push(curr);
+		return acc;
+	}, []);
 
 	return cn("bg-background min-h-screen antialiased", ...font, {
 		dark,

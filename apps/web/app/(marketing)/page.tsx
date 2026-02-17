@@ -7,6 +7,7 @@ import { withI18n } from "~/lib/i18n/with-i18n";
 import { AnimateOnScroll } from "./_components/animate-on-scroll";
 import { CausticsBackground } from "./_components/caustics-background";
 import { HeroGradientEffect } from "./_components/hero-gradient-effect";
+import { HomeFoundersMessage } from "./_components/home-founders-message";
 import { HeroSection } from "./_components/home-hero-section";
 import { PresentationShowcase } from "./_components/home-presentation-showcase";
 import { ProductPreviewSection } from "./_components/home-product-preview-section";
@@ -125,20 +126,19 @@ function Home() {
 				</div>
 			</div>
 
-			<SectionDivider />
+			{/* Founder's Message */}
+			<HomeFoundersMessage />
 
 			{/* Logo Cloud Section */}
 			<section
 				aria-label="Trusted by leading companies"
-				className={`w-full ${spacing.section} bg-background`}
+				className="w-full bg-black py-10 sm:py-12 md:py-16 lg:py-20"
 			>
-				<div className={`${containerBase} ${widths.navigation}`}>
-					<AnimateOnScroll>
-						<Suspense fallback={<LogoCloudSkeleton />}>
-							<LogoCloudMarquee />
-						</Suspense>
-					</AnimateOnScroll>
-				</div>
+				<AnimateOnScroll>
+					<Suspense fallback={<LogoCloudSkeleton />}>
+						<LogoCloudMarquee />
+					</Suspense>
+				</AnimateOnScroll>
 			</section>
 
 			<SectionDivider />
@@ -146,7 +146,7 @@ function Home() {
 			{/* Statistics Section */}
 			<section
 				aria-label="Platform statistics"
-				className={`w-full ${spacing.section} bg-background`}
+				className={`w-full bg-black py-10 sm:py-12 md:py-16 lg:py-20`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<AnimateOnScroll>

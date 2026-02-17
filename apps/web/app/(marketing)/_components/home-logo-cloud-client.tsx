@@ -19,13 +19,11 @@ const LogoCloudMarquee = dynamic<
 
 export default function HomeLogoCloud() {
 	return (
-		<div className="bg-background text-foreground">
-			<LogoCloudMarquee
-				mode="single"
-				title={homepageContentConfig.logoCloud.heading}
-				description=""
-				speed={homepageContentConfig.logoCloud.marqueeSpeed}
-			/>
-		</div>
+		<LogoCloudMarquee
+			mode="single"
+			title={homepageContentConfig.logoCloud.heading}
+			description=""
+			speed={homepageContentConfig.logoCloud.marqueeSpeed}
+		/>
 	);
 }

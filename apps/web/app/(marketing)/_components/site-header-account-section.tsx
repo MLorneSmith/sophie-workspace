@@ -71,11 +71,13 @@ function AuthButtons() {
 				</If>
 			</div>
 
-			<div className={"flex gap-x-2.5"}>
+			<div className={"flex items-center gap-x-2.5"}>
 				<Button
-					className={"hidden min-h-[44px] md:block"}
+					className={
+						"hidden border-white text-white hover:bg-white/10 hover:text-white md:inline-flex"
+					}
 					asChild
-					variant={"ghost"}
+					variant={"outline"}
 				>
 					<Link href={pathsConfig.auth.signIn}>
 						<Trans i18nKey={"auth:signIn"} />
@@ -84,8 +86,7 @@ function AuthButtons() {
 
 				<Button
 					asChild
-					className="min-h-[44px] text-xs md:text-sm"
-					variant={"default"}
+					className="bg-[#24A9E0] text-white hover:bg-[#24A9E0]/85"
 				>
 					<Link href={pathsConfig.auth.signUp}>
 						<Trans i18nKey={"auth:signUp"} />

@@ -143,7 +143,7 @@ const MotionDiv = motion.div;
 
 const LogoItem = ({ logo }: { logo: Logo }) => {
 	return (
-		<div className="mx-6 flex min-h-[44px] min-w-[44px] items-center md:mx-12">
+		<div className="mx-8 flex min-h-[44px] min-w-[44px] items-center md:mx-14">
 			<MotionDiv
 				whileHover={{
 					scale: 1.1,
@@ -157,8 +157,8 @@ const LogoItem = ({ logo }: { logo: Logo }) => {
 					<Image
 						src={logo.src}
 						alt={logo.name}
-						width={120}
-						height={60}
+						width={150}
+						height={75}
 						className="block opacity-90 transition-all duration-300 hover:opacity-100 dark:hidden"
 						style={{
 							objectFit: "contain",
@@ -169,8 +169,8 @@ const LogoItem = ({ logo }: { logo: Logo }) => {
 						src={logo.grayscaleSrc || logo.src}
 						alt=""
 						aria-hidden="true"
-						width={120 * (logo.scale || 1.0)}
-						height={60 * (logo.scale || 1.0)}
+						width={150 * (logo.scale || 1.0)}
+						height={75 * (logo.scale || 1.0)}
 						className="hidden opacity-90 transition-all duration-300 hover:opacity-100 dark:block"
 						style={{
 							objectFit: "contain",
@@ -199,7 +199,7 @@ export function LogoCloudMarquee({
 	return (
 		<div
 			className={cn(
-				"relative px-4 py-10 motion-reduce:*:animate-none md:px-8",
+				"relative py-10 motion-reduce:*:animate-none",
 				className,
 			)}
 			style={{ zIndex: 0 }}
@@ -214,7 +214,7 @@ export function LogoCloudMarquee({
 				<h2
 					className={cn(
 						"font-heading text-center text-3xl font-bold md:text-4xl lg:text-5xl",
-						"text-foreground",
+						"text-white",
 					)}
 				>
 					{title}
@@ -244,17 +244,25 @@ export function LogoCloudMarquee({
 			>
 				{mode === "single" ? (
 					<div
-						className="relative w-full"
+						className="relative w-full overflow-hidden"
 						role="group"
 						aria-label="Client logos"
 					>
 						<div
-							className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent"
+							className="pointer-events-none absolute inset-y-0 left-0 z-[2] w-16 sm:w-24 lg:w-32"
 							aria-hidden="true"
+							style={{
+								background:
+									"linear-gradient(to right, rgb(0 0 0 / 0.9), transparent)",
+							}}
 						/>
 						<div
-							className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent"
+							className="pointer-events-none absolute inset-y-0 right-0 z-[2] w-16 sm:w-24 lg:w-32"
 							aria-hidden="true"
+							style={{
+								background:
+									"linear-gradient(to left, rgb(0 0 0 / 0.9), transparent)",
+							}}
 						/>
 						<div className="relative z-[1]">
 							<Marquee
@@ -276,17 +284,25 @@ export function LogoCloudMarquee({
 				) : (
 					<>
 						<div
-							className="relative w-full"
+							className="relative w-full overflow-hidden"
 							role="group"
 							aria-label="Client logos first row"
 						>
 							<div
-								className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent"
+								className="pointer-events-none absolute inset-y-0 left-0 z-[2] w-16 sm:w-24 lg:w-32"
 								aria-hidden="true"
+								style={{
+									background:
+										"linear-gradient(to right, rgb(0 0 0 / 0.9), transparent)",
+								}}
 							/>
 							<div
-								className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent"
+								className="pointer-events-none absolute inset-y-0 right-0 z-[2] w-16 sm:w-24 lg:w-32"
 								aria-hidden="true"
+								style={{
+									background:
+										"linear-gradient(to left, rgb(0 0 0 / 0.9), transparent)",
+								}}
 							/>
 							<div className="relative z-[1]">
 								<Marquee
@@ -307,17 +323,25 @@ export function LogoCloudMarquee({
 						</div>
 
 						<div
-							className="relative w-full"
+							className="relative w-full overflow-hidden"
 							role="group"
 							aria-label="Client logos second row"
 						>
 							<div
-								className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent"
+								className="pointer-events-none absolute inset-y-0 left-0 z-[2] w-16 sm:w-24 lg:w-32"
 								aria-hidden="true"
+								style={{
+									background:
+										"linear-gradient(to right, rgb(0 0 0 / 0.9), transparent)",
+								}}
 							/>
 							<div
-								className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent"
+								className="pointer-events-none absolute inset-y-0 right-0 z-[2] w-16 sm:w-24 lg:w-32"
 								aria-hidden="true"
+								style={{
+									background:
+										"linear-gradient(to left, rgb(0 0 0 / 0.9), transparent)",
+								}}
 							/>
 							<div className="relative z-[1]">
 								<Marquee

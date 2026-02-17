@@ -70,7 +70,7 @@ function StatBlock({
 					{suffix}
 				</span>
 			</div>
-			<p className="mt-2 text-sm font-medium text-muted-foreground sm:text-base">
+			<p className="mt-2 text-sm font-normal text-[#a0a0b0] sm:text-base">
 				{label}
 			</p>
 		</motion.li>
