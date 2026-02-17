@@ -241,10 +241,10 @@ export const homepageContentConfig = {
 		title: "SlideHeroes Canvas",
 	},
 	hero: {
-		title: "Write more impactful presentations ",
+		title: "Build better presentations, faster",
 		subtitle:
-			"AI-powered writing canvas, video training, private coaching for high-stakes consulting, sales & investor presentations",
-		pillText: "AI-Powered Presentation Platform",
+			"SlideHeroes is the AI presentation platform trusted by consultants and executives. Write faster with structured frameworks, expert video training, and private coaching.",
+		pillText: "AI Presentation Platform",
 		ctaPrimary: { label: "Start Writing Free", href: "/auth/sign-up" },
 		ctaSecondary: { label: "Watch Demo", href: "#product-preview" },
 		socialProof: { avatarCount: 5, label: "Join 2,000+ professionals" },

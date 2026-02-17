@@ -1,28 +1,95 @@
 import { cn } from "@kit/ui/utils";
-import { DM_Sans, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 
 /**
  * @sans
- * @description DM Sans - Contemporary, friendly, highly readable body font.
+ * @description Untitled Sans - Clean, neutral grotesque for body text.
+ * Test fonts from Klim Type Foundry.
  */
-const sans = DM_Sans({
-	subsets: ["latin"],
+const sans = localFont({
+	src: [
+		{
+			path: "../fonts/untitled-sans/test-untitled-sans-light.woff2",
+			weight: "300",
+			style: "normal",
+		},
+		{
+			path: "../fonts/untitled-sans/test-untitled-sans-light-italic.woff2",
+			weight: "300",
+			style: "italic",
+		},
+		{
+			path: "../fonts/untitled-sans/test-untitled-sans-regular.woff2",
+			weight: "400",
+			style: "normal",
+		},
+		{
+			path: "../fonts/untitled-sans/test-untitled-sans-regular-italic.woff2",
+			weight: "400",
+			style: "italic",
+		},
+		{
+			path: "../fonts/untitled-sans/test-untitled-sans-medium.woff2",
+			weight: "500",
+			style: "normal",
+		},
+		{
+			path: "../fonts/untitled-sans/test-untitled-sans-medium-italic.woff2",
+			weight: "500",
+			style: "italic",
+		},
+		{
+			path: "../fonts/untitled-sans/test-untitled-sans-bold.woff2",
+			weight: "700",
+			style: "normal",
+		},
+		{
+			path: "../fonts/untitled-sans/test-untitled-sans-bold-italic.woff2",
+			weight: "700",
+			style: "italic",
+		},
+		{
+			path: "../fonts/untitled-sans/test-untitled-sans-black.woff2",
+			weight: "900",
+			style: "normal",
+		},
+		{
+			path: "../fonts/untitled-sans/test-untitled-sans-black-italic.woff2",
+			weight: "900",
+			style: "italic",
+		},
+	],
 	variable: "--font-sans",
 	fallback: ["system-ui", "Helvetica Neue", "Helvetica", "Arial"],
 	preload: true,
-	weight: ["400", "500", "700"],
 });
 
 /**
  * @heading
- * @description Plus Jakarta Sans - Modern, geometric heading font.
+ * @description Untitled Sans - Same family for headings, unified typography.
+ * Test fonts from Klim Type Foundry.
  */
-const heading = Plus_Jakarta_Sans({
-	subsets: ["latin"],
+const heading = localFont({
+	src: [
+		{
+			path: "../fonts/untitled-sans/test-untitled-sans-medium.woff2",
+			weight: "500",
+			style: "normal",
+		},
+		{
+			path: "../fonts/untitled-sans/test-untitled-sans-bold.woff2",
+			weight: "700",
+			style: "normal",
+		},
+		{
+			path: "../fonts/untitled-sans/test-untitled-sans-black.woff2",
+			weight: "900",
+			style: "normal",
+		},
+	],
 	variable: "--font-heading",
 	fallback: ["system-ui", "Helvetica Neue", "Helvetica", "Arial"],
 	preload: true,
-	weight: ["400", "500", "600", "700"],
 });
 
 // we export these fonts into the root layout

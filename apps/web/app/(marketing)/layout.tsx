@@ -1,5 +1,6 @@
 import type { JWTUserData } from "@kit/supabase/types";
 
+import { GridLines } from "~/(marketing)/_components/grid-lines";
 import { MotionProvider } from "~/(marketing)/_components/motion-provider";
 import { SiteFooter } from "~/(marketing)/_components/site-footer";
 import { SiteHeader } from "~/(marketing)/_components/site-header";
@@ -15,6 +16,7 @@ function SiteLayout(props: React.PropsWithChildren) {
 			<a href="#main-content" className="skip-to-content">
 				Skip to content
 			</a>
+			<GridLines />
 			<SiteHeader user={user} />
 
 			<MotionProvider>{props.children}</MotionProvider>

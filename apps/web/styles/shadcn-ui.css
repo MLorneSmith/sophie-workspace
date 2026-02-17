@@ -10,11 +10,11 @@
 	:root {
 		/* Font variables are set by next/font in layout - these are fallbacks */
 		--font-sans:
-			"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+			"Untitled Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
 			Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
 			"Segoe UI Symbol";
 		--font-heading:
-			"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+			"Untitled Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
 			Helvetica, Arial, sans-serif;
 
 		--background: var(--color-white);
