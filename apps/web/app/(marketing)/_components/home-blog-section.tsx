@@ -89,9 +89,7 @@ export function HomeBlogSection() {
 
 	return (
 		<div>
-			<h2 className="text-h3 sm:text-h2 mb-3 text-center sm:mb-4">
-				{title}
-			</h2>
+			<h2 className="text-h3 sm:text-h2 mb-3 text-center sm:mb-4">{title}</h2>
 			<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-muted-foreground sm:mb-12 dark:text-muted-foreground">
 				{subtitle}
 			</p>

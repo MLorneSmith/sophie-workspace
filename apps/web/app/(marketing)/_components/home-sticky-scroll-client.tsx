@@ -1,6 +1,12 @@
 "use client";
 
-import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import {
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ChevronRight } from "lucide-react";
 
@@ -181,9 +187,7 @@ function TabItem({
 			<div className="py-5">
 				<h3
 					className={`text-xl font-semibold transition-colors duration-300 lg:text-2xl ${
-						isActive
-							? "text-white"
-							: "text-white/30 hover:text-white/50"
+						isActive ? "text-white" : "text-white/30 hover:text-white/50"
 					}`}
 				>
 					{item.title}

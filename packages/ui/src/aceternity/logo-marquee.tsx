@@ -208,12 +208,7 @@ export function LogoCloudMarquee({
 				animate={{ opacity: 1, y: 0 }}
 				transition={springConfig}
 			>
-				<h2
-					className={cn(
-						"text-h3 sm:text-h2 text-center",
-						"text-white",
-					)}
-				>
+				<h2 className={cn("text-h3 sm:text-h2 text-center", "text-white")}>
 					{title}
 				</h2>
 			</MotionDiv>

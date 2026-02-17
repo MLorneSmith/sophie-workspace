@@ -83,13 +83,13 @@ export function AIWritingPanel() {
 						<div className="space-y-2 text-sm leading-relaxed text-white/60">
 							<p>
 								Enterprise presentation tools are converging on AI-first
-								workflows, with 73% of Fortune 500 companies now investing
-								in automated content creation.
+								workflows, with 73% of Fortune 500 companies now investing in
+								automated content creation.
 							</p>
 							<p>
 								Three forces are driving this shift: increased demand for
-								data-driven storytelling, pressure for faster turnaround
-								on executive communications, and the need for consistent
+								data-driven storytelling, pressure for faster turnaround on
+								executive communications, and the need for consistent
 								brand-quality output at scale.
 							</p>
 						</div>
@@ -225,18 +225,12 @@ export function TrainingPanel() {
 						<span className="size-2.5 rounded-full bg-[#febc2e]" />
 						<span className="size-2.5 rounded-full bg-[#28c840]" />
 					</div>
-					<span className="text-xs text-white/50">
-						Training Dashboard
-					</span>
+					<span className="text-xs text-white/50">Training Dashboard</span>
 				</div>
 				<div className="flex items-center gap-2">
-					<span className="text-[10px] text-white/30">
-						40 lessons
-					</span>
+					<span className="text-[10px] text-white/30">40 lessons</span>
 					<span className="text-[10px] text-white/30">·</span>
-					<span className="text-[10px] text-white/30">
-						12h total
-					</span>
+					<span className="text-[10px] text-white/30">12h total</span>
 				</div>
 			</div>
 
@@ -261,16 +255,12 @@ export function TrainingPanel() {
 							}`}
 						>
 							<span>{item.label}</span>
-							<span className="text-[10px] text-white/25">
-								{item.count}
-							</span>
+							<span className="text-[10px] text-white/25">{item.count}</span>
 						</div>
 					))}
 
 					<div className="mt-5 rounded-lg bg-white/5 p-2.5">
-						<div className="mb-1 text-[10px] text-white/40">
-							Your progress
-						</div>
+						<div className="mb-1 text-[10px] text-white/40">Your progress</div>
 						<div className="text-lg font-bold text-white">47%</div>
 						<div className="mt-1.5 h-1 overflow-hidden rounded-full bg-white/10">
 							<div
@@ -286,9 +276,7 @@ export function TrainingPanel() {
 					{/* Search bar */}
 					<div className="flex items-center gap-2 border-b border-white/10 px-4 py-2">
 						<span className="text-xs text-white/30">⌕</span>
-						<span className="text-xs text-white/25">
-							Search 6 modules...
-						</span>
+						<span className="text-xs text-white/25">Search 6 modules...</span>
 					</div>
 
 					{/* Table header */}
@@ -309,12 +297,8 @@ export function TrainingPanel() {
 							<span className="truncate text-xs text-white/70">
 								{mod.title}
 							</span>
-							<span className="text-xs text-white/40">
-								{mod.lessons}
-							</span>
-							<span className="text-xs text-white/40">
-								{mod.duration}
-							</span>
+							<span className="text-xs text-white/40">{mod.lessons}</span>
+							<span className="text-xs text-white/40">{mod.duration}</span>
 							<span
 								className={`inline-block w-fit rounded-full px-2 py-0.5 text-[10px] ${categoryColors[mod.category] ?? ""}`}
 							>
@@ -386,9 +370,7 @@ export function CoachingPanel() {
 						<span className="size-2.5 rounded-full bg-[#febc2e]" />
 						<span className="size-2.5 rounded-full bg-[#28c840]" />
 					</div>
-					<span className="text-xs text-white/50">
-						Coaching Session
-					</span>
+					<span className="text-xs text-white/50">Coaching Session</span>
 				</div>
 				<div className="flex items-center gap-2">
 					<div className="flex -space-x-1.5">
@@ -399,9 +381,7 @@ export function CoachingPanel() {
 							MS
 						</div>
 					</div>
-					<span className="text-[10px] text-white/30">
-						2 collaborators
-					</span>
+					<span className="text-[10px] text-white/30">2 collaborators</span>
 				</div>
 			</div>
 
@@ -421,8 +401,8 @@ export function CoachingPanel() {
 							Q4 Revenue Impact
 						</div>
 						<p className="mt-1 text-[11px] leading-relaxed text-white/40">
-							This quarter, we left $4.2M in pipeline due to
-							misaligned messaging across regional teams.
+							This quarter, we left $4.2M in pipeline due to misaligned
+							messaging across regional teams.
 						</p>
 					</div>
 
@@ -432,12 +412,8 @@ export function CoachingPanel() {
 							Presentation Score
 						</div>
 						<div className="flex items-end gap-1">
-							<span className="text-2xl font-bold text-emerald-400">
-								8.2
-							</span>
-							<span className="mb-0.5 text-xs text-white/30">
-								/ 10
-							</span>
+							<span className="text-2xl font-bold text-emerald-400">8.2</span>
+							<span className="mb-0.5 text-xs text-white/30">/ 10</span>
 						</div>
 						<div className="mt-2 space-y-1.5">
 							{[
@@ -465,12 +441,8 @@ export function CoachingPanel() {
 				{/* Right - feedback thread */}
 				<div className="flex flex-1 flex-col">
 					<div className="border-b border-white/10 px-4 py-2">
-						<span className="text-xs text-white/40">
-							Feedback Thread
-						</span>
-						<span className="ml-2 text-[10px] text-white/20">
-							3 comments
-						</span>
+						<span className="text-xs text-white/40">Feedback Thread</span>
+						<span className="ml-2 text-[10px] text-white/20">3 comments</span>
 					</div>
 
 					<div className="flex-1 space-y-3 overflow-hidden p-4">
@@ -509,9 +481,7 @@ export function CoachingPanel() {
 					{/* Input bar */}
 					<div className="border-t border-white/10 px-4 py-2.5">
 						<div className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2">
-							<span className="text-xs text-white/20">
-								Reply to coach...
-							</span>
+							<span className="text-xs text-white/20">Reply to coach...</span>
 						</div>
 					</div>
 				</div>

@@ -63,9 +63,7 @@ function FlowArrow({
 						background: `linear-gradient(to right, ${fromColor}, ${toColor})`,
 						width: 20,
 					}}
-					initial={
-						reduced ? undefined : { scaleX: 0, opacity: 0 }
-					}
+					initial={reduced ? undefined : { scaleX: 0, opacity: 0 }}
 					whileInView={{ scaleX: 1, opacity: 1 }}
 					transition={{
 						duration: 0.4,
@@ -78,9 +76,7 @@ function FlowArrow({
 					viewBox="0 0 12 12"
 					className="h-3 w-3"
 					fill="none"
-					initial={
-						reduced ? undefined : { opacity: 0, x: -4 }
-					}
+					initial={reduced ? undefined : { opacity: 0, x: -4 }}
 					whileInView={{ opacity: 1, x: 0 }}
 					transition={{
 						duration: 0.3,
@@ -88,10 +84,7 @@ function FlowArrow({
 					}}
 					viewport={{ once: true }}
 				>
-					<polygon
-						points="0,0 12,6 0,12"
-						fill={toColor}
-					/>
+					<polygon points="0,0 12,6 0,12" fill={toColor} />
 				</motion.svg>
 			</motion.div>
 		</div>
@@ -122,8 +115,7 @@ export function HomeHowItWorks({ title, subtitle, steps }: HowItWorksProps) {
 				<div
 					className="mt-4 grid items-stretch gap-y-0"
 					style={{
-						gridTemplateColumns:
-							"1fr 40px 1fr 40px 1fr 40px 1fr 40px 1fr",
+						gridTemplateColumns: "1fr 40px 1fr 40px 1fr 40px 1fr 40px 1fr",
 						gap: 0,
 					}}
 				>
@@ -138,10 +130,7 @@ export function HomeHowItWorks({ title, subtitle, steps }: HowItWorksProps) {
 									<FlowArrow
 										key={`arrow-${i}`}
 										index={i - 1}
-										fromColor={
-											STEP_COLORS[i - 1] ??
-											STEP_COLORS[0]!
-										}
+										fromColor={STEP_COLORS[i - 1] ?? STEP_COLORS[0]!}
 										toColor={color}
 										reduced={reduced}
 									/>
@@ -153,11 +142,7 @@ export function HomeHowItWorks({ title, subtitle, steps }: HowItWorksProps) {
 									style={{
 										border: `1px solid ${hexToRgba(color, 0.25)}`,
 									}}
-									initial={
-										reduced
-											? undefined
-											: { opacity: 0, y: 24 }
-									}
+									initial={reduced ? undefined : { opacity: 0, y: 24 }}
 									whileInView={{ opacity: 1, y: 0 }}
 									whileHover={{
 										y: -4,
@@ -189,10 +174,7 @@ export function HomeHowItWorks({ title, subtitle, steps }: HowItWorksProps) {
 									<motion.div
 										className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl"
 										style={{
-											backgroundColor: hexToRgba(
-												color,
-												0.12,
-											),
+											backgroundColor: hexToRgba(color, 0.12),
 										}}
 										initial={
 											reduced
@@ -223,22 +205,15 @@ export function HomeHowItWorks({ title, subtitle, steps }: HowItWorksProps) {
 														y: [0, -3, 0],
 													}}
 													transition={{
-														duration:
-															3 + i * 0.4,
+														duration: 3 + i * 0.4,
 														repeat: Number.POSITIVE_INFINITY,
 														ease: "easeInOut",
 													}}
 												>
-													<Icon
-														className="h-7 w-7"
-														style={{ color }}
-													/>
+													<Icon className="h-7 w-7" style={{ color }} />
 												</motion.div>
 											) : (
-												<Icon
-													className="h-7 w-7"
-													style={{ color }}
-												/>
+												<Icon className="h-7 w-7" style={{ color }} />
 											))}
 									</motion.div>
 
@@ -276,11 +251,7 @@ export function HomeHowItWorks({ title, subtitle, steps }: HowItWorksProps) {
 							<motion.li
 								key={step.stepNumber}
 								className="relative"
-								initial={
-									reduced
-										? undefined
-										: { opacity: 0, x: -12 }
-								}
+								initial={reduced ? undefined : { opacity: 0, x: -12 }}
 								whileInView={{ opacity: 1, x: 0 }}
 								transition={{
 									duration: 0.4,
@@ -307,22 +278,12 @@ export function HomeHowItWorks({ title, subtitle, steps }: HowItWorksProps) {
 										<div
 											className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
 											style={{
-												backgroundColor: hexToRgba(
-													color,
-													0.12,
-												),
+												backgroundColor: hexToRgba(color, 0.12),
 											}}
 										>
-											{Icon && (
-												<Icon
-													className="h-4 w-4"
-													style={{ color }}
-												/>
-											)}
+											{Icon && <Icon className="h-4 w-4" style={{ color }} />}
 										</div>
-										<h3 className="font-semibold text-white">
-											{step.title}
-										</h3>
+										<h3 className="font-semibold text-white">{step.title}</h3>
 									</div>
 									<p className="text-sm leading-relaxed text-white/50">
 										{step.description}

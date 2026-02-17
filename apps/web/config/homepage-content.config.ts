@@ -12,7 +12,9 @@ export type IconName =
 	| "Layers"
 	| "GitBranch"
 	| "LayoutPanelTop"
-	| "Rocket";
+	| "Rocket"
+	| "Award"
+	| "ShieldCheck";
 
 interface BlogPost {
 	title: string;
@@ -186,13 +188,13 @@ const featureCards: FeatureCard[] = [
 		title: "Fine-tuned AI",
 		description:
 			"AI tailored to the task of creating high-quality presentation content.",
-		iconName: "Brain",
+		iconName: "Sparkles",
 		size: "large",
 	},
 	{
 		title: "Proven Methodology",
 		description: "AI is automating a proven presentation development approach.",
-		iconName: "Presentation",
+		iconName: "Target",
 		size: "standard",
 	},
 	{
@@ -206,21 +208,21 @@ const featureCards: FeatureCard[] = [
 		title: "Certification",
 		description:
 			"Earn presentation excellence Certification. Share achievements on LinkedIn.",
-		iconName: "LayoutDashboard",
-		size: "standard",
+		iconName: "Award",
+		size: "large",
 	},
 	{
 		title: "Private Coaching",
 		description:
 			"Our one-on-one coaching delivers high touch, custom feedback and support.",
-		iconName: "Sparkles",
+		iconName: "UserCircle",
 		size: "large",
 	},
 	{
 		title: "30-Day Money-Back Guarantee",
 		description:
 			"Cancel anytime in your first 30 days and receive a full refund.",
-		iconName: "BarChart3",
+		iconName: "ShieldCheck",
 		size: "standard",
 	},
 ];
@@ -305,7 +307,7 @@ export const homepageContentConfig = {
 		] as StickyContentItem[],
 	},
 	features: {
-		title: "What Makes SlideHeroes Different",
+		title: "What Makes SlideHeroes Different?",
 		subtitle:
 			"Unique features that set us apart from traditional presentation tools",
 		cards: featureCards,

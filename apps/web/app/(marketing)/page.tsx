@@ -13,7 +13,6 @@ import { PresentationShowcase } from "./_components/home-presentation-showcase";
 import { ProductPreviewSection } from "./_components/home-product-preview-section";
 import {
 	BlogSkeleton,
-	ComparisonSkeleton,
 	CtaSkeleton,
 	FeaturesSkeleton,
 	HowItWorksSkeleton,
@@ -42,11 +41,6 @@ const HomeHowItWorks = dynamic(() =>
 const HomeFeaturesGrid = dynamic(() =>
 	import("./_components/home-features-grid-client").then((m) => ({
 		default: m.HomeFeaturesGrid,
-	})),
-);
-const HomeComparisonSection = dynamic(() =>
-	import("./_components/home-comparison-section").then((m) => ({
-		default: m.HomeComparisonSection,
 	})),
 );
 
@@ -204,22 +198,6 @@ function Home() {
 					</Suspense>
 				</div>
 			</section>
-
-			{/* Comparison Section */}
-			<section
-				aria-label="Comparison"
-				className={`${spacing.section} bg-background dark:bg-background`}
-			>
-				<div className={`${containerBase} ${widths.content}`}>
-					<AnimateOnScroll>
-						<Suspense fallback={<ComparisonSkeleton />}>
-							<HomeComparisonSection />
-						</Suspense>
-					</AnimateOnScroll>
-				</div>
-			</section>
-
-			<SectionDivider />
 
 			{/* Testimonials Section */}
 			<section
