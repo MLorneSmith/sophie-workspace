@@ -26,10 +26,10 @@ export function HomeFoundersMessage() {
 				{/* Letter body */}
 				<div className="space-y-6 text-base leading-relaxed text-muted-foreground sm:text-lg sm:leading-relaxed">
 					<p>
-						It was the one where someone walked into the room, laid out the
-						problem in a way that made everyone nod, and then built an argument
-						so clear that the decision felt obvious. No fancy animations. No
-						stock photos. Just sharp thinking, structured right.
+						It was the one where someone laid out the problem in a way that made
+						everyone nod, then built an argument so clear the decision felt
+						obvious. No fancy animations, stock photos. Just sharp thinking,
+						structured right.
 					</p>
 
 					<p className="text-foreground/80">
@@ -37,11 +37,11 @@ export function HomeFoundersMessage() {
 					</p>
 
 					<p>
-						AI has made it trivially easy to generate slides. Type a sentence,
-						get a deck. It looks professional. It says all the right buzzwords.
-						And it lands with a thud&nbsp;&mdash; because there&apos;s no
-						thinking behind it. No structure. No understanding of who&apos;s in
-						the room and what they actually need to hear.
+						AI has made it trivially easy to generate
+						slides&nbsp;&mdash;&nbsp;type a sentence, get a deck. It looks
+						professional, uses the right buzzwords, and lands with a thud.
+						Because there&apos;s no thinking behind it. No structure. No
+						understanding of who&apos;s in the room.
 					</p>
 
 					<p className="text-foreground/80">
@@ -50,21 +50,20 @@ export function HomeFoundersMessage() {
 
 					<p>
 						SlideHeroes doesn&apos;t generate presentations for you. It helps
-						you build them&nbsp;&mdash; with the same methodology that the best
-						consulting firms have used for decades. Structured storytelling.
-						Logical flow. Audience-aware persuasion. The stuff that separates a
-						deck that gets forwarded from one that gets forgotten.
+						you build them&nbsp;&mdash;&nbsp;automating the same methodology the
+						best consulting firms have used for decades. Structured
+						storytelling. Logical flow. Audience-aware persuasion.
 					</p>
 
 					<p>
-						The AI handles the research, the drafts, the heavy lifting. You
-						handle the judgment&nbsp;&mdash; what matters, what doesn&apos;t,
-						and what this particular audience needs to walk away believing.
+						Our AI handles the research, the drafts, the heavy lifting. You
+						handle the judgment&nbsp;&mdash;&nbsp;what matters, what
+						doesn&apos;t, and what your audience needs to walk away believing.
 					</p>
 
 					<p className="text-foreground/80">
-						It&apos;s not magic. It&apos;s a better process. And better process
-						beats better templates every single time.
+						It&apos;s not magic. It&apos;s a better workflow. And better process
+						beats better templates every time.
 					</p>
 
 					<p>
