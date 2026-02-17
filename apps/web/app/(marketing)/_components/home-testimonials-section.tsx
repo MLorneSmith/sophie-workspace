@@ -27,11 +27,7 @@ function highlightContent(content: string, highlights: string[]) {
 				);
 				if (isHighlight) {
 					return (
-						<strong
-							key={i}
-							className="font-semibold"
-							style={{ color: "var(--homepage-text, #f5f5f7)" }}
-						>
+						<strong key={i} className="font-semibold text-foreground">
 							{part}
 						</strong>
 					);
@@ -83,20 +79,13 @@ function TestimonialCarousel({
 					type="button"
 					onClick={prev}
 					aria-label="Previous testimonial"
-					className="flex-shrink-0 cursor-pointer rounded-full border p-2 transition-colors hover:bg-[var(--homepage-surface-elevated,#1a1a25)] sm:p-3"
-					style={{
-						borderColor: "var(--homepage-border-subtle, #1e1e2e)",
-						color: "var(--homepage-text-muted, #a0a0b0)",
-					}}
+					className="flex-shrink-0 cursor-pointer rounded-full border border-border p-2 text-muted-foreground transition-colors hover:bg-muted sm:p-3"
 				>
 					<ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
 				</button>
 
 				<blockquote className="flex-1 text-center">
-					<p
-						className="text-lg font-light leading-relaxed sm:text-xl md:text-2xl"
-						style={{ color: "var(--homepage-text-muted, #a0a0b0)" }}
-					>
+					<p className="text-lg font-light leading-relaxed text-muted-foreground sm:text-xl md:text-2xl">
 						&ldquo;{highlightContent(current.content, current.highlights)}
 						&rdquo;
 					</p>
@@ -106,11 +95,7 @@ function TestimonialCarousel({
 					type="button"
 					onClick={next}
 					aria-label="Next testimonial"
-					className="flex-shrink-0 cursor-pointer rounded-full border p-2 transition-colors hover:bg-[var(--homepage-surface-elevated,#1a1a25)] sm:p-3"
-					style={{
-						borderColor: "var(--homepage-border-subtle, #1e1e2e)",
-						color: "var(--homepage-text-muted, #a0a0b0)",
-					}}
+					className="flex-shrink-0 cursor-pointer rounded-full border border-border p-2 text-muted-foreground transition-colors hover:bg-muted sm:p-3"
 				>
 					<ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
 				</button>
@@ -118,40 +103,22 @@ function TestimonialCarousel({
 
 			{/* Script signature */}
 			<p
-				className="mb-6 text-3xl sm:mb-8 sm:text-4xl"
-				style={{
-					fontFamily: "var(--font-script), cursive",
-					color: "var(--homepage-text, #f5f5f7)",
-				}}
+				className="mb-6 text-3xl text-foreground sm:mb-8 sm:text-4xl"
+				style={{ fontFamily: "var(--font-script), cursive" }}
 			>
 				{current.name}
 			</p>
 
 			{/* Avatar + name + title */}
 			<div className="flex items-center gap-4">
-				<div
-					className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-sm font-medium"
-					style={{
-						backgroundColor: "var(--homepage-surface-elevated, #1a1a25)",
-						border: "1px solid var(--homepage-border-subtle, #1e1e2e)",
-						color: "var(--homepage-text, #f5f5f7)",
-					}}
-				>
+				<div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-border bg-muted text-sm font-medium text-foreground">
 					{getInitials(current.name)}
 				</div>
 				<div>
-					<p
-						className="text-sm font-semibold"
-						style={{ color: "var(--homepage-text, #f5f5f7)" }}
-					>
+					<p className="text-sm font-semibold text-foreground">
 						{current.name}
 					</p>
-					<p
-						className="text-sm"
-						style={{ color: "var(--homepage-text-muted, #a0a0b0)" }}
-					>
-						{current.role}
-					</p>
+					<p className="text-sm text-muted-foreground">{current.role}</p>
 				</div>
 			</div>
 
@@ -163,14 +130,9 @@ function TestimonialCarousel({
 							key={testimonials[i]!.name}
 							type="button"
 							onClick={() => setIndex(i)}
-							className="h-1.5 rounded-full transition-all"
-							style={{
-								width: i === index ? "24px" : "6px",
-								backgroundColor:
-									i === index
-										? "var(--homepage-text, #f5f5f7)"
-										: "var(--homepage-border, #2a2a3a)",
-							}}
+							className={`h-1.5 rounded-full transition-all ${
+								i === index ? "w-6 bg-foreground" : "w-1.5 bg-border"
+							}`}
 							aria-label={`Go to testimonial ${i + 1}`}
 						/>
 					))}
@@ -186,21 +148,21 @@ export function HomeTestimonialsSection() {
 
 	return (
 		<div className="w-full">
-			<h2
-				className="text-h3 sm:text-h2 mb-8 text-center sm:mb-12"
-				style={{ color: "var(--homepage-text, #f5f5f7)" }}
-			>
+			<h2 className="text-h3 sm:text-h2 mb-3 text-center text-foreground sm:mb-4">
 				{testimonials.title} {testimonials.titleMuted}
 			</h2>
+			<p className="mx-auto mb-8 max-w-4xl text-center text-lg leading-relaxed text-muted-foreground sm:mb-12 sm:text-xl">
+				{testimonials.subtitle}
+			</p>
 
 			<Tabs defaultValue={categories[0]!.value} className="w-full">
 				<div className="mb-10 flex justify-center sm:mb-14">
-					<TabsList className="h-auto gap-2 rounded-full border border-[var(--homepage-border-subtle,#1e1e2e)] bg-[var(--homepage-bg,#0a0a0f)] p-1.5">
+					<TabsList className="h-auto gap-2 rounded-full border border-border bg-background p-1.5">
 						{categories.map((cat) => (
 							<TabsTrigger
 								key={cat.value}
 								value={cat.value}
-								className="cursor-pointer rounded-full px-4 py-2 text-sm font-medium text-[var(--homepage-text-muted,#a0a0b0)] transition-all data-[state=active]:bg-[var(--homepage-surface-elevated,#1a1a25)] data-[state=active]:text-[var(--homepage-text,#f5f5f7)] data-[state=active]:shadow-none"
+								className="cursor-pointer rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-all data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none"
 							>
 								{cat.label}
 							</TabsTrigger>

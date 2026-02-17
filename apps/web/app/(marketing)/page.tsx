@@ -85,7 +85,7 @@ function SectionDivider() {
 	return (
 		<div
 			aria-hidden="true"
-			className="mx-auto hidden h-px w-full max-w-7xl px-4 dark:block sm:px-6 lg:px-8"
+			className="mx-auto block h-px w-full max-w-7xl px-4 sm:px-6 lg:px-8"
 			style={{
 				background:
 					"radial-gradient(ellipse at center, var(--homepage-border, #2a2a3a) 0%, transparent 70%)",
@@ -97,10 +97,7 @@ function SectionDivider() {
 function Home() {
 	return (
 		// biome-ignore lint/correctness/useUniqueElementIds: skip-to-content anchor target, only rendered once
-		<main
-			id="main-content"
-			className="bg-background dark:bg-background flex flex-col"
-		>
+		<main id="main-content" className="flex flex-col bg-background">
 			{/* Hero + Product Preview + Showcase — unified caustics background */}
 			<div className="relative overflow-hidden bg-black">
 				{/* Caustics background covers entire dark zone */}
@@ -164,7 +161,7 @@ function Home() {
 					>
 						{homepageContentConfig.sticky.title}
 					</h2>
-					<p className="text-body sm:text-body-lg mx-auto max-w-4xl text-center leading-relaxed text-muted-foreground dark:text-muted-foreground">
+					<p className="mx-auto max-w-4xl text-center text-lg leading-relaxed text-muted-foreground sm:text-xl">
 						{homepageContentConfig.sticky.subtitle}
 					</p>
 				</div>
@@ -196,7 +193,7 @@ function Home() {
 			{/* Features Section */}
 			<section
 				aria-label="Features"
-				className={`${spacing.section} dark:bg-background bg-secondary/50`}
+				className={`${spacing.section} bg-background`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<Suspense fallback={<FeaturesSkeleton />}>
@@ -220,7 +217,7 @@ function Home() {
 			{/* Blog Posts Section */}
 			<section
 				aria-label="Essential reads"
-				className={`${spacing.section} bg-background dark:bg-background pb-12`}
+				className={`${spacing.section} bg-background pb-12`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<Suspense fallback={<BlogSkeleton />}>
@@ -232,7 +229,7 @@ function Home() {
 			{/* FAQ Section */}
 			<section
 				aria-label="Frequently asked questions"
-				className={`${spacing.section} bg-background dark:bg-background pb-12`}
+				className={`${spacing.section} bg-background pb-12`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<Suspense fallback={<FaqSkeleton />}>
@@ -244,7 +241,7 @@ function Home() {
 			{/* Final CTA Section */}
 			<section
 				aria-label="Get started"
-				className={`${spacing.section} bg-background dark:bg-background pb-12`}
+				className={`${spacing.section} bg-background pb-12`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<Suspense fallback={<CtaSkeleton />}>

@@ -315,6 +315,8 @@ export const homepageContentConfig = {
 	testimonials: {
 		title: "What our users",
 		titleMuted: "are saying",
+		subtitle:
+			"Hear from consultants, strategists, and freelancers who transformed how they build presentations",
 		categories: [
 			{
 				label: "Boutique Consultancies",

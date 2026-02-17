@@ -103,10 +103,10 @@ export function HomeHowItWorks({ title, subtitle, steps }: HowItWorksProps) {
 
 	return (
 		<div className="w-full">
-			<h2 className="text-h3 sm:text-h2 mb-3 text-center text-white sm:mb-4">
+			<h2 className="text-h3 sm:text-h2 mb-3 text-center text-foreground sm:mb-4">
 				{title}
 			</h2>
-			<p className="mx-auto mb-10 max-w-3xl text-center text-lg leading-relaxed text-white/60 sm:mb-14">
+			<p className="mx-auto mb-10 max-w-3xl text-center text-lg leading-relaxed text-muted-foreground sm:mb-14 sm:text-xl">
 				{subtitle}
 			</p>
 
@@ -221,7 +221,7 @@ export function HomeHowItWorks({ title, subtitle, steps }: HowItWorksProps) {
 										{step.title}
 									</h3>
 
-									<p className="text-center text-xs leading-relaxed text-white/50 lg:text-sm">
+									<p className="text-center text-xs leading-relaxed text-muted-foreground lg:text-sm">
 										{step.description}
 									</p>
 								</motion.div>
@@ -283,9 +283,11 @@ export function HomeHowItWorks({ title, subtitle, steps }: HowItWorksProps) {
 										>
 											{Icon && <Icon className="h-4 w-4" style={{ color }} />}
 										</div>
-										<h3 className="font-semibold text-white">{step.title}</h3>
+										<h3 className="font-semibold text-foreground">
+											{step.title}
+										</h3>
 									</div>
-									<p className="text-sm leading-relaxed text-white/50">
+									<p className="text-sm leading-relaxed text-muted-foreground">
 										{step.description}
 									</p>
 								</div>

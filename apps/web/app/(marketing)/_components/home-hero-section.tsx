@@ -55,7 +55,7 @@ export function HeroSection() {
 				{/* Subtitle */}
 				<m.p
 					variants={prefersReducedMotion ? undefined : fadeUp}
-					className="max-w-3xl text-lg leading-relaxed text-[#a0a0b0] sm:text-xl"
+					className="max-w-3xl text-lg leading-relaxed text-muted-foreground sm:text-xl"
 				>
 					{hero.subtitle}
 				</m.p>

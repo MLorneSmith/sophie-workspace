@@ -187,7 +187,9 @@ function TabItem({
 			<div className="py-5">
 				<h3
 					className={`text-xl font-semibold transition-colors duration-300 lg:text-2xl ${
-						isActive ? "text-white" : "text-white/30 hover:text-white/50"
+						isActive
+							? "text-foreground"
+							: "text-muted-foreground/50 hover:text-muted-foreground"
 					}`}
 				>
 					{item.title}
@@ -207,13 +209,13 @@ function TabItem({
 							}
 							className="overflow-hidden"
 						>
-							<p className="mt-3 text-sm leading-relaxed text-white/50">
+							<p className="mt-3 text-sm leading-relaxed text-muted-foreground">
 								{item.description.join(". ")}
 							</p>
 							{item.learnMoreHref && (
 								<a
 									href={item.learnMoreHref}
-									className="mt-3 inline-flex items-center gap-1 text-sm text-white/70 transition-colors hover:text-white"
+									className="mt-3 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
 									onClick={(e) => e.stopPropagation()}
 								>
 									Learn more
@@ -269,10 +271,10 @@ function MobileStackedView({ content }: { content: StickyContentItem[] }) {
 						)}
 					</div>
 					<div className="p-5">
-						<h3 className="mb-3 text-xl font-semibold text-white">
+						<h3 className="mb-3 text-xl font-semibold text-foreground">
 							{item.title}
 						</h3>
-						<p className="text-sm leading-relaxed text-white/50">
+						<p className="text-sm leading-relaxed text-muted-foreground">
 							{item.description.join(". ")}
 						</p>
 					</div>

@@ -18,13 +18,13 @@ export function HomeFoundersMessage() {
 
 			<div className="mx-auto max-w-2xl px-6 sm:px-8">
 				{/* Opening hook — large, weighted */}
-				<p className="mb-8 text-2xl leading-snug font-medium tracking-tight text-[#f5f5f7] sm:mb-10 sm:text-3xl md:text-4xl md:leading-snug">
+				<p className="mb-8 text-2xl leading-snug font-medium tracking-tight text-foreground sm:mb-10 sm:text-3xl md:text-4xl md:leading-snug">
 					The best presentation you ever saw probably wasn&apos;t the prettiest
 					one.
 				</p>
 
 				{/* Letter body */}
-				<div className="space-y-6 text-base leading-relaxed text-[#a0a0b0] sm:text-lg sm:leading-relaxed">
+				<div className="space-y-6 text-base leading-relaxed text-muted-foreground sm:text-lg sm:leading-relaxed">
 					<p>
 						It was the one where someone walked into the room, laid out the
 						problem in a way that made everyone nod, and then built an argument
@@ -32,7 +32,7 @@ export function HomeFoundersMessage() {
 						stock photos. Just sharp thinking, structured right.
 					</p>
 
-					<p className="text-[#c8c8d4]">
+					<p className="text-foreground/80">
 						That&apos;s the craft. And it&apos;s disappearing.
 					</p>
 
@@ -44,7 +44,7 @@ export function HomeFoundersMessage() {
 						the room and what they actually need to hear.
 					</p>
 
-					<p className="text-[#c8c8d4]">
+					<p className="text-foreground/80">
 						We think that&apos;s a problem worth solving properly.
 					</p>
 
@@ -62,7 +62,7 @@ export function HomeFoundersMessage() {
 						and what this particular audience needs to walk away believing.
 					</p>
 
-					<p className="text-[#c8c8d4]">
+					<p className="text-foreground/80">
 						It&apos;s not magic. It&apos;s a better process. And better process
 						beats better templates every single time.
 					</p>
@@ -80,7 +80,7 @@ export function HomeFoundersMessage() {
 				{/* Signature */}
 				<div className="mt-10 sm:mt-12">
 					<p
-						className="text-5xl text-[#f5f5f7] sm:text-6xl"
+						className="text-5xl text-foreground sm:text-6xl"
 						style={{ fontFamily: "var(--font-script), cursive" }}
 					>
 						Michael
@@ -90,8 +90,8 @@ export function HomeFoundersMessage() {
 							aria-hidden="true"
 							className="h-px w-8 bg-[var(--homepage-border,#2a2a3a)]"
 						/>
-						<p className="text-sm tracking-wide text-[#a0a0b0]">
-							Michael<span className="mx-1.5 text-[#555]">/</span>
+						<p className="text-sm tracking-wide text-muted-foreground">
+							Michael<span className="mx-1.5 text-muted-foreground/50">/</span>
 							Founder
 						</p>
 					</div>

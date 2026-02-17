@@ -12,7 +12,7 @@ function SiteLayout(props: React.PropsWithChildren) {
 	const user: JWTUserData | null = null;
 
 	return (
-		<div data-marketing className={"flex min-h-[100vh] flex-col"}>
+		<div data-marketing className="dark flex min-h-[100vh] flex-col">
 			<a href="#main-content" className="skip-to-content">
 				Skip to content
 			</a>

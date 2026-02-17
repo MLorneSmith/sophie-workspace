@@ -158,34 +158,28 @@ const PROGRAMMATIC_SEO_PAGES = [
 
 export function SiteFooter() {
 	return (
-		<footer
-			className={cn(
-				"border-t border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-black",
-			)}
-		>
+		<footer className={cn("border-t border-white/10 bg-black")}>
 			<div className="container py-8">
-				<div
-					className={cn("border-b border-gray-200 pb-6 dark:border-white/10")}
-				>
+				<div className={cn("border-b border-white/10 pb-6")}>
 					<FooterLogoSection />
 				</div>
 				<div
 					className={cn(
-						"relative grid grid-cols-2 gap-8 border-b border-gray-200 py-8 md:grid-cols-4 dark:border-white/10",
+						"relative grid grid-cols-2 gap-8 border-b border-white/10 py-8 md:grid-cols-4",
 					)}
 				>
 					{/* Payload-style vertical column dividers */}
 					<div
 						aria-hidden="true"
-						className="pointer-events-none absolute inset-y-0 hidden md:block left-1/4 w-px bg-gray-200 dark:bg-white/10"
+						className="pointer-events-none absolute inset-y-0 hidden md:block left-1/4 w-px bg-white/10"
 					/>
 					<div
 						aria-hidden="true"
-						className="pointer-events-none absolute inset-y-0 hidden md:block left-1/2 w-px bg-gray-200 dark:bg-white/10"
+						className="pointer-events-none absolute inset-y-0 hidden md:block left-1/2 w-px bg-white/10"
 					/>
 					<div
 						aria-hidden="true"
-						className="pointer-events-none absolute inset-y-0 hidden md:block left-3/4 w-px bg-gray-200 dark:bg-white/10"
+						className="pointer-events-none absolute inset-y-0 hidden md:block left-3/4 w-px bg-white/10"
 					/>
 
 					<FooterLinkList title="Product" items={PRODUCT} />
