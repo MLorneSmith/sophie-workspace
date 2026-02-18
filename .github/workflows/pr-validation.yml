@@ -1,7 +1,9 @@
 name: PR Validation
 
 on:
-  pull_request:
+  # pull_request_target runs for fork PRs (runs in base repo context with secrets access)
+  # Safe here because we pin checkout to the PR head SHA and don't run arbitrary fork scripts
+  pull_request_target:
     branches: [main, staging, dev]
     types: [opened, synchronize, reopened]
   workflow_dispatch:
@@ -112,7 +114,7 @@ jobs:
           echo "reason=Full validation required" >> $GITHUB_OUTPUT
 
       - name: Comment skip status on PR
-        if: steps.check.outputs.skip == 'true' && github.event_name == 'pull_request'
+        if: steps.check.outputs.skip == 'true' && github.event_name == 'pull_request_target'
         uses: actions/github-script@v8
         with:
           script: |
@@ -147,6 +149,8 @@ jobs:
       docker: ${{ steps.filter.outputs.docker }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -182,6 +186,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 2
 
       - uses: ./.github/actions/setup-deps
@@ -210,6 +215,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 2
 
       - uses: ./.github/actions/setup-deps
@@ -241,6 +247,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 2
 
       - uses: ./.github/actions/setup-deps
@@ -269,6 +276,8 @@ jobs:
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.yaml == 'true'
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - uses: ./.github/actions/setup-deps
 
@@ -283,6 +292,8 @@ jobs:
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.markdown == 'true'
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - uses: ./.github/actions/setup-deps
 
@@ -301,10 +312,12 @@ jobs:
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes
     # Only run on pull requests with relevant changes
-    if: (needs.changes.outputs.dependencies == 'true' || needs.changes.outputs.typescript == 'true') && github.event_name == 'pull_request'
+    if: (needs.changes.outputs.dependencies == 'true' || needs.changes.outputs.typescript == 'true') && github.event_name == 'pull_request_target'
     continue-on-error: true  # Non-blocking - allows security findings to be triaged separately
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Run Aikido Security Scan
         uses: AikidoSec/github-actions-workflow@v1.0.13
@@ -342,9 +355,11 @@ jobs:
       PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
     steps:
       - uses: actions/checkout@v6
-      
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
       - uses: ./.github/actions/setup-deps
-      
+
       - name: Build applications
         run: pnpm build
       
@@ -409,6 +424,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 2
 
       - uses: ./.github/actions/setup-deps
@@ -453,7 +469,7 @@ jobs:
 
       - name: Comment on PR with accessibility results
         uses: actions/github-script@v8
-        if: always() && github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request_target'
         with:
           script: |
             const fs = require('fs');
@@ -500,6 +516,8 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -534,7 +552,7 @@ jobs:
       - name: Upload config scan results
         # Skip SARIF upload in PR context due to GitHub permission restrictions
         # SARIF upload requires 'security-events: write' which is limited in fork PRs
-        if: steps.dockerfiles.outputs.files != '' && github.event_name != 'pull_request'
+        if: steps.dockerfiles.outputs.files != '' && github.event_name != 'pull_request_target'
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: 'trivy-config.sarif'
