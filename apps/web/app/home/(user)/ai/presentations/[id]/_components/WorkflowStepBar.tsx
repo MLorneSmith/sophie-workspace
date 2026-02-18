@@ -33,15 +33,13 @@ function getCurrentStepFromPathname(
 	return "profile";
 }
 
-export function WorkflowStepBar(props: {
-	presentationId: string;
-}) {
+export function WorkflowStepBar(props: { presentationId: string }) {
 	const pathname = usePathname();
 	const currentStep = getCurrentStepFromPathname(pathname, props.presentationId);
 	const currentIndex = WORKFLOW_STEPS.findIndex((s) => s.key === currentStep);
 
 	return (
-		<div className="border-b border-white/5 bg-background/60 backdrop-blur-md">
+		<div className="border-b border-white/5 bg-background/50 backdrop-blur-md">
 			<div className="mx-auto flex max-w-6xl items-center px-4 py-3 sm:px-6 lg:px-8">
 				<ol className="flex w-full items-center">
 					{WORKFLOW_STEPS.map((step, idx) => {
@@ -80,7 +78,7 @@ export function WorkflowStepBar(props: {
 								>
 									<span
 										className={cn(
-											"grid size-6 place-items-center rounded-full border text-xs",
+											"grid size-6 place-items-center rounded-full border text-app-xs",
 											isCurrent
 												? "border-[#24a9e0]/50 bg-[#24a9e0]/15 text-[#24a9e0]"
 												: isCompleted
@@ -102,7 +100,7 @@ export function WorkflowStepBar(props: {
 
 									<span
 										className={cn(
-											"truncate text-sm font-medium",
+											"truncate text-app-sm font-medium",
 											isCurrent ? "text-foreground" : "text-white/80",
 										)}
 									>

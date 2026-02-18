@@ -13,21 +13,21 @@ export function ContinueButton(props: {
 	return (
 		<div className="mt-10 flex flex-col items-end gap-2 border-t border-white/5 pt-6">
 			{!enabled && hint ? (
-				<p className="text-sm text-muted-foreground">{hint}</p>
+				<p className="text-app-sm text-muted-foreground">{hint}</p>
 			) : null}
 
-			<Button
-				type="button"
-				onClick={onContinue}
-				disabled={!enabled}
-				className={
-					enabled
-						? "bg-[#24a9e0] text-black hover:bg-[#24a9e0]/90"
-						: "bg-muted text-muted-foreground"
-				}
-			>
-				{label ?? "Continue"}
-			</Button>
+		<Button
+			type="button"
+			onClick={onContinue}
+			disabled={!enabled}
+			className={
+				enabled
+					? "bg-primary text-primary-foreground hover:bg-primary/90"
+					: "bg-muted text-muted-foreground"
+			}
+		>
+			{label ?? "Continue"}
+		</Button>
 		</div>
 	);
 }

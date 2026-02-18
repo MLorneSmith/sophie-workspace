@@ -12,6 +12,7 @@ import {
 	DialogTitle,
 } from "@kit/ui/dialog";
 import { cn } from "@kit/ui/utils";
+import { FileText } from "lucide-react";
 import { motion } from "motion/react";
 
 import {
@@ -33,10 +34,29 @@ function formatDate(iso: string) {
 	}
 }
 
+function hexToRgba(hex: string, alpha: number) {
+	const raw = hex.replace("#", "");
+
+	const normalized =
+		raw.length === 3
+			? raw
+				.split("")
+				.map((c) => `${c}${c}`)
+				.join("")
+			: raw;
+
+	const r = Number.parseInt(normalized.slice(0, 2), 16);
+	const g = Number.parseInt(normalized.slice(2, 4), 16);
+	const b = Number.parseInt(normalized.slice(4, 6), 16);
+
+	return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 function getNextIncompleteStep(completedThroughIndex: number) {
 	return (
-		WORKFLOW_STEPS[Math.min(completedThroughIndex + 1, WORKFLOW_STEPS.length - 1)] ??
-		WORKFLOW_STEPS[0]
+		WORKFLOW_STEPS[
+			Math.min(completedThroughIndex + 1, WORKFLOW_STEPS.length - 1)
+		] ?? WORKFLOW_STEPS[0]
 	);
 }
 
@@ -46,27 +66,32 @@ export default function PresentationsList() {
 	const [selected, setSelected] = useState<PresentationProject | null>(null);
 
 	const presentations = useMemo(() => MOCK_PRESENTATIONS, []);
+	const nextStep = selected
+		? getNextIncompleteStep(selected.completedThroughIndex)
+		: null;
 
 	return (
 		<div className="space-y-6">
 			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 				<div>
-					<h2 className="text-xl font-semibold text-foreground">Your projects</h2>
-					<p className="text-sm text-muted-foreground">
+					<h2 className="text-app-h2 font-semibold text-foreground">
+						Your projects
+					</h2>
+					<p className="text-app-body text-muted-foreground">
 						Pick up where you left off — or start something new.
 					</p>
 				</div>
 
 				<Button
 					onClick={() => {
-					const id =
-						typeof crypto !== "undefined" && "randomUUID" in crypto
-							? crypto.randomUUID()
-							: `pres-${Date.now()}`;
+						const id =
+							typeof crypto !== "undefined" && "randomUUID" in crypto
+								? crypto.randomUUID()
+								: `pres-${Date.now()}`;
 
-					router.push(`/home/ai/presentations/${id}/profile`);
-				}}
-					className="bg-[#24a9e0] text-black hover:bg-[#24a9e0]/90"
+						router.push(`/home/ai/presentations/${id}/profile`);
+					}}
+					className="bg-primary text-primary-foreground hover:bg-primary/90"
 				>
 					New Presentation
 				</Button>
@@ -74,8 +99,11 @@ export default function PresentationsList() {
 
 			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{presentations.map((p, idx) => {
-					const accent = STEP_ACCENT_SPECTRUM[idx % STEP_ACCENT_SPECTRUM.length];
-					const stepIdx = WORKFLOW_STEPS.findIndex((s) => s.key === p.currentStep);
+					const accent =
+						STEP_ACCENT_SPECTRUM[idx % STEP_ACCENT_SPECTRUM.length] ?? "#24A9E0";
+					const stepIdx = WORKFLOW_STEPS.findIndex(
+						(s) => s.key === p.currentStep,
+					);
 
 					return (
 						<motion.button
@@ -85,42 +113,58 @@ export default function PresentationsList() {
 								setSelected(p);
 								setOpen(true);
 							}}
-							whileHover={{ y: -4 }}
+							whileHover={{
+								y: -4,
+								boxShadow: `0 8px 30px ${hexToRgba(accent, 0.25)}`,
+								borderColor: hexToRgba(accent, 0.5),
+							}}
 							transition={{ type: "spring", stiffness: 400, damping: 20 }}
 							className={cn(
 								"group relative overflow-hidden rounded-xl border bg-white/5 text-left backdrop-blur-xl",
-								"border-white/10 hover:border-white/20",
-								"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#24a9e0]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black",
+								"border-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
 							)}
-							style={{
-								boxShadow: `0 0 0 1px rgba(255,255,255,0.06)`,
-							}}
 						>
-							<div
-								className="relative h-[120px] w-full"
-								aria-hidden="true"
-							>
+							<div className="relative h-[160px] w-full" aria-hidden="true">
 								<div
 									className="absolute inset-0"
 									style={{
-										background: `linear-gradient(135deg, ${accent}22, transparent 70%)`,
+										background: `linear-gradient(135deg, ${hexToRgba(
+											accent,
+											0.24,
+										)}, transparent 70%)`,
 									}}
 								/>
-								<div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-								<div className="absolute inset-0 flex items-center justify-center">
-									<div className="h-12 w-16 rounded-md border border-white/10 bg-white/5" />
+								<div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
+
+								<div className="absolute inset-0 flex items-center justify-center p-4">
+									<div className="relative w-full max-w-[320px]">
+										<div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent">
+											<div className="absolute inset-0">
+												<div className="absolute left-3 right-10 top-3 h-2 rounded bg-white/10" />
+												<div className="absolute left-3 right-16 top-7 h-2 rounded bg-white/10" />
+												<div className="absolute left-3 top-12 h-10 w-[45%] rounded-md bg-white/5" />
+												<div className="absolute right-3 top-12 h-16 w-[40%] rounded-md bg-white/5" />
+												<div className="absolute bottom-3 left-3 right-3 h-2 rounded bg-white/10" />
+											</div>
+
+											<div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-full border border-white/10 bg-black/35 px-2 py-1 text-[11px] text-white/70 backdrop-blur">
+												<FileText className="size-3" />
+												<span>No slides yet</span>
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 
 							<div className="space-y-3 p-4">
 								<div className="space-y-1">
-									<p className="text-xs text-white/60">
+									<p className="text-app-xs text-white/60">
 										Last updated {formatDate(p.updatedAt)}
 									</p>
-									<h3 className="line-clamp-2 text-base font-semibold text-foreground">
+									<h3 className="line-clamp-2 text-app-h4 font-semibold text-foreground">
 										{p.title}
 									</h3>
-									<p className="line-clamp-1 text-sm text-muted-foreground">
+									<p className="line-clamp-1 text-app-sm text-muted-foreground">
 										{p.audienceName}
 									</p>
 								</div>
@@ -129,14 +173,17 @@ export default function PresentationsList() {
 									<div className="flex items-center gap-2">
 										<div
 											className="h-2.5 w-2.5 rounded-full"
-											style={{ backgroundColor: STEP_ACCENT_SPECTRUM[stepIdx] ?? "#24A9E0" }}
+											style={{
+												backgroundColor:
+													STEP_ACCENT_SPECTRUM[stepIdx] ?? "#24A9E0",
+											}}
 										/>
-										<p className="text-sm text-white/80">
+										<p className="text-app-sm text-white/80">
 											{WORKFLOW_STEPS[stepIdx]?.label ?? "Profile"}
 										</p>
 									</div>
 
-									<p className="text-xs text-white/50">
+									<p className="text-app-xs text-white/50">
 										{Math.max(p.completedThroughIndex + 1, 0)}/5 complete
 									</p>
 								</div>
@@ -156,8 +203,10 @@ export default function PresentationsList() {
 				<DialogContent className="max-w-2xl">
 					{selected ? (
 						<DialogHeader>
-							<DialogTitle>{selected.title}</DialogTitle>
-							<DialogDescription>
+							<DialogTitle className="text-app-h3 font-semibold">
+								{selected.title}
+							</DialogTitle>
+							<DialogDescription className="text-app-sm">
 								Created {formatDate(selected.createdAt)} • Updated{" "}
 								{formatDate(selected.updatedAt)}
 							</DialogDescription>
@@ -167,14 +216,18 @@ export default function PresentationsList() {
 					{selected ? (
 						<div className="mt-4 space-y-6">
 							<div className="rounded-lg border border-white/10 bg-white/5 p-4">
-								<p className="text-sm font-medium text-foreground">Audience summary</p>
-								<p className="mt-2 text-sm text-muted-foreground">
+								<p className="text-app-sm font-medium text-foreground">
+									Audience summary
+								</p>
+								<p className="mt-2 text-app-body text-muted-foreground">
 									{selected.audienceSummary}
 								</p>
 							</div>
 
 							<div className="space-y-2">
-								<p className="text-sm font-medium text-foreground">Workflow</p>
+								<p className="text-app-sm font-medium text-foreground">
+									Workflow
+								</p>
 								<div className="space-y-2">
 									{WORKFLOW_STEPS.map((s, idx) => {
 										const status =
@@ -184,20 +237,43 @@ export default function PresentationsList() {
 													? "Next"
 													: "Not started";
 
+										const stepColor =
+											STEP_ACCENT_SPECTRUM[idx % STEP_ACCENT_SPECTRUM.length] ??
+											"#24A9E0";
+
 										return (
 											<div
 												key={s.key}
-												className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-3"
+												className="flex items-center justify-between gap-3 rounded-lg border bg-white/5 p-3"
+												style={{
+													borderColor: hexToRgba(stepColor, 0.25),
+												}}
 											>
-												<div className="min-w-0">
-													<p className="text-sm font-medium text-foreground">{s.label}</p>
-													<p className="text-xs text-white/60">{status}</p>
+												<div className="flex min-w-0 items-center gap-3">
+													<span
+														className="grid size-6 place-items-center rounded-full border"
+														style={{ borderColor: hexToRgba(stepColor, 0.45) }}
+													>
+														<span
+															className="size-2.5 rounded-full"
+															style={{ backgroundColor: stepColor }}
+														/>
+													</span>
+
+													<div className="min-w-0">
+														<p className="text-app-body font-medium text-foreground">
+															{s.label}
+														</p>
+														<p className="text-app-xs text-white/60">{status}</p>
+													</div>
 												</div>
 
 												<Button
 													variant="secondary"
 													onClick={() => {
-														router.push(`/home/ai/presentations/${selected.id}/${s.key}`);
+														router.push(
+															`/home/ai/presentations/${selected.id}/${s.key}`,
+														);
 														setOpen(false);
 													}}
 												>
@@ -222,13 +298,15 @@ export default function PresentationsList() {
 
 								<Button
 									onClick={() => {
-										const next = getNextIncompleteStep(selected.completedThroughIndex);
-										router.push(`/home/ai/presentations/${selected.id}/${next.key}`);
+										if (!nextStep) return;
+										router.push(
+											`/home/ai/presentations/${selected.id}/${nextStep.key}`,
+										);
 										setOpen(false);
 									}}
-									className="bg-[#24a9e0] text-black hover:bg-[#24a9e0]/90"
+									className="bg-primary text-primary-foreground hover:bg-primary/90"
 								>
-									Continue
+									{nextStep ? `Continue to ${nextStep.label} →` : "Continue"}
 								</Button>
 							</div>
 						</div>
