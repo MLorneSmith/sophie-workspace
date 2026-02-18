@@ -50,7 +50,8 @@
 			"!**/.ai/alpha/specs",
 			"!**/.ai/alpha/archive/**/*.json",
 			"!**/.claude/skills/email-style",
-			"!**/.github/skills"
+			"!**/.github/skills",
+			"!**/.agents/skills/nano-banana-pro-prompts-recommend-skill/references"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
@@ -144,6 +145,9 @@
 					},
 					"correctness": {
 						"noUnusedVariables": "off"
+					},
+					"style": {
+						"noNonNullAssertion": "off"
 					}
 				}
 			}
