@@ -34,7 +34,40 @@ python3 scripts/download-and-upload-batch.py --dry-run
 # Evaluate uploaded presentations (status=uploaded → evaluated_kept/deleted)
 python3 scripts/evaluate-presentations.py --limit 10
 python3 scripts/evaluate-presentations.py --threshold 3.0 --dry-run
+
+# Export homepage-ready slide images from kept decks (ranked by design score)
+python3 scripts/export-homepage-slides.py --slides-per-deck 3 --top 20
 ```
+
+### Export top homepage slide images
+
+Prereqs:
+- `pdftoppm` (poppler-utils)
+- `ffmpeg`
+- R2 env vars (same as evaluate script):
+
+```bash
+export R2_ACCOUNT_ID="..."
+export R2_ACCESS_KEY_ID="..."
+export R2_SECRET_ACCESS_KEY="..."
+export R2_BUCKET_NAME="..."
+```
+
+Run:
+```bash
+python3 scripts/export-homepage-slides.py \
+  --slides-per-deck 3 \
+  --top 20
+
+# outputs:
+# ./outputs/homepage-slides/images/
+# ./outputs/homepage-slides/report.md
+# ./outputs/homepage-slides/report.json
+```
+
+Notes:
+- Slide ranking currently uses deck-level `evaluation.design_average`.
+- Use `--force` to re-download/re-render.
 
 ## Sources
 
