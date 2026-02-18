@@ -12,6 +12,7 @@ export function SiteHeader(props: { user?: JWTUserData | null }) {
 			logo={<AppLogo />}
 			navigation={<SiteNavigation />}
 			actions={<SiteHeaderAccountSection user={props.user ?? null} />}
+			className="dark:bg-black"
 		/>
 	);
 }

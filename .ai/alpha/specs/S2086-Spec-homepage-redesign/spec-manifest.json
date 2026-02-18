@@ -1,0 +1,598 @@
+{
+	"metadata": {
+		"spec_id": "S2086",
+		"spec_name": "homepage redesign",
+		"generated_at": "2026-02-13T19:17:11.831Z",
+		"spec_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign",
+		"research_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/research-library"
+	},
+	"initiatives": [
+		{
+			"id": "S2086.I1",
+			"name": "design system foundation",
+			"slug": "design-system-foundation",
+			"priority": 1,
+			"status": "completed",
+			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I1-Initiative-design-system-foundation",
+			"feature_count": 4,
+			"features_completed": 4,
+			"dependencies": []
+		},
+		{
+			"id": "S2086.I2",
+			"name": "hero product preview",
+			"slug": "hero-product-preview",
+			"priority": 2,
+			"status": "completed",
+			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I2-Initiative-hero-product-preview",
+			"feature_count": 2,
+			"features_completed": 2,
+			"dependencies": [
+				"S2086.I1"
+			]
+		},
+		{
+			"id": "S2086.I3",
+			"name": "trust credibility sections",
+			"slug": "trust-credibility-sections",
+			"priority": 3,
+			"status": "completed",
+			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I3-Initiative-trust-credibility-sections",
+			"feature_count": 2,
+			"features_completed": 2,
+			"dependencies": [
+				"S2086.I1"
+			]
+		},
+		{
+			"id": "S2086.I4",
+			"name": "feature showcase sections",
+			"slug": "feature-showcase-sections",
+			"priority": 4,
+			"status": "completed",
+			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I4-Initiative-feature-showcase-sections",
+			"feature_count": 3,
+			"features_completed": 3,
+			"dependencies": [
+				"S2086.I1"
+			]
+		},
+		{
+			"id": "S2086.I5",
+			"name": "social proof conversion",
+			"slug": "social-proof-conversion",
+			"priority": 5,
+			"status": "completed",
+			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I5-Initiative-social-proof-conversion",
+			"feature_count": 5,
+			"features_completed": 5,
+			"dependencies": [
+				"S2086.I1"
+			]
+		},
+		{
+			"id": "S2086.I6",
+			"name": "responsive accessibility polish",
+			"slug": "responsive-accessibility-polish",
+			"priority": 6,
+			"status": "in_progress",
+			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I6-Initiative-responsive-accessibility-polish",
+			"feature_count": 3,
+			"features_completed": 1,
+			"dependencies": [
+				"S2086.I1",
+				"S2086.I2",
+				"S2086.I3",
+				"S2086.I4",
+				"S2086.I5"
+			]
+		}
+	],
+	"feature_queue": [
+		{
+			"id": "S2086.I1.F1",
+			"initiative_id": "S2086.I1",
+			"title": "Dark-Mode Design Tokens & Keyframes",
+			"slug": "dark-mode-design-tokens",
+			"priority": 1,
+			"global_priority": 1,
+			"status": "completed",
+			"tasks_file": "S2086.I1-Initiative-design-system-foundation/S2086.I1.F1-Feature-dark-mode-design-tokens/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I1-Initiative-design-system-foundation/S2086.I1.F1-Feature-dark-mode-design-tokens",
+			"task_count": 6,
+			"tasks_completed": 6,
+			"sequential_hours": 10,
+			"parallel_hours": 7,
+			"dependencies": [],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-a",
+			"assigned_at": 1771010339564
+		},
+		{
+			"id": "S2086.I1.F2",
+			"initiative_id": "S2086.I1",
+			"title": "Animation Infrastructure",
+			"slug": "animation-infrastructure",
+			"priority": 2,
+			"global_priority": 2,
+			"status": "completed",
+			"tasks_file": "S2086.I1-Initiative-design-system-foundation/S2086.I1.F2-Feature-animation-infrastructure/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I1-Initiative-design-system-foundation/S2086.I1.F2-Feature-animation-infrastructure",
+			"task_count": 6,
+			"tasks_completed": 6,
+			"sequential_hours": 12,
+			"parallel_hours": 9,
+			"dependencies": [
+				"S2086.I1.F1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-a",
+			"assigned_at": 1771010668974
+		},
+		{
+			"id": "S2086.I1.F3",
+			"initiative_id": "S2086.I1",
+			"title": "Card Components",
+			"slug": "card-components",
+			"priority": 3,
+			"global_priority": 3,
+			"status": "completed",
+			"tasks_file": "S2086.I1-Initiative-design-system-foundation/S2086.I1.F3-Feature-card-components/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I1-Initiative-design-system-foundation/S2086.I1.F3-Feature-card-components",
+			"task_count": 8,
+			"tasks_completed": 8,
+			"sequential_hours": 15,
+			"parallel_hours": 11,
+			"dependencies": [
+				"S2086.I1.F1",
+				"S2086.I1.F2"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-a",
+			"assigned_at": 1771011128107
+		},
+		{
+			"id": "S2086.I1.F4",
+			"initiative_id": "S2086.I1",
+			"title": "Section Container & Content Config",
+			"slug": "section-container-content-config",
+			"priority": 4,
+			"global_priority": 4,
+			"status": "completed",
+			"tasks_file": "S2086.I1-Initiative-design-system-foundation/S2086.I1.F4-Feature-section-container-content-config/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I1-Initiative-design-system-foundation/S2086.I1.F4-Feature-section-container-content-config",
+			"task_count": 6,
+			"tasks_completed": 6,
+			"sequential_hours": 12,
+			"parallel_hours": 6,
+			"dependencies": [
+				"S2086.I1.F1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-b",
+			"assigned_at": 1771010668983
+		},
+		{
+			"id": "S2086.I2.F1",
+			"initiative_id": "S2086.I2",
+			"title": "Hero Section Redesign",
+			"slug": "hero-section-redesign",
+			"priority": 1,
+			"global_priority": 5,
+			"status": "completed",
+			"tasks_file": "S2086.I2-Initiative-hero-product-preview/S2086.I2.F1-Feature-hero-section-redesign/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I2-Initiative-hero-product-preview/S2086.I2.F1-Feature-hero-section-redesign",
+			"task_count": 9,
+			"tasks_completed": 9,
+			"sequential_hours": 21,
+			"parallel_hours": 13,
+			"dependencies": [
+				"S2086.I1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-a",
+			"assigned_at": 1771011406524
+		},
+		{
+			"id": "S2086.I2.F2",
+			"initiative_id": "S2086.I2",
+			"title": "Product Preview Redesign",
+			"slug": "product-preview-redesign",
+			"priority": 2,
+			"global_priority": 6,
+			"status": "completed",
+			"tasks_file": "S2086.I2-Initiative-hero-product-preview/S2086.I2.F2-Feature-product-preview-redesign/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I2-Initiative-hero-product-preview/S2086.I2.F2-Feature-product-preview-redesign",
+			"task_count": 4,
+			"tasks_completed": 4,
+			"sequential_hours": 9,
+			"parallel_hours": 8,
+			"dependencies": [
+				"S2086.I1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-b",
+			"assigned_at": 1771011406524
+		},
+		{
+			"id": "S2086.I3.F1",
+			"initiative_id": "S2086.I3",
+			"title": "Logo Cloud Redesign",
+			"slug": "logo-cloud-redesign",
+			"priority": 1,
+			"global_priority": 7,
+			"status": "completed",
+			"tasks_file": "S2086.I3-Initiative-trust-credibility-sections/S2086.I3.F1-Feature-logo-cloud-redesign/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I3-Initiative-trust-credibility-sections/S2086.I3.F1-Feature-logo-cloud-redesign",
+			"task_count": 5,
+			"tasks_completed": 5,
+			"sequential_hours": 8,
+			"parallel_hours": 7,
+			"dependencies": [
+				"S2086.I1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-c",
+			"assigned_at": 1771011807331
+		},
+		{
+			"id": "S2086.I3.F2",
+			"initiative_id": "S2086.I3",
+			"title": "Statistics Section",
+			"slug": "statistics-section",
+			"priority": 2,
+			"global_priority": 8,
+			"status": "completed",
+			"tasks_file": "S2086.I3-Initiative-trust-credibility-sections/S2086.I3.F2-Feature-statistics-section/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I3-Initiative-trust-credibility-sections/S2086.I3.F2-Feature-statistics-section",
+			"task_count": 4,
+			"tasks_completed": 4,
+			"sequential_hours": 7,
+			"parallel_hours": 5,
+			"dependencies": [
+				"S2086.I1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-b",
+			"assigned_at": 1771011855046
+		},
+		{
+			"id": "S2086.I4.F1",
+			"initiative_id": "S2086.I4",
+			"title": "Sticky Scroll Features Redesign",
+			"slug": "sticky-scroll-redesign",
+			"priority": 1,
+			"global_priority": 9,
+			"status": "completed",
+			"tasks_file": "S2086.I4-Initiative-feature-showcase-sections/S2086.I4.F1-Feature-sticky-scroll-redesign/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I4-Initiative-feature-showcase-sections/S2086.I4.F1-Feature-sticky-scroll-redesign",
+			"task_count": 12,
+			"tasks_completed": 12,
+			"sequential_hours": 23,
+			"parallel_hours": 15,
+			"dependencies": [
+				"S2086.I1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-a",
+			"assigned_at": 1771011899773
+		},
+		{
+			"id": "S2086.I4.F2",
+			"initiative_id": "S2086.I4",
+			"title": "How It Works Section",
+			"slug": "how-it-works-stepper",
+			"priority": 2,
+			"global_priority": 10,
+			"status": "completed",
+			"tasks_file": "S2086.I4-Initiative-feature-showcase-sections/S2086.I4.F2-Feature-how-it-works-stepper/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I4-Initiative-feature-showcase-sections/S2086.I4.F2-Feature-how-it-works-stepper",
+			"task_count": 8,
+			"tasks_completed": 8,
+			"sequential_hours": 18,
+			"parallel_hours": 18,
+			"dependencies": [
+				"S2086.I1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-c",
+			"assigned_at": 1771012004467
+		},
+		{
+			"id": "S2086.I4.F3",
+			"initiative_id": "S2086.I4",
+			"title": "Features Grid (Bento Layout)",
+			"slug": "bento-features-grid",
+			"priority": 3,
+			"global_priority": 11,
+			"status": "completed",
+			"tasks_file": "S2086.I4-Initiative-feature-showcase-sections/S2086.I4.F3-Feature-bento-features-grid/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I4-Initiative-feature-showcase-sections/S2086.I4.F3-Feature-bento-features-grid",
+			"task_count": 5,
+			"tasks_completed": 5,
+			"sequential_hours": 13,
+			"parallel_hours": 11,
+			"dependencies": [
+				"S2086.I1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-b",
+			"assigned_at": 1771012163887
+		},
+		{
+			"id": "S2086.I5.F1",
+			"initiative_id": "S2086.I5",
+			"title": "Comparison Section",
+			"slug": "comparison-section",
+			"priority": 1,
+			"global_priority": 12,
+			"status": "completed",
+			"tasks_file": "S2086.I5-Initiative-social-proof-conversion/S2086.I5.F1-Feature-comparison-section/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I5-Initiative-social-proof-conversion/S2086.I5.F1-Feature-comparison-section",
+			"task_count": 5,
+			"tasks_completed": 5,
+			"sequential_hours": 13,
+			"parallel_hours": 11,
+			"dependencies": [
+				"S2086.I1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-a",
+			"assigned_at": 1771012433610
+		},
+		{
+			"id": "S2086.I5.F2",
+			"initiative_id": "S2086.I5",
+			"title": "Testimonials Redesign",
+			"slug": "testimonials-redesign",
+			"priority": 2,
+			"global_priority": 13,
+			"status": "completed",
+			"tasks_file": "S2086.I5-Initiative-social-proof-conversion/S2086.I5.F2-Feature-testimonials-redesign/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I5-Initiative-social-proof-conversion/S2086.I5.F2-Feature-testimonials-redesign",
+			"task_count": 7,
+			"tasks_completed": 7,
+			"sequential_hours": 12,
+			"parallel_hours": 7,
+			"dependencies": [
+				"S2086.I1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-c",
+			"assigned_at": 1771012436618
+		},
+		{
+			"id": "S2086.I5.F3",
+			"initiative_id": "S2086.I5",
+			"title": "Pricing Redesign",
+			"slug": "pricing-redesign",
+			"priority": 3,
+			"global_priority": 14,
+			"status": "completed",
+			"tasks_file": "S2086.I5-Initiative-social-proof-conversion/S2086.I5.F3-Feature-pricing-redesign/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I5-Initiative-social-proof-conversion/S2086.I5.F3-Feature-pricing-redesign",
+			"task_count": 9,
+			"tasks_completed": 9,
+			"sequential_hours": 15,
+			"parallel_hours": 7,
+			"dependencies": [
+				"S2086.I1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-a",
+			"assigned_at": 1771012866460
+		},
+		{
+			"id": "S2086.I5.F4",
+			"initiative_id": "S2086.I5",
+			"title": "Blog/Essential Reads Redesign",
+			"slug": "blog-essential-reads-redesign",
+			"priority": 4,
+			"global_priority": 15,
+			"status": "completed",
+			"tasks_file": "S2086.I5-Initiative-social-proof-conversion/S2086.I5.F4-Feature-blog-essential-reads-redesign/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I5-Initiative-social-proof-conversion/S2086.I5.F4-Feature-blog-essential-reads-redesign",
+			"task_count": 9,
+			"tasks_completed": 9,
+			"sequential_hours": 11.5,
+			"parallel_hours": 11.5,
+			"dependencies": [
+				"S2086.I1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-b",
+			"assigned_at": 1771012653658
+		},
+		{
+			"id": "S2086.I5.F5",
+			"initiative_id": "S2086.I5",
+			"title": "Final CTA Section",
+			"slug": "final-cta-section",
+			"priority": 5,
+			"global_priority": 16,
+			"status": "completed",
+			"tasks_file": "S2086.I5-Initiative-social-proof-conversion/S2086.I5.F5-Feature-final-cta-section/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I5-Initiative-social-proof-conversion/S2086.I5.F5-Feature-final-cta-section",
+			"task_count": 4,
+			"tasks_completed": 4,
+			"sequential_hours": 7,
+			"parallel_hours": 7,
+			"dependencies": [
+				"S2086.I1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-c",
+			"assigned_at": 1771012960124
+		},
+		{
+			"id": "S2086.I6.F1",
+			"initiative_id": "S2086.I6",
+			"title": "Responsive Layout Adaptations",
+			"slug": "responsive-layout-adaptations",
+			"priority": 1,
+			"global_priority": 17,
+			"status": "completed",
+			"tasks_file": "S2086.I6-Initiative-responsive-accessibility-polish/S2086.I6.F1-Feature-responsive-layout-adaptations/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I6-Initiative-responsive-accessibility-polish/S2086.I6.F1-Feature-responsive-layout-adaptations",
+			"task_count": 8,
+			"tasks_completed": 8,
+			"sequential_hours": 27,
+			"parallel_hours": 19,
+			"dependencies": [
+				"S2086.I1",
+				"S2086.I2",
+				"S2086.I3",
+				"S2086.I4",
+				"S2086.I5"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"retry_count": 0,
+			"retry_reason": "feature_failure",
+			"assigned_sandbox": "sbx-a",
+			"assigned_at": 1771016322421
+		},
+		{
+			"id": "S2086.I6.F2",
+			"initiative_id": "S2086.I6",
+			"title": "Accessibility Compliance",
+			"slug": "accessibility-compliance",
+			"priority": 2,
+			"global_priority": 18,
+			"status": "failed",
+			"tasks_file": "S2086.I6-Initiative-responsive-accessibility-polish/S2086.I6.F2-Feature-accessibility-compliance/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I6-Initiative-responsive-accessibility-polish/S2086.I6.F2-Feature-accessibility-compliance",
+			"task_count": 10,
+			"tasks_completed": 9,
+			"sequential_hours": 27,
+			"parallel_hours": 13,
+			"dependencies": [
+				"S2086.I1",
+				"S2086.I2",
+				"S2086.I3",
+				"S2086.I4",
+				"S2086.I5"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"error": "Implementation error: [deadline_exceeded] context deadline exceeded: This error is likely due to exceeding 'timeoutMs' — the total time a long running request (like command execution or directory watch) can be active. It can be modified by passing 'timeoutMs' when making the request. Use '0' to disable the timeout. - max retries (3) exceeded",
+			"retry_count": 3,
+			"retry_reason": "feature_failure"
+		},
+		{
+			"id": "S2086.I6.F3",
+			"initiative_id": "S2086.I6",
+			"title": "Performance Optimization & Audit",
+			"slug": "performance-optimization-audit",
+			"priority": 3,
+			"global_priority": 19,
+			"status": "failed",
+			"tasks_file": "S2086.I6-Initiative-responsive-accessibility-polish/S2086.I6.F3-Feature-performance-optimization-audit/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2086-Spec-homepage-redesign/S2086.I6-Initiative-responsive-accessibility-polish/S2086.I6.F3-Feature-performance-optimization-audit",
+			"task_count": 9,
+			"tasks_completed": 6,
+			"sequential_hours": 28,
+			"parallel_hours": 18,
+			"dependencies": [
+				"S2086.I1",
+				"S2086.I2",
+				"S2086.I3",
+				"S2086.I4",
+				"S2086.I5"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0,
+			"error": "Health check failed: Cannot read progress file after 30 minutes - max retries (3) exceeded",
+			"retry_count": 3,
+			"retry_reason": "feature_failure"
+		}
+	],
+	"progress": {
+		"status": "partial",
+		"initiatives_completed": 5,
+		"initiatives_total": 6,
+		"features_completed": 17,
+		"features_total": 19,
+		"tasks_completed": 130,
+		"tasks_total": 134,
+		"next_feature_id": null,
+		"last_completed_feature_id": "S2086.I6.F1",
+		"started_at": "2026-02-13T19:18:59.563Z",
+		"completed_at": "2026-02-13T21:28:44.634Z",
+		"last_checkpoint": "2026-02-13T21:29:39.644Z",
+		"review_error": "exit status 2",
+		"completion_status": "failed"
+	},
+	"sandbox": {
+		"sandbox_ids": [],
+		"branch_name": "alpha/spec-S2086",
+		"created_at": "2026-02-13T20:56:25.549Z"
+	},
+	"phases": [
+		{
+			"id": "P1",
+			"name": "Phase 1",
+			"initiative_ids": [
+				"S2086.I1",
+				"S2086.I2",
+				"S2086.I3"
+			],
+			"feature_count": 8,
+			"task_count": 48
+		},
+		{
+			"id": "P2",
+			"name": "Phase 2",
+			"initiative_ids": [
+				"S2086.I4",
+				"S2086.I5"
+			],
+			"feature_count": 8,
+			"task_count": 59
+		},
+		{
+			"id": "P3",
+			"name": "Phase 3",
+			"initiative_ids": [
+				"S2086.I6"
+			],
+			"feature_count": 3,
+			"task_count": 27
+		}
+	]
+}

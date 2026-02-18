@@ -18,7 +18,21 @@
     },
     "requires_database": false,
     "database_tasks": [],
-    "required_env_vars": []
+    "required_env_vars": [],
+    "contrast_verification": {
+      "verified_at": "2026-02-13",
+      "wcag_level": "AA",
+      "results": [
+        { "pair": "#f5f5f7 on #0a0a0f", "label": "Primary text on background", "ratio": "18.14:1", "required": "17:1", "status": "PASS" },
+        { "pair": "#a0a0b0 on #0a0a0f", "label": "Muted text on background", "ratio": "7.67:1", "required": "4.5:1", "status": "PASS" },
+        { "pair": "#24a9e0 on #0a0a0f", "label": "Accent text on background", "ratio": "7.36:1", "required": "4.5:1", "status": "PASS" },
+        { "pair": "#f5f5f7 on #12121a", "label": "Primary text on surface", "ratio": "17.11:1", "required": "4.5:1", "status": "PASS" },
+        { "pair": "#a0a0b0 on #12121a", "label": "Muted text on surface", "ratio": "7.23:1", "required": "4.5:1", "status": "PASS" },
+        { "pair": "#f5f5f7 on #1a1a25", "label": "Primary text on surface-elevated", "ratio": "15.83:1", "required": "4.5:1", "status": "PASS" },
+        { "pair": "#a0a0b0 on #1a1a25", "label": "Muted text on surface-elevated", "ratio": "6.69:1", "required": "4.5:1", "status": "PASS" }
+      ],
+      "summary": "All 7 text/background combinations pass WCAG AA (4.5:1). Primary text on bg exceeds 17:1 target at 18.14:1."
+    }
   },
   "tasks": [
     {

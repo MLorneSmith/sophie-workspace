@@ -31,9 +31,9 @@ export const SecondaryHero: React.FC<SecondaryHeroProps> =
 						{heading}
 					</Heading>
 
-					<h3 className="text-muted-foreground font-sans text-xl font-normal tracking-tight">
+					<div className="text-muted-foreground font-sans text-xl font-normal tracking-tight">
 						{subheading}
-					</h3>
+					</div>
 				</div>
 
 				{children}

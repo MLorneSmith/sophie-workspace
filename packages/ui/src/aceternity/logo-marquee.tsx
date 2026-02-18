@@ -2,9 +2,25 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
 
 import { cn } from "../lib/utils";
+
+function usePrefersReducedMotion() {
+	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+	useEffect(() => {
+		const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+		setPrefersReducedMotion(mql.matches);
+		const handler = (e: MediaQueryListEvent) =>
+			setPrefersReducedMotion(e.matches);
+		mql.addEventListener("change", handler);
+		return () => mql.removeEventListener("change", handler);
+	}, []);
+
+	return prefersReducedMotion;
+}
 
 interface Logo {
 	name: string;
@@ -18,6 +34,8 @@ interface LogoCloudMarqueeProps {
 	title?: string;
 	description?: string;
 	logos?: Logo[];
+	mode?: "single" | "dual";
+	speed?: number;
 }
 
 const springConfig = {
@@ -125,7 +143,7 @@ const MotionDiv = motion.div;
 
 const LogoItem = ({ logo }: { logo: Logo }) => {
 	return (
-		<div className="mx-8 flex h-16 items-center md:mx-12">
+		<div className="mx-8 flex min-h-[44px] min-w-[44px] items-center md:mx-14">
 			<MotionDiv
 				whileHover={{
 					scale: 1.1,
@@ -139,8 +157,8 @@ const LogoItem = ({ logo }: { logo: Logo }) => {
 					<Image
 						src={logo.src}
 						alt={logo.name}
-						width={120}
-						height={60}
+						width={150}
+						height={75}
 						className="block opacity-90 transition-all duration-300 hover:opacity-100 dark:hidden"
 						style={{
 							objectFit: "contain",
@@ -149,9 +167,10 @@ const LogoItem = ({ logo }: { logo: Logo }) => {
 					/>
 					<Image
 						src={logo.grayscaleSrc || logo.src}
-						alt={logo.name}
-						width={120 * (logo.scale || 1.0)}
-						height={60 * (logo.scale || 1.0)}
+						alt=""
+						aria-hidden="true"
+						width={150 * (logo.scale || 1.0)}
+						height={75 * (logo.scale || 1.0)}
 						className="hidden opacity-90 transition-all duration-300 hover:opacity-100 dark:block"
 						style={{
 							objectFit: "contain",
@@ -169,84 +188,172 @@ export function LogoCloudMarquee({
 	title = "Trusted by the world's best teams",
 	description = "Teams from some of the world's greatest companies use our tools & training to create pursuasive presentations.",
 	logos = defaultLogos,
+	mode = "dual",
+	speed = 30,
 }: LogoCloudMarqueeProps) {
+	const prefersReducedMotion = usePrefersReducedMotion();
 	const midPoint = Math.ceil(logos.length / 2);
 	const firstHalf = logos.slice(0, midPoint);
 	const secondHalf = logos.slice(midPoint);
 
 	return (
 		<div
-			className={cn("relative px-4 py-10 md:px-8", className)}
+			className={cn("relative py-10 motion-reduce:*:animate-none", className)}
 			style={{ zIndex: 0 }}
+			role="region"
+			aria-label={title || "Client logos"}
 		>
 			<MotionDiv
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={springConfig}
 			>
-				<h2
-					className={cn(
-						"font-heading text-center text-3xl font-bold md:text-4xl lg:text-5xl",
-						"text-foreground",
-					)}
-				>
+				<h2 className={cn("text-h3 sm:text-h2 text-center", "text-white")}>
 					{title}
 				</h2>
 			</MotionDiv>
 
-			<MotionDiv
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{
-					...springConfig,
-					delay: 0.1,
-				}}
+			{description && (
+				<MotionDiv
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{
+						...springConfig,
+						delay: 0.1,
+					}}
+				>
+					<p className="body mt-4 text-center text-muted-foreground">
+						{description}
+					</p>
+				</MotionDiv>
+			)}
+
+			<div
+				className={cn(
+					"relative flex w-full flex-col items-center justify-center gap-4",
+					mode === "single" ? "mt-10" : "mt-20",
+				)}
 			>
-				<p className="body mt-4 text-center text-muted-foreground">
-					{description}
-				</p>
-			</MotionDiv>
-
-			<div className="relative mt-20 flex w-full flex-col items-center justify-center gap-4">
-				<div className="relative w-full">
-					<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" />
-					<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent" />
-					<div className="relative z-[1]">
-						<Marquee
-							pauseOnHover
-							direction="right"
-							gradient={false}
-							speed={30}
-							aria-label="Logo marquee first row"
-						>
-							<div className="flex items-center justify-center gap-4">
-								{firstHalf.map((logo) => (
-									<LogoItem key={logo.name} logo={logo} />
-								))}
-							</div>
-						</Marquee>
+				{mode === "single" ? (
+					<div
+						className="relative w-full overflow-hidden"
+						role="group"
+						aria-label="Client logos"
+					>
+						<div
+							className="pointer-events-none absolute inset-y-0 left-0 z-[2] w-16 sm:w-24 lg:w-32"
+							aria-hidden="true"
+							style={{
+								background:
+									"linear-gradient(to right, rgb(0 0 0 / 0.9), transparent)",
+							}}
+						/>
+						<div
+							className="pointer-events-none absolute inset-y-0 right-0 z-[2] w-16 sm:w-24 lg:w-32"
+							aria-hidden="true"
+							style={{
+								background:
+									"linear-gradient(to left, rgb(0 0 0 / 0.9), transparent)",
+							}}
+						/>
+						<div className="relative z-[1]">
+							<Marquee
+								pauseOnHover
+								play={!prefersReducedMotion}
+								direction="right"
+								gradient={false}
+								speed={speed}
+								aria-label="Logo marquee"
+							>
+								<div className="flex items-center justify-center gap-4">
+									{logos.map((logo) => (
+										<LogoItem key={logo.name} logo={logo} />
+									))}
+								</div>
+							</Marquee>
+						</div>
 					</div>
-				</div>
-
-				<div className="relative w-full">
-					<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" />
-					<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent" />
-					<div className="relative z-[1]">
-						<Marquee
-							pauseOnHover
-							direction="left"
-							speed={25}
-							gradient={false}
-							aria-label="Logo marquee second row"
+				) : (
+					<>
+						<div
+							className="relative w-full overflow-hidden"
+							role="group"
+							aria-label="Client logos first row"
 						>
-							<div className="flex items-center justify-center gap-4">
-								{secondHalf.map((logo) => (
-									<LogoItem key={`${logo.name}-second`} logo={logo} />
-								))}
+							<div
+								className="pointer-events-none absolute inset-y-0 left-0 z-[2] w-16 sm:w-24 lg:w-32"
+								aria-hidden="true"
+								style={{
+									background:
+										"linear-gradient(to right, rgb(0 0 0 / 0.9), transparent)",
+								}}
+							/>
+							<div
+								className="pointer-events-none absolute inset-y-0 right-0 z-[2] w-16 sm:w-24 lg:w-32"
+								aria-hidden="true"
+								style={{
+									background:
+										"linear-gradient(to left, rgb(0 0 0 / 0.9), transparent)",
+								}}
+							/>
+							<div className="relative z-[1]">
+								<Marquee
+									pauseOnHover
+									play={!prefersReducedMotion}
+									direction="right"
+									gradient={false}
+									speed={speed}
+									aria-label="Logo marquee first row"
+								>
+									<div className="flex items-center justify-center gap-4">
+										{firstHalf.map((logo) => (
+											<LogoItem key={logo.name} logo={logo} />
+										))}
+									</div>
+								</Marquee>
 							</div>
-						</Marquee>
-					</div>
-				</div>
+						</div>
+
+						<div
+							className="relative w-full overflow-hidden"
+							role="group"
+							aria-label="Client logos second row"
+						>
+							<div
+								className="pointer-events-none absolute inset-y-0 left-0 z-[2] w-16 sm:w-24 lg:w-32"
+								aria-hidden="true"
+								style={{
+									background:
+										"linear-gradient(to right, rgb(0 0 0 / 0.9), transparent)",
+								}}
+							/>
+							<div
+								className="pointer-events-none absolute inset-y-0 right-0 z-[2] w-16 sm:w-24 lg:w-32"
+								aria-hidden="true"
+								style={{
+									background:
+										"linear-gradient(to left, rgb(0 0 0 / 0.9), transparent)",
+								}}
+							/>
+							<div className="relative z-[1]">
+								<Marquee
+									pauseOnHover
+									play={!prefersReducedMotion}
+									direction="left"
+									speed={Math.round(speed * 0.83)}
+									gradient={false}
+									aria-label="Logo marquee second row"
+								>
+									<div className="flex items-center justify-center gap-4">
+										{secondHalf.map((logo) => (
+											<LogoItem key={`${logo.name}-second`} logo={logo} />
+										))}
+									</div>
+								</Marquee>
+							</div>
+						</div>
+					</>
+				)}
 			</div>
 		</div>
 	);

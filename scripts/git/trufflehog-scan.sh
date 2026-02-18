@@ -52,10 +52,11 @@ fi
 
 # Create a temporary file with staged content
 TEMP_DIR=$(mktemp -d)
-trap "rm -rf $TEMP_DIR" EXIT
+trap 'rm -rf "$TEMP_DIR"' EXIT
 
-# Copy staged files to temp directory
-for file in $STAGED_FILES; do
+# Copy staged files to temp directory (use while read to handle spaces in paths)
+echo "$STAGED_FILES" | while IFS= read -r file; do
+    [ -z "$file" ] && continue
     mkdir -p "$TEMP_DIR/$(dirname "$file")"
     git show ":$file" > "$TEMP_DIR/$file" 2>/dev/null || true
 done

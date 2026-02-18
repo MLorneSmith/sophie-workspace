@@ -1,788 +1,815 @@
+---
+title: SlideHeroes Design System
+tags: [design, ui, css, tailwind, typography, colors, animation, accessibility]
+dependencies: []
+cross_references: []
+priority: high
+last_updated: 2026-02-18
+---
+
 # SlideHeroes Design System
 
-> A comprehensive design system for the SlideHeroes presentation platform.
-> This document defines all design tokens and guidelines for consistent UI implementation.
+> The single source of truth for all visual design decisions.
+> Based on the current homepage implementation — our reference design.
 
 ---
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [Design Tokens](#design-tokens)
-3. [Colors](#1-colors)
-4. [Typography](#2-typography)
-5. [Spacing](#3-spacing)
-6. [Elevation & Shadows](#4-elevation--shadows)
-7. [Border Radius](#5-border-radius)
-8. [Motion & Animation](#6-motion--animation)
-9. [Iconography](#7-iconography)
-10. [Breakpoints](#8-breakpoints)
-11. [Z-Index Scale](#9-z-index-scale)
-12. [Interaction States](#10-interaction-states)
-13. [Accessibility](#11-accessibility)
-14. [Implementation Guide](#implementation-guide)
+1. [Design Philosophy](#1-design-philosophy)
+2. [Theme Architecture](#2-theme-architecture)
+3. [Color System](#3-color-system)
+4. [Typography](#4-typography)
+5. [Spacing & Layout](#5-spacing--layout)
+6. [Border Radius](#6-border-radius)
+7. [Elevation & Shadows](#7-elevation--shadows)
+8. [Glass & Blur Effects](#8-glass--blur-effects)
+9. [Animation System](#9-animation-system)
+10. [Iconography](#10-iconography)
+11. [Breakpoints](#11-breakpoints)
+12. [Component Patterns](#12-component-patterns)
+13. [Interaction States](#13-interaction-states)
+14. [Accessibility](#14-accessibility)
+15. [Implementation Reference](#15-implementation-reference)
 
 ---
 
-## Overview
+## 1. Design Philosophy
 
-### Design Philosophy
+### Identity
 
-SlideHeroes follows a **"professional yet approachable"** design language suitable for a B2B SaaS presentation platform. The design system prioritizes:
+SlideHeroes uses a **dark, editorial, premium** design language. The visual identity communicates sophistication and technical capability for a B2B SaaS presentation platform.
 
-- **Clarity**: Clean, uncluttered interfaces that let content shine
-- **Professionalism**: Trustworthy appearance for business users
-- **Accessibility**: WCAG AA compliance as a minimum standard
-- **Scalability**: Works across marketing and application contexts
+### Core Principles
 
-### Token Architecture
+- **Dark-first**: Pure black backgrounds with blue-tinted surfaces create depth
+- **Editorial restraint**: Medium-weight headings (500), generous whitespace, clean lines
+- **Glass morphism**: Frosted glass cards with subtle borders over dark surfaces
+- **Accent discipline**: A single cyan-blue accent color (`#24a9e0`) used consistently
+- **Progressive disclosure**: Scroll-triggered animations reveal content incrementally
+- **Accessibility by default**: WCAG AA minimum, reduced motion support, 44px touch targets
 
-We use a **three-layer token hierarchy**:
+### What We Are Not
 
-```
-┌─────────────────────────────────────────────────────┐
-│  COMPONENT TOKENS                                    │
-│  Button padding, card border-radius, input height   │
-├─────────────────────────────────────────────────────┤
-│  SEMANTIC TOKENS                                     │
-│  --color-primary, --spacing-section, --text-body    │
-├─────────────────────────────────────────────────────┤
-│  PRIMITIVE TOKENS                                    │
-│  --color-blue-600, --spacing-4, --font-size-base    │
-└─────────────────────────────────────────────────────┘
-```
+- Not flat/minimal — we use depth, glass effects, and subtle glow
+- Not maximalist — one accent color, restrained typography weights
+- Not light-mode-first — dark is the default and brand identity
 
 ---
 
-## Design Tokens
+## 2. Theme Architecture
 
-### Token Naming Convention
+### Marketing Pages (Always Dark)
 
-```
---[category]-[property]-[element]-[variant]-[state]
-```
-
-**Examples:**
-- `--color-primary` (semantic)
-- `--color-primary-hover` (semantic + state)
-- `--spacing-component-padding` (semantic + element)
-- `--color-blue-600` (primitive)
-
----
-
-## 1. Colors
-
-### 1.1 Color Philosophy
-
-**Current**: Neutral-first palette with subtle accents
-**Goal**: Define whether we want a more vibrant brand identity or maintain professional neutrality
-
-### 1.2 Primitive Color Scales
-
-These are the raw color values from which semantic colors are derived.
-
-#### Neutral Scale (Current: Slate-based)
-
-| Token | Value | Preview | Usage |
-|-------|-------|---------|-------|
-| `--color-neutral-50` | `#f8fafc` | ![#f8fafc](https://via.placeholder.com/20/f8fafc/f8fafc) | Subtle backgrounds |
-| `--color-neutral-100` | `#f1f5f9` | ![#f1f5f9](https://via.placeholder.com/20/f1f5f9/f1f5f9) | Hover states |
-| `--color-neutral-200` | `#e2e8f0` | ![#e2e8f0](https://via.placeholder.com/20/e2e8f0/e2e8f0) | Borders, dividers |
-| `--color-neutral-300` | `#cbd5e1` | ![#cbd5e1](https://via.placeholder.com/20/cbd5e1/cbd5e1) | Disabled text |
-| `--color-neutral-400` | `#94a3b8` | ![#94a3b8](https://via.placeholder.com/20/94a3b8/94a3b8) | Placeholder text |
-| `--color-neutral-500` | `#64748b` | ![#64748b](https://via.placeholder.com/20/64748b/64748b) | Secondary text |
-| `--color-neutral-600` | `#475569` | ![#475569](https://via.placeholder.com/20/475569/475569) | Body text |
-| `--color-neutral-700` | `#334155` | ![#334155](https://via.placeholder.com/20/334155/334155) | Headings |
-| `--color-neutral-800` | `#1e293b` | ![#1e293b](https://via.placeholder.com/20/1e293b/1e293b) | Dark backgrounds |
-| `--color-neutral-900` | `#0f172a` | ![#0f172a](https://via.placeholder.com/20/0f172a/0f172a) | Darkest elements |
-| `--color-neutral-950` | `#020617` | ![#020617](https://via.placeholder.com/20/020617/020617) | Near black |
-
-#### Primary Brand Scale
-
-> **EXPERIMENT CANDIDATES**: Test different primary colors
-
-| Option | Name | Base Color | Personality |
-|--------|------|------------|-------------|
-| A | **Indigo** | `#4f46e5` | Professional, trustworthy |
-| B | **Blue** | `#2563eb` | Classic SaaS, reliable |
-| C | **Violet** | `#7c3aed` | Creative, modern |
-| D | **Teal** | `#0d9488` | Fresh, approachable |
-
-**Current Implementation** (Neutral-based):
-
-| Token | Light Mode | Dark Mode |
-|-------|------------|-----------|
-| `--color-primary` | `neutral-950` | `white` |
-| `--color-primary-hover` | `neutral-800` | `neutral-200` |
-| `--color-primary-foreground` | `white` | `neutral-900` |
-
-#### Accent/Secondary Colors
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--color-secondary` | `oklch(96.76% 0.0013 286.38)` | Secondary buttons |
-| `--color-accent` | TBD | Highlights, badges |
-
-#### Semantic Colors (Status/Feedback)
-
-| Token | Light Value | Dark Value | Usage |
-|-------|-------------|------------|-------|
-| `--color-success` | `#22c55e` | `#22c55e` | Success states, positive |
-| `--color-warning` | `#f59e0b` | `#f59e0b` | Warnings, cautions |
-| `--color-error` | `#ef4444` | `#dc2626` | Errors, destructive |
-| `--color-info` | `#3b82f6` | `#60a5fa` | Informational |
-
-### 1.3 Semantic Color Tokens
-
-These map primitives to UI purposes.
-
-#### Surface Colors
-
-| Token | Light Mode | Dark Mode | Usage |
-|-------|------------|-----------|-------|
-| `--color-background` | `white` | `neutral-900` | Page background |
-| `--color-foreground` | `neutral-950` | `white` | Primary text |
-| `--color-card` | `white` | `neutral-900` | Card surfaces |
-| `--color-card-foreground` | `neutral-950` | `white` | Card text |
-| `--color-muted` | `neutral-100` | `neutral-800` | Muted backgrounds |
-| `--color-muted-foreground` | `neutral-500` | `neutral-400` | Muted text |
-
-#### Interactive Colors
-
-| Token | Light Mode | Dark Mode | Usage |
-|-------|------------|-----------|-------|
-| `--color-border` | `neutral-200` | `neutral-800` | Default borders |
-| `--color-input` | `neutral-200` | `neutral-700` | Input borders |
-| `--color-ring` | `neutral-400` | `neutral-300` | Focus rings |
-
-### 1.4 Chart Colors
-
-| Token | Light Mode | Dark Mode |
-|-------|------------|-----------|
-| `--chart-1` | `orange-400` | `blue-600` |
-| `--chart-2` | `teal-600` | `emerald-400` |
-| `--chart-3` | `green-800` | `orange-400` |
-| `--chart-4` | `yellow-200` | `purple-500` |
-| `--chart-5` | `orange-200` | `pink-500` |
-
----
-
-## 2. Typography
-
-### 2.1 Font Stack
-
-> **EXPERIMENT CANDIDATES**: Test different font combinations
-
-| Option | Headings | Body | Personality |
-|--------|----------|------|-------------|
-| A | **Plus Jakarta Sans** | **DM Sans** | Modern, geometric |
-| B | **Inter** | **Inter** | Clean, versatile |
-| C | **Manrope** | **Source Sans Pro** | Rounded, friendly |
-| D | **Outfit** | **Nunito Sans** | Contemporary, warm |
-
-**Current Implementation**:
-- Sans: `Inter` (all text)
-- Heading: `Inter` (same as sans)
-
-**Planned Implementation**:
-- Headings: `Plus Jakarta Sans` (400, 500, 600, 700)
-- Body: `DM Sans` (400, 500, 700)
-
-### 2.2 Type Scale
-
-We use two scales: **Marketing** (impactful) and **Application** (compact).
-
-#### Marketing Scale (Large, for landing pages)
-
-| Level | Token | Size | Line Height | Letter Spacing | Weight |
-|-------|-------|------|-------------|----------------|--------|
-| Display 1 | `--text-display-1` | 4.768rem (76px) | 1.1 | -0.02em | 700 |
-| Display 2 | `--text-display-2` | 3.815rem (61px) | 1.15 | -0.02em | 700 |
-| H1 | `--text-h1` | 3.052rem (49px) | 1.2 | -0.02em | 600 |
-| H2 | `--text-h2` | 2.441rem (39px) | 1.25 | -0.01em | 600 |
-| H3 | `--text-h3` | 1.953rem (31px) | 1.3 | -0.01em | 600 |
-| H4 | `--text-h4` | 1.563rem (25px) | 1.4 | 0 | 600 |
-| Body Large | `--text-body-lg` | 1.25rem (20px) | 1.6 | 0 | 400 |
-| Body | `--text-body` | 1.125rem (18px) | 1.6 | 0 | 400 |
-| Body Small | `--text-body-sm` | 1rem (16px) | 1.5 | 0 | 400 |
-| Caption | `--text-caption` | 0.875rem (14px) | 1.4 | 0.01em | 400 |
-
-#### Application Scale (Compact, for dashboard/app)
-
-| Level | Token | Size | Line Height | Letter Spacing | Weight |
-|-------|-------|------|-------------|----------------|--------|
-| App H1 | `--text-app-h1` | 2.25rem (36px) | 1.2 | -0.02em | 600 |
-| App H2 | `--text-app-h2` | 1.875rem (30px) | 1.25 | -0.01em | 600 |
-| App H3 | `--text-app-h3` | 1.5rem (24px) | 1.3 | -0.01em | 600 |
-| App H4 | `--text-app-h4` | 1.25rem (20px) | 1.4 | 0 | 600 |
-| App Body | `--text-app-body` | 1rem (16px) | 1.5 | 0 | 400 |
-| App Small | `--text-app-sm` | 0.875rem (14px) | 1.4 | 0 | 400 |
-| App XS | `--text-app-xs` | 0.75rem (12px) | 1.4 | 0.01em | 400 |
-
-### 2.3 Font Weights
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--font-weight-regular` | 400 | Body text, UI labels |
-| `--font-weight-medium` | 500 | Emphasis, buttons |
-| `--font-weight-semibold` | 600 | Headings, important labels |
-| `--font-weight-bold` | 700 | Display text, strong emphasis |
-
-### 2.4 Scale Activation
-
-Marketing pages use `data-marketing` attribute:
+Marketing pages enforce dark mode unconditionally:
 
 ```tsx
-// Marketing layout
-<div data-marketing className="flex min-h-screen flex-col">
+// apps/web/app/(marketing)/layout.tsx
+<div data-marketing className="dark flex min-h-[100vh] flex-col">
   {children}
 </div>
+```
 
-// CSS automatically applies larger scale
-[data-marketing] h1 { @apply text-h1; }
+- `dark` class: Forces dark mode CSS variables
+- `data-marketing`: Activates marketing-specific CSS tokens and typography scale
+- No user toggle — marketing pages are always dark
+
+### Application Pages (Dark Default, Light Optional)
+
+App pages (dashboard, settings, workspace) default to dark mode but allow user preference:
+
+```typescript
+// apps/web/lib/root-theme.ts
+const fallbackThemeMode = "dark";
+```
+
+- Default: Dark mode
+- User toggle: Stored in user preferences
+- System preference: Respected as fallback
+
+### CSS Variable Layers
+
+```
+┌─────────────────────────────────────────────┐
+│  [data-marketing] tokens                     │  Marketing-only overrides
+│  --homepage-bg, --homepage-accent, etc.      │
+├─────────────────────────────────────────────┤
+│  .dark { } tokens                            │  Dark mode semantic colors
+│  --background, --foreground, --card, etc.    │
+├─────────────────────────────────────────────┤
+│  @theme inline { } tokens                    │  Primitive color scales
+│  --color-neutral-*, --color-white, etc.      │
+└─────────────────────────────────────────────┘
 ```
 
 ---
 
-## 3. Spacing
+## 3. Color System
 
-### 3.1 Base Unit
+### 3.1 Brand Accent
 
-**Base unit**: `4px` (0.25rem)
-All spacing values are multiples of the base unit.
-
-### 3.2 Spacing Scale
-
-| Token | Value | Pixels | Usage |
-|-------|-------|--------|-------|
-| `--spacing-0` | 0 | 0px | None |
-| `--spacing-0.5` | 0.125rem | 2px | Micro adjustments |
-| `--spacing-1` | 0.25rem | 4px | Tight gaps |
-| `--spacing-1.5` | 0.375rem | 6px | Small gaps |
-| `--spacing-2` | 0.5rem | 8px | Related elements |
-| `--spacing-2.5` | 0.625rem | 10px | - |
-| `--spacing-3` | 0.75rem | 12px | Component padding |
-| `--spacing-4` | 1rem | 16px | Standard gap |
-| `--spacing-5` | 1.25rem | 20px | - |
-| `--spacing-6` | 1.5rem | 24px | Section padding |
-| `--spacing-8` | 2rem | 32px | Large gaps |
-| `--spacing-10` | 2.5rem | 40px | - |
-| `--spacing-12` | 3rem | 48px | Section margins |
-| `--spacing-16` | 4rem | 64px | Large sections |
-| `--spacing-20` | 5rem | 80px | - |
-| `--spacing-24` | 6rem | 96px | Hero spacing |
-| `--spacing-32` | 8rem | 128px | Major sections |
-
-### 3.3 Semantic Spacing
+The primary accent is **cyan-blue** `#24a9e0`. This single color anchors the entire brand.
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--spacing-page-x` | `1rem` / `2rem` (lg) | Page horizontal padding |
-| `--spacing-page-y` | `2rem` / `4rem` (lg) | Page vertical padding |
-| `--spacing-section` | `3rem` / `6rem` (lg) | Between sections |
-| `--spacing-card` | `1.5rem` | Card internal padding |
-| `--spacing-stack` | `1rem` | Stacked elements |
-| `--spacing-inline` | `0.5rem` | Inline elements |
+| `--homepage-accent` | `#24a9e0` | Interactive elements, icons, stats, links |
+| `--homepage-accent-contrast` | `#0f7ea8` | WCAG AA compliant text on dark backgrounds |
+| `--homepage-accent-glow` | `rgba(36, 169, 224, 0.4)` | Glow effects, hover states |
+| `--homepage-gradient-accent` | `linear-gradient(135deg, #1e9dd0, #1a6fb5)` | Gradient text, CTA orbs |
 
-### 3.4 Component Spacing Patterns
+### 3.2 Accent Color Spectrum
 
-```typescript
-// Standardized spacing patterns
-const spacing = {
-  sm: 'gap-4 my-4',      // 16px
-  md: 'gap-6 my-6',      // 24px
-  lg: 'gap-8 my-8',      // 32px
-  xl: 'gap-12 my-12',    // 48px
-  section: 'mt-12 md:mt-16 lg:mt-24'  // Responsive
-};
+Used cyclically for feature cards, step indicators, and bento grid:
 
-const componentSpacing = {
-  card: 'p-4 md:p-6',
-  stack: 'space-y-4 md:space-y-6',
-  grid: 'gap-4 md:gap-6 lg:gap-8'
-};
+| Index | Hex | Name | Usage |
+|-------|-----|------|-------|
+| 0 | `#2431E0` | Deep Blue | First card/step border + icon |
+| 1 | `#246CE0` | Medium Blue | Second card/step |
+| 2 | `#24A9E0` | **Brand Cyan** | Third card/step (primary accent) |
+| 3 | `#24E0DD` | Cyan-Teal | Fourth card/step |
+| 4 | `#24E09D` | Teal-Green | Fifth card/step |
+
+These colors are used at low opacity for borders (20-25%) and icon backgrounds (12%), creating subtle differentiation without overwhelming the design.
+
+### 3.3 Dark Mode Surface Colors
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--background` | `var(--color-black)` / `#000000` | Page background |
+| `--homepage-bg` | `#0a0a0f` | Near-black with blue tint |
+| `--homepage-surface` | `#12121a` | Dark navy surface (cards) |
+| `--homepage-surface-elevated` | `#1a1a25` | Elevated card surfaces |
+| `--foreground` | `var(--color-white)` | Primary text |
+| `--card` | `var(--color-neutral-900)` | Card backgrounds |
+| `--muted` | `var(--color-neutral-800)` | Muted backgrounds |
+| `--muted-foreground` | `oklch(71.19% 0.0129 286.07)` | Secondary text (~`#a8a8b8`) |
+
+### 3.4 Border Colors
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--homepage-border` | `#2a2a3a` | Standard borders |
+| `--homepage-border-subtle` | `#1e1e2e` | Very subtle borders |
+| `--border` | `var(--color-neutral-800)` | Default border token |
+| `border-white/[0.08]` | 8% white | Card borders (showcase) |
+| `border-white/10` | 10% white | Section borders, tab separators |
+| `border-white/5` | 5% white | Subtle structural dividers |
+
+### 3.5 Light Mode Surface Colors
+
+Used for app pages when user selects light theme:
+
+| Token | Light Value | Usage |
+|-------|-------------|-------|
+| `--background` | `white` | Page background |
+| `--foreground` | `var(--color-neutral-950)` | Primary text |
+| `--card` | `white` | Card backgrounds |
+| `--muted` | `var(--color-neutral-100)` | Muted backgrounds |
+| `--muted-foreground` | `var(--color-neutral-500)` | Secondary text |
+| `--border` | `var(--color-neutral-200)` | Borders |
+| `--input` | `var(--color-neutral-200)` | Input borders |
+
+### 3.6 Semantic Status Colors
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--color-success` / `green` | `#22c55e` | Success states |
+| `--color-warning` / `amber` | `#f59e0b` | Warning states |
+| `--color-error` / `red` | `#ef4444` (light) / `#dc2626` (dark) | Error states |
+| `--color-info` / `blue` | `#3b82f6` (light) / `#60a5fa` (dark) | Info states |
+
+### 3.7 Text Opacity Scale
+
+For layered text hierarchy on dark backgrounds:
+
+| Class | Opacity | Usage |
+|-------|---------|-------|
+| `text-foreground` | 100% | Headlines, active text |
+| `text-foreground/80` | 80% | Emphasis paragraphs |
+| `text-muted-foreground` | ~65% | Body text, subtitles |
+| `text-white/60` | 60% | Panel mockup secondary |
+| `text-white/50` | 50% | Tertiary text |
+| `text-white/40` | 40% | Inactive items |
+| `text-white/30` | 30% | Decorative text |
+
+---
+
+## 4. Typography
+
+### 4.1 Font Stack
+
+| Role | Font | Source | Variable | Weights |
+|------|------|--------|----------|---------|
+| **Body / Sans** | Untitled Sans | Local (Klim Type Foundry) | `--font-sans` | 300, 400, 500, 700, 900 |
+| **Heading** | Untitled Sans | Local (Klim Type Foundry) | `--font-heading` | 500, 700, 900 |
+| **Script** | Whisper | Google Fonts | `--font-script` | 400 |
+
+**Key decision**: Headings and body use the same family (Untitled Sans). The distinction is in weight and scale, not in font pairing. This creates a refined, editorial feel.
+
+**Script font**: Whisper is used exclusively for decorative signatures (Founder's Letter, testimonials).
+
+### 4.2 Marketing Typography Scale
+
+Used on pages wrapped with `data-marketing`:
+
+| Token | Size | Line Height | Letter Spacing | Weight | Usage |
+|-------|------|-------------|----------------|--------|-------|
+| `--text-display` | 4.768rem (76px) | 1.1 | -0.02em | 500 (medium) | Hero h1 |
+| `--text-display-2` | 3.75rem (60px) | 1.2 | -0.02em | 500 | Large section titles |
+| `--text-h2` | 3.052rem (49px) | 1.2 | -0.02em | 500 | Section headings |
+| `--text-h3` | 2.441rem (39px) | 1.2 | -0.01em | 500 | Sub-section headings |
+| `--text-body-lg` | 1.563rem (25px) | 1.5 | 0 | 400 | Lead paragraphs, subtitles |
+| `--text-body` | 1.25rem (20px) | 1.5 | 0 | 400 | Body text |
+
+**Critical detail**: Marketing headings use `font-weight: 500` (medium), not bold. This is intentional — it creates the editorial, refined aesthetic. Only card titles and specific UI elements use `font-semibold` (600).
+
+### 4.3 Application Typography Scale
+
+For dashboard, settings, and workspace pages:
+
+| Token | Size | Line Height | Letter Spacing | Weight | Usage |
+|-------|------|-------------|----------------|--------|-------|
+| `--text-app-h1` | 2.25rem (36px) | 1.2 | -0.02em | 600 | Page titles |
+| `--text-app-h2` | 1.875rem (30px) | 1.25 | -0.01em | 600 | Section headings |
+| `--text-app-h3` | 1.5rem (24px) | 1.3 | -0.01em | 600 | Card titles |
+| `--text-app-h4` | 1.25rem (20px) | 1.4 | 0 | 600 | Sub-headings |
+| `--text-app-body` | 1rem (16px) | 1.5 | 0 | 400 | Body text |
+| `--text-app-sm` | 0.875rem (14px) | 1.4 | 0 | 400 | Small text, metadata |
+| `--text-app-xs` | 0.75rem (12px) | 1.4 | 0.01em | 400 | Captions, badges |
+
+### 4.4 Responsive Heading Patterns (Marketing)
+
+Hero h1:
+```
+text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem]
+font-medium leading-[1.1] tracking-tight
 ```
 
-### 3.5 Container Width
+Section h2:
+```
+text-h3 sm:text-h2
+```
+Starts at ~39px on mobile, grows to ~49px on desktop.
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--container-sm` | 640px | Narrow content |
-| `--container-md` | 768px | Medium content |
-| `--container-lg` | 1024px | Standard content |
-| `--container-xl` | 1280px | Wide content |
-| `--container-2xl` | 1400px | Maximum width |
+Card titles:
+```
+text-lg font-semibold    (18px — standard cards)
+text-xl lg:text-2xl      (20-24px — feature tabs)
+```
 
-**Container utility**:
+### 4.5 Font Weight Usage Guide
+
+| Weight | Class | Marketing Usage | App Usage |
+|--------|-------|----------------|-----------|
+| 300 | `font-light` | Testimonial quotes | — |
+| 400 | `font-normal` | Body text, subtitles | Body text |
+| 500 | `font-medium` | **All marketing headings**, buttons | Buttons, labels |
+| 600 | `font-semibold` | Card titles, tab titles | All headings |
+| 700 | `font-bold` | Statistics numbers | Strong emphasis |
+
+---
+
+## 5. Spacing & Layout
+
+### 5.1 Width Hierarchy
+
+Three levels of content width:
+
+| Token | Value | Tailwind | Usage |
+|-------|-------|----------|-------|
+| Navigation | 1280px | `max-w-7xl` | Header, footer |
+| Content | 1152px | `max-w-6xl` | Standard content sections |
+| Focused | 1024px | `max-w-5xl` | Hero, key messages |
+| Narrow | 672px | `max-w-2xl` | Founder's letter, long-form text |
+| FAQ | 768px | `max-w-3xl` | FAQ, forms |
+
+### 5.2 Container Base
+
+```
+mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden
+```
+
+Container utility (defined in `theme.utilities.css`):
 ```css
 @utility container {
   margin-inline: auto;
-  @apply xl:max-w-[80rem] px-4 lg:px-8;
+  @apply xl:max-w-[80rem] px-4 lg:px-8;  /* 1280px max */
+}
+```
+
+### 5.3 Section Vertical Spacing
+
+Standard section padding across breakpoints:
+
+| Breakpoint | Padding | Pixels |
+|------------|---------|--------|
+| Base | `py-12` | 48px |
+| `sm` | `py-16` | 64px |
+| `md` | `py-20` | 80px |
+| `lg` | `py-28` | 112px |
+
+**Pattern**: `py-12 sm:py-16 md:py-20 lg:py-28`
+
+Founder's Letter (extra generous):
+```
+py-16 sm:py-20 md:py-28 lg:py-36
+```
+
+### 5.4 Content Gaps
+
+| Context | Pattern | Value |
+|---------|---------|-------|
+| Section heading → subtitle | `mb-4 sm:mb-6` | 16-24px |
+| Subtitle → content | `mb-10 sm:mb-14` | 40-56px |
+| Hero content stack | `gap-6` | 24px |
+| Grid gaps (cards) | `gap-4 sm:gap-6 lg:gap-8` | 16-32px |
+| How-it-works arrows | 40px column | Fixed |
+
+### 5.5 Spacing Constants (Code)
+
+```typescript
+const spacing = {
+  sm: "gap-4 my-4",
+  md: "gap-6 my-6",
+  lg: "gap-8 my-8",
+  xl: "gap-12 my-12",
+  section: "py-12 sm:py-16 md:py-20 lg:py-28",
+};
+```
+
+---
+
+## 6. Border Radius
+
+| Context | Value | Tailwind |
+|---------|-------|----------|
+| Base/default | 8px | `rounded-md` (`--radius: 0.5rem`) |
+| Cards (marketing) | 12px | `rounded-xl` |
+| Browser frame outer | 16px | `rounded-2xl` |
+| CTA buttons | 12px | `rounded-xl` |
+| Presentation cards | 8px → 12px | `rounded-lg sm:rounded-xl` |
+| Pills, avatars, tabs | 9999px | `rounded-full` |
+| Step badges | 9999px | `rounded-full` |
+| Testimonial nav | 9999px | `rounded-full` |
+| How-it-works cards | 16px | `rounded-2xl` |
+
+**Pattern**: Marketing uses larger radii (`rounded-xl`, `rounded-2xl`). App pages use standard radii (`rounded-md`, `rounded-lg`).
+
+---
+
+## 7. Elevation & Shadows
+
+### 7.1 Standard Shadow Scale
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `shadow-sm` | `0 1px 3px rgb(0 0 0 / 0.1)` | Subtle lift |
+| `shadow-md` | `0 4px 6px -1px rgb(0 0 0 / 0.1)` | Dropdowns |
+| `shadow-lg` | `0 10px 15px -3px rgb(0 0 0 / 0.1)` | Modals |
+| `shadow-xl` | `0 20px 25px -5px rgb(0 0 0 / 0.1)` | Large overlays |
+| `shadow-2xl` | `0 25px 50px -12px rgb(0 0 0 / 0.25)` | Maximum depth |
+
+### 7.2 Marketing-Specific Shadows
+
+| Effect | Value | Usage |
+|--------|-------|-------|
+| Card hover glow | `0 8px 30px rgba(color, 0.25)` | Bento cards, how-it-works cards |
+| Glow pulse base | `0 0 20px rgba(36, 169, 224, 0.3)` | Browser frame glow |
+| Glow pulse peak | `0 0 40px rgba(36, 169, 224, 0.5)` | Browser frame glow (animated) |
+| Edge vignette | `inset 0 60px 80px 40px rgba(0,0,0,0.6)` | CausticsBackground top/bottom |
+| CTA glow orb | `blur-[80px]` on `#24a9e0/20` (500x500 circle) | Final CTA section |
+| CTA button | `dark:shadow-primary/30 hover:shadow-2xl` | Primary CTA buttons |
+| GlassCard glow | `shadow-[0_0_15px_var(--homepage-accent-glow)]` | Featured glass cards |
+
+### 7.3 Dark Mode Shadow Rules
+
+On dark backgrounds, traditional box-shadows are barely visible. Instead, use:
+- **Colored glow shadows**: `rgba(accent-color, 0.2-0.3)` for interactive elements
+- **Border emphasis**: Increase border opacity on hover rather than adding shadow
+- **Blur-based glow**: Large blurred elements behind cards for ambient light effect
+
+---
+
+## 8. Glass & Blur Effects
+
+Glass morphism is central to the marketing design. All glass elements need Safari fallbacks.
+
+### 8.1 Blur Scale
+
+| Level | Blur | Opacity | Tailwind | Usage |
+|-------|------|---------|----------|-------|
+| Subtle | 12px | 60% | `backdrop-blur-[12px] bg-[--homepage-surface]/60` | Default cards |
+| Standard | 16px | 75% | `backdrop-blur-[16px] bg-[--homepage-surface]/75` | Elevated cards, browser frame |
+| Strong | 20px | 85% | `backdrop-blur-[20px] bg-[--homepage-surface]/85` | Featured/highlighted cards |
+| Navigation | `md` | 50-80% | `backdrop-blur-md bg-background/50` | Sticky header |
+| Cards | `xl` | varies | `backdrop-blur-xl bg-white/5` | How-it-works, bento cards |
+
+### 8.2 GlassCard Component
+
+Three variants:
+
+```
+default:  backdrop-blur-[12px] bg-[--homepage-surface]/60
+elevated: backdrop-blur-[16px] bg-[--homepage-surface]/75
+featured: backdrop-blur-[20px] bg-[--homepage-surface]/85 border-[--homepage-accent]/20
+```
+
+### 8.3 Safari Fallback
+
+```css
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-element {
+    background: var(--homepage-surface); /* solid fallback */
+  }
 }
 ```
 
 ---
 
-## 4. Elevation & Shadows
+## 9. Animation System
 
-### 4.1 Shadow Scale
+### 9.1 Library & Setup
 
-> **EXPERIMENT CANDIDATES**: Test shadow intensity
+- **Library**: `motion/react` (Framer Motion)
+- **Loading**: `LazyMotion` with deferred feature loading via `MotionProvider`
+- **Reduced motion**: `MotionConfig reducedMotion="user"` — respects `prefers-reduced-motion`
 
-| Option | Personality | Shadow Intensity |
-|--------|-------------|------------------|
-| A | **Subtle** | Very light, almost flat |
-| B | **Balanced** | Moderate depth (current) |
-| C | **Elevated** | Prominent shadows |
+### 9.2 Standard Scroll Animation
 
-### 4.2 Shadow Tokens
+The default reveal animation used on most sections:
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--shadow-xs` | `0 1px 2px 0 rgb(0 0 0 / 0.05)` | Subtle lift |
-| `--shadow-sm` | `0 1px 3px 0 rgb(0 0 0 / 0.1)` | Cards, buttons |
-| `--shadow-md` | `0 4px 6px -1px rgb(0 0 0 / 0.1)` | Dropdowns |
-| `--shadow-lg` | `0 10px 15px -3px rgb(0 0 0 / 0.1)` | Modals, popovers |
-| `--shadow-xl` | `0 20px 25px -5px rgb(0 0 0 / 0.1)` | Large overlays |
-| `--shadow-2xl` | `0 25px 50px -12px rgb(0 0 0 / 0.25)` | Maximum depth |
-| `--shadow-inner` | `inset 0 2px 4px 0 rgb(0 0 0 / 0.05)` | Inset elements |
-| `--shadow-none` | `none` | Flat |
+```typescript
+// AnimateOnScroll component
+initial: { opacity: 0, y: 24 }
+animate: { opacity: 1, y: 0 }
+duration: 0.6
+ease: [0, 0.71, 0.2, 1.01]  // custom spring-like
+viewport: { once: true, amount: 0.2 }
+```
 
-### 4.3 Elevation Levels
+### 9.3 Hero Stagger
 
-| Level | Token | Use Case | Shadow |
-|-------|-------|----------|--------|
-| 0 | `elevation-0` | Base surface | none |
-| 1 | `elevation-1` | Cards, buttons | shadow-sm |
-| 2 | `elevation-2` | Dropdowns, tooltips | shadow-md |
-| 3 | `elevation-3` | Modals, dialogs | shadow-lg |
-| 4 | `elevation-4` | Notifications | shadow-xl |
-
-### 4.4 Dark Mode Shadows
-
-In dark mode, shadows are reduced in intensity and may use color tints:
-
-```css
-.dark {
-  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+```typescript
+container: { staggerChildren: 0.15, delayChildren: 0.1 }
+child: {
+  initial: { opacity: 0, y: 24 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }
 }
 ```
 
----
+### 9.4 Card Hover
 
-## 5. Border Radius
+Spring-based physics for interactive cards:
 
-### 5.1 Radius Scale
-
-> **EXPERIMENT CANDIDATES**: Test roundness levels
-
-| Option | Personality | Base Radius |
-|--------|-------------|-------------|
-| A | **Sharp** | 0.25rem (4px) |
-| B | **Balanced** | 0.5rem (8px) - Current |
-| C | **Rounded** | 0.75rem (12px) |
-| D | **Soft** | 1rem (16px) |
-
-### 5.2 Radius Tokens
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--radius-none` | 0 | No rounding |
-| `--radius-sm` | 0.25rem (4px) | Small elements, badges |
-| `--radius-md` | 0.375rem (6px) | Inputs, buttons |
-| `--radius-lg` | 0.5rem (8px) | Cards, containers |
-| `--radius-xl` | 0.75rem (12px) | Large cards |
-| `--radius-2xl` | 1rem (16px) | Modal containers |
-| `--radius-3xl` | 1.5rem (24px) | Hero elements |
-| `--radius-full` | 9999px | Pills, avatars |
-
-### 5.3 Current Implementation
-
-```css
---radius: 0.5rem;
---radius-sm: calc(var(--radius) - 4px);  /* 0.25rem */
---radius-md: calc(var(--radius) - 2px);  /* 0.375rem */
---radius-lg: var(--radius);              /* 0.5rem */
+```typescript
+whileHover: {
+  y: -4,
+  boxShadow: `0 8px 30px rgba(color, 0.25)`,
+  borderColor: `rgba(color, 0.5)`
+}
+transition: { type: "spring", stiffness: 400, damping: 20 }
 ```
 
----
+### 9.5 Icon Float
 
-## 6. Motion & Animation
+Subtle floating animation for feature icons:
 
-### 6.1 Duration Scale
+```typescript
+animate: { y: [0, -3, 0] }
+transition: { duration: 3 + index * 0.4, repeat: Infinity, ease: "easeInOut" }
+```
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--duration-instant` | 0ms | No animation |
-| `--duration-fast` | 100ms | Micro-interactions |
-| `--duration-normal` | 200ms | Standard transitions |
-| `--duration-moderate` | 300ms | Entrances, exits |
-| `--duration-slow` | 500ms | Complex animations |
-| `--duration-slower` | 700ms | Page transitions |
+### 9.6 CSS Keyframe Animations
 
-### 6.2 Easing Functions
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--ease-default` | `cubic-bezier(0.4, 0, 0.2, 1)` | Standard |
-| `--ease-in` | `cubic-bezier(0.4, 0, 1, 1)` | Exit animations |
-| `--ease-out` | `cubic-bezier(0, 0, 0.2, 1)` | Enter animations |
-| `--ease-in-out` | `cubic-bezier(0.4, 0, 0.2, 1)` | Symmetrical |
-| `--ease-bounce` | `cubic-bezier(0.68, -0.55, 0.265, 1.55)` | Playful |
-
-### 6.3 Animation Presets
-
-| Name | Duration | Easing | Usage |
+| Name | Duration | Effect | Usage |
 |------|----------|--------|-------|
-| `fade-in` | 200ms | ease-out | Element appearance |
-| `fade-out` | 150ms | ease-in | Element disappearance |
-| `slide-up` | 300ms | ease-out | Bottom sheets |
-| `slide-down` | 200ms | ease-in | Dropdowns |
-| `scale-in` | 200ms | ease-out | Modals |
-| `accordion-down` | 200ms | ease-out | Expand |
-| `accordion-up` | 200ms | ease-out | Collapse |
+| `fade-up` | 0.5s | opacity + translateY up | General reveal |
+| `fade-down` | 0.5s | opacity + translateY down | Reverse reveal |
+| `accordion-down` | 0.2s ease-out | height 0 → full | FAQ expand |
+| `accordion-up` | 0.2s ease-out | height full → 0 | FAQ collapse |
+| `glowPulse` | 2.5s infinite | opacity + scale + shadow | Browser frame glow |
+| `borderRotate` | 3.5s linear infinite | conic-gradient rotation | Browser frame border |
+| `marquee-left` | 45s linear infinite | translateX 0 → -50% | Presentation showcase |
+| `marquee-right` | 50s linear infinite | translateX -50% → 0 | Presentation showcase |
 
-### 6.4 Current Implementation
+### 9.7 Statistics Count-Up
 
-```css
---animate-fade-up: fade-up 0.5s;
---animate-fade-down: fade-down 0.5s;
---animate-accordion-down: accordion-down 0.2s ease-out;
---animate-accordion-up: accordion-up 0.2s ease-out;
-```
+Numbers count from 0 to target value over 2 seconds when scrolled into view.
 
-### 6.5 Reduced Motion
+### 9.8 Feature Tab Auto-Advance
 
-Always respect user preferences:
+Progress line animates from 0% to 100% width over 6 seconds per tab, then auto-advances to the next tab. Uses `bg-[#24a9e0]` accent color.
+
+### 9.9 Reduced Motion
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }
+
+[data-marketing] [class*="animate-"] {
+  /* Force-disabled for reduced motion */
+}
 ```
 
 ---
 
-## 7. Iconography
+## 10. Iconography
 
-### 7.1 Icon System
+### 10.1 System
 
-**Library**: Lucide React (primary)
-**Style**: Outlined, consistent 24px grid
+- **Library**: Lucide React
+- **Style**: Outlined, consistent 24px grid
+- **Stroke width**: 2px (default), 1.5px for smaller sizes
+- **Color**: `currentColor` (inherits from text)
 
-### 7.2 Icon Sizes
+### 10.2 Sizes
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--icon-xs` | 12px | Inline indicators |
-| `--icon-sm` | 16px | Compact UI |
-| `--icon-md` | 20px | Standard buttons |
-| `--icon-lg` | 24px | Default size |
-| `--icon-xl` | 32px | Feature icons |
-| `--icon-2xl` | 48px | Hero/marketing |
+| Token | Size | Usage |
+|-------|------|-------|
+| `size-3` | 12px | Inline indicators |
+| `size-4` | 16px | Buttons, compact UI |
+| `size-5` | 20px | Standard buttons |
+| `size-6` | 24px | Default icons |
+| `size-8` | 32px | Feature cards |
+| `size-12` | 48px | Marketing hero icons |
 
-### 7.3 Icon Guidelines
+### 10.3 Marketing Icon Containers
 
-- **Stroke width**: 2px (default), 1.5px (smaller sizes)
-- **Color**: Inherit from text (`currentColor`)
-- **Accessibility**: Always include `aria-label` or adjacent text
-- **Alignment**: Center vertically with text
+Feature icons sit inside colored containers:
 
-```tsx
-<Button>
-  <PlusIcon className="size-4" aria-hidden="true" />
-  <span>Add Item</span>
-</Button>
 ```
+h-11 w-11 rounded-xl
+backgroundColor: rgba(accent-color, 0.12)
+```
+
+With optional float animation (see 9.5).
 
 ---
 
-## 8. Breakpoints
-
-### 8.1 Breakpoint Scale
+## 11. Breakpoints
 
 | Token | Value | Target |
 |-------|-------|--------|
-| `--breakpoint-sm` | 640px | Mobile landscape |
-| `--breakpoint-md` | 768px | Tablet portrait |
-| `--breakpoint-lg` | 1024px | Tablet landscape / small desktop |
-| `--breakpoint-xl` | 1280px | Desktop |
-| `--breakpoint-2xl` | 1536px | Large desktop |
+| `sm` | 640px | Mobile landscape |
+| `md` | 768px | Tablet portrait |
+| `lg` | 1024px | Tablet landscape / small desktop |
+| `xl` | 1280px | Desktop |
+| `2xl` | 1536px | Large desktop |
 
-### 8.2 Usage with Tailwind
+**Approach**: Mobile-first. Base styles are mobile, breakpoints add complexity upward.
+
+---
+
+## 12. Component Patterns
+
+### 12.1 Section Structure (Marketing)
+
+Every marketing section follows this anatomy:
 
 ```tsx
-// Mobile-first approach
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-  {/* Content */}
-</div>
+<section className="bg-black py-12 sm:py-16 md:py-20 lg:py-28">
+  <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    {/* Section heading */}
+    <h2 className="text-h3 sm:text-h2 mb-4 sm:mb-6 text-center text-foreground">
+      {title}
+    </h2>
 
-// Responsive typography
-<h1 className="text-2xl md:text-3xl lg:text-4xl">
-  {title}
-</h1>
+    {/* Section subtitle */}
+    <p className="mx-auto mb-10 sm:mb-14 max-w-4xl text-center text-lg sm:text-xl leading-relaxed text-muted-foreground">
+      {subtitle}
+    </p>
+
+    {/* Section content */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+      {content}
+    </div>
+  </div>
+</section>
 ```
 
-### 8.3 Container Queries (Future)
+### 12.2 Section Divider
 
-For component-level responsive design:
+Radial gradient horizontal rule between sections:
 
-```css
-@container (min-width: 400px) {
-  .card-content {
-    flex-direction: row;
-  }
-}
+```tsx
+<div style={{
+  background: "radial-gradient(ellipse at center, var(--homepage-border, #2a2a3a) 0%, transparent 70%)"
+}} className="h-px" />
+```
+
+### 12.3 Grid Lines
+
+Fixed vertical lines at container edges (decorative):
+
+```
+fixed inset-0 z-[5]
+bg-white/[0.06]  (6% white opacity)
+dark:block only
+```
+
+### 12.4 Buttons
+
+**Primary CTA** (marketing):
+```
+bg-primary text-primary-foreground
+h-12 rounded-xl px-4 text-base font-medium
+min-h-[44px] w-full sm:w-auto
+hover:shadow-2xl dark:shadow-primary/30 transition-all
+```
+
+**Secondary/Outline** (marketing):
+```
+variant="outline"
+border border-input bg-background hover:bg-accent
+h-12 rounded-xl px-4 text-base font-medium
+```
+
+### 12.5 Bento Feature Cards
+
+```
+rounded-xl bg-white/5 p-6 sm:p-8 backdrop-blur-md
+border: 1px solid rgba(accent-color, 0.2)
+
+Hover: y: -4, boxShadow: 0 8px 30px rgba(color, 0.25)
+Cursor glow: radial-gradient overlay following mouse position
+```
+
+### 12.6 How-It-Works Cards
+
+```
+rounded-2xl bg-white/5 pt-8 px-5 pb-5 backdrop-blur-xl
+border: 1px solid rgba(step-color, 0.25)
+
+Step badge: -top-4, h-8 w-8 rounded-full, linear-gradient(135deg, color, color@70%)
+```
+
+### 12.7 Testimonial Carousel
+
+- Quote text: `text-lg sm:text-xl md:text-2xl font-light leading-relaxed text-muted-foreground`
+- Highlighted words: `font-semibold text-foreground`
+- Signature: `font-script text-3xl sm:text-4xl text-foreground`
+- Navigation: `rounded-full border border-border p-2 sm:p-3`
+- Dot indicators: active = `w-6 h-1.5 bg-foreground`, inactive = `w-1.5 h-1.5 bg-border`
+
+### 12.8 FAQ Accordion
+
+Standard shadcn Accordion:
+```
+type="single" collapsible
+trigger: text-left text-base font-medium
+content: text-muted-foreground text-base leading-relaxed
+animation: accordion-down/up 0.2s ease-out
+```
+
+### 12.9 Sticky Header
+
+```
+sticky top-0 z-10
+dark:bg-black (marketing) / bg-background/80 backdrop-blur-md (app)
+h-14 (56px)
+grid-cols-3: logo | navigation | actions
+```
+
+### 12.10 Footer
+
+```
+bg-black border-t border-white/10
+4-column grid at md:grid-cols-4
+Column dividers: absolute bg-white/10
+Link colors: dark:text-white/70 dark:hover:text-white
 ```
 
 ---
 
-## 9. Z-Index Scale
+## 13. Interaction States
 
-### 9.1 Layer Hierarchy
+### 13.1 State Definitions
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--z-deep` | -1 | Background elements |
-| `--z-base` | 0 | Default |
-| `--z-raised` | 10 | Raised cards |
-| `--z-dropdown` | 100 | Dropdown menus |
-| `--z-sticky` | 200 | Sticky headers |
-| `--z-fixed` | 300 | Fixed elements |
-| `--z-backdrop` | 400 | Modal backdrops |
-| `--z-modal` | 500 | Modal dialogs |
-| `--z-popover` | 600 | Popovers, tooltips |
-| `--z-toast` | 700 | Toast notifications |
-| `--z-maximum` | 9999 | Emergency overlays |
+| State | Treatment |
+|-------|-----------|
+| Default | Base appearance |
+| Hover | `y: -4` lift, increased border opacity, glow shadow |
+| Focus | `2px solid #24a9e0, offset 3px, shadow 0 0 0 4px rgba(36,169,224,0.25)` |
+| Active | `scale(0.98)` press effect |
+| Disabled | `opacity: 0.5, cursor: not-allowed` |
+| Loading | `animate-pulse bg-muted rounded-md` skeleton |
 
-### 9.2 Guidelines
-
-- **Never use arbitrary z-index values** - always use tokens
-- **Stack within layers** - modals stack at 500, 501, 502...
-- **Avoid z-index wars** - restructure DOM if conflicts arise
-
----
-
-## 10. Interaction States
-
-### 10.1 State Definitions
-
-| State | Visual Treatment | CSS |
-|-------|-----------------|-----|
-| **Default** | Base appearance | - |
-| **Hover** | Subtle lift/color shift | `:hover` |
-| **Focus** | Visible focus ring | `:focus-visible` |
-| **Active** | Pressed appearance | `:active` |
-| **Disabled** | Reduced opacity | `:disabled`, `[aria-disabled]` |
-| **Loading** | Spinner/skeleton | `[data-loading]` |
-| **Selected** | Highlighted | `[aria-selected]`, `[data-state="active"]` |
-| **Error** | Error styling | `[aria-invalid]`, `[data-error]` |
-
-### 10.2 Button States Example
+### 13.2 Marketing Focus Ring
 
 ```css
-.button {
-  /* Default */
-  background: var(--color-primary);
-
-  /* Hover */
-  &:hover:not(:disabled) {
-    background: var(--color-primary-hover);
-  }
-
-  /* Focus */
-  &:focus-visible {
-    outline: 2px solid var(--color-ring);
-    outline-offset: 2px;
-  }
-
-  /* Active */
-  &:active:not(:disabled) {
-    transform: scale(0.98);
-  }
-
-  /* Disabled */
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+[data-marketing] *:focus-visible {
+  outline: 2px solid #24a9e0;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(36, 169, 224, 0.25);
 }
 ```
 
-### 10.3 Focus Ring Standards
-
-| Context | Ring Width | Ring Color | Ring Offset |
-|---------|------------|------------|-------------|
-| Buttons | 2px | `--color-ring` | 2px |
-| Inputs | 2px | `--color-ring` | 0 |
-| Cards | 2px | `--color-ring` | 2px |
-| Links | 2px | `--color-ring` | 2px |
-
----
-
-## 11. Accessibility
-
-### 11.1 Color Contrast
-
-| Level | Ratio | Usage |
-|-------|-------|-------|
-| **AA Large** | 3:1 | Large text (18px+), graphics |
-| **AA Normal** | 4.5:1 | Body text (minimum) |
-| **AAA Normal** | 7:1 | Enhanced (target) |
-
-### 11.2 Current Implementation
+### 13.3 App Focus Ring
 
 ```css
-/* Placeholder contrast - WCAG AA compliant */
-input::placeholder,
-textarea::placeholder {
-  color: hsl(0 0% 32%); /* 7.8:1 on white */
-  opacity: 1;
-}
-
-.dark input::placeholder,
-.dark textarea::placeholder {
-  color: hsl(0 0% 64%);
-  opacity: 1;
-}
-```
-
-### 11.3 Focus Visibility
-
-Always use `:focus-visible` over `:focus` for keyboard-only focus:
-
-```css
-/* Focus ring only visible for keyboard navigation */
-button:focus-visible {
+*:focus-visible {
   outline: 2px solid var(--color-ring);
   outline-offset: 2px;
 }
 ```
 
-### 11.4 Motion Accessibility
+---
 
+## 14. Accessibility
+
+### 14.1 Color Contrast
+
+| Context | Minimum Ratio | Standard |
+|---------|--------------|----------|
+| Body text on dark bg | 4.5:1 | WCAG AA |
+| Large text (18px+) | 3:1 | WCAG AA |
+| Interactive elements | 3:1 | WCAG AA |
+| Target (ideal) | 7:1 | WCAG AAA |
+
+`--homepage-accent-contrast` (`#0f7ea8`) exists specifically for WCAG AA compliance when accent text appears on dark backgrounds.
+
+### 14.2 Motion
+
+- All Framer Motion animations: disabled when `prefers-reduced-motion: reduce`
+- CSS animations: forced to `0.01ms` duration
+- `MotionConfig reducedMotion="user"` wraps entire app
+
+### 14.3 Touch Targets
+
+Minimum 44x44px for all interactive elements (WCAG 2.5.5):
 ```css
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-}
+min-h-[44px] min-w-[44px]
 ```
 
-### 11.5 Touch Targets
+### 14.4 Screen Reader Support
 
-Minimum touch target size: **44x44px** (WCAG 2.5.5)
+- `aria-hidden="true"` on all decorative elements (grid lines, orbs, dividers, marquee)
+- `sr-only` descriptions on carousel/showcase sections
+- ARIA roles: `tablist/tab/tabpanel` for feature tabs, `role="list"` for grids
+- Skip-to-content link: `bg-[--homepage-accent]`, visible on focus
 
-```css
-.touch-target {
-  min-height: 44px;
-  min-width: 44px;
-}
+### 14.5 Skeleton Loading
+
+All async sections use Suspense with structural skeletons:
 ```
+animate-pulse bg-muted dark:bg-muted rounded-md
+```
+Skeletons match the exact dimensions and layout of real content.
 
 ---
 
-## Implementation Guide
+## 15. Implementation Reference
 
-### CSS Variables Setup
+### 15.1 Key Files
 
-All tokens are defined in `apps/web/styles/shadcn-ui.css`:
+| Purpose | Path |
+|---------|------|
+| Homepage | `apps/web/app/(marketing)/page.tsx` |
+| Marketing layout | `apps/web/app/(marketing)/layout.tsx` |
+| Root layout | `apps/web/app/layout.tsx` |
+| Global styles | `apps/web/styles/globals.css` |
+| Theme tokens | `apps/web/styles/theme.css` |
+| shadcn UI tokens | `apps/web/styles/shadcn-ui.css` |
+| Theme utilities | `apps/web/styles/theme.utilities.css` |
+| Font definitions | `apps/web/lib/fonts.ts` |
+| Theme config | `apps/web/lib/root-theme.ts` |
+
+### 15.2 Marketing-Specific CSS Tokens
+
+Defined in `globals.css` inside `[data-marketing] { }`:
 
 ```css
-@theme inline {
-  /* Color primitives */
-  --color-neutral-50: #f8fafc;
-  /* ... */
-
-  /* Semantic colors */
-  --color-background: var(--color-white);
-  --color-foreground: var(--color-neutral-950);
-  /* ... */
-
-  /* Spacing */
-  --spacing-section: 3rem;
-  /* ... */
+[data-marketing] {
+  --homepage-bg: #0a0a0f;
+  --homepage-surface: #12121a;
+  --homepage-surface-elevated: #1a1a25;
+  --homepage-border: #2a2a3a;
+  --homepage-border-subtle: #1e1e2e;
+  --homepage-text: #f5f5f7;
+  --homepage-text-muted: #a0a0b0;
+  --homepage-accent: #24a9e0;
+  --homepage-accent-contrast: #0f7ea8;
+  --homepage-accent-glow: rgba(36, 169, 224, 0.4);
+  --homepage-gradient-accent: linear-gradient(135deg, #1e9dd0, #1a6fb5);
+  --homepage-gradient-surface: linear-gradient(180deg, var(--homepage-surface), transparent);
 }
 ```
 
-### Tailwind Integration
+### 15.3 Using the Design System
 
-Reference CSS variables in Tailwind classes:
+**When building marketing pages**: Use `data-marketing` wrapper, `--homepage-*` tokens, marketing typography scale, glass card patterns.
 
-```tsx
-// Using semantic tokens
-<div className="bg-background text-foreground border-border">
-  <p className="text-muted-foreground">Secondary text</p>
-</div>
+**When building app pages**: Use standard shadcn/ui tokens (`--background`, `--foreground`, etc.), app typography scale, standard card and component patterns.
 
-// Using spacing tokens
-<section className="py-section px-page-x">
-  {content}
-</section>
-```
+**When choosing colors**: Use the accent spectrum array for per-index card coloring. Always apply at low opacity (12% bg, 20-25% border). Never use the raw hex at full opacity for large surfaces.
 
-### Component Implementation
-
-Use `cn()` utility for class merging:
-
-```tsx
-import { cn } from '@kit/ui/utils';
-
-export function Card({ className, ...props }) {
-  return (
-    <div
-      className={cn(
-        'bg-card text-card-foreground rounded-lg border shadow-sm p-6',
-        className
-      )}
-      {...props}
-    />
-  );
-}
-```
-
----
-
-## Phase 2: Experimentation Plan
-
-### Experiment Categories
-
-1. **Color Palette**
-   - Primary brand color variations
-   - Accent color intensity
-   - Dark mode adjustments
-
-2. **Typography**
-   - Font pairing options
-   - Scale ratios (marketing vs app)
-   - Weight distribution
-
-3. **Shape Language**
-   - Border radius levels
-   - Shadow intensity
-   - Overall "softness"
-
-4. **Spacing Density**
-   - Compact mode for power users
-   - Comfortable mode (default)
-   - Relaxed mode for accessibility
-
-### Implementation Approach
-
-Each experiment will create isolated variations that can be:
-- Previewed side-by-side
-- A/B tested with users
-- Easily combined into a final selection
+**When adding animations**: Default to the `AnimateOnScroll` pattern (opacity 0→1, y 24→0). Use spring physics for hover states. Always test with reduced motion.
 
 ---
 
@@ -790,8 +817,5 @@ Each experiment will create isolated variations that can be:
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.0.0 | 2026-01-28 | Initial comprehensive design system |
-
----
-
-*This design system document serves as the single source of truth for all visual design decisions in SlideHeroes.*
+| 2.0.0 | 2026-02-18 | Complete rewrite based on current homepage implementation |
+| 1.0.0 | 2026-01-28 | Initial design system (outdated) |

@@ -6,10 +6,12 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === "true";
 
 // PostHog source map uploads require credentials (CI/CD only)
+const POSTHOG_PROJECT_ID =
+	process.env.POSTHOG_PROJECT_ID || process.env.POSTHOG_ENV_ID;
 const POSTHOG_SOURCEMAPS_ENABLED =
 	IS_PRODUCTION &&
 	Boolean(process.env.POSTHOG_PERSONAL_API_KEY) &&
-	Boolean(process.env.POSTHOG_ENV_ID);
+	Boolean(POSTHOG_PROJECT_ID);
 
 const INTERNAL_PACKAGES = [
 	"@kit/ui",
@@ -105,16 +107,21 @@ const configWithBundleAnalyzer = withBundleAnalyzer({
 	enabled: process.env.ANALYZE === "true",
 })(config);
 
-export default withPostHogConfig(configWithBundleAnalyzer, {
-	personalApiKey: process.env.POSTHOG_PERSONAL_API_KEY,
-	envId: process.env.POSTHOG_ENV_ID,
-	host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-	sourcemaps: {
-		enabled: POSTHOG_SOURCEMAPS_ENABLED,
-		project: "slideheroes",
-		deleteAfterUpload: true,
-	},
-});
+// Only wrap with PostHog config when project ID is available.
+// CI environments without PostHog credentials skip the wrapper to avoid
+// build failures from the plugin's validation (projectId is required).
+export default POSTHOG_PROJECT_ID
+	? withPostHogConfig(configWithBundleAnalyzer, {
+			personalApiKey: process.env.POSTHOG_PERSONAL_API_KEY,
+			projectId: POSTHOG_PROJECT_ID,
+			host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+			sourcemaps: {
+				enabled: POSTHOG_SOURCEMAPS_ENABLED,
+				project: "slideheroes",
+				deleteAfterUpload: true,
+			},
+		})
+	: configWithBundleAnalyzer;
 
 /** @returns {import('next').NextConfig['images']} */
 function getImagesConfig() {

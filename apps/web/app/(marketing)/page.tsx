@@ -1,21 +1,67 @@
-import { PricingTable } from "@kit/billing-gateway/marketing";
-import { BackgroundBoxes } from "@kit/ui/background-boxes";
-import { BlogPostCard } from "@kit/ui/blog-post-card";
-import { CardSpotlight } from "@kit/ui/card-spotlight";
-import { Hero, Pill, SecondaryHero } from "@kit/ui/marketing";
+import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
-import billingConfig from "~/config/billing.config";
 import { homepageContentConfig } from "~/config/homepage-content.config";
-import pathsConfig from "~/config/paths.config";
 import { withI18n } from "~/lib/i18n/with-i18n";
 
-import ContainerScroll from "./_components/home-container-scroll-client";
-import { CtaPresentationName } from "./_components/home-cta-presentation-name";
-import LogoCloudMarquee from "./_components/home-logo-cloud-client";
-import OptimizedImage from "./_components/home-optimized-image";
-import StickyScrollReveal from "./_components/home-sticky-scroll-client";
-import { TestimonialsMasonaryGridServer } from "./_components/home-testimonials-grid-server";
+import { AnimateOnScroll } from "./_components/animate-on-scroll";
+import { CausticsBackground } from "./_components/caustics-background";
+import { HeroGradientEffect } from "./_components/hero-gradient-effect";
+import { HomeFoundersMessage } from "./_components/home-founders-message";
+import { HeroSection } from "./_components/home-hero-section";
+import { PresentationShowcase } from "./_components/home-presentation-showcase";
+import { ProductPreviewSection } from "./_components/home-product-preview-section";
+import {
+	BlogSkeleton,
+	CtaSkeleton,
+	FaqSkeleton,
+	FeaturesSkeleton,
+	HowItWorksSkeleton,
+	LogoCloudSkeleton,
+	StatisticsSkeleton,
+	StickyScrollSkeleton,
+	TestimonialsSkeleton,
+} from "./_components/section-skeleton";
+
+const LogoCloudMarquee = dynamic(
+	() => import("./_components/home-logo-cloud-client"),
+);
+const HomeStatisticsSection = dynamic(() =>
+	import("./_components/home-statistics-section").then((m) => ({
+		default: m.HomeStatisticsSection,
+	})),
+);
+const HomeStickyScroll = dynamic(
+	() => import("./_components/home-sticky-scroll-client"),
+);
+const HomeHowItWorks = dynamic(() =>
+	import("./_components/home-how-it-works-client").then((m) => ({
+		default: m.HomeHowItWorks,
+	})),
+);
+const HomeFeaturesGrid = dynamic(() =>
+	import("./_components/home-features-grid-client").then((m) => ({
+		default: m.HomeFeaturesGrid,
+	})),
+);
+
+import { HomeTestimonialsSection } from "./_components/home-testimonials-section";
+
+const HomeBlogSection = dynamic(() =>
+	import("./_components/home-blog-section").then((m) => ({
+		default: m.HomeBlogSection,
+	})),
+);
+const HomeFaqSection = dynamic(() =>
+	import("./_components/home-faq-section").then((m) => ({
+		default: m.HomeFaqSection,
+	})),
+);
+const HomeFinalCtaSection = dynamic(() =>
+	import("./_components/home-final-cta-section").then((m) => ({
+		default: m.HomeFinalCtaSection,
+	})),
+);
 
 // Width system
 const widths = {
@@ -30,258 +76,177 @@ const spacing = {
 	md: "gap-6 my-6",
 	lg: "gap-8 my-8",
 	xl: "gap-12 my-12",
-	section: "mt-8 sm:mt-12 md:mt-16 lg:mt-24",
+	section: "py-12 sm:py-16 md:py-20 lg:py-28",
 } as const;
 
-const componentSpacing = {
-	card: "mb-4 sm:mb-6 md:mb-8",
-	grid: "gap-4 sm:gap-6 lg:gap-8",
-	stack: "space-y-4 sm:space-y-6 lg:space-y-8",
-} as const;
+const containerBase = "mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden" as const;
 
-const containerBase = "mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden" as const;
-
-const defaultHeroImage = "/images/video-hero-preview.avif";
-
-// Enhanced loading states
-const SectionLoader: React.FC = () => (
-	<div className="animate-pulse space-y-4">
-		<div className="mx-auto h-8 w-2/3 rounded-md bg-muted dark:bg-muted" />
-		<div className="mx-auto h-4 w-1/2 rounded-md bg-muted dark:bg-muted" />
-		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-			<div className="h-64 rounded-lg bg-muted dark:bg-muted" />
-			<div className="h-64 rounded-lg bg-muted dark:bg-muted" />
-			<div className="h-64 rounded-lg bg-muted dark:bg-muted" />
-		</div>
-	</div>
-);
+function SectionDivider() {
+	return (
+		<div
+			aria-hidden="true"
+			className="mx-auto block h-px w-full max-w-7xl px-4 sm:px-6 lg:px-8"
+			style={{
+				background:
+					"radial-gradient(ellipse at center, var(--homepage-border, #2a2a3a) 0%, transparent 70%)",
+			}}
+		/>
+	);
+}
 
 function Home() {
 	return (
-		<div className="bg-background dark:bg-background flex flex-col">
-			{/* Hero Section */}
-			<div className="relative isolate h-[90vh] min-h-[600px]">
-				<BackgroundBoxes className="absolute inset-0">
-					<div
-						className={`flex flex-col items-center ${componentSpacing.stack}`}
-					>
-						<div className={`${containerBase} ${widths.focused} text-center`}>
-							<Hero
-								title={
-									<span className="text-display leading-tight tracking-tight">
-										{homepageContentConfig.hero.title}{" "}
-										<i className="relative inline-block">
-											faster
-											<span className="animate-highlight absolute -bottom-2 left-0 h-3 w-full -rotate-1 bg-[#24a9e0]/40 [mask-image:linear-gradient(to_right,transparent,white_4%,white_96%,transparent)]" />
-										</i>
-									</span>
-								}
-								subtitle={
-									<span className="text-body sm:text-body-lg leading-relaxed text-muted-foreground dark:text-muted-foreground">
-										{homepageContentConfig.hero.subtitle}
-									</span>
-								}
-							/>
-						</div>
-						<div className={`${containerBase} ${widths.focused}`}>
-							<Suspense
-								fallback={
-									<div className="h-12 animate-pulse rounded-lg bg-muted dark:bg-muted" />
-								}
-							>
-								<CtaPresentationName />
-							</Suspense>
-						</div>
-					</div>
-				</BackgroundBoxes>
-			</div>
+		// biome-ignore lint/correctness/useUniqueElementIds: skip-to-content anchor target, only rendered once
+		<main id="main-content" className="flex flex-col bg-background">
+			{/* Hero + Product Preview + Showcase — unified caustics background */}
+			<div className="relative overflow-hidden bg-black">
+				{/* Caustics background covers entire dark zone */}
+				<CausticsBackground fallback={<HeroGradientEffect />} />
 
-			{/* ContainerScroll Section */}
-			<div className="relative z-[1] -mt-[15vh] sm:-mt-[20vh] lg:-mt-[25vh]">
-				<ContainerScroll>
-					<div className="relative h-full w-full">
-						<div className="absolute inset-0 rounded-lg bg-gradient-to-t from-black/20 to-transparent" />
-						<OptimizedImage
-							src={defaultHeroImage}
-							alt="Hero Preview"
-							width={1200}
-							height={800}
-							className="h-full w-full rounded-lg object-cover"
-							priority
-							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
-							quality={85}
-						/>
-					</div>
-				</ContainerScroll>
-			</div>
+				{/* Hero Section */}
+				<HeroSection />
 
-			{/* Logo Cloud Section */}
-			<div className="bg-background dark:bg-background relative w-full border-y border-border dark:border-border">
-				<div className={`${containerBase} ${widths.navigation}`}>
-					<Suspense
-						fallback={
-							<div className="h-20 animate-pulse rounded-lg bg-muted dark:bg-muted" />
-						}
-					>
-						<LogoCloudMarquee className="[&_div[class*='bg-gradient-to-r']]:from-background [&_div[class*='bg-gradient-to-r']]:via-background/90 [&_div[class*='bg-gradient-to-l']]:from-background [&_div[class*='bg-gradient-to-l']]:via-background/90" />
-					</Suspense>
+				{/* Product Preview — overlaps hero */}
+				<div className="relative z-[2] -mt-[22vh] sm:-mt-[28vh] lg:-mt-[35vh]">
+					<ProductPreviewSection />
+				</div>
+
+				{/* Presentation Showcase */}
+				<div className="relative z-[5]">
+					<PresentationShowcase />
 				</div>
 			</div>
+
+			{/* Founder's Message */}
+			<HomeFoundersMessage />
+
+			{/* Logo Cloud Section */}
+			<section
+				aria-label="Trusted by leading companies"
+				className={`${spacing.section} w-full bg-black`}
+			>
+				<AnimateOnScroll>
+					<Suspense fallback={<LogoCloudSkeleton />}>
+						<LogoCloudMarquee />
+					</Suspense>
+				</AnimateOnScroll>
+			</section>
+
+			<SectionDivider />
+
+			{/* Statistics Section */}
+			<section
+				aria-label="Platform statistics"
+				className={`${spacing.section} w-full bg-black`}
+			>
+				<div className={`${containerBase} ${widths.content}`}>
+					<AnimateOnScroll>
+						<Suspense fallback={<StatisticsSkeleton />}>
+							<HomeStatisticsSection />
+						</Suspense>
+					</AnimateOnScroll>
+				</div>
+			</section>
 
 			{/* Sticky Scroll Section */}
 			<section
-				className={`w-full ${spacing.section} bg-background dark:bg-background`}
+				aria-labelledby="sticky-scroll-heading"
+				className={`${spacing.section} w-full bg-black`}
 			>
-				<div className={`${containerBase} ${widths.content} mb-[20vh]`}>
-					<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
+				<div className={`${containerBase} ${widths.content} mb-10 sm:mb-14`}>
+					{/* biome-ignore lint/correctness/useUniqueElementIds: aria-labelledby target, page rendered once */}
+					<h2
+						id="sticky-scroll-heading"
+						className="text-h3 sm:text-h2 mb-4 text-center sm:mb-6"
+					>
 						{homepageContentConfig.sticky.title}
 					</h2>
-					<p className="text-body sm:text-body-lg mx-auto max-w-4xl text-center leading-relaxed text-muted-foreground dark:text-muted-foreground">
+					<p className="mx-auto max-w-4xl text-center text-lg leading-relaxed text-muted-foreground sm:text-xl">
 						{homepageContentConfig.sticky.subtitle}
 					</p>
 				</div>
-				<Suspense fallback={<SectionLoader />}>
-					<StickyScrollReveal
-						content={homepageContentConfig.sticky.content.map(
-							(item, index) => ({
-								...item,
-								content: (
-									<OptimizedImage
-										key={`sticky-${item.title}`}
-										src={item.imageSrc}
-										alt={item.title}
-										width={1200}
-										height={800}
-										className="h-full w-full rounded-lg object-cover"
-										priority={index === 0}
-										loading={index === 0 ? "eager" : "lazy"}
-										sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
-										quality={85}
-									/>
-								),
-							}),
-						)}
-					/>
+				<Suspense fallback={<StickyScrollSkeleton />}>
+					<HomeStickyScroll content={homepageContentConfig.sticky.content} />
 				</Suspense>
 			</section>
 
-			{/* Features Section */}
+			<SectionDivider />
+
+			{/* How It Works Section */}
 			<section
-				className={`${spacing.section} dark:bg-background bg-secondary/50`}
+				aria-label="How it works"
+				className={`${spacing.section} relative z-10 overflow-hidden bg-black`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
-					<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
-						{homepageContentConfig.features.title}
-					</h2>
-					<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-muted-foreground sm:mb-12 dark:text-muted-foreground">
-						{homepageContentConfig.features.subtitle}
-					</p>
-					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
-						{homepageContentConfig.features.cards.map((card) => (
-							<Suspense
-								key={`feature-${card.title}`}
-								fallback={
-									<div className="h-64 animate-pulse rounded-lg bg-muted dark:bg-muted" />
-								}
-							>
-								<CardSpotlight
-									heading={card.title}
-									description={card.description}
-									iconName={card.iconName}
-								/>
-							</Suspense>
-						))}
-					</div>
+					<Suspense fallback={<HowItWorksSkeleton />}>
+						<HomeHowItWorks
+							title={homepageContentConfig.howItWorks.title}
+							subtitle={homepageContentConfig.howItWorks.subtitle}
+							steps={homepageContentConfig.howItWorks.steps}
+						/>
+					</Suspense>
+				</div>
+			</section>
+
+			<SectionDivider />
+
+			{/* Features Section */}
+			<section
+				aria-label="Features"
+				className={`${spacing.section} bg-background`}
+			>
+				<div className={`${containerBase} ${widths.content}`}>
+					<Suspense fallback={<FeaturesSkeleton />}>
+						<HomeFeaturesGrid />
+					</Suspense>
 				</div>
 			</section>
 
 			{/* Testimonials Section */}
 			<section
-				className={`${spacing.section} bg-background dark:bg-background`}
+				aria-label="Testimonials"
+				className={`${spacing.section} w-full bg-black`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
-					<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
-						{homepageContentConfig.testimonials.title}
-					</h2>
-					<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-muted-foreground sm:mb-12 dark:text-muted-foreground">
-						{homepageContentConfig.testimonials.subtitle}
-					</p>
-					<Suspense fallback={<SectionLoader />}>
-						<TestimonialsMasonaryGridServer />
+					<Suspense fallback={<TestimonialsSkeleton />}>
+						<HomeTestimonialsSection />
 					</Suspense>
-				</div>
-			</section>
-
-			{/* Pricing Section */}
-			<section
-				className={`${spacing.section} dark:bg-background bg-secondary/50`}
-			>
-				<div className={`${containerBase} ${widths.content}`}>
-					<div
-						className={`flex flex-col items-center justify-center ${componentSpacing.stack}`}
-					>
-						<SecondaryHero
-							pill={<Pill>{homepageContentConfig.pricing.pill}</Pill>}
-							heading={
-								<span className="text-h3 sm:text-h2 mb-8 text-center leading-snug sm:mb-12">
-									{homepageContentConfig.pricing.title}
-								</span>
-							}
-							subheading={
-								<p className="text-body sm:text-body-lg max-w-4xl leading-relaxed text-muted-foreground dark:text-muted-foreground">
-									{homepageContentConfig.pricing.subtitle}
-								</p>
-							}
-						/>
-
-						<div className="w-full overflow-x-auto pb-6 sm:pb-0">
-							<Suspense fallback={<SectionLoader />}>
-								<PricingTable
-									config={billingConfig}
-									paths={{
-										signUp: pathsConfig.auth.signUp,
-										return: pathsConfig.app.home,
-									}}
-								/>
-							</Suspense>
-						</div>
-					</div>
 				</div>
 			</section>
 
 			{/* Blog Posts Section */}
 			<section
-				className={`${spacing.section} bg-background dark:bg-background pb-12`}
+				aria-label="Essential reads"
+				className={`${spacing.section} bg-background`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
-					<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
-						{homepageContentConfig.essentialReads.title}
-					</h2>
-					<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-muted-foreground sm:mb-12 dark:text-muted-foreground">
-						{homepageContentConfig.essentialReads.subtitle}
-					</p>
-					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
-						{homepageContentConfig.essentialReads.posts.map((post) => (
-							<Suspense
-								key={`post-${post.title}`}
-								fallback={
-									<div className="h-64 animate-pulse rounded-lg bg-muted dark:bg-muted" />
-								}
-							>
-								<BlogPostCard
-									title={post.title}
-									description={post.description}
-									backgroundImage="/images/posts/blog-post-placeholder.png"
-									iconType={post.iconType}
-									blogType={post.blogType}
-									readTimeMinutes={post.readTimeMinutes}
-								/>
-							</Suspense>
-						))}
-					</div>
+					<Suspense fallback={<BlogSkeleton />}>
+						<HomeBlogSection />
+					</Suspense>
 				</div>
 			</section>
-		</div>
+
+			{/* FAQ Section */}
+			<section
+				aria-label="Frequently asked questions"
+				className={`${spacing.section} bg-background`}
+			>
+				<div className={`${containerBase} ${widths.content}`}>
+					<Suspense fallback={<FaqSkeleton />}>
+						<HomeFaqSection />
+					</Suspense>
+				</div>
+			</section>
+
+			{/* Final CTA Section */}
+			<section aria-label="Get started" className="bg-background">
+				<div className={`${containerBase} ${widths.content}`}>
+					<Suspense fallback={<CtaSkeleton />}>
+						<HomeFinalCtaSection config={homepageContentConfig.finalCta} />
+					</Suspense>
+				</div>
+			</section>
+		</main>
 	);
 }
 
