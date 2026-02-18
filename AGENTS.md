@@ -140,7 +140,7 @@ Always follow this exact order:
 
 ### Route Structure
 
-```
+```text
 apps/web/app/home/[account]/
 ├── page.tsx
 ├── _components/           # Route-specific components
@@ -181,16 +181,18 @@ After adding via CLI, update exports in `packages/ui/package.json`.
 
 Format: `type(scope): description [agent: name]`
 
-```
+```text
 feat(auth): add OAuth2 social login support [agent: codex]
 fix(cms): resolve quiz relationship bug [agent: codex]
 chore(deps): update Next.js to v16.2 [agent: codex]
 ```
 
 **Types:** feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
-**Scopes:** web, payload, e2e, dev-tool, auth, billing, canvas, course, quiz, admin, api, cms, ui, migration, config, deps, tooling, ci, deploy, docker, security
+**Scopes:** web, payload, e2e, dev-tool, auth, billing, canvas, course, quiz, admin,
+api, cms, ui, migration, config, deps, tooling, ci, deploy, docker, security
 
 **Rules:**
+
 - Present tense: "add" not "added"
 - Lowercase after colon
 - 50-72 chars for description
@@ -200,12 +202,14 @@ chore(deps): update Next.js to v16.2 [agent: codex]
 ## Essential Commands
 
 ### Development
+
 ```bash
 pnpm dev                              # Start all apps
 pnpm build                            # Build production
 ```
 
 ### Code Quality
+
 ```bash
 pnpm typecheck                        # Type checking (MUST pass)
 pnpm lint:fix                         # Lint + auto-fix
@@ -214,6 +218,7 @@ pnpm codecheck                        # Full code quality check
 ```
 
 ### Database
+
 ```bash
 pnpm supabase:web:start               # Start local Supabase
 pnpm --filter web supabase migration up  # Apply migrations
@@ -223,6 +228,7 @@ pnpm --filter web supabase:db:diff    # Create migration
 ```
 
 ### Testing
+
 ```bash
 pnpm test:unit                        # Unit tests
 pnpm test:e2e                         # E2E tests
@@ -230,6 +236,7 @@ pnpm test:coverage                    # Tests with coverage
 ```
 
 ### Git
+
 ```bash
 git status --porcelain                # Check status
 git diff --name-only                  # Changed files
@@ -259,15 +266,17 @@ Research tools are available in `.ai/bin/`:
 
 Detailed docs are in `.ai/ai_docs/context-docs/`:
 
-- **Development:** architecture-overview, database-patterns, server-actions, react-query-patterns, shadcn-ui-components, makerkit-integration
-- **Infrastructure:** auth-overview, auth-implementation, docker-setup, vercel-deployment, ci-cd-complete
+- **Development:** architecture-overview, database-patterns, server-actions,
+  react-query-patterns, shadcn-ui-components, makerkit-integration
+- **Infrastructure:** auth-overview, auth-implementation, docker-setup,
+  vercel-deployment, ci-cd-complete
 - **Testing:** fundamentals, e2e-testing, integration-testing, vitest-configuration
 
 Read relevant docs before implementing complex features.
 
 ## Reports Directory
 
-```
+```text
 .ai/reports/
 ├── bug-reports/YYYY-MM-DD/
 ├── feature-reports/YYYY-MM-DD/
@@ -292,9 +301,12 @@ pnpm typecheck
 
 **All three must pass before committing.** If `typecheck` fails, fix the type errors — don't use `any` or `@ts-ignore`.
 
-After fixing, commit with `--no-verify` if the local pre-commit hook times out on TruffleHog or markdownlint for non-code files — but **only after confirming the three checks above pass**.
+After fixing, commit with `--no-verify` if the local pre-commit hook
+times out on TruffleHog or markdownlint for non-code files — but
+**only after confirming the three checks above pass**.
 
 ### Commit workflow
+
 ```bash
 pnpm format:fix && pnpm lint:fix && pnpm typecheck
 git add -A
