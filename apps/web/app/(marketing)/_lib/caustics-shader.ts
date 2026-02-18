@@ -206,6 +206,7 @@ export function initCausticsGL(canvas: HTMLCanvasElement): CausticsGL | null {
 		throw new Error(`Program link error: ${info}`);
 	}
 
+	// biome-ignore lint/correctness/useHookAtTopLevel: WebGL API method, not a React hook
 	gl.useProgram(program);
 
 	// Full-screen quad (triangle strip)

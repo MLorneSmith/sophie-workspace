@@ -45,7 +45,7 @@ export function SocialProofStrip({
 			<div className="flex flex-row items-center" aria-hidden="true">
 				{Array.from({ length: avatarCount }, (_, i) => (
 					<m.div
-						key={i}
+						key={`avatar-${i}`}
 						variants={prefersReducedMotion ? undefined : itemVariants}
 						className={`flex h-10 w-10 items-center justify-center rounded-full ring-2 ring-background ${avatarColors[i % avatarColors.length]} ${i > 0 ? "-ml-3" : ""}`}
 					>

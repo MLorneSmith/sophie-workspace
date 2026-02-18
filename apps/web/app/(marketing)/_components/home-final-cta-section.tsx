@@ -50,10 +50,7 @@ export function HomeFinalCtaSection({ config }: HomeFinalCtaSectionProps) {
 						</div>
 
 						{/* Trust badges */}
-						<ul
-							role="list"
-							className="flex flex-col items-center gap-3 sm:flex-row sm:gap-6"
-						>
+						<ul className="flex flex-col items-center gap-3 sm:flex-row sm:gap-6">
 							{config.trustBadges.map((badge) => (
 								<li
 									key={badge}

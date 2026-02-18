@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { CheckCircle } from "lucide-react";
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
-import { Switch } from "@kit/ui/switch";
 import { Pill, SecondaryHero } from "@kit/ui/marketing";
+import { Switch } from "@kit/ui/switch";
 import { cn } from "@kit/ui/utils";
+import { CheckCircle } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import billingConfig from "~/config/billing.config";
 import { homepageContentConfig } from "~/config/homepage-content.config";
@@ -163,10 +163,7 @@ export function HomePricingSection() {
 
 							{/* Feature List */}
 							{product.features && product.features.length > 0 && (
-								<ul
-									role="list"
-									className="flex flex-col gap-3 border-t border-[var(--homepage-border-subtle)] pt-6"
-								>
+								<ul className="flex flex-col gap-3 border-t border-[var(--homepage-border-subtle)] pt-6">
 									{product.features.map((feature) => (
 										<li key={feature} className="flex items-start gap-2.5">
 											<CheckCircle

@@ -76,6 +76,7 @@ function FlowArrow({
 					viewBox="0 0 12 12"
 					className="h-3 w-3"
 					fill="none"
+					aria-hidden="true"
 					initial={reduced ? undefined : { opacity: 0, x: -4 }}
 					whileInView={{ opacity: 1, x: 0 }}
 					transition={{

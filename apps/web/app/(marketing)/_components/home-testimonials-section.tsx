@@ -27,12 +27,12 @@ function highlightContent(content: string, highlights: string[]) {
 				);
 				if (isHighlight) {
 					return (
-						<strong key={i} className="font-semibold text-foreground">
+						<strong key={`part-${i}`} className="font-semibold text-foreground">
 							{part}
 						</strong>
 					);
 				}
-				return <span key={i}>{part}</span>;
+				return <span key={`part-${i}`}>{part}</span>;
 			})}
 		</>
 	);
@@ -127,7 +127,7 @@ function TestimonialCarousel({
 				<div className="mt-6 flex gap-2 sm:mt-8" aria-hidden="true">
 					{testimonials.map((_, i) => (
 						<button
-							key={testimonials[i]!.name}
+							key={testimonials[i]?.name}
 							type="button"
 							onClick={() => setIndex(i)}
 							className={`h-1.5 rounded-full transition-all ${
@@ -155,7 +155,7 @@ export function HomeTestimonialsSection() {
 				{testimonials.subtitle}
 			</p>
 
-			<Tabs defaultValue={categories[0]!.value} className="w-full">
+			<Tabs defaultValue={categories[0]?.value} className="w-full">
 				<div className="mb-10 flex justify-center sm:mb-14">
 					<TabsList className="h-auto gap-2 rounded-full border border-border bg-background p-1.5">
 						{categories.map((cat) => (

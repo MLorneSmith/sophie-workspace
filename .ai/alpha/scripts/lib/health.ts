@@ -284,7 +284,7 @@ export async function runHealthChecks(
 	instances: SandboxInstance[],
 	manifest: SpecManifest,
 	uiEnabled: boolean = false,
-	provider: AgentProvider = "claude",
+	_provider: AgentProvider = "claude",
 	coordinator?: RecoveryCoordinator,
 ): Promise<SandboxInstance[]> {
 	const { log } = createLogger(uiEnabled);
