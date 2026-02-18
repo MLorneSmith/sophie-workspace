@@ -44,7 +44,7 @@ const AppConfigSchema = z
 			.string()
 			.describe("This is the default locale of your SaaS.")
 			.default("en"),
-		theme: z.enum(["light", "dark", "system"]).default("light"),
+		theme: z.enum(["light", "dark", "system"]).default("dark"),
 		production: z.boolean(),
 		themeColor: z.string().default("#ffffff"),
 		themeColorDark: z.string().default("#0a0a0a"),
@@ -91,7 +91,7 @@ const appConfig = AppConfigSchema.parse({
 		"https://2025slideheroes-web.vercel.app",
 	),
 	locale: getEnvVar("NEXT_PUBLIC_DEFAULT_LOCALE", "en"),
-	theme: getEnvVar("NEXT_PUBLIC_DEFAULT_THEME_MODE", "light"),
+	theme: getEnvVar("NEXT_PUBLIC_DEFAULT_THEME_MODE", "dark"),
 	themeColor: getEnvVar("NEXT_PUBLIC_THEME_COLOR", "#ffffff"),
 	themeColorDark: getEnvVar("NEXT_PUBLIC_THEME_COLOR_DARK", "#0a0a0a"),
 	production,

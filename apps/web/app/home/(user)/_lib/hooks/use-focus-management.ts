@@ -21,10 +21,10 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
 			'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 		function handleKeyDown(event: KeyboardEvent) {
-			if (event.key !== "Tab") return;
+			if (!container || event.key !== "Tab") return;
 
 			const focusableElements =
-				container!.querySelectorAll<HTMLElement>(focusableSelector);
+				container.querySelectorAll<HTMLElement>(focusableSelector);
 			if (focusableElements.length === 0) return;
 
 			const first = focusableElements[0]!;

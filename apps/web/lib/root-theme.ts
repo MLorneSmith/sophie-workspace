@@ -20,7 +20,7 @@ const appDefaultThemeMode = Theme.safeParse(
  * @name fallbackThemeMode
  * @description The fallback theme mode if none of the other options are available.
  */
-const fallbackThemeMode = "light";
+const fallbackThemeMode = "dark";
 
 /**
  * @name getRootTheme
