@@ -447,7 +447,10 @@ export function CoachingPanel() {
 
 					<div className="flex-1 space-y-3 overflow-hidden p-4">
 						{feedbackItems.map((item) => (
-							<div key={item.initials} className="flex gap-2.5">
+							<div
+								key={`${item.initials}-${item.time}`}
+								className="flex gap-2.5"
+							>
 								<div
 									className={`size-6 shrink-0 rounded-full ${item.color} text-center text-[9px] leading-6 font-medium text-white`}
 								>
