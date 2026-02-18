@@ -35,7 +35,10 @@ function getCurrentStepFromPathname(
 
 export function WorkflowStepBar(props: { presentationId: string }) {
 	const pathname = usePathname();
-	const currentStep = getCurrentStepFromPathname(pathname, props.presentationId);
+	const currentStep = getCurrentStepFromPathname(
+		pathname,
+		props.presentationId,
+	);
 	const currentIndex = WORKFLOW_STEPS.findIndex((s) => s.key === currentStep);
 
 	return (
@@ -87,7 +90,9 @@ export function WorkflowStepBar(props: { presentationId: string }) {
 										)}
 										style={
 											isCurrent
-												? ({ borderColor: `${accent}66` } as React.CSSProperties)
+												? ({
+														borderColor: `${accent}66`,
+													} as React.CSSProperties)
 												: undefined
 										}
 									>

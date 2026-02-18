@@ -16,18 +16,18 @@ export function ContinueButton(props: {
 				<p className="text-app-sm text-muted-foreground">{hint}</p>
 			) : null}
 
-		<Button
-			type="button"
-			onClick={onContinue}
-			disabled={!enabled}
-			className={
-				enabled
-					? "bg-primary text-primary-foreground hover:bg-primary/90"
-					: "bg-muted text-muted-foreground"
-			}
-		>
-			{label ?? "Continue"}
-		</Button>
+			<Button
+				type="button"
+				onClick={onContinue}
+				disabled={!enabled}
+				className={
+					enabled
+						? "bg-primary text-primary-foreground hover:bg-primary/90"
+						: "bg-muted text-muted-foreground"
+				}
+			>
+				{label ?? "Continue"}
+			</Button>
 		</div>
 	);
 }

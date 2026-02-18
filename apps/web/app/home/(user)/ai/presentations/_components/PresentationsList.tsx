@@ -40,9 +40,9 @@ function hexToRgba(hex: string, alpha: number) {
 	const normalized =
 		raw.length === 3
 			? raw
-				.split("")
-				.map((c) => `${c}${c}`)
-				.join("")
+					.split("")
+					.map((c) => `${c}${c}`)
+					.join("")
 			: raw;
 
 	const r = Number.parseInt(normalized.slice(0, 2), 16);
@@ -100,7 +100,8 @@ export default function PresentationsList() {
 			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{presentations.map((p, idx) => {
 					const accent =
-						STEP_ACCENT_SPECTRUM[idx % STEP_ACCENT_SPECTRUM.length] ?? "#24A9E0";
+						STEP_ACCENT_SPECTRUM[idx % STEP_ACCENT_SPECTRUM.length] ??
+						"#24A9E0";
 					const stepIdx = WORKFLOW_STEPS.findIndex(
 						(s) => s.key === p.currentStep,
 					);
@@ -264,7 +265,9 @@ export default function PresentationsList() {
 														<p className="text-app-body font-medium text-foreground">
 															{s.label}
 														</p>
-														<p className="text-app-xs text-white/60">{status}</p>
+														<p className="text-app-xs text-white/60">
+															{status}
+														</p>
 													</div>
 												</div>
 

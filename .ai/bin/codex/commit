@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# codex-commit: Create properly formatted git commits
+# Usage: .ai/bin/codex/commit [agent-name] [type] [scope]
+# Examples:
+#   .ai/bin/codex/commit                    # Auto-infer everything
+#   .ai/bin/codex/commit codex feat auth    # Explicit type and scope
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+AGENT_NAME="${1:-codex}"
+COMMIT_TYPE="${2:-}"
+SCOPE="${3:-}"
+
+cd "$REPO_ROOT"
+
+PROMPT=$(cat <<PROMPT_EOF
+Create a properly formatted git commit following Conventional Commits with agent traceability.
+
+## Format
+type(scope): description [agent: ${AGENT_NAME}]
+
+## Valid Types
+feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+
+## Valid Scopes
+Apps: web, payload, e2e, dev-tool
+Features: auth, billing, canvas, course, quiz, admin, api
+Technical: cms, ui, migration, config, deps, tooling
+Infrastructure: ci, deploy, docker, security
+
+## Instructions
+
+1. Review the current changes:
+   git status --short
+   git diff --stat HEAD
+   git log --oneline -5
+
+2. Analyze changes for logical groupings. If changes span 2+ distinct areas, split into separate commits.
+
+3. Infer type and scope from changed files (unless specified):
+   - Specified type: ${COMMIT_TYPE:-auto-infer}
+   - Specified scope: ${SCOPE:-auto-infer}
+
+4. Rules:
+   - Present tense: "add" not "added"
+   - Lowercase after colon
+   - 50-72 chars for description line
+   - Body lines max 100 chars
+   - No period at end
+
+5. Stage and commit:
+   git add -A
+   git commit -m "type(scope): description [agent: ${AGENT_NAME}]"
+
+6. Verify: git log --oneline -3
+
+If pre-commit hooks fail (TruffleHog, Biome, commitlint), fix and retry.
+PROMPT_EOF
+)
+
+codex exec --full-auto -C "$REPO_ROOT" "$PROMPT"
