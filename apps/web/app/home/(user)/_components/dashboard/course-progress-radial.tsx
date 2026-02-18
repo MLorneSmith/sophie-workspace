@@ -43,7 +43,7 @@ export function CourseProgressRadial({ data }: CourseProgressRadialProps) {
 
 	if (isZero) {
 		return (
-			<Card className="border-l-4 border-l-teal-500 bg-teal-50/40 dark:bg-teal-950/20">
+			<Card className="border-l-4 border-l-[#2431E0]">
 				<CardHeader className="pb-2">
 					<CardTitle className="font-heading">Course Progress</CardTitle>
 				</CardHeader>
@@ -60,7 +60,7 @@ export function CourseProgressRadial({ data }: CourseProgressRadialProps) {
 	}
 
 	return (
-		<Card className="border-l-4 border-l-teal-500 bg-teal-50/40 dark:bg-teal-950/20">
+		<Card className="border-l-4 border-l-[#2431E0]">
 			<CardHeader className="pb-2">
 				<CardTitle className="font-heading">Course Progress</CardTitle>
 			</CardHeader>

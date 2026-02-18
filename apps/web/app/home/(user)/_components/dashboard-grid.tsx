@@ -51,7 +51,7 @@ function getSuggestedActions(data: DashboardData): SuggestedAction[] {
 			label: "Take Assessment",
 			description: "Discover your presentation strengths",
 			href: "/home/assessment",
-			accentClass: "text-indigo-600 dark:text-indigo-400",
+			accentClass: "text-[#246CE0]",
 		});
 	}
 
@@ -61,7 +61,7 @@ function getSuggestedActions(data: DashboardData): SuggestedAction[] {
 			label: "Start Course",
 			description: "Learn proven presentation techniques",
 			href: "/home/course",
-			accentClass: "text-teal-600 dark:text-teal-400",
+			accentClass: "text-[#24A9E0]",
 		});
 	}
 
@@ -71,7 +71,7 @@ function getSuggestedActions(data: DashboardData): SuggestedAction[] {
 			label: "Plan Tasks",
 			description: "Organize your presentation prep",
 			href: "/home/kanban",
-			accentClass: "text-amber-600 dark:text-amber-400",
+			accentClass: "text-[#24E09D]",
 		});
 	}
 

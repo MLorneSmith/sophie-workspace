@@ -44,7 +44,7 @@ export function SkillsSpiderDiagram({
 
 	if (!chartData) {
 		return (
-			<Card className="border-l-4 border-l-indigo-500 bg-indigo-50/40 dark:bg-indigo-950/20">
+			<Card className="border-l-4 border-l-[#246CE0]">
 				<CardHeader className="pb-2">
 					<CardTitle className="font-heading">Skills Assessment</CardTitle>
 				</CardHeader>
@@ -61,7 +61,7 @@ export function SkillsSpiderDiagram({
 	}
 
 	return (
-		<Card className="border-l-4 border-l-indigo-500 bg-indigo-50/40 dark:bg-indigo-950/20">
+		<Card className="border-l-4 border-l-[#246CE0]">
 			<CardHeader className="items-center pb-4">
 				<CardTitle className="font-heading">Skills Assessment</CardTitle>
 			</CardHeader>

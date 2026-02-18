@@ -35,7 +35,7 @@ const steps: WelcomeStep[] = [
 		href: "/home/assessment/survey",
 		cta: "Start Assessment",
 		accentClass:
-			"bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400",
+			"bg-[#2431E0]/10 text-[#2431E0] dark:bg-[#2431E0]/15 dark:text-[#246CE0]",
 	},
 	{
 		icon: BookOpen,
@@ -44,7 +44,8 @@ const steps: WelcomeStep[] = [
 			"Learn proven techniques to structure, design, and deliver compelling presentations.",
 		href: "/home/course",
 		cta: "Start Learning",
-		accentClass: "bg-teal-50 text-teal-600 dark:bg-teal-950 dark:text-teal-400",
+		accentClass:
+			"bg-[#24A9E0]/10 text-[#24A9E0] dark:bg-[#24A9E0]/15 dark:text-[#24E0DD]",
 	},
 	{
 		icon: Presentation,
@@ -54,13 +55,13 @@ const steps: WelcomeStep[] = [
 		href: "/home/ai/blocks",
 		cta: "Create Now",
 		accentClass:
-			"bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400",
+			"bg-[#24E09D]/10 text-[#24E09D] dark:bg-[#24E09D]/15 dark:text-[#24E09D]",
 	},
 ];
 
 export function WelcomeHero() {
 	return (
-		<Card className="border-none bg-gradient-to-br from-indigo-50/80 via-white to-teal-50/60 shadow-sm dark:from-indigo-950/30 dark:via-card dark:to-teal-950/20">
+		<Card className="border-none bg-gradient-to-br from-[#24a9e0]/[0.03] via-card to-[#24E0DD]/[0.03] shadow-sm dark:from-[#24a9e0]/[0.06] dark:via-card dark:to-[#24E0DD]/[0.04]">
 			<CardHeader className="pb-2">
 				<CardTitle className="font-heading text-2xl tracking-tight">
 					Welcome to SlideHeroes
@@ -88,7 +89,7 @@ function StepCard({ step }: { step: WelcomeStep }) {
 	return (
 		<Link
 			href={step.href}
-			className="group flex flex-col rounded-lg border bg-card p-4 transition-all hover:border-primary/20 hover:shadow-md"
+			className="group flex flex-col rounded-lg border bg-card p-4 transition-all hover:border-[#24a9e0]/20 hover:shadow-sm dark:hover:shadow-none"
 		>
 			<div
 				className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg ${step.accentClass}`}
