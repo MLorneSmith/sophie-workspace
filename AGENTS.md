@@ -277,11 +277,30 @@ Read relevant docs before implementing complex features.
 
 ## Quality Checklist
 
-After implementation:
-1. Run `pnpm typecheck` — must pass
-2. Run `pnpm lint:fix` — auto-fix issues
-3. Run `pnpm format:fix` — format code
-4. Commit with proper format
+**MANDATORY before every commit.** CI will reject PRs that fail these checks.
+
+```bash
+# 1. Format code (Biome)
+pnpm format:fix
+
+# 2. Lint and auto-fix (Biome)
+pnpm lint:fix
+
+# 3. Type check (TypeScript)
+pnpm typecheck
+```
+
+**All three must pass before committing.** If `typecheck` fails, fix the type errors — don't use `any` or `@ts-ignore`.
+
+After fixing, commit with `--no-verify` if the local pre-commit hook times out on TruffleHog or markdownlint for non-code files — but **only after confirming the three checks above pass**.
+
+### Commit workflow
+```bash
+pnpm format:fix && pnpm lint:fix && pnpm typecheck
+git add -A
+git commit -m "type(scope): description [agent: agent]"
+git push origin <branch>
+```
 
 ## Key Reminders
 
