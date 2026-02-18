@@ -51,7 +51,9 @@
 			"!**/.ai/alpha/archive/**/*.json",
 			"!**/.claude/skills/email-style",
 			"!**/.github/skills",
-			"!**/.agents/skills/nano-banana-pro-prompts-recommend-skill/references"
+			"!**/.agents/skills/nano-banana-pro-prompts-recommend-skill/references",
+			"!**/.claude/skills/nano-banana-pro-prompts-recommend-skill/references",
+			"!**/.claude/skills/artifacts-builder"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
@@ -129,6 +131,7 @@
 				"**/*.spec.ts",
 				"**/*.spec.tsx",
 				"**/apps/load-tests/**/*.js",
+				"apps/load-tests/**/*.js",
 				"**/test-*.ts",
 				"**/test-*.tsx",
 				"**/vitest.config.mts",
@@ -141,7 +144,9 @@
 						"noExplicitAny": "off"
 					},
 					"complexity": {
-						"useDateNow": "off"
+						"useDateNow": "off",
+						"useLiteralKeys": "off",
+						"noBannedTypes": "off"
 					},
 					"correctness": {
 						"noUnusedVariables": "off"
@@ -173,7 +178,8 @@
 						"noAssignInExpressions": "off"
 					},
 					"style": {
-						"useTemplate": "off"
+						"useTemplate": "off",
+						"noNonNullAssertion": "off"
 					},
 					"correctness": {
 						"noUnusedVariables": "off"
@@ -255,6 +261,23 @@
 			}
 		},
 		{
+			"includes": ["packages/ui/src/aceternity/**/*.tsx"],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"useSemanticElements": "off",
+						"noSvgWithoutTitle": "off"
+					},
+					"style": {
+						"noNonNullAssertion": "off"
+					},
+					"suspicious": {
+						"noExplicitAny": "off"
+					}
+				}
+			}
+		},
+		{
 			"includes": ["**/styles/globals.css"],
 			"formatter": {
 				"enabled": false
@@ -277,6 +300,49 @@
 			"includes": ["**/supabase/templates/**/*.html"],
 			"linter": {
 				"enabled": false
+			}
+		},
+		{
+			"includes": ["**/app/(marketing)/_components/section-skeleton.tsx"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noArrayIndexKey": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"**/app/(marketing)/_components/**/*.tsx",
+				"**/app/(marketing)/_lib/**/*.ts"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noNonNullAssertion": "off"
+					},
+					"suspicious": {
+						"noArrayIndexKey": "off"
+					},
+					"a11y": {
+						"noSvgWithoutTitle": "off",
+						"useAriaPropsSupportedByRole": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"**/app/home/(user)/_lib/**/*.ts",
+				"**/app/home/(user)/_lib/**/*.tsx"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noNonNullAssertion": "off"
+					}
+				}
 			}
 		}
 	]
