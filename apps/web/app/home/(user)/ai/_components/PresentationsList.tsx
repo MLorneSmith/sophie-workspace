@@ -89,7 +89,7 @@ export default function PresentationsList() {
 								? crypto.randomUUID()
 								: `pres-${Date.now()}`;
 
-						router.push(`/home/ai/presentations/${id}/profile`);
+						router.push(`/home/ai/${id}/profile`);
 					}}
 					className="bg-primary text-primary-foreground hover:bg-primary/90"
 				>
@@ -274,9 +274,7 @@ export default function PresentationsList() {
 												<Button
 													variant="secondary"
 													onClick={() => {
-														router.push(
-															`/home/ai/presentations/${selected.id}/${s.key}`,
-														);
+														router.push(`/home/ai/${selected.id}/${s.key}`);
 														setOpen(false);
 													}}
 												>
@@ -292,7 +290,7 @@ export default function PresentationsList() {
 								<Button
 									variant="secondary"
 									onClick={() => {
-										router.push(`/home/ai/presentations/${selected.id}`);
+										router.push(`/home/ai/${selected.id}`);
 										setOpen(false);
 									}}
 								>
@@ -302,9 +300,7 @@ export default function PresentationsList() {
 								<Button
 									onClick={() => {
 										if (!nextStep) return;
-										router.push(
-											`/home/ai/presentations/${selected.id}/${nextStep.key}`,
-										);
+										router.push(`/home/ai/${selected.id}/${nextStep.key}`);
 										setOpen(false);
 									}}
 									className="bg-primary text-primary-foreground hover:bg-primary/90"

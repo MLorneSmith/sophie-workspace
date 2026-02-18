@@ -18,7 +18,7 @@ function getCurrentStepFromPathname(
 	pathname: string,
 	presentationId: string,
 ): PresentationStep {
-	const base = `/home/ai/presentations/${presentationId}`;
+	const base = `/home/ai/${presentationId}`;
 
 	if (pathname === base) {
 		return "profile";
@@ -70,7 +70,7 @@ export function WorkflowStepBar(props: { presentationId: string }) {
 								) : null}
 
 								<Link
-									href={`/home/ai/presentations/${props.presentationId}/${step.key}`}
+									href={`/home/ai/${props.presentationId}/${step.key}`}
 									aria-disabled={isFuture}
 									className={cn(
 										"group inline-flex min-w-0 items-center gap-2 rounded-full px-2 py-1 transition",

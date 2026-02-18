@@ -16,7 +16,7 @@ function getStepFromPath(
 	pathname: string,
 	presentationId: string,
 ): PresentationStep {
-	const base = `/home/ai/presentations/${presentationId}`;
+	const base = `/home/ai/${presentationId}`;
 
 	if (pathname === base) {
 		return "profile";
@@ -73,9 +73,7 @@ export function WorkflowShell(props: {
 							hint="Complete the minimum requirements for this step to continue."
 							onContinue={() => {
 								const next = getNextStep(currentStep);
-								router.push(
-									`/home/ai/presentations/${props.presentationId}/${next}`,
-								);
+								router.push(`/home/ai/${props.presentationId}/${next}`);
 							}}
 						/>
 					</div>
