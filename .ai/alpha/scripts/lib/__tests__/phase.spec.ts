@@ -191,10 +191,7 @@ describe("autoGeneratePhases", () => {
 		}
 
 		// Total features across all phases should equal 18
-		const totalFeatures = phases.reduce(
-			(sum, p) => sum + p.feature_count,
-			0,
-		);
+		const totalFeatures = phases.reduce((sum, p) => sum + p.feature_count, 0);
 		expect(totalFeatures).toBe(18);
 
 		// Phase IDs should be P1, P2, ...
@@ -388,9 +385,7 @@ describe("filterManifestByPhase", () => {
 
 describe("validatePhase", () => {
 	it("valid phase passes validation", () => {
-		const initiatives = [
-			createTestInitiative({ id: "S1.I1", priority: 1 }),
-		];
+		const initiatives = [createTestInitiative({ id: "S1.I1", priority: 1 })];
 		const features = [
 			createTestFeature({
 				id: "S1.I1.F1",
@@ -421,9 +416,7 @@ describe("validatePhase", () => {
 	});
 
 	it("rejects phase exceeding feature count", () => {
-		const initiatives = [
-			createTestInitiative({ id: "S1.I1", priority: 1 }),
-		];
+		const initiatives = [createTestInitiative({ id: "S1.I1", priority: 1 })];
 		const features: FeatureEntry[] = [];
 		for (let f = 1; f <= 12; f++) {
 			features.push(
@@ -452,9 +445,7 @@ describe("validatePhase", () => {
 	});
 
 	it("rejects phase exceeding task count", () => {
-		const initiatives = [
-			createTestInitiative({ id: "S1.I1", priority: 1 }),
-		];
+		const initiatives = [createTestInitiative({ id: "S1.I1", priority: 1 })];
 		const features = [
 			createTestFeature({
 				id: "S1.I1.F1",
@@ -485,9 +476,7 @@ describe("validatePhase", () => {
 	});
 
 	it("rejects phase exceeding dependency depth", () => {
-		const initiatives = [
-			createTestInitiative({ id: "S1.I1", priority: 1 }),
-		];
+		const initiatives = [createTestInitiative({ id: "S1.I1", priority: 1 })];
 		// Create a chain of 7 features (depth 6, exceeds MAX_DEPENDENCY_DEPTH=5)
 		const features: FeatureEntry[] = [];
 		for (let f = 1; f <= 7; f++) {
