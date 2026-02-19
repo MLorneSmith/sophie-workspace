@@ -1,24 +1,22 @@
-import { redirect } from "next/navigation";
+import { Badge } from "@kit/ui/badge";
+import { FileText } from "lucide-react";
 
-import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
+export default function OutlineStepPage() {
+	return (
+		<div className="flex min-h-[420px] items-center justify-center">
+			<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-3 text-center">
+				<FileText className="text-muted-foreground size-10" />
 
-import { CanvasPage } from "../../canvas/_components/canvas-page";
+				<h2 className="text-lg font-medium">Outline Editor</h2>
 
-export default async function OutlineStepPage(props: {
-	params: Promise<{ id: string }>;
-	searchParams?: { id?: string };
-}) {
-	const params = await props.params;
+				<p className="text-app-sm text-muted-foreground">
+					Structure your presentation into sections with key talking points
+				</p>
 
-	// The existing Canvas implementation uses ?id=<submissionId>.
-	// Bridge the new route param into the expected query param.
-	if (props.searchParams?.id !== params.id) {
-		redirect(`/home/ai/${params.id}/outline?id=${params.id}`);
-	}
-
-	const i18n = await createI18nServerInstance();
-	const title = i18n.t("common:routes.aiCanvas");
-	const description = i18n.t("common:aiCanvasTabDescription");
-
-	return <CanvasPage title={title} description={description} />;
+				<Badge variant="secondary" className="mt-2">
+					Coming in Phase 2
+				</Badge>
+			</div>
+		</div>
+	);
 }
