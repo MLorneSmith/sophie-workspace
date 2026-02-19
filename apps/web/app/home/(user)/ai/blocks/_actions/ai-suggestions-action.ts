@@ -23,9 +23,7 @@ const SuggestionsSchema = z
 		title: z.string().optional(),
 		field: z
 			.enum(["title", "audience", "situation", "complication"])
-			.describe(
-				"Must be one of: title, audience, situation, complication",
-			),
+			.describe("Must be one of: title, audience, situation, complication"),
 		presentationType: z.string().optional(),
 	})
 	.refine(

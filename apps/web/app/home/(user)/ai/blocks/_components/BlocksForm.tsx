@@ -271,9 +271,8 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 	const [touchedFields, setTouchedFields] = useState<Set<keyof FormData>>(
 		new Set(),
 	);
-	const [argumentMapTree, setArgumentMapTree] = useState<ArgumentMapNode | null>(
-		null,
-	);
+	const [argumentMapTree, setArgumentMapTree] =
+		useState<ArgumentMapNode | null>(null);
 
 	const {
 		suggestions,
@@ -530,9 +529,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 								...formData,
 								argument_map: JSON.stringify(next),
 							});
-							setTouchedFields(
-								new Set(touchedFields).add("argument_map"),
-							);
+							setTouchedFields(new Set(touchedFields).add("argument_map"));
 						}}
 					/>
 					{touchedFieldsOnBlur.has("argument_map") && errors.argument_map && (

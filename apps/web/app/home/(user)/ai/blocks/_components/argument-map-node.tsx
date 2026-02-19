@@ -37,7 +37,8 @@ function typeStyles(type: ArgumentMapNodeTypeEnum): {
 		case "claim":
 			return {
 				badgeVariant: "secondary",
-				badgeClassName: "bg-blue-500/15 text-blue-300 border border-blue-500/25",
+				badgeClassName:
+					"bg-blue-500/15 text-blue-300 border border-blue-500/25",
 				cardClassName: "border-blue-500/20 bg-blue-500/5",
 				connectorClassName: "bg-blue-400/35",
 			};
@@ -112,7 +113,9 @@ export function ArgumentMapNode({
 								>
 									{TYPE_LABEL[node.type]}
 								</Badge>
-								<span className="text-muted-foreground text-xs">Depth {depth}</span>
+								<span className="text-muted-foreground text-xs">
+									Depth {depth}
+								</span>
 							</div>
 
 							{isEditing ? (

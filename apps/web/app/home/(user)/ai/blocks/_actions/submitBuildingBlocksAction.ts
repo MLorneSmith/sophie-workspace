@@ -14,7 +14,9 @@ function argumentMapToAnswerText(argumentMapJson: string): string {
 		type Node = { text?: unknown; children?: unknown };
 		const root = parsed as Node;
 		const claim = typeof root.text === "string" ? root.text.trim() : "";
-		const children = Array.isArray(root.children) ? (root.children as Node[]) : [];
+		const children = Array.isArray(root.children)
+			? (root.children as Node[])
+			: [];
 
 		const supports = children
 			.map((c) => (typeof c.text === "string" ? c.text.trim() : ""))
@@ -22,9 +24,12 @@ function argumentMapToAnswerText(argumentMapJson: string): string {
 
 		if (supports.length === 0) return claim;
 
-		return [claim, "", "Supporting arguments:", ...supports.map((s) => `- ${s}`)].join(
-			"\n",
-		);
+		return [
+			claim,
+			"",
+			"Supporting arguments:",
+			...supports.map((s) => `- ${s}`),
+		].join("\n");
 	} catch {
 		return "";
 	}
