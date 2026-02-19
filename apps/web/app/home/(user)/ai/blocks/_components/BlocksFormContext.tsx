@@ -53,7 +53,7 @@ interface FormContextType {
 	currentPath: QuestionField[];
 	handleNext: () => void;
 	handlePrevious: () => void;
-	handleSubmit: (e: React.FormEvent) => Promise<void>;
+	handleSubmit: (e: React.FormEvent) => Promise<boolean>;
 	errors: Record<string, string>;
 	setErrors: (errors: Record<string, string>) => void;
 	validateField: (field: keyof FormData) => boolean;
@@ -197,7 +197,7 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		setCurrentQuestion((prev) => Math.max(prev - 1, 0));
 	};
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent): Promise<boolean> => {
 		e.preventDefault();
 
 		// Only validate fields that are in the current path
@@ -209,18 +209,20 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 				fieldsValidated: currentPath,
 				totalFields: currentPath.length,
 			});
-		} else {
-			logger.info("Form submission failed validation", {
-				currentPath,
-				validationResults: validations,
-				errors,
-			});
-			// Find the first invalid field and set it as current
-			const firstInvalidIndex = validations.findIndex((valid) => !valid);
-			if (firstInvalidIndex !== -1) {
-				setCurrentQuestion(firstInvalidIndex);
-			}
+			return true;
 		}
+
+		logger.info("Form submission failed validation", {
+			currentPath,
+			validationResults: validations,
+			errors,
+		});
+		// Find the first invalid field and set it as current
+		const firstInvalidIndex = validations.findIndex((valid) => !valid);
+		if (firstInvalidIndex !== -1) {
+			setCurrentQuestion(firstInvalidIndex);
+		}
+		return false;
 	};
 
 	return (

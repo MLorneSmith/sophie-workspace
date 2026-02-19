@@ -397,7 +397,8 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 		e.preventDefault();
 		setIsSubmitting(true);
 		try {
-			await handleSubmit(e);
+			const isValid = await handleSubmit(e);
+			if (!isValid) return;
 			// First submit to building_blocks_submissions table
 			const {
 				title,
