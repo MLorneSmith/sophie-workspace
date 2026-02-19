@@ -43,7 +43,10 @@ export interface FormData {
 	question_type: string;
 	situation: string;
 	complication: string;
-	argument_map: string; // JSON string of the ArgumentMapNode tree
+	// NOTE: Current flow uses `answer`. Upcoming Argument Map flow may replace this
+	// with an `argument_map` step.
+	answer: string;
+	argument_map?: unknown;
 }
 
 interface FormContextType {
@@ -53,7 +56,7 @@ interface FormContextType {
 	currentPath: QuestionField[];
 	handleNext: () => void;
 	handlePrevious: () => void;
-	handleSubmit: (e: React.FormEvent) => Promise<boolean>;
+	handleSubmit: (e: React.FormEvent) => Promise<void>;
 	errors: Record<string, string>;
 	setErrors: (errors: Record<string, string>) => void;
 	validateField: (field: keyof FormData) => boolean;
@@ -63,7 +66,13 @@ interface FormContextType {
 
 const SetupFormContext = createContext<FormContextType | undefined>(undefined);
 
-export function SetupFormProvider({ children }: { children: React.ReactNode }) {
+export function SetupFormProvider({
+	children,
+	initialFormData,
+}: {
+	children: React.ReactNode;
+	initialFormData?: Partial<FormData>;
+}) {
 	const [formData, setFormData] = useState<FormData>({
 		title: "",
 		audience: "",
@@ -71,7 +80,8 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		question_type: "",
 		situation: "",
 		complication: "",
-		argument_map: "",
+		answer: "",
+		argument_map: undefined,
 	});
 
 	const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -82,6 +92,16 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 	const [touchedFieldsOnBlur, setTouchedFieldsOnBlur] = useState<
 		Set<keyof FormData>
 	>(new Set());
+
+	useEffect(() => {
+		if (!initialFormData) return;
+
+		logger.info("Initializing form with initial data", {
+			keys: Object.keys(initialFormData),
+		});
+
+		setFormData((prev) => ({ ...prev, ...initialFormData }));
+	}, [initialFormData]);
 
 	// Initialize with default path and update when presentation type changes
 	useEffect(() => {
@@ -108,34 +128,10 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		let isValid = true;
 		const newErrors = { ...errors };
 
-		// Special validation for the argument map: require at least a non-empty claim.
-		if (field === "argument_map") {
-			try {
-				const parsed = JSON.parse(value) as unknown;
-				const claimText =
-					typeof parsed === "object" &&
-					parsed !== null &&
-					"text" in parsed &&
-					typeof (parsed as { text?: unknown }).text === "string"
-						? ((parsed as { text: string }).text ?? "")
-						: "";
+		const isEmptyString = typeof value === "string" && value.trim() === "";
+		const isMissing = value === undefined || value === null || isEmptyString;
 
-				if (claimText.trim().length === 0) {
-					newErrors[field] = "Add your main claim to continue";
-					isValid = false;
-				} else {
-					delete newErrors[field];
-				}
-			} catch {
-				newErrors[field] = "Build your argument map to continue";
-				isValid = false;
-			}
-
-			setErrors(newErrors);
-			return isValid;
-		}
-
-		if (!value || value.trim() === "") {
+		if (isMissing) {
 			newErrors[field] = "This field is required";
 			isValid = false;
 			logger.info("Field validation failed", {
@@ -147,7 +143,7 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 			delete newErrors[field];
 			logger.info("Field validation passed", {
 				field,
-				valueLength: value.trim().length,
+				valueType: typeof value,
 			});
 		}
 
@@ -197,7 +193,7 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		setCurrentQuestion((prev) => Math.max(prev - 1, 0));
 	};
 
-	const handleSubmit = async (e: React.FormEvent): Promise<boolean> => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		// Only validate fields that are in the current path
@@ -209,20 +205,18 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 				fieldsValidated: currentPath,
 				totalFields: currentPath.length,
 			});
-			return true;
+		} else {
+			logger.info("Form submission failed validation", {
+				currentPath,
+				validationResults: validations,
+				errors,
+			});
+			// Find the first invalid field and set it as current
+			const firstInvalidIndex = validations.findIndex((valid) => !valid);
+			if (firstInvalidIndex !== -1) {
+				setCurrentQuestion(firstInvalidIndex);
+			}
 		}
-
-		logger.info("Form submission failed validation", {
-			currentPath,
-			validationResults: validations,
-			errors,
-		});
-		// Find the first invalid field and set it as current
-		const firstInvalidIndex = validations.findIndex((valid) => !valid);
-		if (firstInvalidIndex !== -1) {
-			setCurrentQuestion(firstInvalidIndex);
-		}
-		return false;
 	};
 
 	return (

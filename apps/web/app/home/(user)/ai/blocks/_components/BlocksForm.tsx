@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getSuggestions } from "../_actions/ai-suggestions-action";
 import { submitBuildingBlocksAction } from "../_actions/submitBuildingBlocksAction";
+import { saveAssembleStepAction } from "../../[id]/assemble/_actions/save-assemble-step.action";
 import {
 	getQuestion,
 	presentationTypes,
@@ -25,8 +26,6 @@ import {
 	type QuestionOption,
 	questions,
 } from "../_config/formContent";
-import type { ArgumentMapNode } from "../../_lib/schemas/presentation-artifacts";
-import { ArgumentMapEditor } from "./argument-map-editor";
 import { type FormData, useSetupForm } from "./BlocksFormContext";
 
 // Create a client-safe logger wrapper
@@ -59,6 +58,8 @@ const logger = {
 
 interface SetupFormProps {
 	userId: string; // For cache namespacing
+	mode?: "blocks" | "assemble";
+	presentationId?: string;
 }
 
 function useSuggestions(_userId: string) {
@@ -249,7 +250,11 @@ const PresentationTypeQuestion = ({
 	</div>
 );
 
-export function SetupForm({ userId: _userId }: SetupFormProps) {
+export function SetupForm({
+	userId: _userId,
+	mode = "blocks",
+	presentationId,
+}: SetupFormProps) {
 	const {
 		formData,
 		setFormData,
@@ -271,8 +276,6 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 	const [touchedFields, setTouchedFields] = useState<Set<keyof FormData>>(
 		new Set(),
 	);
-	const [argumentMapTree, setArgumentMapTree] =
-		useState<ArgumentMapNode | null>(null);
 
 	const {
 		suggestions,
@@ -397,9 +400,8 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 		e.preventDefault();
 		setIsSubmitting(true);
 		try {
-			const isValid = await handleSubmit(e);
-			if (!isValid) return;
-			// First submit to building_blocks_submissions table
+			await handleSubmit(e);
+
 			const {
 				title,
 				audience,
@@ -409,6 +411,53 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 				complication,
 				argument_map,
 			} = formData;
+
+			if (mode === "assemble") {
+				if (!presentationId) {
+					throw new Error("Missing presentationId for assemble submit");
+				}
+
+				const response = await saveAssembleStepAction({
+					presentationId,
+					title,
+					audience,
+					presentationType: presentation_type as
+						| "general"
+						| "sales"
+						| "consulting"
+						| "fundraising",
+					questionType: question_type as
+						| "strategy"
+						| "assessment"
+						| "implementation"
+						| "diagnostic"
+						| "alternatives"
+						| "postmortem",
+					situation,
+					complication,
+					// Prefer argument_map if present (future flow), otherwise default.
+					argumentMap: argument_map ?? {},
+				});
+
+				if (!response.success) {
+					const errorMessage = (response as unknown as { error?: string })
+						.error;
+					logger.error("Assemble save failed:", {
+						error: errorMessage,
+						presentationId,
+					});
+					setErrors({
+						answer:
+							errorMessage || "Failed to save assemble step. Please try again.",
+					});
+					return;
+				}
+
+				router.push(`/home/ai/${presentationId}/outline`);
+				return;
+			}
+
+			// Default behavior (Blocks tab): submit to building_blocks_submissions.
 			const response = await submitBuildingBlocksAction({
 				title,
 				audience,
@@ -416,7 +465,10 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 				question_type: getQuestionTypeLabel(question_type),
 				situation,
 				complication,
-				argument_map,
+				argument_map:
+					typeof argument_map === "string"
+						? argument_map
+						: JSON.stringify(argument_map ?? {}),
 			});
 
 			if (!response.success) {
@@ -429,8 +481,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 					},
 				});
 				setErrors({
-					argument_map:
-						response.error || "Failed to submit form. Please try again.",
+					answer: response.error || "Failed to submit form. Please try again.",
 				});
 				return;
 			}
@@ -449,7 +500,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 				error: _error,
 			});
 			setErrors({
-				argument_map: "An unexpected error occurred. Please try again.",
+				answer: "An unexpected error occurred. Please try again.",
 			});
 		} finally {
 			setIsSubmitting(false);
@@ -466,7 +517,6 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 					currentQuestion,
 				});
 
-				markFieldAsTouchedOnBlur(currentField);
 				const isValid = validateField(currentField);
 				logger.info("Field validation result:", {
 					field: currentField,
@@ -518,34 +568,12 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 		const currentField = currentPath[currentQuestion];
 		if (!currentField) return null;
 
-		// Custom final step: Pyramid Principle argument map (replaces free-text answer)
-		if (currentField === "argument_map") {
-			return (
-				<div className="space-y-3">
-					<ArgumentMapEditor
-						value={argumentMapTree}
-						onChange={(next) => {
-							setArgumentMapTree(next);
-							setFormData({
-								...formData,
-								argument_map: JSON.stringify(next),
-							});
-							setTouchedFields(new Set(touchedFields).add("argument_map"));
-						}}
-					/>
-					{touchedFieldsOnBlur.has("argument_map") && errors.argument_map && (
-						<p className="text-sm text-red-500">{errors.argument_map}</p>
-					)}
-				</div>
-			);
-		}
-
 		const question = getQuestion(currentField as QuestionField);
 		const field = question.field;
 
 		const commonProps = {
 			id: field,
-			value: formData[field],
+			value: typeof formData[field] === "string" ? formData[field] : "",
 			onChange: handleInputChange(field),
 			onBlur: handleBlur(field),
 			className: `${
@@ -590,7 +618,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 			case "multiple_choice":
 				return (
 					<MultipleChoiceQuestion
-						value={formData[field]}
+						value={typeof formData[field] === "string" ? formData[field] : ""}
 						onChange={(value) => {
 							setFormData({ ...formData, [field]: value });
 							setTouchedFields(new Set(touchedFields).add(field));
