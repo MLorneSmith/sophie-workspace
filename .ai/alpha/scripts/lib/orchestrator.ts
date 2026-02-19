@@ -95,7 +95,10 @@ import { runWorkLoop } from "./work-loop.js";
 *
 * @param manifest - The spec manifest
  */
-export function printDryRun(manifest: SpecManifest, phase?: string): void {
+export function printDryRun(
+	manifest: SpecManifest,
+	phase?: string,
+): void {
 	console.log("\n🔍 DRY RUN - Execution Plan:\n");
 
 	// Show phase info if running in phase mode
@@ -103,7 +106,9 @@ export function printDryRun(manifest: SpecManifest, phase?: string): void {
 		const phaseInfo = manifest.phases.find((p) => p.id === phase);
 		if (phaseInfo) {
 			console.log(`Phase: ${phaseInfo.id} - ${phaseInfo.name}`);
-			console.log(`Initiatives: ${phaseInfo.initiative_ids.join(", ")}`);
+			console.log(
+				`Initiatives: ${phaseInfo.initiative_ids.join(", ")}`,
+			);
 			console.log(
 				`Scope: ${phaseInfo.feature_count} features, ${phaseInfo.task_count} tasks\n`,
 			);
@@ -284,11 +289,7 @@ export async function createSandboxWithRetry(
 	baseBranch?: string,
 	phase?: string,
 ): Promise<SandboxInstance> {
-	for (
-		let attempt = 1;
-		attempt <= SANDBOX_CREATION_MAX_RETRIES + 1;
-		attempt++
-	) {
+	for (let attempt = 1; attempt <= SANDBOX_CREATION_MAX_RETRIES + 1; attempt++) {
 		try {
 			return await createSandbox(
 				manifest,
@@ -302,7 +303,8 @@ export async function createSandboxWithRetry(
 			);
 		} catch (error) {
 			const isLastAttempt = attempt > SANDBOX_CREATION_MAX_RETRIES;
-			const errorMsg = error instanceof Error ? error.message : String(error);
+			const errorMsg =
+				error instanceof Error ? error.message : String(error);
 
 			if (isLastAttempt) {
 				log(
@@ -321,9 +323,7 @@ export async function createSandboxWithRetry(
 	}
 
 	// Unreachable but satisfies TypeScript
-	throw new Error(
-		`Sandbox ${label} creation failed: retry loop exited unexpectedly`,
-	);
+	throw new Error(`Sandbox ${label} creation failed: retry loop exited unexpectedly`);
 }
 
 // ============================================================================
@@ -436,7 +436,9 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		log(
 			`   Phase ${options.phase}: ${manifest.feature_queue.length} features, ${manifest.progress.tasks_total} tasks`,
 		);
-		log(`   Initiatives: ${phaseInfo?.initiative_ids.join(", ") ?? "unknown"}`);
+		log(
+			`   Initiatives: ${phaseInfo?.initiative_ids.join(", ") ?? "unknown"}`,
+		);
 
 		if (options.baseBranch) {
 			log(`   Base branch: ${options.baseBranch}`);
