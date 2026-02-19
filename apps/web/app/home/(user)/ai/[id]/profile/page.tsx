@@ -1,24 +1,22 @@
-import { Badge } from "@kit/ui/badge";
-import { Input } from "@kit/ui/input";
+import { requireUser } from "@kit/supabase/require-user";
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
-export default function ProfileStepPage() {
-	return (
-		<div className="flex min-h-[420px] items-center justify-center">
-			<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-3 text-center">
-				<Input
-					disabled
-					placeholder="Who are you presenting to?"
-					className="h-12 text-app-md"
-				/>
+import { getProfileByPresentationId } from "../../_lib/server/audience-profiles.service";
 
-				<p className="text-app-sm text-muted-foreground">
-					Enter a name, company, or LinkedIn URL to begin audience profiling
-				</p>
+import { ProfileStepForm } from "./_components/profile-step-form";
 
-				<Badge variant="secondary" className="mt-2">
-					Coming in Phase 2
-				</Badge>
-			</div>
-		</div>
-	);
+export default async function ProfileStepPage(props: {
+	params: Promise<{ id: string }>;
+}) {
+	const params = await props.params;
+	const client = getSupabaseServerClient();
+	const auth = await requireUser(client);
+
+	if (auth.error) {
+		throw new Error("Unauthorized");
+	}
+
+	const profile = await getProfileByPresentationId(client, params.id);
+
+	return <ProfileStepForm presentationId={params.id} initialProfile={profile} />;
 }
