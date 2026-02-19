@@ -4,16 +4,22 @@ import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import { cn } from "@kit/ui/utils";
 import {
-	AlignLeft,
+	ArrowLeftRight,
+	BarChart3,
 	CheckCircle,
 	Columns2,
 	Download,
+	FileText,
+	Image,
 	Layers,
-	LayoutTemplate,
 	Loader2,
+	Minus,
 	Plus,
+	Quote,
 	RefreshCw,
 	Sparkles,
+	Square,
+	Type,
 } from "lucide-react";
 import {
 	useCallback,
@@ -45,12 +51,37 @@ type SaveStatus = "idle" | "saving" | "saved" | "error";
 function getLayoutIcon(layout: SlideLayout) {
 	switch (layout) {
 		case "title-only":
-			return AlignLeft;
+			return Type;
+		case "title-content":
+			return FileText;
 		case "title-two-column":
 			return Columns2;
+		case "section-divider":
+			return Minus;
+		case "image-text":
+			return Image;
+		case "comparison":
+			return ArrowLeftRight;
+		case "data-chart":
+			return BarChart3;
+		case "quote":
+			return Quote;
+		case "blank":
+			return Square;
 		default:
-			return LayoutTemplate;
+			return FileText;
 	}
+}
+
+function normalizeSlide(slide: StoryboardSlide): StoryboardSlide {
+	return {
+		...slide,
+		purpose: slide.purpose ?? "",
+		takeaway_headline: slide.takeaway_headline ?? "",
+		evidence_needed: slide.evidence_needed ?? "",
+		content_left: slide.content_left ?? "",
+		content_right: slide.content_right ?? "",
+	};
 }
 
 export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
@@ -86,9 +117,10 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 					});
 
 					if (result && "data" in result && result.data?.slides) {
-						setSlides(result.data.slides);
-						if (result.data.slides.length > 0) {
-							setSelectedSlideId(result.data.slides[0]?.id ?? null);
+						const normalizedSlides = result.data.slides.map(normalizeSlide);
+						setSlides(normalizedSlides);
+						if (normalizedSlides.length > 0) {
+							setSelectedSlideId(normalizedSlides[0]?.id ?? null);
 						}
 					} else if (result && "error" in result) {
 						setGenerationError(
@@ -109,9 +141,10 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 
 	useEffect(() => {
 		if (storyboardData?.slides && storyboardData.slides.length > 0) {
-			setSlides(storyboardData.slides);
-			if (!selectedSlideId && storyboardData.slides.length > 0) {
-				setSelectedSlideId(storyboardData.slides[0]?.id ?? null);
+			const normalizedSlides = storyboardData.slides.map(normalizeSlide);
+			setSlides(normalizedSlides);
+			if (!selectedSlideId && normalizedSlides.length > 0) {
+				setSelectedSlideId(normalizedSlides[0]?.id ?? null);
 			}
 			hasInitialized.current = true;
 		}
@@ -215,6 +248,11 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 			title: "New Slide",
 			layout: "title-content",
 			content: "",
+			content_left: "",
+			content_right: "",
+			purpose: "",
+			takeaway_headline: "",
+			evidence_needed: "",
 			speaker_notes: {
 				type: "doc",
 				content: [{ type: "paragraph", content: [] }],
@@ -342,6 +380,11 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 											<p className="truncate text-sm font-medium">
 												{slide.title || "Untitled slide"}
 											</p>
+											{slide.takeaway_headline ? (
+												<p className="text-muted-foreground truncate text-xs">
+													{slide.takeaway_headline}
+												</p>
+											) : null}
 										</div>
 										<LayoutIcon className="text-muted-foreground h-4 w-4 shrink-0" />
 									</button>
