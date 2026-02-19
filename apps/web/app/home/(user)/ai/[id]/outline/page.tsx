@@ -1,9 +1,23 @@
+"use client";
+
+import { useParams } from "next/navigation";
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
+
+import { OutlineEditor } from "./_components/outline-editor";
+
 export default function OutlineStepPage() {
+	const params = useParams<{ id: string }>();
+
 	return (
-		<div className="flex min-h-[360px] items-center justify-center">
-			<h1 className="text-2xl font-semibold text-foreground">
-				Outline Step — Coming Soon
-			</h1>
-		</div>
+		<Suspense
+			fallback={
+				<div className="flex min-h-[300px] items-center justify-center">
+					<Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
+				</div>
+			}
+		>
+			<OutlineEditor presentationId={params.id} />
+		</Suspense>
 	);
 }

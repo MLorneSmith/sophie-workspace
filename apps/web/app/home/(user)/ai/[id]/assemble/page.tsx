@@ -1,9 +1,15 @@
-export default function AssembleStepPage() {
-	return (
-		<div className="flex min-h-[360px] items-center justify-center">
-			<h1 className="text-2xl font-semibold text-foreground">
-				Assemble Step — Coming Soon
-			</h1>
-		</div>
-	);
+import { requireUser } from "@kit/supabase/require-user";
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
+
+import BlocksMultistepForm from "../../blocks/BlocksMultistepForm";
+
+export default async function AssembleStepPage() {
+	const client = getSupabaseServerClient();
+	const auth = await requireUser(client);
+
+	if (auth.error) {
+		throw new Error("Unauthorized");
+	}
+
+	return <BlocksMultistepForm userId={auth.data.id} />;
 }
