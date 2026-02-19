@@ -2,11 +2,7 @@
 
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-import type {
-	OutlineContentsRow,
-	OutlineSection,
-} from "../../../_lib/types/outline.types";
+import type { JSONContent } from "@tiptap/react";
 
 function outlineQueryKey(presentationId: string) {
 	return ["outline-contents", presentationId] as const;
@@ -17,7 +13,7 @@ export function useOutlineContents(presentationId: string) {
 
 	return useQuery({
 		queryKey: outlineQueryKey(presentationId),
-		queryFn: async (): Promise<OutlineContentsRow | null> => {
+		queryFn: async (): Promise<JSONContent | null> => {
 			const { data, error } = await supabase
 				.from("outline_contents")
 				.select("*")
@@ -27,58 +23,55 @@ export function useOutlineContents(presentationId: string) {
 			if (error) throw error;
 			if (!data) return null;
 
-			return {
-				...data,
-				sections: (data.sections ?? []) as unknown as OutlineSection[],
-			};
+			// sections JSONB stores the full TipTap document
+			const doc = data.sections as unknown as JSONContent;
+			if (
+				doc &&
+				typeof doc === "object" &&
+				doc.type === "doc" &&
+				Array.isArray(doc.content)
+			) {
+				return doc;
+			}
+
+			return null;
 		},
 		staleTime: 5 * 60 * 1000,
 		gcTime: 30 * 60 * 1000,
 	});
 }
 
-export function useSaveOutlineSections(presentationId: string) {
+export function useSaveOutlineContent(presentationId: string) {
 	const supabase = useSupabase();
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (sections: OutlineSection[]) => {
-			const { data, error } = await supabase
+		mutationFn: async (content: JSONContent) => {
+			const { error } = await supabase
 				.from("outline_contents")
 				.update({
-					sections: JSON.parse(JSON.stringify(sections)),
+					sections: JSON.parse(JSON.stringify(content)),
 					updated_at: new Date().toISOString(),
 				})
-				.eq("presentation_id", presentationId)
-				.select()
-				.single();
+				.eq("presentation_id", presentationId);
 
 			if (error) throw error;
-
-			return {
-				...data,
-				sections: (data.sections ?? []) as unknown as OutlineSection[],
-			};
+			return content;
 		},
-		onMutate: async (newSections) => {
+		onMutate: async (newContent) => {
 			await queryClient.cancelQueries({
 				queryKey: outlineQueryKey(presentationId),
 			});
 
-			const previous = queryClient.getQueryData<OutlineContentsRow | null>(
+			const previous = queryClient.getQueryData<JSONContent | null>(
 				outlineQueryKey(presentationId),
 			);
 
-			if (previous) {
-				queryClient.setQueryData(outlineQueryKey(presentationId), {
-					...previous,
-					sections: newSections,
-				});
-			}
+			queryClient.setQueryData(outlineQueryKey(presentationId), newContent);
 
 			return { previous };
 		},
-		onError: (_err, _newSections, context) => {
+		onError: (_err, _newContent, context) => {
 			if (context?.previous) {
 				queryClient.setQueryData(
 					outlineQueryKey(presentationId),

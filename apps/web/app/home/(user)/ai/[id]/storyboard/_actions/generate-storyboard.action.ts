@@ -2,8 +2,8 @@
 
 import {
 	ConfigManager,
-	type ChatMessage,
 	type ChatCompletionOptions,
+	type ChatMessage,
 	createOpenAIOnlyConfig,
 	getChatCompletion,
 } from "@kit/ai-gateway";
@@ -12,8 +12,75 @@ import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
 
-import type { OutlineSection } from "../../_lib/types/outline.types";
 import type { StoryboardSlide } from "../../_lib/types/storyboard.types";
+
+interface TiptapNode {
+	type: string;
+	content?: TiptapNode[];
+	attrs?: Record<string, unknown>;
+	text?: string;
+}
+
+function extractTextFromTiptap(node: unknown): string {
+	if (!node || typeof node !== "object") return "";
+
+	const n = node as TiptapNode;
+
+	if (n.text && typeof n.text === "string") return n.text;
+
+	if (Array.isArray(n.content)) {
+		return n.content.map((child) => extractTextFromTiptap(child)).join("\n");
+	}
+
+	return "";
+}
+
+function extractSectionsFromOutlineDoc(
+	doc: unknown,
+): Array<{ title: string; content: string }> {
+	if (!doc || typeof doc !== "object") return [];
+
+	const d = doc as { content?: TiptapNode[] };
+	if (!Array.isArray(d.content)) return [];
+
+	const sections: Array<{ title: string; content: string }> = [];
+	let currentSection: { title: string; content: string[] } | null = null;
+
+	for (const node of d.content) {
+		if (
+			node.type === "heading" &&
+			node.attrs &&
+			(node.attrs.level === 2 || node.attrs.level === 1)
+		) {
+			// Save previous section
+			if (currentSection) {
+				sections.push({
+					title: currentSection.title,
+					content: currentSection.content.filter(Boolean).join("\n"),
+				});
+			}
+			const title = extractTextFromTiptap(node).trim();
+			if (title && title !== "Presentation Outline") {
+				currentSection = { title, content: [] };
+			}
+		} else if (currentSection) {
+			const text = extractTextFromTiptap(node).trim();
+			if (text) {
+				currentSection.content.push(text);
+			}
+		}
+	}
+
+	// Save last section
+	if (currentSection) {
+		sections.push({
+			title: currentSection.title,
+			content: currentSection.content.filter(Boolean).join("\n"),
+		});
+	}
+
+	return sections;
+}
 
 const GenerateStoryboardSchema = z.object({
 	presentationId: z.string().min(1),
@@ -44,12 +111,12 @@ export const generateStoryboardAction = enhanceAction(
 			throw new Error("No outline found. Complete the outline step first.");
 		}
 
-		const outlineSections = (outlineData.sections ??
-			[]) as unknown as OutlineSection[];
+		// Extract sections from the TipTap outline document
+		const outlineSections = extractSectionsFromOutlineDoc(outlineData.sections);
 
 		if (outlineSections.length === 0) {
 			throw new Error(
-				"Outline has no sections. Add sections in the outline step first.",
+				"Outline has no content. Add content in the outline step first.",
 			);
 		}
 
@@ -76,10 +143,10 @@ export const generateStoryboardAction = enhanceAction(
 			.eq("presentation_id", data.presentationId)
 			.maybeSingle();
 
-		// Format outline sections for the prompt
+		// Format outline for the prompt
 		const outlineText = outlineSections
-			.map((s, i) => `Section ${i + 1}: ${s.title}`)
-			.join("\n");
+			.map((s, i) => `Section ${i + 1} - ${s.title}:\n${s.content}`)
+			.join("\n\n");
 
 		// Build AI prompt
 		const systemPrompt = `You are a presentation storyboard designer. Given a presentation outline, generate slide layouts with content, speaker notes, and visual suggestions.
@@ -159,7 +226,7 @@ Generate slides that bring this outline to life with clear layouts and content.`
 				title: section.title,
 				layout:
 					idx === 0 ? ("title-only" as const) : ("title-content" as const),
-				content: "",
+				content: section.content,
 				speaker_notes: {
 					type: "doc",
 					content: [

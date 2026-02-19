@@ -7,14 +7,7 @@ import { z } from "zod";
 
 const SaveOutlineSchema = z.object({
 	presentationId: z.string().min(1),
-	sections: z.array(
-		z.object({
-			id: z.string(),
-			title: z.string(),
-			body: z.unknown(),
-			order: z.number(),
-		}),
-	),
+	content: z.unknown(),
 });
 
 export const saveOutlineAction = enhanceAction(
@@ -24,14 +17,14 @@ export const saveOutlineAction = enhanceAction(
 		const { error } = await client
 			.from("outline_contents")
 			.update({
-				sections: JSON.parse(JSON.stringify(data.sections)),
+				sections: JSON.parse(JSON.stringify(data.content)),
 				updated_at: new Date().toISOString(),
 			})
 			.eq("presentation_id", data.presentationId);
 
 		if (error) {
 			const logger = await getLogger();
-			logger.error("Failed to save outline sections", {
+			logger.error("Failed to save outline", {
 				presentationId: data.presentationId,
 				error,
 			});

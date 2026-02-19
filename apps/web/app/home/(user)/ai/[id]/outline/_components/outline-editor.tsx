@@ -2,23 +2,52 @@
 
 import { Button } from "@kit/ui/button";
 import { Badge } from "@kit/ui/badge";
+import { cn } from "@kit/ui/utils";
+import Bold from "@tiptap/extension-bold";
+import BulletList from "@tiptap/extension-bullet-list";
+import Heading from "@tiptap/extension-heading";
+import Italic from "@tiptap/extension-italic";
+import ListItem from "@tiptap/extension-list-item";
+import OrderedList from "@tiptap/extension-ordered-list";
+import Placeholder from "@tiptap/extension-placeholder";
+import Underline from "@tiptap/extension-underline";
+import StarterKit from "@tiptap/starter-kit";
 import {
+	type Editor,
+	type JSONContent,
+	EditorContent,
+	useEditor,
+} from "@tiptap/react";
+import {
+	Bold as BoldIcon,
 	CheckCircle,
 	FileText,
+	Heading1,
+	Heading2,
+	Italic as ItalicIcon,
+	List,
+	ListOrdered,
 	Loader2,
-	Plus,
 	RefreshCw,
 	Sparkles,
+	Underline as UnderlineIcon,
+	Undo,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import debounce from "lodash/debounce";
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
 
-import type { OutlineSection } from "../../_lib/types/outline.types";
 import { generateOutlineAction } from "../_actions/generate-outline.action";
 import {
 	useOutlineContents,
-	useSaveOutlineSections,
+	useSaveOutlineContent,
 } from "../_lib/hooks/use-outline-contents";
-import { SectionEditor } from "./section-editor";
 
 interface OutlineEditorProps {
 	presentationId: string;
@@ -26,18 +55,126 @@ interface OutlineEditorProps {
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 
-export function OutlineEditor({ presentationId }: OutlineEditorProps) {
-	const { data: outlineData, isPending: isLoading } =
-		useOutlineContents(presentationId);
-	const { mutate: saveSections } = useSaveOutlineSections(presentationId);
+function Toolbar({ editor }: { editor: Editor | null }) {
+	if (!editor) return null;
 
-	const [sections, setSections] = useState<OutlineSection[]>([]);
+	return (
+		<div className="flex items-center gap-1 border-b border-white/10 p-1">
+			<Button
+				variant="ghost"
+				size="sm"
+				onClick={() => editor.chain().focus().toggleBold().run()}
+				className={cn(
+					"h-8 w-8 p-0",
+					editor.isActive("bold") && "bg-accent text-accent-foreground",
+				)}
+				aria-label="Bold"
+			>
+				<BoldIcon className="h-4 w-4" />
+			</Button>
+			<Button
+				variant="ghost"
+				size="sm"
+				onClick={() => editor.chain().focus().toggleItalic().run()}
+				className={cn(
+					"h-8 w-8 p-0",
+					editor.isActive("italic") && "bg-accent text-accent-foreground",
+				)}
+				aria-label="Italic"
+			>
+				<ItalicIcon className="h-4 w-4" />
+			</Button>
+			<Button
+				variant="ghost"
+				size="sm"
+				onClick={() => editor.chain().focus().toggleUnderline().run()}
+				className={cn(
+					"h-8 w-8 p-0",
+					editor.isActive("underline") && "bg-accent text-accent-foreground",
+				)}
+				aria-label="Underline"
+			>
+				<UnderlineIcon className="h-4 w-4" />
+			</Button>
+			<div className="mx-1 h-6 w-px bg-white/10" />
+			<Button
+				variant="ghost"
+				size="sm"
+				onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+				className={cn(
+					"h-8 w-8 p-0",
+					editor.isActive("heading", { level: 1 }) &&
+						"bg-accent text-accent-foreground",
+				)}
+				aria-label="Heading 1"
+			>
+				<Heading1 className="h-4 w-4" />
+			</Button>
+			<Button
+				variant="ghost"
+				size="sm"
+				onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+				className={cn(
+					"h-8 w-8 p-0",
+					editor.isActive("heading", { level: 2 }) &&
+						"bg-accent text-accent-foreground",
+				)}
+				aria-label="Heading 2"
+			>
+				<Heading2 className="h-4 w-4" />
+			</Button>
+			<div className="mx-1 h-6 w-px bg-white/10" />
+			<Button
+				variant="ghost"
+				size="sm"
+				onClick={() => editor.chain().focus().toggleBulletList().run()}
+				className={cn(
+					"h-8 w-8 p-0",
+					editor.isActive("bulletList") && "bg-accent text-accent-foreground",
+				)}
+				aria-label="Bullet List"
+			>
+				<List className="h-4 w-4" />
+			</Button>
+			<Button
+				variant="ghost"
+				size="sm"
+				onClick={() => editor.chain().focus().toggleOrderedList().run()}
+				className={cn(
+					"h-8 w-8 p-0",
+					editor.isActive("orderedList") && "bg-accent text-accent-foreground",
+				)}
+				aria-label="Ordered List"
+			>
+				<ListOrdered className="h-4 w-4" />
+			</Button>
+			<div className="mx-1 h-6 w-px bg-white/10" />
+			<Button
+				variant="ghost"
+				size="sm"
+				onClick={() => editor.chain().focus().undo().run()}
+				disabled={!editor.can().undo()}
+				className="h-8 w-8 p-0"
+				aria-label="Undo"
+			>
+				<Undo className="h-4 w-4" />
+			</Button>
+		</div>
+	);
+}
+
+export function OutlineEditor({ presentationId }: OutlineEditorProps) {
+	const { data: outlineDoc, isPending: isLoading } =
+		useOutlineContents(presentationId);
+	const { mutate: saveContent } = useSaveOutlineContent(presentationId);
+
 	const [isGenerating, startGenerating] = useTransition();
 	const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
 	const [generationError, setGenerationError] = useState<string | null>(null);
 	const hasInitialized = useRef(false);
+	const [resetKey, setResetKey] = useState(0);
 
-	const handleGenerate = useCallback(
+	const handleReset = useCallback(
 		(forceRegenerate: boolean) => {
 			setGenerationError(null);
 			startGenerating(async () => {
@@ -47,18 +184,19 @@ export function OutlineEditor({ presentationId }: OutlineEditorProps) {
 						forceRegenerate,
 					});
 
-					if (result && "data" in result && result.data?.sections) {
-						setSections(result.data.sections);
+					if (result && "data" in result && result.data) {
+						// Force editor remount with new content
+						setResetKey((k) => k + 1);
 					} else if (result && "error" in result) {
 						setGenerationError(
 							typeof result.error === "string"
 								? result.error
-								: "Generation failed. Try again.",
+								: "Failed to assemble outline. Try again.",
 						);
 					}
 				} catch (err) {
 					setGenerationError(
-						err instanceof Error ? err.message : "Generation failed",
+						err instanceof Error ? err.message : "Failed to assemble outline",
 					);
 				}
 			});
@@ -66,30 +204,22 @@ export function OutlineEditor({ presentationId }: OutlineEditorProps) {
 		[presentationId],
 	);
 
-	// Sync sections from query data
-	useEffect(() => {
-		if (outlineData?.sections && outlineData.sections.length > 0) {
-			setSections(outlineData.sections);
-			hasInitialized.current = true;
-		}
-	}, [outlineData]);
-
-	// Auto-generate on first load if no sections exist
+	// Auto-generate on first load if no outline exists
 	useEffect(() => {
 		if (isLoading || hasInitialized.current) return;
-		if (
-			outlineData === null ||
-			(outlineData && outlineData.sections.length === 0)
-		) {
+		if (outlineDoc === null) {
 			hasInitialized.current = true;
-			handleGenerate(false);
+			handleReset(false);
+		} else {
+			hasInitialized.current = true;
 		}
-	}, [isLoading, outlineData, handleGenerate]);
+	}, [isLoading, outlineDoc, handleReset]);
 
+	// Save handler
 	const handleSave = useCallback(
-		(updatedSections: OutlineSection[]) => {
+		(json: JSONContent) => {
 			setSaveStatus("saving");
-			saveSections(updatedSections, {
+			saveContent(json, {
 				onSuccess: () => {
 					setSaveStatus("saved");
 					setTimeout(() => setSaveStatus("idle"), 2000);
@@ -100,45 +230,80 @@ export function OutlineEditor({ presentationId }: OutlineEditorProps) {
 				},
 			});
 		},
-		[saveSections],
+		[saveContent],
 	);
 
-	const handleSectionUpdate = useCallback(
-		(updated: OutlineSection) => {
-			const newSections = sections.map((s) =>
-				s.id === updated.id ? updated : s,
-			);
-			setSections(newSections);
-			handleSave(newSections);
-		},
-		[sections, handleSave],
-	);
+	const debouncedSave = useMemo(() => debounce(handleSave, 1000), [handleSave]);
 
-	const handleSectionDelete = useCallback(
-		(sectionId: string) => {
-			const newSections = sections
-				.filter((s) => s.id !== sectionId)
-				.map((s, idx) => ({ ...s, order: idx }));
-			setSections(newSections);
-			handleSave(newSections);
-		},
-		[sections, handleSave],
-	);
+	// Initialize TipTap editor
+	const initialContent = useMemo(() => {
+		if (!outlineDoc) return undefined;
+		return outlineDoc;
+	}, [outlineDoc]);
 
-	const handleAddSection = useCallback(() => {
-		const newSection: OutlineSection = {
-			id: `section-${Date.now()}`,
-			title: "New Section",
-			body: {
-				type: "doc",
-				content: [{ type: "paragraph", content: [] }],
+	const editor = useEditor(
+		{
+			immediatelyRender: false,
+			extensions: [
+				StarterKit,
+				Placeholder.configure({
+					placeholder: "Your presentation outline will appear here...",
+				}),
+				Bold,
+				Italic,
+				Underline,
+				Heading.configure({ levels: [1, 2, 3] }),
+				BulletList,
+				OrderedList,
+				ListItem,
+			],
+			content: initialContent,
+			editorProps: {
+				attributes: {
+					class: "outline-none min-h-[400px] p-4",
+				},
 			},
-			order: sections.length,
+			onBlur: ({ editor }) => {
+				debouncedSave.cancel();
+				handleSave(editor.getJSON());
+			},
+		},
+		[resetKey],
+	);
+
+	// Debounced auto-save on editor updates
+	useEffect(() => {
+		if (!editor) return;
+
+		const handleUpdate = ({ editor }: { editor: Editor }) => {
+			debouncedSave(editor.getJSON());
 		};
-		const newSections = [...sections, newSection];
-		setSections(newSections);
-		handleSave(newSections);
-	}, [sections, handleSave]);
+
+		editor.on("update", handleUpdate);
+		return () => {
+			editor.off("update", handleUpdate);
+		};
+	}, [editor, debouncedSave]);
+
+	// Cleanup debounce on unmount
+	useEffect(() => {
+		return () => {
+			debouncedSave.cancel();
+		};
+	}, [debouncedSave]);
+
+	// Save before unload
+	useEffect(() => {
+		const handleBeforeUnload = () => {
+			if (editor) {
+				debouncedSave.cancel();
+				handleSave(editor.getJSON());
+			}
+		};
+
+		window.addEventListener("beforeunload", handleBeforeUnload);
+		return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+	}, [editor, debouncedSave, handleSave]);
 
 	// Loading state
 	if (isLoading) {
@@ -155,7 +320,7 @@ export function OutlineEditor({ presentationId }: OutlineEditorProps) {
 			<div className="flex min-h-[300px] flex-col items-center justify-center gap-3">
 				<Sparkles className="h-8 w-8 animate-pulse text-blue-400" />
 				<p className="text-muted-foreground text-sm">
-					Generating outline from your response...
+					Assembling outline from your responses...
 				</p>
 			</div>
 		);
@@ -186,22 +351,20 @@ export function OutlineEditor({ presentationId }: OutlineEditorProps) {
 						</Badge>
 					)}
 				</div>
-				<div className="flex items-center gap-2">
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => handleGenerate(true)}
-						disabled={isGenerating}
-					>
-						<RefreshCw className="mr-1.5 h-3.5 w-3.5" />
-						Regenerate
-					</Button>
-					<Button variant="outline" size="sm" onClick={handleAddSection}>
-						<Plus className="mr-1.5 h-3.5 w-3.5" />
-						Add Section
-					</Button>
-				</div>
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={() => handleReset(true)}
+					disabled={isGenerating}
+				>
+					<RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+					Reset Outline
+				</Button>
 			</div>
+
+			<p className="text-muted-foreground text-xs">
+				Combined content from your situation, complication, and answer responses
+			</p>
 
 			{/* Generation error */}
 			{generationError && (
@@ -210,29 +373,11 @@ export function OutlineEditor({ presentationId }: OutlineEditorProps) {
 				</div>
 			)}
 
-			{/* Sections */}
-			{sections.length === 0 ? (
-				<div className="flex min-h-[200px] flex-col items-center justify-center gap-3 text-center">
-					<FileText className="text-muted-foreground h-8 w-8" />
-					<p className="text-muted-foreground text-sm">
-						No sections yet. Click &ldquo;Add Section&rdquo; or
-						&ldquo;Regenerate&rdquo; to get started.
-					</p>
-				</div>
-			) : (
-				<div className="space-y-3">
-					{sections
-						.sort((a, b) => a.order - b.order)
-						.map((section) => (
-							<SectionEditor
-								key={section.id}
-								section={section}
-								onUpdate={handleSectionUpdate}
-								onDelete={handleSectionDelete}
-							/>
-						))}
-				</div>
-			)}
+			{/* Single TipTap editor for the full outline document */}
+			<div className="rounded-lg border border-white/10 bg-white/5">
+				<Toolbar editor={editor} />
+				<EditorContent editor={editor} />
+			</div>
 		</div>
 	);
 }

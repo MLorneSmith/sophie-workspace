@@ -1,18 +1,144 @@
 "use server";
 
-import {
-	ConfigManager,
-	type ChatMessage,
-	type ChatCompletionOptions,
-	createOpenAIOnlyConfig,
-	getChatCompletion,
-} from "@kit/ai-gateway";
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
 
-import type { OutlineSection } from "../../_lib/types/outline.types";
+interface TiptapNode {
+	type: string;
+	content?: TiptapNode[];
+	attrs?: Record<string, unknown>;
+	marks?: { type: string }[];
+	text?: string;
+}
+
+interface TiptapDocument {
+	type: string;
+	content: TiptapNode[];
+	meta?: Record<string, unknown>;
+}
+
+const SPACER_PARAGRAPH: TiptapNode = {
+	type: "paragraph",
+	content: [{ type: "text", text: " " }],
+};
+
+function hasValidText(node: TiptapNode): boolean {
+	if (
+		(node.type === "paragraph" || node.type === "heading") &&
+		node.content &&
+		node.content.length > 0
+	) {
+		return node.content.some(
+			(child) =>
+				child.type === "text" &&
+				typeof child.text === "string" &&
+				child.text.trim().length > 0,
+		);
+	}
+
+	if (
+		node.type === "bulletList" ||
+		node.type === "orderedList" ||
+		node.type === "listItem" ||
+		node.type === "blockquote" ||
+		node.type === "codeBlock" ||
+		node.type === "table"
+	) {
+		return true;
+	}
+
+	return false;
+}
+
+function normalizeNode(node: TiptapNode): TiptapNode {
+	if (node.type === "text" && (!node.text || node.text === "")) {
+		node.text = " ";
+	}
+
+	if (
+		node.type === "paragraph" &&
+		(!node.content || node.content.length === 0)
+	) {
+		node.content = [{ type: "text", text: " " }];
+	}
+
+	if (node.type === "bulletList" || node.type === "orderedList") {
+		if (!node.content || node.content.length === 0) {
+			node.content = [
+				{
+					type: "listItem",
+					content: [
+						{ type: "paragraph", content: [{ type: "text", text: " " }] },
+					],
+				},
+			];
+		} else {
+			node.content = node.content.map((item) => {
+				if (!item || item.type !== "listItem") {
+					return {
+						type: "listItem",
+						content: [
+							{ type: "paragraph", content: [{ type: "text", text: " " }] },
+						],
+					};
+				}
+				return normalizeNode(item);
+			});
+		}
+	}
+
+	if (node.type === "listItem") {
+		if (!node.content || node.content.length === 0) {
+			node.content = [
+				{ type: "paragraph", content: [{ type: "text", text: " " }] },
+			];
+		} else if (node.content[0] && node.content[0].type !== "paragraph") {
+			node.content = [
+				{
+					type: "paragraph",
+					content: [node.content[0] || { type: "text", text: " " }],
+				},
+			];
+		}
+	}
+
+	if (node.content && Array.isArray(node.content)) {
+		node.content = node.content.map((childNode) =>
+			childNode
+				? normalizeNode(childNode)
+				: { type: "paragraph", content: [{ type: "text", text: " " }] },
+		);
+	}
+
+	return node;
+}
+
+function normalizeOutlineContent(content: TiptapDocument): TiptapDocument {
+	const result: TiptapDocument = JSON.parse(JSON.stringify(content));
+
+	if (result.content && Array.isArray(result.content)) {
+		result.content = result.content.map((node: TiptapNode | undefined) =>
+			node
+				? normalizeNode(node)
+				: { type: "paragraph", content: [{ type: "text", text: " " }] },
+		);
+	}
+
+	return result;
+}
+
+function textToTiptapNodes(text: string): TiptapNode[] {
+	if (!text || text.trim().length === 0) return [];
+
+	return text.split("\n").map((line) => ({
+		type: "paragraph",
+		content: line.trim()
+			? [{ type: "text", text: line }]
+			: [{ type: "text", text: " " }],
+	}));
+}
 
 const GenerateOutlineSchema = z.object({
 	presentationId: z.string().min(1),
@@ -20,15 +146,35 @@ const GenerateOutlineSchema = z.object({
 });
 
 export const generateOutlineAction = enhanceAction(
-	async (data, user) => {
+	async (data, _user) => {
 		const logger = await getLogger();
 		const client = getSupabaseServerClient();
+
+		// Check if outline already exists and has content (unless force regenerating)
+		if (!data.forceRegenerate) {
+			const { data: existing } = await client
+				.from("outline_contents")
+				.select("id, sections")
+				.eq("presentation_id", data.presentationId)
+				.maybeSingle();
+
+			if (existing?.sections) {
+				const doc = existing.sections as unknown as TiptapDocument;
+				if (
+					doc.type === "doc" &&
+					Array.isArray(doc.content) &&
+					doc.content.length > 1
+				) {
+					return { success: true, data: doc };
+				}
+			}
+		}
 
 		// Fetch assemble_outputs for this presentation
 		const { data: assembleOutput, error: assembleError } = await client
 			.from("assemble_outputs")
 			.select(
-				"situation, complication, question_type, presentation_type, argument_map",
+				"situation, complication, presentation_type, question_type, argument_map",
 			)
 			.eq("presentation_id", data.presentationId)
 			.maybeSingle();
@@ -47,159 +193,114 @@ export const generateOutlineAction = enhanceAction(
 			);
 		}
 
-		// Check if outline already exists (unless force regenerating)
-		if (!data.forceRegenerate) {
-			const { data: existing } = await client
-				.from("outline_contents")
-				.select("id, sections")
-				.eq("presentation_id", data.presentationId)
-				.maybeSingle();
+		// Parse situation, complication text into TipTap nodes
+		const situationNodes = textToTiptapNodes(assembleOutput.situation || "");
+		const complicationNodes = textToTiptapNodes(
+			assembleOutput.complication || "",
+		);
 
-			if (existing) {
-				const sections = (existing.sections ??
-					[]) as unknown as OutlineSection[];
-				if (sections.length > 0) {
-					return { success: true, data: { sections } };
+		// Parse argument_map to extract answer content
+		let answerNodes: TiptapNode[] = [];
+		if (assembleOutput.argument_map) {
+			const argMap = assembleOutput.argument_map as Record<string, unknown>;
+			if (typeof argMap === "object" && argMap !== null) {
+				// Try to extract text from argument_map structure
+				const mainArg = (argMap.main_argument || argMap.answer || "") as string;
+				if (typeof mainArg === "string" && mainArg.trim()) {
+					answerNodes = textToTiptapNodes(mainArg);
+				}
+
+				// Also include supporting points if available
+				const supporting = argMap.supporting_points as string[] | undefined;
+				if (Array.isArray(supporting) && supporting.length > 0) {
+					answerNodes.push({
+						type: "bulletList",
+						content: supporting
+							.filter(
+								(p): p is string =>
+									typeof p === "string" && p.trim().length > 0,
+							)
+							.map((point) => ({
+								type: "listItem",
+								content: [
+									{
+										type: "paragraph",
+										content: [{ type: "text", text: point }],
+									},
+								],
+							})),
+					});
 				}
 			}
 		}
 
-		// Build AI prompt
-		const systemPrompt = `You are a presentation outline architect. Given a presentation's situation, complication, and answer (SCA framework), generate a structured outline with clear sections.
-
-Each section should have a title and a body with key talking points as bullet points.
-
-Return ONLY valid JSON in this exact format:
-{
-  "sections": [
-    {
-      "id": "section-1",
-      "title": "Section Title",
-      "body": { "type": "doc", "content": [{ "type": "bulletList", "content": [{ "type": "listItem", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Key point here" }] }] }] }] },
-      "order": 0
-    }
-  ]
-}
-
-Guidelines:
-- Generate 4-7 sections for a typical presentation
-- First section should be an introduction/hook
-- Middle sections cover the situation, complication, and answer
-- Last section should be a conclusion/call-to-action
-- Each section body should have 2-4 bullet points as TipTap JSON
-- Keep titles concise and descriptive`;
-
-		const userPrompt = `Create a presentation outline from this SCA framework:
-
-**Presentation Type:** ${assembleOutput.presentation_type}
-**Question Type:** ${assembleOutput.question_type}
-
-**Situation:** ${assembleOutput.situation || "Not provided"}
-
-**Complication:** ${assembleOutput.complication || "Not provided"}
-
-**Argument Map:** ${assembleOutput.argument_map ? JSON.stringify(assembleOutput.argument_map) : "Not provided"}
-
-Generate a structured outline with sections that flow logically from the situation through complications to the answer/recommendation.`;
-
-		const messages: ChatMessage[] = [
-			{ role: "system", content: systemPrompt },
-			{ role: "user", content: userPrompt },
-		];
-
-		const config = createOpenAIOnlyConfig({
-			userId: user.id,
-			context: "outline-generation",
-		});
-		const normalizedConfig = ConfigManager.normalizeConfig(config);
-
-		if (!normalizedConfig) {
-			throw new Error("Failed to normalize AI config");
-		}
-
-		const response = await getChatCompletion(messages, {
-			config: normalizedConfig,
-			userId: user.id,
-			feature: "workflow-outline-generation",
-		} as ChatCompletionOptions);
-
-		// Parse AI response
-		let sections: OutlineSection[];
-		try {
-			const jsonMatch = response.content.match(/\{[\s\S]*\}/);
-			if (!jsonMatch) {
-				throw new Error("No JSON found in AI response");
-			}
-			const parsed = JSON.parse(jsonMatch[0]);
-			sections = parsed.sections;
-		} catch (parseError) {
-			logger.error("Failed to parse AI outline response", {
-				presentationId: data.presentationId,
-				responseContent: response.content.substring(0, 500),
-				error: parseError,
-			});
-			// Fallback: create a basic outline
-			sections = [
+		// Build combined TipTap document (same structure as old canvas outline)
+		const outlineContent: TiptapDocument = {
+			type: "doc",
+			content: [
+				// H1: Presentation Outline
 				{
-					id: "section-1",
-					title: "Introduction",
-					body: {
-						type: "doc",
-						content: [
-							{
-								type: "paragraph",
-								content: [
-									{
-										type: "text",
-										text:
-											assembleOutput.situation ||
-											"Set the context for your audience",
-									},
-								],
-							},
-						],
-					},
-					order: 0,
+					type: "heading",
+					attrs: { level: 1 },
+					content: [{ type: "text", text: "Presentation Outline" }],
 				},
-				{
-					id: "section-2",
-					title: "The Challenge",
-					body: {
-						type: "doc",
-						content: [
+				SPACER_PARAGRAPH,
+
+				// Situation section
+				...(situationNodes.some(hasValidText)
+					? [
 							{
-								type: "paragraph",
-								content: [
-									{
-										type: "text",
-										text:
-											assembleOutput.complication ||
-											"Describe the key challenge",
-									},
-								],
+								type: "heading" as const,
+								attrs: { level: 2 },
+								content: [{ type: "text" as const, text: "Situation" }],
 							},
-						],
-					},
-					order: 1,
-				},
-				{
-					id: "section-3",
-					title: "Recommendation",
-					body: {
-						type: "doc",
-						content: [
+							SPACER_PARAGRAPH,
+							...situationNodes,
+							SPACER_PARAGRAPH,
+						]
+					: []),
+
+				// Complication section
+				...(complicationNodes.some(hasValidText)
+					? [
 							{
-								type: "paragraph",
-								content: [
-									{ type: "text", text: "Present your recommended approach" },
-								],
+								type: "heading" as const,
+								attrs: { level: 2 },
+								content: [{ type: "text" as const, text: "Complication" }],
 							},
-						],
-					},
-					order: 2,
-				},
-			];
-		}
+							SPACER_PARAGRAPH,
+							...complicationNodes,
+							SPACER_PARAGRAPH,
+						]
+					: []),
+
+				// Answer section
+				...(answerNodes.some(hasValidText)
+					? [
+							{
+								type: "heading" as const,
+								attrs: { level: 2 },
+								content: [{ type: "text" as const, text: "Answer" }],
+							},
+							SPACER_PARAGRAPH,
+							...answerNodes,
+						]
+					: []),
+			],
+		};
+
+		// Normalize the content
+		const normalizedContent = normalizeOutlineContent(outlineContent);
+
+		// Add metadata
+		const finalContent: TiptapDocument = {
+			...normalizedContent,
+			meta: {
+				sectionType: "outline",
+				timestamp: new Date().toISOString(),
+				version: "1.0",
+			},
+		};
 
 		// Fetch presentation for user/account context
 		const { data: presentation } = await client
@@ -212,55 +313,27 @@ Generate a structured outline with sections that flow logically from the situati
 			throw new Error("Presentation not found");
 		}
 
-		// Upsert outline_contents
-		if (data.forceRegenerate) {
-			const { error: updateError } = await client
-				.from("outline_contents")
-				.update({
-					sections: JSON.parse(JSON.stringify(sections)),
-					updated_at: new Date().toISOString(),
-				})
-				.eq("presentation_id", data.presentationId);
+		// Upsert outline_contents (store full TipTap document in sections JSONB)
+		const { error: upsertError } = await client.from("outline_contents").upsert(
+			{
+				presentation_id: data.presentationId,
+				user_id: presentation.user_id,
+				account_id: presentation.account_id,
+				sections: JSON.parse(JSON.stringify(finalContent)),
+			},
+			{ onConflict: "presentation_id" },
+		);
 
-			if (updateError) {
-				// If no row exists yet, insert instead
-				const { error: insertError } = await client
-					.from("outline_contents")
-					.insert({
-						presentation_id: data.presentationId,
-						user_id: presentation.user_id,
-						account_id: presentation.account_id,
-						sections: JSON.parse(JSON.stringify(sections)),
-					});
+		if (upsertError) throw upsertError;
 
-				if (insertError) throw insertError;
-			}
-		} else {
-			// Insert new record
-			const { error: insertError } = await client
-				.from("outline_contents")
-				.upsert(
-					{
-						presentation_id: data.presentationId,
-						user_id: presentation.user_id,
-						account_id: presentation.account_id,
-						sections: JSON.parse(JSON.stringify(sections)),
-					},
-					{ onConflict: "presentation_id" },
-				);
-
-			if (insertError) throw insertError;
-		}
-
-		logger.info("Outline generated successfully", {
+		logger.info("Outline assembled successfully", {
 			presentationId: data.presentationId,
-			sectionCount: sections.length,
-			cost: response.metadata.cost,
+			nodeCount: finalContent.content.length,
 		});
 
 		return {
 			success: true,
-			data: { sections },
+			data: finalContent,
 		};
 	},
 	{
