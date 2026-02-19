@@ -19,7 +19,7 @@ import { useMemo, useState } from "react";
 import type {
 	ArgumentMapNode as ArgumentMapNodeType,
 	ArgumentMapNodeType as ArgumentMapNodeTypeEnum,
-} from "../../../_lib/schemas/presentation-artifacts";
+} from "../../_lib/schemas/presentation-artifacts";
 
 const TYPE_LABEL: Record<ArgumentMapNodeTypeEnum, string> = {
 	claim: "Claim",

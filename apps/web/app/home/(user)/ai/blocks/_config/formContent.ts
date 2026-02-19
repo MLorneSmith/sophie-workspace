@@ -181,21 +181,13 @@ export const questions = {
 		paths: ["sales", "consulting"],
 		image: placeholderImage,
 	},
-	answer: {
-		field: "answer" as const,
-		label: "What is your solution or recommendation?",
+	argument_map: {
+		field: "argument_map" as const,
+		label: "Build your argument map",
 		type: "textarea" as const,
-		section: "Present your solution",
-		description: "Present your solution and its benefits clearly.",
-		descriptions: {
-			general: "",
-			sales:
-				"How does your product or service solve their specific challenges?",
-			consulting:
-				"What are your key recommendations and their expected impact?",
-			fundraising: "",
-		},
-		paths: ["sales", "consulting"],
+		section: "Build your answer",
+		description:
+			"Use the Pyramid Principle to structure your answer: a claim supported by arguments and evidence.",
 		image: placeholderImage,
 	},
 } as const;
@@ -211,37 +203,37 @@ export const presentationPaths: PathConfig = {
 		"presentation_type",
 		"title",
 		"audience",
-		"question_type",
 		"situation",
 		"complication",
-		"answer",
+		"question_type",
+		"argument_map",
 	],
 	sales: [
 		"presentation_type",
 		"title",
 		"audience",
-		"question_type",
 		"situation",
 		"complication",
-		"answer",
+		"question_type",
+		"argument_map",
 	],
 	consulting: [
 		"presentation_type",
 		"title",
 		"audience",
-		"question_type",
 		"situation",
 		"complication",
-		"answer",
+		"question_type",
+		"argument_map",
 	],
 	fundraising: [
 		"presentation_type",
 		"title",
 		"audience",
-		"question_type",
 		"situation",
 		"complication",
-		"answer",
+		"question_type",
+		"argument_map",
 	],
 } as const;
 

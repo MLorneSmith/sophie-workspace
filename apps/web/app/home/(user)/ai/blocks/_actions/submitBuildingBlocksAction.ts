@@ -6,6 +6,30 @@ import type { Database } from "~/lib/database.types";
 import { SubmitBuildingBlocksSchema } from "../_lib/schemas/submit-building-blocks.schema";
 import { createTiptapFromText } from "./tiptap-format-utils";
 
+function argumentMapToAnswerText(argumentMapJson: string): string {
+	try {
+		const parsed = JSON.parse(argumentMapJson) as unknown;
+		if (typeof parsed !== "object" || parsed === null) return "";
+
+		type Node = { text?: unknown; children?: unknown };
+		const root = parsed as Node;
+		const claim = typeof root.text === "string" ? root.text.trim() : "";
+		const children = Array.isArray(root.children) ? (root.children as Node[]) : [];
+
+		const supports = children
+			.map((c) => (typeof c.text === "string" ? c.text.trim() : ""))
+			.filter((t) => t.length > 0);
+
+		if (supports.length === 0) return claim;
+
+		return [claim, "", "Supporting arguments:", ...supports.map((s) => `- ${s}`)].join(
+			"\n",
+		);
+	} catch {
+		return "";
+	}
+}
+
 export const submitBuildingBlocksAction = enhanceAction(
 	async (data) => {
 		const client = getSupabaseServerClient<Database>();
@@ -22,6 +46,8 @@ export const submitBuildingBlocksAction = enhanceAction(
 			};
 		}
 
+		const answerText = argumentMapToAnswerText(data.argument_map);
+
 		// Check if a submission already exists with the same data
 		const { data: existingSubmission } = await client
 			.from("building_blocks_submissions")
@@ -34,7 +60,7 @@ export const submitBuildingBlocksAction = enhanceAction(
 				question_type: data.question_type,
 				situation: createTiptapFromText(data.situation),
 				complication: createTiptapFromText(data.complication),
-				answer: createTiptapFromText(data.answer),
+				answer: createTiptapFromText(answerText),
 			})
 			.maybeSingle();
 
@@ -54,7 +80,7 @@ export const submitBuildingBlocksAction = enhanceAction(
 				question_type: data.question_type,
 				situation: createTiptapFromText(data.situation),
 				complication: createTiptapFromText(data.complication),
-				answer: createTiptapFromText(data.answer),
+				answer: createTiptapFromText(answerText),
 			})
 			.select("id")
 			.single();

@@ -9,7 +9,7 @@ import { useCallback, useMemo, useState } from "react";
 import type {
 	ArgumentMapNode,
 	ArgumentMapNodeType,
-} from "../../../_lib/schemas/presentation-artifacts";
+} from "../../_lib/schemas/presentation-artifacts";
 import { ArgumentMapNode as ArgumentMapNodeComponent } from "./argument-map-node";
 
 export interface ArgumentMapEditorProps {

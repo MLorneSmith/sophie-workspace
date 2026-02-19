@@ -25,6 +25,8 @@ import {
 	type QuestionOption,
 	questions,
 } from "../_config/formContent";
+import type { ArgumentMapNode } from "../../_lib/schemas/presentation-artifacts";
+import { ArgumentMapEditor } from "./argument-map-editor";
 import { type FormData, useSetupForm } from "./BlocksFormContext";
 
 // Create a client-safe logger wrapper
@@ -68,7 +70,7 @@ function useSuggestions(_userId: string) {
 		() =>
 			debounce(
 				async (
-					field: "title" | "audience" | "situation" | "complication" | "answer",
+					field: "title" | "audience" | "situation" | "complication",
 					presentationType?: string,
 					title?: string,
 					setIsLoadingSuggestions?: (loading: boolean) => void,
@@ -113,7 +115,7 @@ function useSuggestions(_userId: string) {
 	// Use the debounced function inside useCallback
 	const fetchSuggestions = useCallback(
 		(
-			field: "title" | "audience" | "situation" | "complication" | "answer",
+			field: "title" | "audience" | "situation" | "complication",
 			presentationType?: string,
 			title?: string,
 		) => {
@@ -269,6 +271,9 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 	const [touchedFields, setTouchedFields] = useState<Set<keyof FormData>>(
 		new Set(),
 	);
+	const [argumentMapTree, setArgumentMapTree] = useState<ArgumentMapNode | null>(
+		null,
+	);
 
 	const {
 		suggestions,
@@ -402,7 +407,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 				question_type,
 				situation,
 				complication,
-				answer,
+				argument_map,
 			} = formData;
 			const response = await submitBuildingBlocksAction({
 				title,
@@ -411,7 +416,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 				question_type: getQuestionTypeLabel(question_type),
 				situation,
 				complication,
-				answer,
+				argument_map,
 			});
 
 			if (!response.success) {
@@ -424,7 +429,8 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 					},
 				});
 				setErrors({
-					answer: response.error || "Failed to submit form. Please try again.",
+					argument_map:
+						response.error || "Failed to submit form. Please try again.",
 				});
 				return;
 			}
@@ -443,7 +449,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 				error: _error,
 			});
 			setErrors({
-				answer: "An unexpected error occurred. Please try again.",
+				argument_map: "An unexpected error occurred. Please try again.",
 			});
 		} finally {
 			setIsSubmitting(false);
@@ -460,6 +466,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 					currentQuestion,
 				});
 
+				markFieldAsTouchedOnBlur(currentField);
 				const isValid = validateField(currentField);
 				logger.info("Field validation result:", {
 					field: currentField,
@@ -510,6 +517,30 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 	const renderQuestion = () => {
 		const currentField = currentPath[currentQuestion];
 		if (!currentField) return null;
+
+		// Custom final step: Pyramid Principle argument map (replaces free-text answer)
+		if (currentField === "argument_map") {
+			return (
+				<div className="space-y-3">
+					<ArgumentMapEditor
+						value={argumentMapTree}
+						onChange={(next) => {
+							setArgumentMapTree(next);
+							setFormData({
+								...formData,
+								argument_map: JSON.stringify(next),
+							});
+							setTouchedFields(
+								new Set(touchedFields).add("argument_map"),
+							);
+						}}
+					/>
+					{touchedFieldsOnBlur.has("argument_map") && errors.argument_map && (
+						<p className="text-sm text-red-500">{errors.argument_map}</p>
+					)}
+				</div>
+			);
+		}
 
 		const question = getQuestion(currentField as QuestionField);
 		const field = question.field;

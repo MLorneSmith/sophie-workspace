@@ -22,9 +22,9 @@ const SuggestionsSchema = z
 	.object({
 		title: z.string().optional(),
 		field: z
-			.enum(["title", "audience", "situation", "complication", "answer"])
+			.enum(["title", "audience", "situation", "complication"])
 			.describe(
-				"Must be one of: title, audience, situation, complication, answer",
+				"Must be one of: title, audience, situation, complication",
 			),
 		presentationType: z.string().optional(),
 	})
@@ -108,19 +108,6 @@ function generateMessages(
 				{
 					role: "user",
 					content: `Based on "${title}" provide 3 suggestions to make the complication more compelling. Format as a numbered list.`,
-				},
-			];
-
-		case "answer":
-			return [
-				{
-					role: "system",
-					content:
-						"You are a professional presentation expert who provides concise, relevant suggestions.",
-				},
-				{
-					role: "user",
-					content: `Based on "${title}" provide 3 suggestions to make the answer more impactful. Format as a numbered list.`,
 				},
 			];
 
