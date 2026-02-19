@@ -2,7 +2,7 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-export type OutlineContentsUpsert = {
+export type OutlineContentUpsert = {
 	presentationId: string;
 	userId: string;
 	accountId: string;
@@ -30,19 +30,18 @@ export async function getOutlineContent(
 
 export async function saveOutlineContent(
 	client: SupabaseClient,
-	data: OutlineContentsUpsert,
+	data: OutlineContentUpsert,
 ) {
+	const payload = {
+		presentation_id: data.presentationId,
+		user_id: data.userId,
+		account_id: data.accountId,
+		sections: data.sections,
+		updated_at: new Date().toISOString(),
+	};
+
 	const { data: saved, error } = await outlineContentsTable(client)
-		.upsert(
-			{
-				presentation_id: data.presentationId,
-				user_id: data.userId,
-				account_id: data.accountId,
-				sections: data.sections,
-				updated_at: new Date().toISOString(),
-			},
-			{ onConflict: "presentation_id" },
-		)
+		.upsert(payload, { onConflict: "presentation_id" })
 		.select("*")
 		.single();
 
