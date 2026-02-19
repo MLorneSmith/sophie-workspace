@@ -18,5 +18,7 @@ export default async function ProfileStepPage(props: {
 
 	const profile = await getProfileByPresentationId(client, params.id);
 
-	return <ProfileStepForm presentationId={params.id} initialProfile={profile} />;
+	return (
+		<ProfileStepForm presentationId={params.id} initialProfile={profile} />
+	);
 }
