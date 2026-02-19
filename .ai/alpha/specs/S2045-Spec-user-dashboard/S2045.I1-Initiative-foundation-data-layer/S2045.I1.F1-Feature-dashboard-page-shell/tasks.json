@@ -1,0 +1,339 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2045.I1.F1",
+    "feature_name": "Dashboard Page Shell & Grid Layout",
+    "feature_slug": "dashboard-page-shell",
+    "initiative_id": "S2045.I1",
+    "spec_id": "S2045",
+    "created_at": "2026-02-09T14:30:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S2045.I1.F1.T4", "S2045.I1.F1.T5"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2045.I1.F1.T1",
+      "type": "task",
+      "name": "Add i18n keys for dashboard page",
+      "action": { "verb": "Add", "target": "i18n keys for dashboard" },
+      "purpose": "Provide localized strings for dashboard page title and description",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/public/locales/en/common.json",
+          "apps/web/public/locales/nl/common.json"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Keys must match existing naming conventions (camelCase)",
+          "NL translations should be provided if locale file exists"
+        ]
+      },
+      "input_state": "common.json has existing i18n keys for home page",
+      "output_state": "dashboard and dashboardDescription keys added to common.json locale files",
+      "acceptance_criterion": "Keys 'dashboard' and 'dashboardDescription' exist in en/common.json and can be imported via Trans component",
+      "verification_command": "grep -q '\"dashboard\"' apps/web/public/locales/en/common.json && grep -q '\"dashboardDescription\"' apps/web/public/locales/en/common.json && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/public/locales/en/common.json" },
+        { "type": "modified", "path": "apps/web/public/locales/nl/common.json" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2045.I1.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F1.T2",
+      "type": "task",
+      "name": "Create dashboard grid component",
+      "action": { "verb": "Create", "target": "dashboard grid component" },
+      "purpose": "Provide responsive 3-3-1 grid layout container for dashboard widgets",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/[account]/_components/dashboard-demo-charts.tsx"
+        ],
+        "dependencies": [
+          "Card from @kit/ui/card",
+          "Tailwind CSS grid utilities"
+        ],
+        "constraints": [
+          "Must use Tailwind grid: grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4",
+          "Bottom row spans full width: xl:col-span-3 md:col-span-2",
+          "Accept children prop for 7 card slots",
+          "No client-side interactivity needed"
+        ]
+      },
+      "input_state": "No dashboard-grid.tsx component exists",
+      "output_state": "DashboardGrid component created with responsive 3-3-1 grid layout",
+      "acceptance_criterion": "DashboardGrid component exists, accepts children, renders 3-3-1 responsive grid with correct Tailwind classes",
+      "verification_command": "grep -q 'export function DashboardGrid' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && grep -q 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2045.I1.F1.T3", "S2045.I1.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F1.T3",
+      "type": "task",
+      "name": "Create dashboard skeleton component",
+      "action": { "verb": "Create", "target": "dashboard skeleton component" },
+      "purpose": "Provide loading state that matches dashboard grid layout for Suspense boundary",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card from @kit/ui/card",
+          "DashboardGrid component"
+        ],
+        "constraints": [
+          "Must use same grid layout as DashboardGrid",
+          "7 Skeleton placeholders matching card slots",
+          "Use Card with Skeleton children for each slot"
+        ]
+      },
+      "input_state": "DashboardGrid component exists, no skeleton component exists",
+      "output_state": "DashboardSkeleton component created with 7 skeleton placeholders in 3-3-1 grid",
+      "acceptance_criterion": "DashboardSkeleton component exists, renders 7 Skeleton components in DashboardGrid layout",
+      "verification_command": "grep -q 'export function DashboardSkeleton' apps/web/app/home/\\(user\\)/_components/dashboard-skeleton.tsx && grep -q 'Skeleton' apps/web/app/home/\\(user\\)/_components/dashboard-skeleton.tsx && grep -q 'DashboardGrid' apps/web/app/home/\\(user\\)/_components/dashboard-skeleton.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_components/dashboard-skeleton.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F1.T2"],
+        "blocks": ["S2045.I1.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F1.T4",
+      "type": "task",
+      "name": "Update dashboard page with grid and metadata",
+      "action": { "verb": "Update", "target": "dashboard page component" },
+      "purpose": "Replace empty home page with dashboard shell featuring grid layout, page header, and force-dynamic export",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Dashboard" },
+          { "command": "find role", "target": "main" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/home-page-header.tsx",
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
+          "apps/web/app/home/(user)/_components/dashboard-skeleton.tsx"
+        ],
+        "dependencies": [
+          "HomeLayoutPageHeader component",
+          "DashboardGrid component",
+          "DashboardSkeleton component",
+          "Card from @kit/ui/card",
+          "Trans from @kit/ui/trans",
+          "withI18n HOC",
+          "Suspense from React"
+        ],
+        "constraints": [
+          "Must export generateMetadata function using i18n",
+          "Must add export const dynamic = 'force-dynamic'",
+          "Must wrap DashboardGrid in Suspense with DashboardSkeleton fallback",
+          "Must render 7 placeholder Card components with 'Coming soon' text",
+          "Must use Trans component for i18n keys"
+        ]
+      },
+      "input_state": "Empty page.tsx with HomeLayoutPageHeader, DashboardGrid and DashboardSkeleton components exist, i18n keys added",
+      "output_state": "Dashboard page renders with header, responsive grid, 7 placeholder cards, loading skeleton, force-dynamic export, and metadata",
+      "acceptance_criterion": "Page renders with title 'Dashboard', 7 placeholder cards in 3-3-1 grid, Suspense boundary with skeleton, force-dynamic export, and generateMetadata function",
+      "verification_command": "grep -q 'export const dynamic = \"force-dynamic\"' apps/web/app/home/\\(user\\)/page.tsx && grep -q 'generateMetadata' apps/web/app/home/\\(user\\)/page.tsx && grep -q 'DashboardGrid' apps/web/app/home/\\(user\\)/page.tsx && grep -q 'Suspense' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F1.T1", "S2045.I1.F1.T2", "S2045.I1.F1.T3"],
+        "blocks": ["S2045.I1.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F1.T5",
+      "type": "task",
+      "name": "Add visual verification for dashboard page",
+      "action": { "verb": "Add", "target": "visual verification checks" },
+      "purpose": "Verify dashboard page renders correctly with grid layout and placeholder cards",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Dashboard" },
+          { "command": "is visible", "target": "Coming soon" },
+          { "command": "find role", "target": "main" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "agent-browser tool for visual validation"
+        ],
+        "constraints": [
+          "Must navigate to /home route",
+          "Must verify 'Dashboard' heading is visible",
+          "Must verify placeholder cards render",
+          "Must capture screenshot"
+        ]
+      },
+      "input_state": "Dashboard page implemented with grid and placeholder cards",
+      "output_state": "Visual verification confirms dashboard renders correctly with expected layout",
+      "acceptance_criterion": "agent-browser can navigate to /home, verify Dashboard heading and placeholder cards are visible, and capture screenshot without errors",
+      "verification_command": "agent-browser open http://localhost:3000/home && agent-browser wait 3000 && agent-browser 'is visible' 'Dashboard' && agent-browser 'is visible' 'Coming soon' && agent-browser screenshot /tmp/dashboard-verification.png",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F1.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation Setup",
+        "task_ids": ["S2045.I1.F1.T1", "S2045.I1.F1.T2", "S2045.I1.F1.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 7,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Page Integration",
+        "task_ids": ["S2045.I1.F1.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Verification",
+        "task_ids": ["S2045.I1.F1.T5"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2045.I1.F1.T2", "S2045.I1.F1.T3", "S2045.I1.F1.T4", "S2045.I1.F1.T5"],
+      "total_hours": 11
+    },
+    "duration": {
+      "sequential": 13,
+      "parallel": 9,
+      "time_saved_percent": 31
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

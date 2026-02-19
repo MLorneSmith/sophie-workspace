@@ -60,12 +60,23 @@ jobs:
           PR_URL: ${{github.event.pull_request.html_url}}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
+      - name: Generate Approval Bot Token
+        if: |
+          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+          (steps.metadata.outputs.update-type == 'version-update:semver-minor' &&
+           steps.metadata.outputs.dependency-type == 'direct:development')
+        id: approval-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APPROVAL_APP_ID }}
+          private-key: ${{ secrets.APPROVAL_APP_PRIVATE_KEY }}
+
       - name: Auto-approve patch updates
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
         run: gh pr review --approve "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
-          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GH_TOKEN: ${{steps.approval-token.outputs.token}}
 
       - name: Auto-approve minor dev dependency updates
         if: |
@@ -74,7 +85,7 @@ jobs:
         run: gh pr review --approve "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
-          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GH_TOKEN: ${{steps.approval-token.outputs.token}}
 
       - name: Label security updates
         if: steps.metadata.outputs.security-update == 'true'
