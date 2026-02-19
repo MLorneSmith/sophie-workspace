@@ -43,7 +43,7 @@ export interface FormData {
 	question_type: string;
 	situation: string;
 	complication: string;
-	answer: string;
+	argument_map: string; // JSON string of the ArgumentMapNode tree
 }
 
 interface FormContextType {
@@ -53,7 +53,7 @@ interface FormContextType {
 	currentPath: QuestionField[];
 	handleNext: () => void;
 	handlePrevious: () => void;
-	handleSubmit: (e: React.FormEvent) => Promise<void>;
+	handleSubmit: (e: React.FormEvent) => Promise<boolean>;
 	errors: Record<string, string>;
 	setErrors: (errors: Record<string, string>) => void;
 	validateField: (field: keyof FormData) => boolean;
@@ -71,7 +71,7 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		question_type: "",
 		situation: "",
 		complication: "",
-		answer: "",
+		argument_map: "",
 	});
 
 	const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -107,6 +107,33 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		const value = formData[field];
 		let isValid = true;
 		const newErrors = { ...errors };
+
+		// Special validation for the argument map: require at least a non-empty claim.
+		if (field === "argument_map") {
+			try {
+				const parsed = JSON.parse(value) as unknown;
+				const claimText =
+					typeof parsed === "object" &&
+					parsed !== null &&
+					"text" in parsed &&
+					typeof (parsed as { text?: unknown }).text === "string"
+						? ((parsed as { text: string }).text ?? "")
+						: "";
+
+				if (claimText.trim().length === 0) {
+					newErrors[field] = "Add your main claim to continue";
+					isValid = false;
+				} else {
+					delete newErrors[field];
+				}
+			} catch {
+				newErrors[field] = "Build your argument map to continue";
+				isValid = false;
+			}
+
+			setErrors(newErrors);
+			return isValid;
+		}
 
 		if (!value || value.trim() === "") {
 			newErrors[field] = "This field is required";
@@ -170,7 +197,7 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		setCurrentQuestion((prev) => Math.max(prev - 1, 0));
 	};
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent): Promise<boolean> => {
 		e.preventDefault();
 
 		// Only validate fields that are in the current path
@@ -182,18 +209,20 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 				fieldsValidated: currentPath,
 				totalFields: currentPath.length,
 			});
-		} else {
-			logger.info("Form submission failed validation", {
-				currentPath,
-				validationResults: validations,
-				errors,
-			});
-			// Find the first invalid field and set it as current
-			const firstInvalidIndex = validations.findIndex((valid) => !valid);
-			if (firstInvalidIndex !== -1) {
-				setCurrentQuestion(firstInvalidIndex);
-			}
+			return true;
 		}
+
+		logger.info("Form submission failed validation", {
+			currentPath,
+			validationResults: validations,
+			errors,
+		});
+		// Find the first invalid field and set it as current
+		const firstInvalidIndex = validations.findIndex((valid) => !valid);
+		if (firstInvalidIndex !== -1) {
+			setCurrentQuestion(firstInvalidIndex);
+		}
+		return false;
 	};
 
 	return (

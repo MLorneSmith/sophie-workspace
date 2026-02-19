@@ -43,7 +43,8 @@ export async function validateField(
 			return presentationTypes.some((type) => type.id === value);
 		case "situation":
 		case "complication":
-		case "answer":
+			return value.length >= 10;
+		case "argument_map":
 			return value.length >= 10;
 		default:
 			return false; // Default to false for unknown fields
