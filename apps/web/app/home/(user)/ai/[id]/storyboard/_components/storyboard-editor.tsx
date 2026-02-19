@@ -1,24 +1,38 @@
 "use client";
 
-import { Button } from "@kit/ui/button";
 import { Badge } from "@kit/ui/badge";
+import { Button } from "@kit/ui/button";
+import { cn } from "@kit/ui/utils";
 import {
+	AlignLeft,
 	CheckCircle,
+	Columns2,
 	Download,
 	Layers,
+	LayoutTemplate,
 	Loader2,
 	Plus,
 	RefreshCw,
 	Sparkles,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-
-import type { StoryboardSlide } from "../../_lib/types/storyboard.types";
-import { generateStoryboardAction } from "../_actions/generate-storyboard.action";
-import { exportPowerPointAction } from "../_actions/export-powerpoint.action";
 import {
-	useStoryboardContents,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
+
+import type {
+	SlideLayout,
+	StoryboardSlide,
+} from "../../_lib/types/storyboard.types";
+import { exportPowerPointAction } from "../_actions/export-powerpoint.action";
+import { generateStoryboardAction } from "../_actions/generate-storyboard.action";
+import {
 	useSaveStoryboardSlides,
+	useStoryboardContents,
 } from "../_lib/hooks/use-storyboard-contents";
 import { SlideEditor } from "./slide-editor";
 
@@ -27,6 +41,17 @@ interface StoryboardEditorProps {
 }
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
+
+function getLayoutIcon(layout: SlideLayout) {
+	switch (layout) {
+		case "title-only":
+			return AlignLeft;
+		case "title-two-column":
+			return Columns2;
+		default:
+			return LayoutTemplate;
+	}
+}
 
 export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 	const { data: storyboardData, isPending: isLoading } =
@@ -40,6 +65,15 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 	const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
 	const [generationError, setGenerationError] = useState<string | null>(null);
 	const hasInitialized = useRef(false);
+
+	const sortedSlides = useMemo(
+		() => [...slides].sort((a, b) => a.order - b.order),
+		[slides],
+	);
+	const selectedSlide =
+		sortedSlides.find((slide) => slide.id === selectedSlideId) ??
+		sortedSlides[0] ??
+		null;
 
 	const handleGenerate = useCallback(
 		(forceRegenerate: boolean) => {
@@ -73,7 +107,6 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 		[presentationId],
 	);
 
-	// Sync slides from query data
 	useEffect(() => {
 		if (storyboardData?.slides && storyboardData.slides.length > 0) {
 			setSlides(storyboardData.slides);
@@ -84,7 +117,6 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 		}
 	}, [storyboardData, selectedSlideId]);
 
-	// Auto-generate on first load if no slides exist
 	useEffect(() => {
 		if (isLoading || hasInitialized.current) return;
 		if (
@@ -104,7 +136,6 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 				});
 
 				if (result && "data" in result && result.data?.base64) {
-					// Trigger download
 					const byteCharacters = atob(result.data.base64);
 					const byteNumbers = new Array(byteCharacters.length);
 					for (let i = 0; i < byteCharacters.length; i++) {
@@ -158,16 +189,24 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 
 	const handleSlideDelete = useCallback(
 		(slideId: string) => {
-			const newSlides = slides
-				.filter((s) => s.id !== slideId)
-				.map((s, idx) => ({ ...s, order: idx }));
+			const slideIndex = sortedSlides.findIndex(
+				(slide) => slide.id === slideId,
+			);
+			const newSlides = sortedSlides
+				.filter((slide) => slide.id !== slideId)
+				.map((slide, idx) => ({ ...slide, order: idx }));
+
 			setSlides(newSlides);
+
 			if (selectedSlideId === slideId) {
-				setSelectedSlideId(newSlides[0]?.id ?? null);
+				const nextSlide =
+					newSlides[slideIndex] ?? newSlides[slideIndex - 1] ?? null;
+				setSelectedSlideId(nextSlide?.id ?? null);
 			}
+
 			handleSave(newSlides);
 		},
-		[slides, selectedSlideId, handleSave],
+		[handleSave, selectedSlideId, sortedSlides],
 	);
 
 	const handleAddSlide = useCallback(() => {
@@ -181,15 +220,14 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 				content: [{ type: "paragraph", content: [] }],
 			},
 			visual_notes: "",
-			order: slides.length,
+			order: sortedSlides.length,
 		};
-		const newSlides = [...slides, newSlide];
+		const newSlides = [...sortedSlides, newSlide];
 		setSlides(newSlides);
 		setSelectedSlideId(newSlide.id);
 		handleSave(newSlides);
-	}, [slides, handleSave]);
+	}, [sortedSlides, handleSave]);
 
-	// Loading state
 	if (isLoading) {
 		return (
 			<div className="flex min-h-[300px] items-center justify-center">
@@ -198,7 +236,6 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 		);
 	}
 
-	// Generating state
 	if (isGenerating) {
 		return (
 			<div className="flex min-h-[300px] flex-col items-center justify-center gap-3">
@@ -212,7 +249,6 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 
 	return (
 		<div className="space-y-4">
-			{/* Header */}
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-3">
 					<Layers className="text-muted-foreground h-5 w-5" />
@@ -265,15 +301,13 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 				</div>
 			</div>
 
-			{/* Generation error */}
 			{generationError && (
 				<div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
 					{generationError}
 				</div>
 			)}
 
-			{/* Slides */}
-			{slides.length === 0 ? (
+			{sortedSlides.length === 0 ? (
 				<div className="flex min-h-[200px] flex-col items-center justify-center gap-3 text-center">
 					<Layers className="text-muted-foreground h-8 w-8" />
 					<p className="text-muted-foreground text-sm">
@@ -282,19 +316,50 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 					</p>
 				</div>
 			) : (
-				<div className="space-y-3">
-					{slides
-						.sort((a, b) => a.order - b.order)
-						.map((slide) => (
+				<div className="flex h-[min(70vh,720px)] gap-4">
+					<div className="w-[300px] shrink-0 rounded-lg border border-white/10 bg-white/5 p-2">
+						<div className="h-full space-y-2 overflow-y-auto pr-1">
+							{sortedSlides.map((slide) => {
+								const LayoutIcon = getLayoutIcon(slide.layout);
+								const isSelected = slide.id === selectedSlide?.id;
+
+								return (
+									<button
+										key={slide.id}
+										type="button"
+										onClick={() => setSelectedSlideId(slide.id)}
+										className={cn(
+											"flex w-full items-center gap-2 rounded-lg border px-2.5 py-2 text-left transition-colors",
+											isSelected
+												? "border-blue-500/40 bg-blue-500/5"
+												: "border-white/10 bg-white/5 hover:border-white/20",
+										)}
+									>
+										<span className="text-muted-foreground flex h-6 w-6 shrink-0 items-center justify-center rounded bg-white/10 text-xs font-medium">
+											{slide.order + 1}
+										</span>
+										<div className="min-w-0 flex-1">
+											<p className="truncate text-sm font-medium">
+												{slide.title || "Untitled slide"}
+											</p>
+										</div>
+										<LayoutIcon className="text-muted-foreground h-4 w-4 shrink-0" />
+									</button>
+								);
+							})}
+						</div>
+					</div>
+
+					<div className="min-w-0 flex-1 overflow-y-auto rounded-lg border border-white/10 bg-white/5 p-1">
+						{selectedSlide && (
 							<SlideEditor
-								key={slide.id}
-								slide={slide}
+								key={selectedSlide.id}
+								slide={selectedSlide}
 								onUpdate={handleSlideUpdate}
 								onDelete={handleSlideDelete}
-								isSelected={slide.id === selectedSlideId}
-								onSelect={() => setSelectedSlideId(slide.id)}
 							/>
-						))}
+						)}
+					</div>
 				</div>
 			)}
 		</div>
