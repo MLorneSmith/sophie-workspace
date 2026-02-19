@@ -10,7 +10,8 @@ import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import type { Database } from "~/lib/database.types";
 
 type Client = SupabaseClient<Database>;
-export type PresentationRow = Database["public"]["Tables"]["presentations"]["Row"];
+export type PresentationRow =
+	Database["public"]["Tables"]["presentations"]["Row"];
 
 export const loadPresentations = cache(listPresentationsLoader);
 
