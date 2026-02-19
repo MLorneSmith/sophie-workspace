@@ -61,7 +61,6 @@ export {
 	getOpenAIApiKey,
 	getOpenAIAuthMethod,
 	OPENAI_API_KEY,
-	resolveClaudeModel,
 } from "./environment.js";
 // Event server management
 export {
@@ -117,7 +116,6 @@ export {
 	generateSpecManifest,
 	loadManifest,
 	saveManifest,
-	syncSandboxProgressToManifest,
 	writeOverallProgress,
 } from "./manifest.js";
 

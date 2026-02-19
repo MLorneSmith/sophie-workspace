@@ -21,10 +21,10 @@ import type {
 	SandboxProgress,
 	SpecManifest,
 } from "../types/index.js";
+import { transitionFeatureStatus } from "./feature-transitions.js";
 import { validateProgressStatus } from "./progress-file.js";
 import { createLogger } from "./logger.js";
-import type { RecoveryCoordinator } from "./recovery-coordinator.js";
-import { SandboxProgressSchema, safeParseProgress } from "./schemas/index.js";
+import { saveManifest } from "./manifest.js";
 import { getForceKillCommand, getProviderDisplayName } from "./provider.js";
 import { sleep } from "./utils.js";
 
@@ -113,18 +113,11 @@ export async function checkSandboxHealth(
 			return { healthy: true, timeSinceStart };
 		}
 
-		// Parse progress file with Zod validation (Feature #2066)
+		// Parse progress file (validate status to prevent #1952 propagation)
 		const raw = JSON.parse(result.stdout);
-		const validated = safeParseProgress(
-			SandboxProgressSchema,
-			raw,
-			"healthCheck",
-		);
 		const progress: SandboxProgress = {
-			...validated,
-			status: validated.status
-				? validateProgressStatus(validated.status)
-				: undefined,
+			...raw,
+			status: raw.status ? validateProgressStatus(raw.status) : undefined,
 		};
 		instance.lastProgressSeen = new Date();
 
@@ -136,21 +129,9 @@ export async function checkSandboxHealth(
 			// CRITICAL: Ignore heartbeats from before this feature session started
 			const graceWindow = 5 * 60 * 1000; // 5 minute grace period
 			if (heartbeatTime < featureStartTime - graceWindow) {
-				// Bug fix #2056: Heartbeat is from a previous session.
-				// Instead of always returning healthy, check if enough time has
-				// elapsed since the feature started without a current-session heartbeat.
+				// Heartbeat is from a previous session - don't flag as stale
 				const heartbeatAgeMin = Math.round((now - heartbeatTime) / 60000);
 				const sessionAgeMin = Math.round(timeSinceStart / 60000);
-
-				if (timeSinceStart > HEARTBEAT_STALE_TIMEOUT_MS) {
-					return {
-						healthy: false,
-						issue: "stale_heartbeat",
-						message: `No heartbeat from current session after ${sessionAgeMin} minutes (last heartbeat ${heartbeatAgeMin}m old, from previous session)`,
-						timeSinceStart,
-					};
-				}
-
 				log(
 					`   │   ℹ️ [${instance.label}] Ignoring stale heartbeat (${heartbeatAgeMin}m old, session started ${sessionAgeMin}m ago)`,
 				);
@@ -266,26 +247,19 @@ export async function killClaudeProcess(
 // ============================================================================
 
 /**
- * Run health checks on all busy sandboxes and handle unhealthy ones.
- * Returns list of sandboxes that need feature reassignment.
- *
- * Bug fix #2077: Recovery is now delegated to RecoveryCoordinator
- * which provides per-feature mutex, idempotent recovery, and
- * centralized retry budget management.
- *
- * @param instances - All sandbox instances
- * @param manifest - The spec manifest
- * @param uiEnabled - Whether UI mode is enabled
- * @param provider - Agent provider (claude or gpt)
- * @param coordinator - Recovery coordinator for centralized recovery
- * @returns List of sandboxes that need reassignment
+
+* Run health checks on all busy sandboxes and handle unhealthy ones.
+* Returns list of sandboxes that need feature reassignment.
+*
+* @param instances - All sandbox instances
+* @param manifest - The spec manifest
+* @returns List of sandboxes that need reassignment
  */
 export async function runHealthChecks(
 	instances: SandboxInstance[],
 	manifest: SpecManifest,
 	uiEnabled: boolean = false,
-	_provider: AgentProvider = "claude",
-	coordinator?: RecoveryCoordinator,
+	provider: AgentProvider = "claude",
 ): Promise<SandboxInstance[]> {
 	const { log } = createLogger(uiEnabled);
 	const needsReassignment: SandboxInstance[] = [];
@@ -297,36 +271,69 @@ export async function runHealthChecks(
 
 		const health = await checkSandboxHealth(instance, manifest, uiEnabled);
 
-		if (!health.healthy && instance.currentFeature) {
+		if (!health.healthy) {
 			log(`\n   ⚠️ HEALTH CHECK FAILED [${instance.label}]: ${health.message}`);
 
-			if (coordinator) {
-				// Delegate recovery to coordinator (Bug fix #2077)
-				const result = await coordinator.recoverFeature(
-					instance.currentFeature,
-					`Health check failed: ${health.message}`,
-					"health_check",
+			// Check if we can retry
+			if (instance.retryCount < MAX_SANDBOX_RETRIES) {
+				log(
+					`   │   Attempting recovery (retry ${instance.retryCount + 1}/${MAX_SANDBOX_RETRIES})...`,
 				);
 
-				if (result.executed) {
+				const killed = await killClaudeProcess(instance, uiEnabled, provider);
+				if (killed) {
 					instance.retryCount++;
-					if (!result.willRetry) {
-						log(
-							`   │   ✗ Feature #${instance.currentFeature} max retries exceeded`,
-						);
-					} else {
-						log(`   │   ✓ ${instance.label} ready for retry`);
-					}
-				}
-			} else {
-				// Sandbox-level retries exhausted — mark sandbox as failed
-				if (instance.retryCount >= MAX_SANDBOX_RETRIES) {
-					log(
-						`   │   ✗ Max sandbox retries (${MAX_SANDBOX_RETRIES}) exceeded, marking sandbox as failed`,
+					instance.featureStartedAt = undefined;
+					instance.lastProgressSeen = undefined;
+					instance.lastHeartbeat = undefined;
+
+					// Reset feature to pending so it can be retried
+					const feature = manifest.feature_queue.find(
+						(f) => f.id === instance.currentFeature,
 					);
+					if (feature) {
+						transitionFeatureStatus(feature, manifest, "pending", {
+							reason: "health check recovery - retrying",
+							skipSave: true,
+						});
+					}
+
+					instance.currentFeature = null;
+					instance.status = "ready";
+					instance.outputLineCount = 0;
+					instance.hasReceivedOutput = false;
+					saveManifest(manifest);
+
+					log(`   │   ✓ ${instance.label} ready for retry`);
+				} else {
+					// Kill failed - mark sandbox as failed
+					log("   │   ✗ Recovery failed, marking sandbox as failed");
 					instance.status = "failed";
 					needsReassignment.push(instance);
 				}
+			} else {
+				log(
+					`   │   ✗ Max retries (${MAX_SANDBOX_RETRIES}) exceeded, marking feature as failed`,
+				);
+
+				// Mark feature as failed
+				const feature = manifest.feature_queue.find(
+					(f) => f.id === instance.currentFeature,
+				);
+				if (feature) {
+					feature.error = `Health check failed: ${health.message}`;
+					transitionFeatureStatus(feature, manifest, "failed", {
+						reason: "health check failed - max retries exceeded",
+						skipSave: true,
+					});
+				}
+
+				instance.currentFeature = null;
+				instance.status = "ready"; // Allow sandbox to take new work
+				instance.retryCount = 0; // Reset for next feature
+				instance.outputLineCount = 0;
+				instance.hasReceivedOutput = false;
+				saveManifest(manifest);
 			}
 		}
 	}
