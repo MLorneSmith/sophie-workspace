@@ -71,7 +71,7 @@ function useSuggestions(_userId: string) {
 		() =>
 			debounce(
 				async (
-					field: "title" | "audience" | "situation" | "complication" | "answer",
+					field: "title" | "audience" | "situation" | "complication",
 					presentationType?: string,
 					title?: string,
 					setIsLoadingSuggestions?: (loading: boolean) => void,
@@ -116,7 +116,7 @@ function useSuggestions(_userId: string) {
 	// Use the debounced function inside useCallback
 	const fetchSuggestions = useCallback(
 		(
-			field: "title" | "audience" | "situation" | "complication" | "answer",
+			field: "title" | "audience" | "situation" | "complication",
 			presentationType?: string,
 			title?: string,
 		) => {
@@ -409,7 +409,6 @@ export function SetupForm({
 				question_type,
 				situation,
 				complication,
-				answer,
 				argument_map,
 			} = formData;
 
@@ -466,7 +465,10 @@ export function SetupForm({
 				question_type: getQuestionTypeLabel(question_type),
 				situation,
 				complication,
-				answer,
+				argument_map:
+					typeof argument_map === "string"
+						? argument_map
+						: JSON.stringify(argument_map ?? {}),
 			});
 
 			if (!response.success) {
