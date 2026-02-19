@@ -15,7 +15,6 @@ import {
 	PROGRESS_FILE_STALE_THRESHOLD_MS,
 	WORKSPACE_DIR,
 } from "../config/index.js";
-import { ProgressFileDataSchema, safeParseProgress } from "./schemas/index.js";
 
 // ============================================================================
 // Status Validation
@@ -31,28 +30,6 @@ export const VALID_PROGRESS_STATUSES = new Set([
 export type ValidProgressStatus = "in_progress" | "completed" | "failed";
 
 /**
- * Known terminal statuses that agents may write to the progress file.
- * These indicate the agent has finished (successfully or partially) and
- * should NOT be treated as "in_progress".
- *
- * Maps non-standard status -> valid orchestrator status.
- */
-const TERMINAL_STATUS_REMAPPING: Record<string, ValidProgressStatus> = {
-	// Bug fix #1952: GPT agents write "blocked" when a task is blocked
-	blocked: "failed",
-	// Bug fix #2048: GPT agents write "context_limit" when context window exhausted
-	// Treat as completed since the agent exited cleanly with partial work committed
-	context_limit: "completed",
-	// Other known terminal statuses that GPT or future agents might write
-	partial: "completed",
-	context_exceeded: "completed",
-	done: "completed",
-	error: "failed",
-	aborted: "failed",
-	timed_out: "failed",
-};
-
-/**
  * Validate and normalize a progress file status value.
  *
  * TypeScript unions are erased at runtime. External agents can write any
@@ -60,8 +37,8 @@ const TERMINAL_STATUS_REMAPPING: Record<string, ValidProgressStatus> = {
  * propagate into the orchestrator.
  *
  * Remapping rules:
- * - Known terminal statuses -> mapped to appropriate valid status (see TERMINAL_STATUS_REMAPPING)
- * - Unknown values -> "failed" (safe fallback; "in_progress" is dangerous as it causes retry loops)
+ * - "blocked" -> "failed" (Bug fix #1952: prevents unrecoverable state)
+ * - Unknown values -> "in_progress" (safe fallback, health checks will catch stuck features)
  */
 export function validateProgressStatus(
 	rawStatus: unknown,
@@ -73,21 +50,17 @@ export function validateProgressStatus(
 		return rawStatus as ValidProgressStatus;
 	}
 
-	if (typeof rawStatus === "string" && rawStatus in TERMINAL_STATUS_REMAPPING) {
-		const mapped = TERMINAL_STATUS_REMAPPING[rawStatus]!;
+	if (rawStatus === "blocked") {
 		console.warn(
-			`[STATUS_VALIDATION] Remapping "${rawStatus}" -> "${mapped}" (agent wrote non-orchestrator status)`,
+			'[STATUS_VALIDATION] Remapping "blocked" -> "failed" (agent wrote non-orchestrator status)',
 		);
-		return mapped;
+		return "failed";
 	}
 
-	// Bug fix #2048: Default to "failed" instead of "in_progress"
-	// "in_progress" default caused infinite retry loops when agents wrote unknown statuses
-	// "failed" is safer: feature gets retried rather than waiting forever
 	console.warn(
-		`[STATUS_VALIDATION] Unknown progress status "${String(rawStatus)}" -> defaulting to "failed"`,
+		`[STATUS_VALIDATION] Unknown progress status "${String(rawStatus)}" -> defaulting to "in_progress"`,
 	);
-	return "failed";
+	return "in_progress";
 }
 
 // ============================================================================
@@ -107,8 +80,6 @@ export interface ProgressFileData {
 	total_tasks?: number;
 	last_heartbeat: string;
 	context_usage_percent?: number;
-	/** Feature ID for recovery validation (Bug fix #2063) */
-	feature_id?: string;
 	current_task?: {
 		id: string;
 		name: string;
@@ -154,14 +125,9 @@ export async function readProgressFile(
 		}
 
 		const raw = JSON.parse(result.stdout);
-		const validated = safeParseProgress(
-			ProgressFileDataSchema,
-			raw,
-			"readProgressFile",
-		);
 		const data: ProgressFileData = {
-			...validated,
-			status: validateProgressStatus(validated.status),
+			...raw,
+			status: validateProgressStatus(raw.status),
 		};
 		return { success: true, data };
 	} catch (error) {

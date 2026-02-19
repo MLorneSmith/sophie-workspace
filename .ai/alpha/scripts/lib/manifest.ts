@@ -23,10 +23,6 @@ import type {
 import { aggregateRequiredEnvVars } from "./env-requirements.js";
 import { getProjectRoot } from "./lock.js";
 import { autoGeneratePhases } from "./phase.js";
-import {
-	SandboxProgressFileSchema,
-	safeParseProgress,
-} from "./schemas/index.js";
 
 // ============================================================================
 // Types for Manifest Generation
@@ -265,9 +261,7 @@ function extractFeatureDependenciesRaw(featureDir: string): RawDependency[] {
 				}
 			}
 
-			// Match bare F# references but exclude those preceded by . (part of S#.I#.F#)
-			// or - (part of range notation like F1-F3)
-			const internalMatches = section.match(/(?<![.-])\bF(\d+)\b/g);
+			const internalMatches = section.match(/(?<!\.)\bF(\d+)\b/g);
 			if (internalMatches) {
 				for (const internalMatch of internalMatches) {
 					const fNum = internalMatch.slice(1);
@@ -289,7 +283,6 @@ function extractFeatureDependenciesRaw(featureDir: string): RawDependency[] {
  */
 function resolveFeatureDependencies(
 	rawDeps: RawDependency[],
-	currentFeatureId: string,
 	initiativeId: string,
 	featurePriorityMap: Map<string, string>,
 ): string[] {
@@ -297,8 +290,7 @@ function resolveFeatureDependencies(
 
 	for (const dep of rawDeps) {
 		if (dep.type === "semantic") {
-			// Filter self-references
-			if (dep.value !== currentFeatureId && !resolved.includes(dep.value)) {
+			if (!resolved.includes(dep.value)) {
 				resolved.push(dep.value);
 			}
 		} else if (dep.type === "issue") {
@@ -308,12 +300,7 @@ function resolveFeatureDependencies(
 		} else if (dep.type === "internal") {
 			const key = `${initiativeId}-${dep.value}`;
 			const featureId = featurePriorityMap.get(key);
-			// Filter self-references
-			if (
-				featureId &&
-				featureId !== currentFeatureId &&
-				!resolved.includes(featureId)
-			) {
+			if (featureId && !resolved.includes(featureId)) {
 				resolved.push(featureId);
 			}
 		}
@@ -590,9 +577,7 @@ export function generateSpecManifest(
 			const taskCount = tasksJson.tasks.length;
 
 			if (taskCount > 12) {
-				log(
-					`   ⚠️ Feature ${featureId} has ${taskCount} tasks (max recommended: 12). Consider splitting.`,
-				);
+				log(`   ⚠️ Feature ${featureId} has ${taskCount} tasks (max recommended: 12). Consider splitting.`);
 			}
 
 			totalTasks += taskCount;
@@ -669,7 +654,6 @@ export function generateSpecManifest(
 		if (rawDeps && rawDeps.length > 0) {
 			feature.dependencies = resolveFeatureDependencies(
 				rawDeps,
-				feature.id,
 				feature.initiative_id,
 				featurePriorityMap,
 			);
@@ -931,55 +915,6 @@ export interface ReviewUrlForUI {
 }
 
 /**
- * Sync real-time task completion counts from sandbox progress files into the manifest.
- *
- * Bug fix #2050: During feature execution, manifest.feature_queue[].tasks_completed
- * stays at 0 because it's only updated after feature completion (feature.ts:750).
- * Meanwhile, sandbox progress files (sbx-{label}-progress.json) have accurate
- * real-time counts from the progress poller. This function bridges that gap by
- * reading the local sandbox progress files and updating the manifest.
- *
- * @param manifest - The manifest to update
- * @param progressDir - The UI progress directory containing sandbox progress files
- */
-export function syncSandboxProgressToManifest(
-	manifest: SpecManifest,
-	progressDir: string,
-): void {
-	// Only sync for in-progress features with an assigned sandbox
-	for (const feature of manifest.feature_queue) {
-		if (feature.status !== "in_progress" || !feature.assigned_sandbox) {
-			continue;
-		}
-
-		const sandboxProgressFile = path.join(
-			progressDir,
-			`${feature.assigned_sandbox}-progress.json`,
-		);
-
-		try {
-			if (!fs.existsSync(sandboxProgressFile)) continue;
-
-			const content = fs.readFileSync(sandboxProgressFile, "utf-8");
-			const raw = JSON.parse(content);
-			const sandboxProgress = safeParseProgress(
-				SandboxProgressFileSchema,
-				raw,
-				`manifest-sync-${feature.assigned_sandbox}`,
-			);
-			const completedCount = sandboxProgress.completed_tasks?.length ?? 0;
-
-			// Only update if sandbox shows more progress (never regress)
-			if (completedCount > (feature.tasks_completed || 0)) {
-				feature.tasks_completed = completedCount;
-			}
-		} catch {
-			// Ignore read/parse errors - sandbox file may be mid-write
-		}
-	}
-}
-
-/**
 
 * Write overall progress to local file for UI consumption.
 * This provides authoritative counts from the manifest since sandbox
@@ -1000,11 +935,6 @@ export function writeOverallProgress(
 ): void {
 	const progressDir = ensureUIProgressDir();
 	const filePath = path.join(progressDir, "overall-progress.json");
-
-	// Bug fix #2050: Sync real-time task counts from sandbox progress files
-	// before calculating overall progress. This ensures in-progress features
-	// have current task completion counts instead of stale 0 values.
-	syncSandboxProgressToManifest(manifest, progressDir);
 
 	// Calculate features completed by counting status from manifest state
 	// This prevents counts from exceeding totals when features are retried

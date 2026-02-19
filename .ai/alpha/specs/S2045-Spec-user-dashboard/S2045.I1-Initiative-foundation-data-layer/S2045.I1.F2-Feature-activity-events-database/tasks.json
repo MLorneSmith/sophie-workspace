@@ -1,0 +1,407 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2045.I1.F2",
+    "feature_name": "Activity Events Database",
+    "feature_slug": "activity-events-database",
+    "initiative_id": "S2045.I1",
+    "spec_id": "S2045",
+    "created_at": "2026-02-09T18:30:00Z",
+    "complexity": {
+      "score": 52.5,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": true,
+    "database_tasks": ["S2045.I1.F2.T1", "S2045.I1.F2.T2", "S2045.I1.F2.T3", "S2045.I1.F2.T4", "S2045.I1.F2.T5", "S2045.I1.F2.T6"],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": [
+      {
+        "name": "CALCOM_API_KEY",
+        "description": "Cal.com V2 API key for fetching coaching session bookings (optional for activity events, required for coaching widget in I3)",
+        "source": "https://cal.com/settings/developer → API Keys",
+        "required": false,
+        "scope": "server"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S2045.I1.F2.T1",
+      "type": "task",
+      "name": "Create activity_event_type enum and activity_events table schema",
+      "action": {
+        "verb": "Create",
+        "target": "activity_event_type enum and activity_events table"
+      },
+      "purpose": "Define the enum for event types and the table structure for storing user activity events",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": true,
+      "migration_name_prefix": "S2045_I1_F2_T1",
+      "context": {
+        "files": [
+          "apps/web/supabase/schemas/02-config.sql",
+          "apps/web/supabase/migrations/20250319104726_web_course_system.sql"
+        ],
+        "dependencies": [
+          "auth.users table (existing)",
+          "Standard PostgreSQL table creation syntax"
+        ],
+        "constraints": [
+          "Enum must include: lesson_completed, quiz_completed, survey_completed, course_started, course_completed, presentation_created, presentation_updated",
+          "Table columns: id (UUID), user_id (UUID FK), event_type (enum), entity_id (TEXT), entity_type (TEXT), title (TEXT), metadata (JSONB), created_at (TIMESTAMPTZ)",
+          "UNIQUE constraint not needed (allow duplicate events for audit trail)"
+        ]
+      },
+      "input_state": "No activity_events table or activity_event_type enum exists",
+      "output_state": "Schema file exists at apps/web/supabase/schemas/18-activity-events.sql with enum and table definition",
+      "acceptance_criterion": "Schema file contains enum definition with 7 event types and table with 8 columns including JSONB metadata",
+      "verification_command": "grep -q 'CREATE TYPE public.activity_event_type' apps/web/supabase/schemas/18-activity-events.sql && grep -q 'CREATE TABLE.*public.activity_events' apps/web/supabase/schemas/18-activity-events.sql",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/supabase/schemas/18-activity-events.sql"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2045.I1.F2.T2", "S2045.I1.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F2.T2",
+      "type": "task",
+      "name": "Add RLS policies and indexes to activity_events schema",
+      "action": {
+        "verb": "Add",
+        "target": "RLS policies and indexes"
+      },
+      "purpose": "Enable row-level security for user data isolation and add indexes for efficient timeline queries",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": true,
+      "migration_name_prefix": "S2045_I1_F2_T2",
+      "context": {
+        "files": [
+          "apps/web/supabase/schemas/18-activity-events.sql",
+          "apps/web/supabase/migrations/20250319104726_web_course_system.sql"
+        ],
+        "dependencies": [
+          "auth.uid() function (existing)",
+          "Standard RLS policy syntax"
+        ],
+        "constraints": [
+          "RLS policies: SELECT and INSERT only (no UPDATE/DELETE needed for audit trail)",
+          "Use (SELECT auth.uid()) = user_id pattern for performance",
+          "Indexes: (user_id, created_at DESC) for timeline queries, user_id for RLS filtering"
+        ]
+      },
+      "input_state": "Schema file has table definition without RLS or indexes",
+      "output_state": "Schema file includes RLS enabled, 2 policies (SELECT, INSERT), and 2 indexes",
+      "acceptance_criterion": "Schema file contains ALTER TABLE ENABLE ROW LEVEL SECURITY, 2 CREATE POLICY statements, and 2 CREATE INDEX statements",
+      "verification_command": "grep -q 'ENABLE ROW LEVEL SECURITY' apps/web/supabase/schemas/18-activity-events.sql && grep -c 'CREATE POLICY' apps/web/supabase/schemas/18-activity-events.sql | grep -q '^2$' && grep -c 'CREATE INDEX' apps/web/supabase/schemas/18-activity-events.sql | grep -q '^2$'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/supabase/schemas/18-activity-events.sql"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F2.T1"],
+        "blocks": ["S2045.I1.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F2.T3",
+      "type": "task",
+      "name": "Create trigger functions for 5 source tables",
+      "action": {
+        "verb": "Create",
+        "target": "5 trigger functions"
+      },
+      "purpose": "Define PostgreSQL functions that insert activity events when source table records are created or updated",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 3,
+      "group": 1,
+      "requires_database": true,
+      "migration_name_prefix": "S2045_I1_F2_T3",
+      "context": {
+        "files": [
+          "apps/web/supabase/schemas/18-activity-events.sql",
+          "apps/web/supabase/schemas/02-config.sql"
+        ],
+        "dependencies": [
+          "lesson_progress table (existing)",
+          "quiz_attempts table (existing)",
+          "survey_responses table (existing)",
+          "course_progress table (existing)",
+          "building_blocks_submissions table (existing)"
+        ],
+        "constraints": [
+          "Function 1: lesson_progress → lesson_completed (when completed_at IS NOT NULL)",
+          "Function 2: quiz_attempts → quiz_completed (include score in metadata)",
+          "Function 3: survey_responses → survey_completed (when completed = true)",
+          "Function 4: course_progress → course_started (INSERT) + course_completed (UPDATE when completed_at IS NOT NULL)",
+          "Function 5: building_blocks_submissions → presentation_created (INSERT only)",
+          "All functions: RETURNS trigger, SET search_path = '', LANGUAGE plpgsql",
+          "Denormalize title into activity_events for fast rendering",
+          "Use CREATE TRIGGER AFTER INSERT (or AFTER INSERT OR UPDATE for course_progress)"
+        ]
+      },
+      "input_state": "Schema file has table and RLS but no trigger functions",
+      "output_state": "Schema file includes 5 trigger functions and 5 CREATE TRIGGER statements",
+      "acceptance_criterion": "Schema file contains 5 CREATE OR REPLACE FUNCTION statements and 5 CREATE TRIGGER statements linking to source tables",
+      "verification_command": "grep -c 'CREATE OR REPLACE FUNCTION.*activity_event' apps/web/supabase/schemas/18-activity-events.sql | grep -q '^5$' && grep -c 'CREATE TRIGGER' apps/web/supabase/schemas/18-activity-events.sql | grep -q '^5$'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/supabase/schemas/18-activity-events.sql"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F2.T1"],
+        "blocks": ["S2045.I1.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F2.T4",
+      "type": "task",
+      "name": "Generate migration from activity_events schema file",
+      "action": {
+        "verb": "Generate",
+        "target": "migration file"
+      },
+      "purpose": "Create migration file that applies the schema changes to the database",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": true,
+      "migration_name_prefix": "S2045_I1_F2_T4",
+      "context": {
+        "files": [
+          "apps/web/supabase/schemas/18-activity-events.sql"
+        ],
+        "dependencies": [
+          "pnpm --filter web supabase:db:diff command",
+          "Supabase CLI (existing)"
+        ],
+        "constraints": [
+          "Use command: pnpm --filter web supabase:db:diff -f S2045_I1_F2_activity_events",
+          "Migration file will be auto-generated in apps/web/supabase/migrations/"
+        ]
+      },
+      "input_state": "Schema file complete but no migration file exists",
+      "output_state": "Migration file exists in apps/web/supabase/migrations/ with timestamp and name containing 'S2045_I1_F2_activity_events'",
+      "acceptance_criterion": "Migration file generated and contains CREATE TYPE, CREATE TABLE, and CREATE TRIGGER statements",
+      "verification_command": "ls -1 apps/web/supabase/migrations/*S2045_I1_F2_activity_events.sql && grep -q 'CREATE TYPE public.activity_event_type' apps/web/supabase/migrations/*S2045_I1_F2_activity_events.sql",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/supabase/migrations/TIMESTAMP_S2045_I1_F2_activity_events.sql"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F2.T2", "S2045.I1.F2.T3"],
+        "blocks": ["S2045.I1.F2.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F2.T5",
+      "type": "task",
+      "name": "Apply migration to local database",
+      "action": {
+        "verb": "Apply",
+        "target": "migration"
+      },
+      "purpose": "Execute migration to create tables, enum, RLS policies, indexes, and triggers in local Supabase instance",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": true,
+      "migration_name_prefix": "S2045_I1_F2_T5",
+      "context": {
+        "files": [
+          "apps/web/supabase/migrations/*S2045_I1_F2_activity_events.sql"
+        ],
+        "dependencies": [
+          "pnpm --filter web supabase migration up command",
+          "Local Supabase instance running"
+        ],
+        "constraints": [
+          "Use command: pnpm --filter web supabase migration up",
+          "Verify no errors during migration application",
+          "Verify triggers exist in pg_trigger catalog"
+        ]
+      },
+      "input_state": "Migration file exists but not applied to database",
+      "output_state": "Migration applied successfully, activity_events table and triggers exist in local database",
+      "acceptance_criterion": "Migration command exits 0 and psql query shows 5 triggers with names matching 'activity_event_%'",
+      "verification_command": "pnpm --filter web supabase migration up && psql 'postgresql://postgres:postgres@127.0.0.1:54322/postgres' -c \"SELECT COUNT(*) FROM pg_trigger WHERE tgname LIKE 'activity_event_%';\" | grep -q '5'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/supabase/.branches/_current_branch"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F2.T4"],
+        "blocks": ["S2045.I1.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F2.T6",
+      "type": "task",
+      "name": "Generate TypeScript types for activity_events",
+      "action": {
+        "verb": "Generate",
+        "target": "TypeScript types"
+      },
+      "purpose": "Create TypeScript type definitions for the new activity_events table and enum to enable type-safe queries",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 2,
+      "requires_database": true,
+      "migration_name_prefix": "S2045_I1_F2_T6",
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "pnpm supabase:web:typegen command",
+          "Migration already applied"
+        ],
+        "constraints": [
+          "Use command: pnpm supabase:web:typegen",
+          "Verify activity_events table type exists",
+          "Verify activity_event_type enum type exists"
+        ]
+      },
+      "input_state": "Migration applied but TypeScript types not updated",
+      "output_state": "apps/web/lib/database.types.ts contains types for activity_events table and activity_event_type enum",
+      "acceptance_criterion": "database.types.ts file contains 'activity_events' table definition and 'activity_event_type' enum",
+      "verification_command": "pnpm supabase:web:typegen && grep -q 'activity_events' apps/web/lib/database.types.ts && grep -q 'activity_event_type' apps/web/lib/database.types.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/lib/database.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F2.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Schema Definition",
+        "task_ids": ["S2045.I1.F2.T1", "S2045.I1.F2.T2", "S2045.I1.F2.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 8,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Migration and Type Generation",
+        "task_ids": ["S2045.I1.F2.T4", "S2045.I1.F2.T5", "S2045.I1.F2.T6"],
+        "depends_on_groups": [1],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2045.I1.F2.T1", "S2045.I1.F2.T3", "S2045.I1.F2.T4", "S2045.I1.F2.T5", "S2045.I1.F2.T6"],
+      "total_hours": 9
+    },
+    "duration": {
+      "sequential": 11,
+      "parallel": 7,
+      "time_saved_percent": 36
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

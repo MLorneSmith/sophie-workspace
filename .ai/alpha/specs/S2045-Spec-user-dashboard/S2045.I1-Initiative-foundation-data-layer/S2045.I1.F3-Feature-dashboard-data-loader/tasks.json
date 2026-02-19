@@ -1,0 +1,488 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2045.I1.F3",
+    "feature_name": "Dashboard Data Loader",
+    "feature_slug": "dashboard-data-loader",
+    "initiative_id": "S2045.I1",
+    "spec_id": "2045",
+    "created_at": "2026-02-09T19:30:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": [
+      {
+        "name": "NEXT_PUBLIC_CALCOM_COACH_USERNAME",
+        "description": "Cal.com username for coach scheduling embed",
+        "source": "Cal.com settings → Profile → Username",
+        "required": false,
+        "scope": "client"
+      },
+      {
+        "name": "NEXT_PUBLIC_CALCOM_EVENT_SLUG",
+        "description": "Cal.com event type slug for coaching sessions (e.g., '60min')",
+        "source": "Cal.com settings → Event Types → Event slug",
+        "required": false,
+        "scope": "client"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S2045.I1.F3.T1",
+      "type": "task",
+      "name": "Create dashboard TypeScript types",
+      "action": { "verb": "Create", "target": "dashboard.types.ts file" },
+      "purpose": "Define TypeScript interfaces for all 7 widget data shapes to maintain type safety in loader and page components",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts",
+          "apps/web/app/home/(user)/billing/_lib/server/personal-account-billing-page.loader.ts"
+        ],
+        "dependencies": [
+          "Database types for course_progress, survey_responses, tasks, building_blocks_submissions"
+        ],
+        "constraints": [
+          "Must export interfaces for: CourseProgressData, SurveyScoresData, KanbanSummaryData, RecentActivityData, QuickActionFlagsData, CoachingData, PresentationOutlinesData",
+          "Must export aggregate DashboardData type combining all 7 interfaces",
+          "Use Database['public']['Tables'] types for table row structures"
+        ]
+      },
+      "input_state": "Database types exist in apps/web/lib/database.types.ts",
+      "output_state": "New file apps/web/app/home/(user)/_lib/types/dashboard.types.ts with 7 widget interfaces and 1 aggregate type",
+      "acceptance_criterion": "File exists with all 8 types exported and passes typecheck",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && grep -c 'export interface' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts | grep -q '^8$' && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2045.I1.F3.T2", "S2045.I1.F3.T3", "S2045.I1.F3.T4", "S2045.I1.F3.T5", "S2045.I1.F3.T6", "S2045.I1.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F3.T2",
+      "type": "task",
+      "name": "Create loader skeleton with Promise.allSettled structure",
+      "action": { "verb": "Create", "target": "dashboard-page.loader.ts skeleton" },
+      "purpose": "Set up the loader file with server-only directive, cache wrapper, and Promise.allSettled pattern for resilient parallel queries",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/billing/_lib/server/personal-account-billing-page.loader.ts",
+          "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "React cache function",
+          "getSupabaseServerClient from @kit/supabase/server-client",
+          "requireUserInServerComponent helper",
+          "DashboardData type from dashboard.types.ts"
+        ],
+        "constraints": [
+          "Must include 'use server-only' directive at top",
+          "Must wrap loader in React cache() for per-request memoization",
+          "Must use Promise.allSettled() for 7 parallel queries",
+          "Must accept userId parameter",
+          "Must return typed DashboardData with null values for failed queries"
+        ]
+      },
+      "input_state": "dashboard.types.ts file exists with DashboardData type",
+      "output_state": "New file apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts with skeleton structure and 7 placeholder query functions",
+      "acceptance_criterion": "File exists with server-only directive, cache wrapper, Promise.allSettled structure, and passes typecheck",
+      "verification_command": "grep -q \"'server-only'\" apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'cache(' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'allSettled' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F3.T1"],
+        "blocks": ["S2045.I1.F3.T3", "S2045.I1.F3.T4", "S2045.I1.F3.T5", "S2045.I1.F3.T6", "S2045.I1.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F3.T3",
+      "type": "task",
+      "name": "Add course progress query function",
+      "action": { "verb": "Add", "target": "loadCourseProgress function" },
+      "purpose": "Query course_progress table to get user's enrolled courses and completion statistics",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Supabase client from loader",
+          "CourseProgressData type from dashboard.types.ts",
+          "course_progress table with user_id filter"
+        ],
+        "constraints": [
+          "Must use RLS-protected Supabase client (not admin client)",
+          "Must filter by user_id = userId parameter",
+          "Must return null on error (graceful degradation)",
+          "Must select: id, course_id, completion_percentage, started_at, completed_at"
+        ]
+      },
+      "input_state": "Loader skeleton exists with placeholder for loadCourseProgress",
+      "output_state": "loadCourseProgress function implemented and wired into Promise.allSettled array",
+      "acceptance_criterion": "Function queries course_progress table and returns CourseProgressData or null",
+      "verification_command": "grep -q 'loadCourseProgress' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'course_progress' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F3.T2"],
+        "blocks": ["S2045.I1.F3.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F3.T4",
+      "type": "task",
+      "name": "Add survey scores query function",
+      "action": { "verb": "Add", "target": "loadSurveyScores function" },
+      "purpose": "Query survey_responses table to get user's latest completed survey with category scores",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Supabase client from loader",
+          "SurveyScoresData type from dashboard.types.ts",
+          "survey_responses table with completed=true filter"
+        ],
+        "constraints": [
+          "Must use RLS-protected Supabase client",
+          "Must filter by user_id = userId AND completed = true",
+          "Must order by updated_at DESC and limit 1 (latest completed)",
+          "Must return null on error or if no completed surveys",
+          "Must select: id, category_scores, highest_scoring_category, lowest_scoring_category, updated_at"
+        ]
+      },
+      "input_state": "Loader skeleton exists with placeholder for loadSurveyScores",
+      "output_state": "loadSurveyScores function implemented and wired into Promise.allSettled array",
+      "acceptance_criterion": "Function queries survey_responses table and returns latest completed survey or null",
+      "verification_command": "grep -q 'loadSurveyScores' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'survey_responses' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F3.T2"],
+        "blocks": ["S2045.I1.F3.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F3.T5",
+      "type": "task",
+      "name": "Add kanban tasks query function",
+      "action": { "verb": "Add", "target": "loadKanbanSummary function" },
+      "purpose": "Query tasks table to get user's active tasks (3 'doing' + 1 'do') for the kanban widget",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Supabase client from loader",
+          "KanbanSummaryData type from dashboard.types.ts",
+          "tasks table with status filter"
+        ],
+        "constraints": [
+          "Must use RLS-protected Supabase client",
+          "Must query tasks where status='doing' (limit 3) and status='do' (limit 1)",
+          "Must use two separate queries or single query with filtering in code",
+          "Must return null on error",
+          "Must select: id, title, description, status, priority, updated_at"
+        ]
+      },
+      "input_state": "Loader skeleton exists with placeholder for loadKanbanSummary",
+      "output_state": "loadKanbanSummary function implemented with two filtered queries and wired into Promise.allSettled array",
+      "acceptance_criterion": "Function queries tasks table and returns up to 4 tasks (3 doing, 1 do) or null",
+      "verification_command": "grep -q 'loadKanbanSummary' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'tasks' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F3.T2"],
+        "blocks": ["S2045.I1.F3.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F3.T6",
+      "type": "task",
+      "name": "Add recent activity query function",
+      "action": { "verb": "Add", "target": "loadRecentActivity function" },
+      "purpose": "Query activity_events table to get user's latest 10 activity events ordered by created_at DESC",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Supabase client from loader",
+          "RecentActivityData type from dashboard.types.ts",
+          "activity_events table (created by F2)"
+        ],
+        "constraints": [
+          "Must use RLS-protected Supabase client",
+          "Must filter by user_id = userId",
+          "Must order by created_at DESC and limit 10",
+          "Must return null on error or if table doesn't exist yet",
+          "Must select: id, event_type, title, entity_id, entity_type, metadata, created_at"
+        ]
+      },
+      "input_state": "Loader skeleton exists with placeholder for loadRecentActivity, activity_events table exists (from F2)",
+      "output_state": "loadRecentActivity function implemented and wired into Promise.allSettled array",
+      "acceptance_criterion": "Function queries activity_events table and returns latest 10 events or null",
+      "verification_command": "grep -q 'loadRecentActivity' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'activity_events' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F3.T2"],
+        "blocks": ["S2045.I1.F3.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F3.T7",
+      "type": "task",
+      "name": "Add quick actions and presentations query functions",
+      "action": { "verb": "Add", "target": "loadQuickActionFlags and loadPresentationOutlines functions" },
+      "purpose": "Query existence flags for quick actions and fetch all presentation outlines for the outlines widget",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Supabase client from loader",
+          "QuickActionFlagsData and PresentationOutlinesData types from dashboard.types.ts",
+          "course_progress, survey_responses, building_blocks_submissions tables"
+        ],
+        "constraints": [
+          "loadQuickActionFlags: Must perform 3 existence checks (SELECT EXISTS) for hasStartedCourse, hasCompletedSurvey, hasCreatedPresentation",
+          "loadPresentationOutlines: Must query building_blocks_submissions table ordered by updated_at DESC",
+          "Must use RLS-protected Supabase client",
+          "Must return null on error for each function",
+          "CoachingData is a static config object (no query) - can be inline in loader"
+        ]
+      },
+      "input_state": "Loader skeleton exists with placeholders for loadQuickActionFlags and loadPresentationOutlines",
+      "output_state": "Both functions implemented and wired into Promise.allSettled array, plus inline CoachingData object",
+      "acceptance_criterion": "Both functions query their respective tables and return data or null, CoachingData is a static object",
+      "verification_command": "grep -q 'loadQuickActionFlags' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'loadPresentationOutlines' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'NEXT_PUBLIC_CALCOM' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F3.T2"],
+        "blocks": ["S2045.I1.F3.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I1.F3.T8",
+      "type": "task",
+      "name": "Integrate loader into page component",
+      "action": { "verb": "Update", "target": "page.tsx to call loader" },
+      "purpose": "Update the dashboard page component to call the loader and pass data to placeholder card slots",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "loadDashboardData loader function",
+          "requireUserInServerComponent helper",
+          "DashboardData type",
+          "Placeholder card components from F1"
+        ],
+        "constraints": [
+          "Must call requireUserInServerComponent to get user",
+          "Must call loadDashboardData(user.id)",
+          "Must pass loader data to grid component or individual cards",
+          "Must handle null data for each widget gracefully (empty states)",
+          "Must keep force-dynamic export and withI18n HOC from F1"
+        ]
+      },
+      "input_state": "page.tsx has grid with placeholder cards (from F1), loader is fully implemented with all 7 queries",
+      "output_state": "page.tsx calls loader and passes data to each card slot, placeholder cards now receive real data types",
+      "acceptance_criterion": "Page component calls loader and passes data to cards, typecheck passes",
+      "verification_command": "grep -q 'loadDashboardData' apps/web/app/home/\\(user\\)/page.tsx && grep -q 'requireUserInServerComponent' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I1.F3.T3", "S2045.I1.F3.T4", "S2045.I1.F3.T5", "S2045.I1.F3.T6", "S2045.I1.F3.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation - Types",
+        "task_ids": ["S2045.I1.F3.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Parallel Queries - Loader Implementation",
+        "task_ids": ["S2045.I1.F3.T2", "S2045.I1.F3.T3", "S2045.I1.F3.T4", "S2045.I1.F3.T5", "S2045.I1.F3.T6", "S2045.I1.F3.T7"],
+        "depends_on_groups": [1],
+        "estimated_hours": 13,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Integration",
+        "task_ids": ["S2045.I1.F3.T8"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2045.I1.F3.T1", "S2045.I1.F3.T2", "S2045.I1.F3.T7", "S2045.I1.F3.T8"],
+      "total_hours": 9
+    },
+    "duration": {
+      "sequential": 17,
+      "parallel": 9,
+      "time_saved_percent": 47
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
