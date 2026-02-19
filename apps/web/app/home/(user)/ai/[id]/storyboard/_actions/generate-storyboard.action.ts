@@ -87,6 +87,31 @@ const GenerateStoryboardSchema = z.object({
 	forceRegenerate: z.boolean().default(false),
 });
 
+function normalizeGeneratedSlide(
+	slide: Partial<StoryboardSlide>,
+	index: number,
+): StoryboardSlide {
+	return {
+		id: slide.id ?? `slide-${index + 1}`,
+		title: slide.title ?? "Untitled slide",
+		layout: slide.layout ?? "title-content",
+		content: slide.content ?? "",
+		content_left: slide.content_left ?? "",
+		content_right: slide.content_right ?? "",
+		purpose: slide.purpose ?? "",
+		takeaway_headline: slide.takeaway_headline ?? "",
+		evidence_needed: slide.evidence_needed ?? "",
+		speaker_notes:
+			slide.speaker_notes ??
+			({
+				type: "doc",
+				content: [{ type: "paragraph", content: [] }],
+			} as StoryboardSlide["speaker_notes"]),
+		visual_notes: slide.visual_notes ?? "",
+		order: slide.order ?? index,
+	};
+}
+
 export const generateStoryboardAction = enhanceAction(
 	async (data, user) => {
 		const logger = await getLogger();
@@ -129,7 +154,9 @@ export const generateStoryboardAction = enhanceAction(
 				.maybeSingle();
 
 			if (existing) {
-				const slides = (existing.slides ?? []) as unknown as StoryboardSlide[];
+				const slides = (
+					(existing.slides ?? []) as unknown as StoryboardSlide[]
+				).map((slide, idx) => normalizeGeneratedSlide(slide, idx));
 				if (slides.length > 0) {
 					return { success: true, data: { slides } };
 				}
@@ -159,6 +186,11 @@ Return ONLY valid JSON in this exact format:
       "title": "Slide Title",
       "layout": "title-content",
       "content": "Main content text for the slide body",
+      "content_left": "Left column content when needed",
+      "content_right": "Right column content when needed",
+      "purpose": "What this slide does for the narrative",
+      "takeaway_headline": "The one sentence the audience should remember",
+      "evidence_needed": "Specific data/proof needed to support the claims",
       "speaker_notes": { "type": "doc", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Notes for the presenter" }] }] },
       "visual_notes": "Suggestion for visual element (e.g., 'Chart showing growth trends')",
       "order": 0
@@ -166,7 +198,24 @@ Return ONLY valid JSON in this exact format:
   ]
 }
 
-Layout options: "title-only", "title-content", "title-two-column"
+Layout options:
+- "title-only"
+- "title-content"
+- "title-two-column"
+- "section-divider"
+- "image-text"
+- "comparison"
+- "data-chart"
+- "quote"
+- "blank"
+
+Layout guidance:
+- Section transitions/headings → "section-divider"
+- Data/metrics-heavy slides → "data-chart"
+- Side-by-side contrasts → "comparison"
+- Quotes/key statements → "quote"
+- Visual/image-led slides → "image-text"
+- Use "title-two-column" for structured two-column lists or arguments
 
 Guidelines:
 - Create 1-2 slides per outline section
@@ -174,6 +223,7 @@ Guidelines:
 - Last slide should be a conclusion/CTA
 - Keep content concise - bullet points, not paragraphs
 - Speaker notes should elaborate on key points
+- Purpose, takeaway_headline, and evidence_needed must be meaningful for every slide
 - Visual notes suggest charts, images, or diagrams`;
 
 		const userPrompt = `Create a storyboard from this outline:
@@ -213,7 +263,11 @@ Generate slides that bring this outline to life with clear layouts and content.`
 				throw new Error("No JSON found in AI response");
 			}
 			const parsed = JSON.parse(jsonMatch[0]);
-			slides = parsed.slides;
+			slides = Array.isArray(parsed.slides)
+				? parsed.slides.map((slide: Partial<StoryboardSlide>, idx: number) =>
+						normalizeGeneratedSlide(slide, idx),
+					)
+				: [];
 		} catch (parseError) {
 			logger.error("Failed to parse AI storyboard response", {
 				presentationId: data.presentationId,
@@ -221,24 +275,32 @@ Generate slides that bring this outline to life with clear layouts and content.`
 				error: parseError,
 			});
 			// Fallback: create basic slides from outline sections
-			slides = outlineSections.map((section, idx) => ({
-				id: `slide-${idx + 1}`,
-				title: section.title,
-				layout:
-					idx === 0 ? ("title-only" as const) : ("title-content" as const),
-				content: section.content,
-				speaker_notes: {
-					type: "doc",
-					content: [
-						{
-							type: "paragraph",
-							content: [{ type: "text", text: `Cover: ${section.title}` }],
+			slides = outlineSections.map((section, idx) =>
+				normalizeGeneratedSlide(
+					{
+						id: `slide-${idx + 1}`,
+						title: section.title,
+						layout:
+							idx === 0 ? ("title-only" as const) : ("title-content" as const),
+						content: section.content,
+						purpose: `Advance section: ${section.title}`,
+						takeaway_headline: section.title,
+						evidence_needed: "",
+						speaker_notes: {
+							type: "doc",
+							content: [
+								{
+									type: "paragraph",
+									content: [{ type: "text", text: `Cover: ${section.title}` }],
+								},
+							],
 						},
-					],
-				},
-				visual_notes: "",
-				order: idx,
-			}));
+						visual_notes: "",
+						order: idx,
+					},
+					idx,
+				),
+			);
 		}
 
 		// Fetch presentation for user/account context
