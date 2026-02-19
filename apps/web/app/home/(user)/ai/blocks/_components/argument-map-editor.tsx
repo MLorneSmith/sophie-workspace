@@ -4,7 +4,7 @@ import { Button } from "@kit/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 import { cn } from "@kit/ui/utils";
 import { GitBranch, Plus, RefreshCw } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type {
 	ArgumentMapNode,
@@ -120,12 +120,13 @@ export function ArgumentMapEditor({
 
 	// Notify parent about the initial default tree on mount so
 	// formData.argument_map is never left as an empty string.
+	const didNotifyRef = useRef(false);
 	useEffect(() => {
-		if (value === null) {
+		if (!didNotifyRef.current && value === null) {
+			didNotifyRef.current = true;
 			onChange(initial);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [value, onChange, initial]);
 
 	const setAndNotify = useCallback(
 		(next: ArgumentMapNode) => {
