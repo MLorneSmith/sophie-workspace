@@ -1,22 +1,23 @@
-import { Badge } from "@kit/ui/badge";
-import { Layers } from "lucide-react";
+"use client";
+
+import { useParams } from "next/navigation";
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
+
+import { StoryboardEditor } from "./_components/storyboard-editor";
 
 export default function StoryboardStepPage() {
+	const params = useParams<{ id: string }>();
+
 	return (
-		<div className="flex min-h-[420px] items-center justify-center">
-			<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-3 text-center">
-				<Layers className="text-muted-foreground size-10" />
-
-				<h2 className="text-lg font-medium">Storyboard Designer</h2>
-
-				<p className="text-app-sm text-muted-foreground">
-					Arrange your outline into slides with layouts and visual cues
-				</p>
-
-				<Badge variant="secondary" className="mt-2">
-					Coming in Phase 2
-				</Badge>
-			</div>
-		</div>
+		<Suspense
+			fallback={
+				<div className="flex min-h-[300px] items-center justify-center">
+					<Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
+				</div>
+			}
+		>
+			<StoryboardEditor presentationId={params.id} />
+		</Suspense>
 	);
 }
