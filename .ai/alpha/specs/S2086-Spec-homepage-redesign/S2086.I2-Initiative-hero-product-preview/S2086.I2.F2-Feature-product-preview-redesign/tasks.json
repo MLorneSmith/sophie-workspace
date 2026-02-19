@@ -1,0 +1,336 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I2.F2",
+    "feature_name": "Product Preview Redesign",
+    "feature_slug": "product-preview-redesign",
+    "initiative_id": "S2086.I2",
+    "spec_id": "2086",
+    "created_at": "2026-02-13T13:30:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": "layer-decomposition-ui"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": [],
+    "requires_ui": true,
+    "ui_tasks": ["S2086.I2.F2.T2", "S2086.I2.F2.T3"]
+  },
+  "tasks": [
+    {
+      "id": "S2086.I2.F2.T1",
+      "type": "task",
+      "name": "Add product preview section to homepage content config",
+      "action": {
+        "verb": "Add",
+        "target": "product preview section to homepage content config"
+      },
+      "purpose": "Define configuration for product preview section (screenshot path, alt text, frame title) in centralized config file",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Use existing /images/video-hero-preview.avif as screenshot path",
+          "Frame title should be 'SlideHeroes Canvas'",
+          "Follow existing config structure pattern"
+        ]
+      },
+      "input_state": "homepage-content.config.ts exists with hero, sticky, features, testimonials, pricing, essentialReads sections but no productPreview section",
+      "output_state": "productPreview configuration added to homepageContentConfig object with screenshot src, alt text, and frame title",
+      "acceptance_criterion": "productPreview key exists in homepageContentConfig with src, alt, and title properties",
+      "verification_command": "grep -q 'productPreview:' apps/web/config/homepage-content.config.ts && grep -q 'video-hero-preview.avif' apps/web/config/homepage-content.config.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/config/homepage-content.config.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I2.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I2.F2.T2",
+      "type": "task",
+      "name": "Create browser frame component with glass styling and gradient border",
+      "action": {
+        "verb": "Create",
+        "target": "browser frame component with glass styling and gradient border"
+      },
+      "purpose": "Build reusable browser-style frame with macOS title bar (3 colored dots + title), glass card styling (backdrop-filter blur), rotating gradient border animation (@keyframes borderRotate), and glow effect pseudo-element",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "SlideHeroes Canvas"
+          },
+          {
+            "command": "find role",
+            "target": "img"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-browser-frame.tsx"
+        ],
+        "dependencies": [
+          "I1.F1 @keyframes borderRotate animation",
+          "I1.F3 glass card styling pattern (backdrop-filter blur, border, background opacity)"
+        ],
+        "constraints": [
+          "Must be client component (\"use client\")",
+          "Accept children prop for screenshot content",
+          "Use CSS @keyframes borderRotate for gradient border animation",
+          "Implement glow effect via CSS pseudo-element with blur + accent color",
+          "Animations must respect prefers-reduced-motion",
+          "Use design tokens from I1.F1 for colors (no hardcoded values)"
+        ]
+      },
+      "input_state": "home-browser-frame.tsx does not exist; I1 provides @keyframes borderRotate and glass card styling patterns",
+      "output_state": "home-browser-frame.tsx exists with BrowserFrame component exporting children, className props; macOS title bar with 3 dots and title; gradient border animation; glass card styling; glow pseudo-element",
+      "acceptance_criterion": "BrowserFrame component renders with macOS title bar (3 colored dots + centered title), glass card backdrop-filter blur, rotating gradient border using @keyframes borderRotate, and glow effect beneath frame",
+      "verification_command": "ls apps/web/app/\\(marketing\\)/_components/home-browser-frame.tsx && grep -q 'use client' apps/web/app/\\(marketing\\)/_components/home-browser-frame.tsx && grep -q 'BrowserFrame' apps/web/app/\\(marketing\\)/_components/home-browser-frame.tsx && grep -q 'prefers-reduced-motion' apps/web/app/\\(marketing\\)/_components/home-browser-frame.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/home-browser-frame.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I2.F2.T3"],
+        "notes": "Requires I1.F1 (design tokens/keyframes) and I1.F3 (glass card patterns) to be complete, but tracked at feature level"
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I2.F2.T3",
+      "type": "task",
+      "name": "Create product preview section with AnimateOnScroll wrapper",
+      "action": {
+        "verb": "Create",
+        "target": "product preview section with AnimateOnScroll wrapper"
+      },
+      "purpose": "Build product preview section component that composes BrowserFrame with OptimizedImage (screenshot) and wraps in AnimateOnScroll for scroll-triggered fade-in entrance animation",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "SlideHeroes Canvas"
+          },
+          {
+            "command": "find role",
+            "target": "img"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-product-preview-section.tsx",
+          "apps/web/app/(marketing)/_components/home-browser-frame.tsx",
+          "apps/web/app/(marketing)/_components/home-optimized-image.tsx",
+          "apps/web/app/(marketing)/_components/animate-on-scroll.tsx",
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "BrowserFrame from T2",
+          "OptimizedImage (existing)",
+          "AnimateOnScroll from I1.F2.T4",
+          "homepageContentConfig.productPreview from T1"
+        ],
+        "constraints": [
+          "Must be client component (\"use client\")",
+          "Use existing OptimizedImage component for screenshot",
+          "Use AnimateOnScroll for scroll-triggered fade-in entrance",
+          "Load screenshot path and alt text from homepageContentConfig.productPreview",
+          "Use Next.js Image with AVIF/WEBP auto-format and blur placeholder",
+          "Animations must respect prefers-reduced-motion"
+        ]
+      },
+      "input_state": "home-product-preview-section.tsx does not exist; BrowserFrame exists (T2); AnimateOnScroll exists (I1.F2.T4); homepageContentConfig.productPreview exists (T1)",
+      "output_state": "home-product-preview-section.tsx exists with ProductPreviewSection component that renders BrowserFrame wrapping OptimizedImage, all wrapped in AnimateOnScroll for entrance animation",
+      "acceptance_criterion": "ProductPreviewSection component renders BrowserFrame with product screenshot inside, wrapped in AnimateOnScroll for scroll-triggered fade-in; uses config from homepageContentConfig.productPreview",
+      "verification_command": "ls apps/web/app/\\(marketing\\)/_components/home-product-preview-section.tsx && grep -q 'use client' apps/web/app/\\(marketing\\)/_components/home-product-preview-section.tsx && grep -q 'ProductPreviewSection' apps/web/app/\\(marketing\\)/_components/home-product-preview-section.tsx && grep -q 'BrowserFrame' apps/web/app/\\(marketing\\)/_components/home-product-preview-section.tsx && grep -q 'AnimateOnScroll' apps/web/app/\\(marketing\\)/_components/home-product-preview-section.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/home-product-preview-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I2.F2.T1", "S2086.I2.F2.T2"],
+        "blocks": ["S2086.I2.F2.T4"],
+        "notes": "Requires I1.F2.T4 (AnimateOnScroll) to be complete, but tracked at feature level"
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I2.F2.T4",
+      "type": "task",
+      "name": "Replace ContainerScroll with ProductPreviewSection in page.tsx",
+      "action": {
+        "verb": "Replace",
+        "target": "ContainerScroll with ProductPreviewSection in page.tsx"
+      },
+      "purpose": "Remove ContainerScroll block (lines 99-116) from homepage and replace with new ProductPreviewSection component, removing ContainerScroll import and adding ProductPreviewSection import",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [
+          "ProductPreviewSection from T3"
+        ],
+        "constraints": [
+          "Remove entire ContainerScroll block (lines 99-116)",
+          "Remove ContainerScroll import",
+          "Remove defaultHeroImage constant (now in config)",
+          "Add ProductPreviewSection import",
+          "Maintain same vertical positioning (-mt-[15vh] sm:-mt-[20vh] lg:-mt-[25vh] relative z-[1])",
+          "Ensure no ContainerScroll references remain"
+        ]
+      },
+      "input_state": "page.tsx has ContainerScroll block at lines 99-116 with ContainerScroll import; ProductPreviewSection exists (T3)",
+      "output_state": "ContainerScroll block replaced with <ProductPreviewSection />; ContainerScroll import removed; ProductPreviewSection import added; defaultHeroImage constant removed",
+      "acceptance_criterion": "ContainerScroll no longer imported or used in page.tsx; ProductPreviewSection imported and rendered in place of ContainerScroll block; typecheck passes",
+      "verification_command": "grep -c 'ContainerScroll' apps/web/app/\\(marketing\\)/page.tsx | grep -q '^0$' && grep -q 'ProductPreviewSection' apps/web/app/\\(marketing\\)/page.tsx && ! grep -q 'defaultHeroImage' apps/web/app/\\(marketing\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I2.F2.T3"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Configuration and browser frame component",
+        "task_ids": ["S2086.I2.F2.T1", "S2086.I2.F2.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Product preview section composition",
+        "task_ids": ["S2086.I2.F2.T3"],
+        "depends_on_groups": [1],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Page integration",
+        "task_ids": ["S2086.I2.F2.T4"],
+        "depends_on_groups": [1, 2],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2086.I2.F2.T2", "S2086.I2.F2.T3", "S2086.I2.F2.T4"],
+      "total_hours": 8
+    },
+    "duration": {
+      "sequential": 9,
+      "parallel": 8,
+      "time_saved_percent": 11
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

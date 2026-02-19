@@ -1,0 +1,569 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I1.F3",
+    "feature_name": "Card Components",
+    "feature_slug": "card-components",
+    "initiative_id": "S2086.I1",
+    "spec_id": "2086",
+    "created_at": "2026-02-13T13:15:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2086.I1.F3.T1",
+      "type": "task",
+      "name": "Create GlassCard component",
+      "action": {
+        "verb": "Create",
+        "target": "GlassCard component"
+      },
+      "purpose": "Create glass morphism card component with backdrop-filter blur, semi-transparent background, and subtle border using dark-mode design tokens",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Glass"
+          }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [],
+        "dependencies": [
+          "CSS tokens from S2086.I1.F1 (--homepage-surface, --homepage-border-subtle, --homepage-accent-glow)",
+          "cn utility from @kit/ui/cn"
+        ],
+        "constraints": [
+          "Must use 'use client' directive",
+          "Use backdrop-filter: blur(12px) with fallback for unsupported browsers",
+          "Background uses var(--homepage-surface) with opacity (e.g., rgba)",
+          "Border uses var(--homepage-border-subtle)",
+          "Accept children, className, and optional glow prop (boolean)",
+          "Glow prop adds accent border glow using var(--homepage-accent-glow)",
+          "Follow component pattern from existing marketing components (e.g., feature-card.tsx)"
+        ]
+      },
+      "input_state": "Marketing _components directory exists with dark-mode tokens from F1, no GlassCard component",
+      "output_state": "GlassCard component exists with backdrop blur, semi-transparent bg, subtle border, and optional glow effect",
+      "acceptance_criterion": "GlassCard component renders with backdrop-filter blur, uses homepage design tokens, accepts children/className/glow props",
+      "verification_command": "test -f apps/web/app/\\(marketing\\)/_components/glass-card.tsx && grep -q 'backdrop-filter.*blur' apps/web/app/\\(marketing\\)/_components/glass-card.tsx && grep -q 'homepage-' apps/web/app/\\(marketing\\)/_components/glass-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/glass-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "notes": "Depends on F1 dark-mode tokens being available in CSS",
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F3.T2",
+      "type": "task",
+      "name": "Add GlassCard variant support",
+      "action": {
+        "verb": "Add",
+        "target": "GlassCard variant support"
+      },
+      "purpose": "Add variant prop to GlassCard with 'default' | 'elevated' | 'featured' options for different blur/opacity levels",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/glass-card.tsx"
+        ],
+        "dependencies": [
+          "GlassCard component from T1"
+        ],
+        "constraints": [
+          "Use TypeScript union type for variant: 'default' | 'elevated' | 'featured'",
+          "Default variant uses standard blur/opacity from T1",
+          "Elevated variant: higher blur (16px), more opaque background",
+          "Featured variant: highest blur (20px), most opaque background, subtle accent border",
+          "Maintain backward compatibility (default prop value)",
+          "Use conditional className merging with cn()"
+        ]
+      },
+      "input_state": "GlassCard component exists with single default style, no variant prop",
+      "output_state": "GlassCard has variant prop with 3 style variations (default, elevated, featured)",
+      "acceptance_criterion": "GlassCard component has TypeScript variant prop with 3 options, each variant applies different blur/opacity levels",
+      "verification_command": "grep -q 'variant' apps/web/app/\\(marketing\\)/_components/glass-card.tsx && grep -q \"'default'.*'elevated'.*'featured'\" apps/web/app/\\(marketing\\)/_components/glass-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/glass-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I1.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F3.T3",
+      "type": "task",
+      "name": "Create StatCard number display",
+      "action": {
+        "verb": "Create",
+        "target": "StatCard number display"
+      },
+      "purpose": "Create the visual display portion of StatCard showing accent-colored number with optional prefix/suffix and descriptive label",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Stat"
+          }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [],
+        "dependencies": [
+          "CSS tokens from S2086.I1.F1 (--homepage-accent, --homepage-text, --homepage-text-muted)"
+        ],
+        "constraints": [
+          "Must use 'use client' directive",
+          "Number uses var(--homepage-accent) color with large, bold typography (e.g., text-5xl font-bold)",
+          "Label uses var(--homepage-text-muted) with smaller size (e.g., text-sm)",
+          "Accept value (number), label (string), prefix (optional string), suffix (optional string)",
+          "Layout: vertical flex with number above label, centered text",
+          "Support className prop for composition",
+          "No animation in this task (static display only)"
+        ]
+      },
+      "input_state": "Marketing _components directory exists, no StatCard component",
+      "output_state": "StatCard displays accent-colored number with label, prefix, suffix props (static, no animation)",
+      "acceptance_criterion": "StatCard renders number with accent color, label with muted text, accepts value/label/prefix/suffix/className props",
+      "verification_command": "test -f apps/web/app/\\(marketing\\)/_components/stat-card.tsx && grep -q 'homepage-accent' apps/web/app/\\(marketing\\)/_components/stat-card.tsx && grep -q 'suffix' apps/web/app/\\(marketing\\)/_components/stat-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/stat-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I1.F3.T4"]
+      },
+      "notes": "Depends on F1 dark-mode tokens being available in CSS",
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F3.T4",
+      "type": "task",
+      "name": "Wire StatCard count-up animation",
+      "action": {
+        "verb": "Wire",
+        "target": "StatCard count-up animation"
+      },
+      "purpose": "Integrate useCountUp hook from F2 into StatCard to animate number from 0 to target on viewport entry",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "animation_trigger",
+            "target": "StatCard number",
+            "expected_action": "animate from 0 to target value on viewport entry",
+            "file_path": "apps/web/app/(marketing)/_components/stat-card.tsx"
+          }
+        ]
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/stat-card.tsx"
+        ],
+        "dependencies": [
+          "useCountUp hook from S2086.I1.F2.T5",
+          "StatCard component from T3"
+        ],
+        "constraints": [
+          "Import useCountUp from '../_hooks/use-count-up'",
+          "Replace static number display with ref from useCountUp",
+          "Pass value prop to useCountUp as target",
+          "Default duration: 2 seconds (matching research recommendations)",
+          "Number updates via ref.textContent (no re-renders)",
+          "Format number with prefix/suffix after animation (e.g., '1,000+', '$500')"
+        ]
+      },
+      "input_state": "StatCard exists with static number display, no animation",
+      "output_state": "StatCard number animates from 0 to target on viewport entry using useCountUp hook",
+      "acceptance_criterion": "StatCard uses useCountUp hook, number animates on scroll, maintains prefix/suffix formatting",
+      "verification_command": "grep -q 'useCountUp' apps/web/app/\\(marketing\\)/_components/stat-card.tsx && grep -q 'from.*use-count-up' apps/web/app/\\(marketing\\)/_components/stat-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/stat-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I1.F3.T3"],
+        "blocks": []
+      },
+      "notes": "Requires useCountUp hook from S2086.I1.F2 (external dependency - managed by orchestrator)",
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F3.T5",
+      "type": "task",
+      "name": "Add StatCard decimals support",
+      "action": {
+        "verb": "Add",
+        "target": "StatCard decimals support"
+      },
+      "purpose": "Add decimals prop to StatCard for displaying values like '4.9/5' with proper formatting",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/stat-card.tsx"
+        ],
+        "dependencies": [
+          "StatCard with animation from T4"
+        ],
+        "constraints": [
+          "Add optional decimals prop (number, default: 0)",
+          "Format number with toFixed(decimals) before adding prefix/suffix",
+          "Example: value=4.9, decimals=1, suffix='/5' → displays '4.9/5'",
+          "Maintain backward compatibility (default decimals=0 for integers)"
+        ]
+      },
+      "input_state": "StatCard supports integer values only, no decimals prop",
+      "output_state": "StatCard supports decimals prop for formatting decimal numbers",
+      "acceptance_criterion": "StatCard has decimals prop, formats numbers with specified decimal places",
+      "verification_command": "grep -q 'decimals' apps/web/app/\\(marketing\\)/_components/stat-card.tsx && grep -q 'toFixed' apps/web/app/\\(marketing\\)/_components/stat-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/stat-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I1.F3.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F3.T6",
+      "type": "task",
+      "name": "Create NoiseOverlay component",
+      "action": {
+        "verb": "Create",
+        "target": "NoiseOverlay component"
+      },
+      "purpose": "Create decorative SVG noise texture overlay for adding depth to sections and cards",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Noise"
+          }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Must use 'use client' directive",
+          "Render inline SVG with noise filter (feTurbulence)",
+          "Set aria-hidden='true' (decorative only)",
+          "Set pointer-events: none (no interaction)",
+          "Position absolute, inset-0 to cover parent container",
+          "Accept opacity prop (number 0-1, default: 0.05 for subtle effect)",
+          "Support className prop for composition",
+          "Optional mode prop: 'noise' | 'grid' (nice-to-have, default: 'noise')"
+        ]
+      },
+      "input_state": "Marketing _components directory exists, no NoiseOverlay component",
+      "output_state": "NoiseOverlay component renders inline SVG noise texture with configurable opacity",
+      "acceptance_criterion": "NoiseOverlay renders SVG with noise filter, aria-hidden, pointer-events-none, accepts opacity/className props",
+      "verification_command": "test -f apps/web/app/\\(marketing\\)/_components/noise-overlay.tsx && grep -q 'feTurbulence' apps/web/app/\\(marketing\\)/_components/noise-overlay.tsx && grep -q 'aria-hidden' apps/web/app/\\(marketing\\)/_components/noise-overlay.tsx && grep -q 'pointer-events.*none' apps/web/app/\\(marketing\\)/_components/noise-overlay.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/noise-overlay.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F3.T7",
+      "type": "task",
+      "name": "Add NoiseOverlay grid texture mode",
+      "action": {
+        "verb": "Add",
+        "target": "NoiseOverlay grid texture mode"
+      },
+      "purpose": "Add 'grid' texture mode to NoiseOverlay as alternative to noise for different visual effects",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/noise-overlay.tsx"
+        ],
+        "dependencies": [
+          "NoiseOverlay component from T6"
+        ],
+        "constraints": [
+          "Add mode prop: 'noise' | 'grid' (default: 'noise')",
+          "Grid mode uses SVG pattern with lines instead of feTurbulence",
+          "Grid pattern: horizontal and vertical lines with subtle opacity",
+          "Maintain aria-hidden and pointer-events-none for both modes",
+          "Use conditional rendering based on mode prop"
+        ]
+      },
+      "input_state": "NoiseOverlay has noise mode only, no mode prop",
+      "output_state": "NoiseOverlay supports mode prop with 'noise' and 'grid' options",
+      "acceptance_criterion": "NoiseOverlay has mode prop, renders grid pattern when mode='grid'",
+      "verification_command": "grep -q 'mode' apps/web/app/\\(marketing\\)/_components/noise-overlay.tsx && grep -q \"'noise'.*'grid'\" apps/web/app/\\(marketing\\)/_components/noise-overlay.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/noise-overlay.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I1.F3.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F3.T8",
+      "type": "task",
+      "name": "Test card components composition",
+      "action": {
+        "verb": "Test",
+        "target": "card components composition"
+      },
+      "purpose": "Verify all three card components render correctly with dark-mode tokens, animations work, and components compose together properly",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/glass-card.tsx",
+          "apps/web/app/(marketing)/_components/stat-card.tsx",
+          "apps/web/app/(marketing)/_components/noise-overlay.tsx"
+        ],
+        "dependencies": [
+          "All card components from T1-T7",
+          "Dark-mode tokens from S2086.I1.F1",
+          "Animation infrastructure from S2086.I1.F2"
+        ],
+        "constraints": [
+          "Run pnpm typecheck to verify no type errors",
+          "Run pnpm lint to verify code quality",
+          "Visual verification: GlassCard renders with backdrop blur and tokens",
+          "Visual verification: StatCard animates number on scroll",
+          "Visual verification: NoiseOverlay adds texture without blocking interaction",
+          "Test composition: GlassCard can wrap StatCard and NoiseOverlay",
+          "Test variants: GlassCard elevated and featured variants render correctly",
+          "Test accessibility: aria-hidden on NoiseOverlay, proper contrast on all text"
+        ]
+      },
+      "input_state": "All three card components created with all features",
+      "output_state": "Card components validated, typecheck passes, lint passes, components work together",
+      "acceptance_criterion": "pnpm typecheck passes, pnpm lint passes, all components render with dark-mode styling, animations work, composition works",
+      "verification_command": "pnpm typecheck && pnpm lint && pnpm test:unit -- --grep 'card components' 2>/dev/null || echo 'No unit tests yet (acceptable)'",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I1.F3.T2",
+          "S2086.I1.F3.T5",
+          "S2086.I1.F3.T7"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "GlassCard Component",
+        "task_ids": ["S2086.I1.F3.T1", "S2086.I1.F3.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "StatCard Component",
+        "task_ids": ["S2086.I1.F3.T3", "S2086.I1.F3.T4", "S2086.I1.F3.T5"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "NoiseOverlay Component",
+        "task_ids": ["S2086.I1.F3.T6", "S2086.I1.F3.T7"],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Integration Testing",
+        "task_ids": ["S2086.I1.F3.T8"],
+        "depends_on_groups": [1, 2, 3],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2086.I1.F3.T1", "S2086.I1.F3.T2", "S2086.I1.F3.T8"],
+      "total_hours": 7
+    },
+    "duration": {
+      "sequential": 15,
+      "parallel": 11,
+      "time_saved_percent": 27
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

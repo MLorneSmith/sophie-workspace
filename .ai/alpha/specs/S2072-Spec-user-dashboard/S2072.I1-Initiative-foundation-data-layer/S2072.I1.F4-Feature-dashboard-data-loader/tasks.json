@@ -1,0 +1,478 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I1.F4",
+    "feature_name": "Dashboard Data Loader",
+    "feature_slug": "dashboard-data-loader",
+    "initiative_id": "S2072.I1",
+    "spec_id": "S2072",
+    "created_at": "2026-02-12T13:00:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": "layer-decomposition"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2072.I1.F4.T1",
+      "type": "task",
+      "name": "Create loader file with React.cache wrapper",
+      "action": { "verb": "Create", "target": "loader file with cache wrapper" },
+      "purpose": "Scaffold the main loader file structure with server-only import, React.cache wrapper, and function stub that returns empty DashboardData",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/dashboard/types.ts"
+        ],
+        "dependencies": [
+          "DashboardData type from F1",
+          "React.cache from 'react'",
+          "getSupabaseServerClient from '@kit/supabase/server-client'"
+        ],
+        "constraints": [
+          "File must be at apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "Must include 'import server-only' at top",
+          "Must export loadDashboardPageData wrapped with cache()",
+          "Function stub returns empty DashboardData object"
+        ]
+      },
+      "input_state": "No loader file exists, assumes DashboardData type available from F1",
+      "output_state": "dashboard-page.loader.ts file exists with cache wrapper and empty loader function",
+      "acceptance_criterion": "File exists with server-only import, React.cache wrapper, and exported loadDashboardPageData function",
+      "verification_command": "test -f apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && grep -q 'server-only' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && grep -q 'React.cache' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2072.I1.F4.T2", "S2072.I1.F4.T3", "S2072.I1.F4.T4", "S2072.I1.F4.T5", "S2072.I1.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I1.F4.T2",
+      "type": "task",
+      "name": "Implement loadCourseProgress helper function",
+      "action": { "verb": "Implement", "target": "loadCourseProgress helper function" },
+      "purpose": "Create helper function to fetch course completion percentage from course_progress table and count completed lessons from lesson_progress table",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Tables<'course_progress'>",
+          "Tables<'lesson_progress'>",
+          "SupabaseClient from '@supabase/supabase-js'",
+          "CourseProgressData type from F1"
+        ],
+        "constraints": [
+          "Query course_progress table for completion_percentage and current_lesson_id",
+          "Query lesson_progress table and count completed lessons",
+          "Return type matches CourseProgressData",
+          "Handle errors gracefully and return null on failure",
+          "Use RLS-protected client (no admin client)"
+        ]
+      },
+      "input_state": "Loader file exists with empty stub, database types available",
+      "output_state": "loadCourseProgress helper function queries course_progress and lesson_progress tables",
+      "acceptance_criterion": "Function exists in dashboard-page.loader.ts, queries both tables, returns CourseProgressData or null",
+      "verification_command": "grep -q 'loadCourseProgress' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && grep -q 'course_progress' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && grep -q 'lesson_progress' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I1.F4.T1"],
+        "blocks": ["S2072.I1.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I1.F4.T3",
+      "type": "task",
+      "name": "Implement loadQuizAttempts helper function",
+      "action": { "verb": "Implement", "target": "loadQuizAttempts helper function" },
+      "purpose": "Create helper function to fetch latest quiz score and pass status from quiz_attempts table",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Tables<'quiz_attempts'>",
+          "SupabaseClient"
+        ],
+        "constraints": [
+          "Query quiz_attempts table for latest score and pass status",
+          "Order by created_at DESC and limit to 1",
+          "Return minimal quiz data (score, passed)",
+          "Handle errors gracefully and return null on failure"
+        ]
+      },
+      "input_state": "Loader file exists with empty stub",
+      "output_state": "loadQuizAttempts helper function queries quiz_attempts table",
+      "acceptance_criterion": "Function exists, queries quiz_attempts, returns latest quiz data or null",
+      "verification_command": "grep -q 'loadQuizAttempts' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && grep -q 'quiz_attempts' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I1.F4.T1"],
+        "blocks": ["S2072.I1.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I1.F4.T4",
+      "type": "task",
+      "name": "Implement loadSkillsData helper function",
+      "action": { "verb": "Implement", "target": "loadSkillsData helper function" },
+      "purpose": "Create helper function to fetch category_scores JSONB from survey_responses table for skills radar diagram",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Tables<'survey_responses'>",
+          "SkillsRadarData type from F1"
+        ],
+        "constraints": [
+          "Query survey_responses table for category_scores JSONB",
+          "Order by created_at DESC and limit to most recent",
+          "Return type matches SkillsRadarData (structure, story, substance, style, self-confidence)",
+          "Handle errors gracefully and return null on failure"
+        ]
+      },
+      "input_state": "Loader file exists with empty stub",
+      "output_state": "loadSkillsData helper function queries survey_responses table",
+      "acceptance_criterion": "Function exists, queries survey_responses for category_scores, returns SkillsRadarData or null",
+      "verification_command": "grep -q 'loadSkillsData' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && grep -q 'survey_responses' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I1.F4.T1"],
+        "blocks": ["S2072.I1.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I1.F4.T5",
+      "type": "task",
+      "name": "Implement loadTasksSummary helper function",
+      "action": { "verb": "Implement", "target": "loadTasksSummary helper function" },
+      "purpose": "Create helper function to fetch tasks with 'doing' status for kanban summary widget",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Tables<'tasks'>",
+          "KanbanSummaryData type from F1"
+        ],
+        "constraints": [
+          "Query tasks table where status = 'doing'",
+          "Select status and title fields",
+          "Return type matches KanbanSummaryData",
+          "Handle errors gracefully and return null on failure"
+        ]
+      },
+      "input_state": "Loader file exists with empty stub",
+      "output_state": "loadTasksSummary helper function queries tasks table",
+      "acceptance_criterion": "Function exists, queries tasks where status='doing', returns KanbanSummaryData or null",
+      "verification_command": "grep -q 'loadTasksSummary' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && grep -q \"status.*doing\" apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I1.F4.T1"],
+        "blocks": ["S2072.I1.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I1.F4.T6",
+      "type": "task",
+      "name": "Implement loadPresentations helper function",
+      "action": { "verb": "Implement", "target": "loadPresentations helper function" },
+      "purpose": "Create helper function to fetch presentations from building_blocks_submissions table",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Tables<'building_blocks_submissions'>",
+          "PresentationData type from F1"
+        ],
+        "constraints": [
+          "Query building_blocks_submissions table for id, title, created_at, status",
+          "Order by created_at DESC",
+          "Return type matches PresentationData array",
+          "Handle errors gracefully and return empty array on failure"
+        ]
+      },
+      "input_state": "Loader file exists with empty stub",
+      "output_state": "loadPresentations helper function queries building_blocks_submissions table",
+      "acceptance_criterion": "Function exists, queries building_blocks_submissions, returns PresentationData[] or empty array",
+      "verification_command": "grep -q 'loadPresentations' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && grep -q 'building_blocks_submissions' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I1.F4.T1"],
+        "blocks": ["S2072.I1.F4.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I1.F4.T7",
+      "type": "task",
+      "name": "Implement main loader with Promise.all aggregation",
+      "action": { "verb": "Implement", "target": "main loader with Promise.all aggregation" },
+      "purpose": "Update main loader function to call all helper functions with Promise.all for parallel fetching, aggregate results, and add error handling with fallbacks",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/app/home/(user)/_lib/dashboard/types.ts"
+        ],
+        "dependencies": [
+          "loadCourseProgress",
+          "loadQuizAttempts",
+          "loadSkillsData",
+          "loadTasksSummary",
+          "loadPresentations",
+          "DashboardData type",
+          "getLogger from '@kit/shared/logger'"
+        ],
+        "constraints": [
+          "Use Promise.all to fetch all data sources in parallel",
+          "Wrap Promise.all in try-catch for error handling",
+          "Return fallback empty DashboardData on complete failure",
+          "Log errors using structured logger",
+          "Each helper failure should not crash entire loader (partial data allowed)",
+          "Return type must match DashboardData exactly"
+        ]
+      },
+      "input_state": "All helper functions implemented, main loader stub exists",
+      "output_state": "Main loader calls all helpers with Promise.all, handles errors, returns DashboardData",
+      "acceptance_criterion": "loadDashboardPageData uses Promise.all, calls all 5 helpers, has error handling, returns DashboardData",
+      "verification_command": "grep -q 'Promise.all' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts && grep -c 'loadCourseProgress\\|loadQuizAttempts\\|loadSkillsData\\|loadTasksSummary\\|loadPresentations' apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts | grep -q '5' && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I1.F4.T2", "S2072.I1.F4.T3", "S2072.I1.F4.T4", "S2072.I1.F4.T5", "S2072.I1.F4.T6"],
+        "blocks": ["S2072.I1.F4.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I1.F4.T8",
+      "type": "task",
+      "name": "Wire loader into dashboard page",
+      "action": { "verb": "Wire", "target": "loader into dashboard page" },
+      "purpose": "Call loadDashboardPageData in page.tsx Server Component and pass data to DashboardGrid component",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Dashboard" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        ],
+        "dependencies": [
+          "loadDashboardPageData function",
+          "DashboardGrid component (from F2 or placeholder)"
+        ],
+        "constraints": [
+          "Call loader in async Server Component",
+          "Pass dashboardData prop to grid component",
+          "Handle loading state with Suspense if needed",
+          "Page must remain a Server Component (no 'use client')"
+        ]
+      },
+      "input_state": "Loader function complete, page.tsx exists without loader call",
+      "output_state": "page.tsx calls loadDashboardPageData and passes data to DashboardGrid",
+      "acceptance_criterion": "page.tsx imports and calls loader, passes data to grid component, typecheck passes",
+      "verification_command": "grep -q 'loadDashboardPageData' apps/web/app/home/(user)/page.tsx && grep -q 'dashboardData' apps/web/app/home/(user)/page.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I1.F4.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Foundation",
+        "task_ids": ["S2072.I1.F4.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 1,
+        "name": "Helper Functions",
+        "task_ids": ["S2072.I1.F4.T2", "S2072.I1.F4.T3", "S2072.I1.F4.T4", "S2072.I1.F4.T5", "S2072.I1.F4.T6"],
+        "depends_on_groups": [0],
+        "estimated_hours": 6,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Loader Aggregation",
+        "task_ids": ["S2072.I1.F4.T7"],
+        "depends_on_groups": [0, 1],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Page Integration",
+        "task_ids": ["S2072.I1.F4.T8"],
+        "depends_on_groups": [0, 1, 2],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2072.I1.F4.T1", "S2072.I1.F4.T2", "S2072.I1.F4.T7", "S2072.I1.F4.T8"],
+      "total_hours": 7
+    },
+    "duration": {
+      "sequential": 11,
+      "parallel": 7,
+      "time_saved_percent": 36.4
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

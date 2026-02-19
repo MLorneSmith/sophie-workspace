@@ -106,5 +106,8 @@
 		"type": "command",
 		"command": ".claude/statusline/statusline.sh"
 	},
-	"enabledPlugins": {}
+	"enabledPlugins": {},
+	"env": {
+		"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+	}
 }

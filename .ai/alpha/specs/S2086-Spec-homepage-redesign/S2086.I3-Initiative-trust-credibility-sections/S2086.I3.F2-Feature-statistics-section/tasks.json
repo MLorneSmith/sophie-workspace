@@ -1,0 +1,271 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I3.F2",
+    "feature_name": "Statistics Section",
+    "feature_slug": "statistics-section",
+    "initiative_id": "S2086.I3",
+    "spec_id": 2086,
+    "created_at": "2026-02-13T14:30:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2086.I3.F2.T1",
+      "type": "task",
+      "name": "Add statistics configuration",
+      "action": { "verb": "Add", "target": "statistics configuration to homepage-content.config.ts" },
+      "purpose": "Define 4 stat items (value, suffix, label) for the statistics section, enabling easy content updates",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Add statistics section after features section in config object",
+          "Define StatItem interface with value (number), suffix (string), label (string)",
+          "Use exact values: 2000 (Professionals), 50000 (Presentations), 4.9 (Rating), 85 (Satisfaction)"
+        ]
+      },
+      "input_state": "homepage-content.config.ts exists with hero, sticky, features, testimonials, essentialReads, pricing sections",
+      "output_state": "statistics section added to config with 4 stat items and TypeScript interface",
+      "acceptance_criterion": "Config contains statistics object with stats array of 4 items, each with value/suffix/label",
+      "verification_command": "grep -q 'statistics:' apps/web/config/homepage-content.config.ts && grep -c 'suffix:' apps/web/config/homepage-content.config.ts | grep -q '4'",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/config/homepage-content.config.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I3.F2.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I3.F2.T2",
+      "type": "task",
+      "name": "Create statistics section component",
+      "action": { "verb": "Create", "target": "statistics section component" },
+      "purpose": "Build client component with responsive grid, count-up animation, staggered fade-in, and accent-colored numbers",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "2,000+" },
+          { "command": "is visible", "target": "Professionals" },
+          { "command": "find role", "target": "list" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "useCountUp hook from I1 (apps/web/app/(marketing)/_hooks/use-count-up.ts)",
+          "AnimateOnScroll from I1 (apps/web/app/(marketing)/_components/animate-on-scroll.tsx)",
+          "motion from motion/react (NOT framer-motion)",
+          "homepageContentConfig"
+        ],
+        "constraints": [
+          "Must use 'use client' directive",
+          "Must import motion from 'motion/react'",
+          "Must use useCountUp hook from I1 for number animation",
+          "Must wrap section with AnimateOnScroll from I1",
+          "Responsive grid: grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
+          "Accent color: text-[#24a9e0] for numbers",
+          "Use Framer Motion containerVariants/itemVariants with whileInView and staggerChildren",
+          "Numbers formatted with toLocaleString() for locale-aware separators",
+          "Follow existing component spacing patterns from page.tsx (componentSpacing.stack)"
+        ]
+      },
+      "input_state": "Config has statistics data, useCountUp hook and AnimateOnScroll exist from I1, motion package available",
+      "output_state": "home-statistics-section.tsx component renders 4 stat blocks with count-up animation and staggered fade-in",
+      "acceptance_criterion": "Component exists with responsive grid, 4 stat blocks using useCountUp, Framer Motion stagger animation, accent-colored numbers, and config-driven content",
+      "verification_command": "grep -q 'useCountUp' apps/web/app/\\(marketing\\)/_components/home-statistics-section.tsx && grep -q 'staggerChildren' apps/web/app/\\(marketing\\)/_components/home-statistics-section.tsx && grep -q '#24a9e0' apps/web/app/\\(marketing\\)/_components/home-statistics-section.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/home-statistics-section.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I3.F2.T1"],
+        "blocks": ["S2086.I3.F2.T3"],
+        "notes": "Requires useCountUp hook and AnimateOnScroll from I1 (feature-level dependency enforced by orchestrator)"
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I3.F2.T3",
+      "type": "task",
+      "name": "Wire statistics section to homepage",
+      "action": { "verb": "Wire", "target": "statistics section to homepage" },
+      "purpose": "Integrate statistics section into homepage page.tsx after Logo Cloud section with Suspense boundary",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-statistics-section.tsx"
+        ],
+        "dependencies": [
+          "home-statistics-section component",
+          "homepageContentConfig"
+        ],
+        "constraints": [
+          "Place section after Logo Cloud (line ~129) and before Sticky Scroll Features",
+          "Use same container/spacing pattern as other sections (containerBase, widths.content, spacing.section)",
+          "Wrap in Suspense with appropriate fallback",
+          "Import component at top of file with other component imports"
+        ]
+      },
+      "input_state": "home-statistics-section.tsx component exists, page.tsx has Logo Cloud section at ~line 119-129",
+      "output_state": "Statistics section appears on homepage after Logo Cloud with Suspense boundary",
+      "acceptance_criterion": "Statistics section integrated after Logo Cloud in page.tsx with proper spacing and Suspense wrapper",
+      "verification_command": "grep -q 'HomeStatisticsSection' apps/web/app/\\(marketing\\)/page.tsx && grep -B5 'HomeStatisticsSection' apps/web/app/\\(marketing\\)/page.tsx | grep -q 'Logo Cloud'",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I3.F2.T2"],
+        "blocks": ["S2086.I3.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I3.F2.T4",
+      "type": "task",
+      "name": "Validate statistics section implementation",
+      "action": { "verb": "Validate", "target": "statistics section implementation" },
+      "purpose": "Run typecheck, lint, and verify visual rendering to ensure quality gates pass",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-statistics-section.tsx",
+          "apps/web/config/homepage-content.config.ts",
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Must run pnpm typecheck and pass without errors",
+          "Must run pnpm lint and pass without errors",
+          "Must visually verify section renders on homepage",
+          "Must verify count-up animation triggers on scroll",
+          "Must verify staggered fade-in animation works",
+          "Must verify responsive grid (test at mobile, tablet, desktop breakpoints)"
+        ]
+      },
+      "input_state": "All files created/modified, statistics section integrated into homepage",
+      "output_state": "Typecheck passes, lint passes, visual verification complete",
+      "acceptance_criterion": "pnpm typecheck passes, pnpm lint passes, section renders correctly with animations",
+      "verification_command": "pnpm typecheck && pnpm lint && echo 'Visual verification: Check http://localhost:3000 for statistics section after Logo Cloud'",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S2086.I3.F2.T3"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Creation",
+        "task_ids": ["S2086.I3.F2.T1", "S2086.I3.F2.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Integration & Validation",
+        "task_ids": ["S2086.I3.F2.T3", "S2086.I3.F2.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 2,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2086.I3.F2.T1", "S2086.I3.F2.T2", "S2086.I3.F2.T3", "S2086.I3.F2.T4"],
+      "total_hours": 7
+    },
+    "duration": {
+      "sequential": 7,
+      "parallel": 5,
+      "time_saved_percent": 29
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

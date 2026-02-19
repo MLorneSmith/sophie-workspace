@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 40" fill="none">
+  <rect x="4" y="8" width="24" height="24" rx="4" stroke="#f5f5f7" stroke-width="2"/>
+  <path d="M10 26L16 14L22 26" stroke="#f5f5f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="36" y="27" font-family="system-ui, sans-serif" font-size="14" font-weight="500" letter-spacing="0.05em" fill="#f5f5f7">NORTHBRIDGE ADVISORY</text>
+</svg>

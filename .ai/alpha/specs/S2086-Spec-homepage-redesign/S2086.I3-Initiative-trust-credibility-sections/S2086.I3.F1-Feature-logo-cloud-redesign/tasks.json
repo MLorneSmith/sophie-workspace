@@ -1,0 +1,415 @@
+{
+	"$schema": "../../../../templates/tasks.schema.json",
+	"metadata": {
+		"feature_id": "S2086.I3.F1",
+		"feature_name": "Logo Cloud Redesign",
+		"feature_slug": "logo-cloud-redesign",
+		"initiative_id": "S2086.I3",
+		"spec_id": "S2086",
+		"created_at": "2026-02-13T12:00:00Z",
+		"complexity": {
+			"score": 31.25,
+			"level": "LOW",
+			"target_steps": {
+				"min": 3,
+				"max": 6
+			},
+			"pattern_matched": null
+		},
+		"requires_database": false,
+		"database_tasks": [],
+		"required_env_vars": []
+	},
+	"tasks": [
+		{
+			"id": "S2086.I3.F1.T1",
+			"type": "task",
+			"name": "Add logoCloud section to homepage content config",
+			"action": {
+				"verb": "Add",
+				"target": "logoCloud section config"
+			},
+			"purpose": "Configure logo cloud heading text and marquee speed settings for the redesigned section",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 1,
+			"group": 1,
+			"requires_database": false,
+			"requires_ui": false,
+			"context": {
+				"files": [
+					"apps/web/config/homepage-content.config.ts"
+				],
+				"dependencies": [
+					"homepageContentConfig object"
+				],
+				"constraints": [
+					"Use TypeScript interface for type safety",
+					"Heading text: 'Trusted by professionals at'",
+					"Marquee speed: 30 (default from existing component)"
+				]
+			},
+			"input_state": "homepage-content.config.ts exists with hero, sticky, features, testimonials, essentialReads, pricing sections",
+			"output_state": "homepage-content.config.ts includes logoCloud section with heading and marqueeSpeed properties",
+			"acceptance_criterion": "logoCloud config object exists with heading text and marqueeSpeed property",
+			"verification_command": "grep -q 'logoCloud:' apps/web/config/homepage-content.config.ts && grep -q 'Trusted by professionals at' apps/web/config/homepage-content.config.ts && pnpm typecheck",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/config/homepage-content.config.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["S2086.I3.F1.T3", "S2086.I3.F1.T4"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S2086.I3.F1.T2",
+			"type": "task",
+			"name": "Add single-row mode to LogoCloudMarquee component",
+			"action": {
+				"verb": "Add",
+				"target": "single-row mode prop"
+			},
+			"purpose": "Enable LogoCloudMarquee to render as single continuous row instead of dual rows for new homepage design",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 2,
+			"group": 1,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Trusted by professionals at"
+					},
+					{
+						"command": "find role",
+						"target": "img"
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": [
+					"packages/ui/src/aceternity/logo-marquee.tsx"
+				],
+				"dependencies": [
+					"react-fast-marquee",
+					"framer-motion (motion)",
+					"15 default logos with grayscaleSrc",
+					"Tailwind CSS"
+				],
+				"constraints": [
+					"Preserve existing dual-row behavior (backward compatibility)",
+					"Add 'mode' prop: 'dual' (default) | 'single'",
+					"Single mode: use all logos in one Marquee component",
+					"Keep gradient edge fades on both sides",
+					"Keep grayscale opacity-90 with hover:opacity-100 transition"
+				]
+			},
+			"input_state": "LogoCloudMarquee component renders dual-row marquee with logos, gradient fades, hover effects",
+			"output_state": "LogoCloudMarquee accepts mode prop ('single' | 'dual'), renders single continuous row when mode='single'",
+			"acceptance_criterion": "Component accepts mode='single' prop and renders all 15 logos in single continuous marquee with gradient fades",
+			"verification_command": "grep -q 'mode.*single.*dual' packages/ui/src/aceternity/logo-marquee.tsx && pnpm typecheck",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "packages/ui/src/aceternity/logo-marquee.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["S2086.I3.F1.T3"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S2086.I3.F1.T3",
+			"type": "task",
+			"name": "Update home-logo-cloud-client wrapper for dark theme",
+			"action": {
+				"verb": "Update",
+				"target": "home-logo-cloud-client wrapper styling"
+			},
+			"purpose": "Apply dark design tokens from I1 and pass single-row mode to LogoCloudMarquee",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 3,
+			"group": 2,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Trusted by professionals at"
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": [
+					"apps/web/app/(marketing)/_components/home-logo-cloud-client.tsx",
+					"apps/web/config/homepage-content.config.ts"
+				],
+				"dependencies": [
+					"LogoCloudMarquee from @kit/ui/logo-marquee",
+					"homepageContentConfig.logoCloud"
+				],
+				"constraints": [
+					"Pass mode='single' prop to LogoCloudMarquee",
+					"Pass heading from config (Trusted by professionals at)",
+					"Remove description (not needed in single-row mode)",
+					"Apply dark background (bg-background or #0a0a0f)",
+					"Apply text color for dark theme (text-foreground)"
+				]
+			},
+			"input_state": "home-logo-cloud-client.tsx wraps LogoCloudMarquee with dynamic import and SSR loading state",
+			"output_state": "home-logo-cloud-client passes mode='single', heading from config, dark theme styling to LogoCloudMarquee",
+			"acceptance_criterion": "Wrapper component renders LogoCloudMarquee with mode='single', configured heading, and dark theme classes",
+			"verification_command": "grep -q \"mode='single'\" apps/web/app/\\(marketing\\)/_components/home-logo-cloud-client.tsx && grep -q 'homepageContentConfig.logoCloud' apps/web/app/\\(marketing\\)/_components/home-logo-cloud-client.tsx && pnpm typecheck",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/(marketing)/_components/home-logo-cloud-client.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S2086.I3.F1.T1", "S2086.I3.F1.T2"],
+				"blocks": ["S2086.I3.F1.T4"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S2086.I3.F1.T4",
+			"type": "task",
+			"name": "Wire logo cloud section in homepage with AnimateOnScroll",
+			"action": {
+				"verb": "Wire",
+				"target": "logo cloud section to homepage with AnimateOnScroll"
+			},
+			"purpose": "Integrate restyled logo cloud into homepage between Product Preview and Statistics sections with viewport entrance animation",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 4,
+			"group": 2,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Trusted by professionals at"
+					},
+					{
+						"command": "find role",
+						"target": "img"
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": [
+					"apps/web/app/(marketing)/page.tsx"
+				],
+				"dependencies": [
+					"LogoCloudMarquee from ./_components/home-logo-cloud-client",
+					"AnimateOnScroll from I1 (expected component)",
+					"spacing.section, containerBase, widths.content patterns from page.tsx"
+				],
+				"constraints": [
+					"Wrap LogoCloudMarquee in AnimateOnScroll with fade-in animation",
+					"Position section between Product Preview and Statistics sections",
+					"Use standard spacing.section, containerBase, widths.content patterns",
+					"Apply dark background (dark:bg-background or bg-[#0a0a0f])",
+					"Update gradient fade classes for dark theme: from-background, via-background/90"
+				]
+			},
+			"input_state": "Homepage has Product Preview section, no logo cloud section between it and next section",
+			"output_state": "Logo cloud section rendered between Product Preview and Statistics with AnimateOnScroll wrapper and dark theme",
+			"acceptance_criterion": "Logo cloud section exists in homepage with AnimateOnScroll, positioned between Product Preview and Statistics, with dark background",
+			"verification_command": "grep -q 'AnimateOnScroll' apps/web/app/\\(marketing\\)/page.tsx && grep -q 'LogoCloudMarquee' apps/web/app/\\(marketing\\)/page.tsx && pnpm typecheck",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/(marketing)/page.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S2086.I3.F1.T1", "S2086.I3.F1.T3"],
+				"blocks": ["S2086.I3.F1.T5"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S2086.I3.F1.T5",
+			"type": "task",
+			"name": "Validate logo cloud rendering and styling",
+			"action": {
+				"verb": "Validate",
+				"target": "logo cloud section rendering and styling"
+			},
+			"purpose": "Verify single-row marquee, grayscale logos, hover effects, gradient fades, dark theme, and AnimateOnScroll animation work correctly",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 5,
+			"group": 3,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Trusted by professionals at"
+					},
+					{
+						"command": "find role",
+						"target": "img"
+					},
+					{
+						"command": "snapshot",
+						"target": null
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": [
+					"apps/web/app/(marketing)/page.tsx",
+					"apps/web/app/(marketing)/_components/home-logo-cloud-client.tsx",
+					"packages/ui/src/aceternity/logo-marquee.tsx",
+					"apps/web/config/homepage-content.config.ts"
+				],
+				"dependencies": [
+					"pnpm typecheck",
+					"pnpm lint",
+					"agent-browser for visual validation"
+				],
+				"constraints": [
+					"Verify 15 greyscale logos load",
+					"Verify single continuous row (not dual rows)",
+					"Verify heading text: 'Trusted by professionals at'",
+					"Verify gradient fades on left/right edges",
+					"Verify hover opacity transition works",
+					"Verify AnimateOnScroll fade-in on viewport entry",
+					"Run pnpm typecheck and pnpm lint"
+				]
+			},
+			"input_state": "All logo cloud code changes are complete",
+			"output_state": "Logo cloud section validated for functionality, styling, and code quality",
+			"acceptance_criterion": "Logo cloud renders correctly, all interactions work, typecheck and lint pass",
+			"verification_command": "pnpm typecheck && pnpm lint && agent-browser open http://localhost:3000 && agent-browser wait 3000 && agent-browser is visible 'Trusted by professionals at'",
+			"outputs": [],
+			"dependencies": {
+				"blocked_by": ["S2086.I3.F1.T4"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 1,
+				"name": "Config & Component Updates",
+				"task_ids": ["S2086.I3.F1.T1", "S2086.I3.F1.T2"],
+				"depends_on_groups": [],
+				"estimated_hours": 3,
+				"parallel_hours": 2
+			},
+			{
+				"id": 2,
+				"name": "Integration & Wiring",
+				"task_ids": ["S2086.I3.F1.T3", "S2086.I3.F1.T4"],
+				"depends_on_groups": [1],
+				"estimated_hours": 4,
+				"parallel_hours": 2
+			},
+			{
+				"id": 3,
+				"name": "Validation",
+				"task_ids": ["S2086.I3.F1.T5"],
+				"depends_on_groups": [2],
+				"estimated_hours": 1,
+				"parallel_hours": 1
+			}
+		],
+		"critical_path": {
+			"task_ids": ["S2086.I3.F1.T2", "S2086.I3.F1.T3", "S2086.I3.F1.T4", "S2086.I3.F1.T5"],
+			"total_hours": 7
+		},
+		"duration": {
+			"sequential": 8,
+			"parallel": 7,
+			"time_saved_percent": 12.5
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 100,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 100,
+			"testability": 100
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": false,
+		"spec_issue_commented": true
+	}
+}

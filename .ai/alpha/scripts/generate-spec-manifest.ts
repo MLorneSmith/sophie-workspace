@@ -320,8 +320,8 @@ function extractFeatureDependenciesRaw(featureDir: string): RawDependency[] {
 
 			// Match internal feature references: F1, F2, F3, etc.
 			// Pattern: F1: or F1 or F1, - captures the number after F
-			// Skip if it's part of a semantic ID (already matched above)
-			const internalMatches = section.match(/(?<!\.)\bF(\d+)\b/g);
+			// Skip if it's part of a semantic ID (preceded by .) or range notation (preceded by -)
+			const internalMatches = section.match(/(?<![.-])\bF(\d+)\b/g);
 			if (internalMatches) {
 				for (const internalMatch of internalMatches) {
 					const fNum = internalMatch.slice(1);
@@ -348,6 +348,7 @@ function extractFeatureDependenciesRaw(featureDir: string): RawDependency[] {
  */
 function resolveFeatureDependencies(
 	rawDeps: RawDependency[],
+	currentFeatureId: string,
 	initiativeId: string,
 	featurePriorityMap: Map<string, string>,
 ): string[] {
@@ -355,8 +356,8 @@ function resolveFeatureDependencies(
 
 	for (const dep of rawDeps) {
 		if (dep.type === "semantic") {
-			// Semantic ID (S1362.I1.F1) - use directly
-			if (!resolved.includes(dep.value)) {
+			// Semantic ID (S1362.I1.F1) - use directly, filter self-references
+			if (dep.value !== currentFeatureId && !resolved.includes(dep.value)) {
 				resolved.push(dep.value);
 			}
 		} else if (dep.type === "issue") {
@@ -369,7 +370,12 @@ function resolveFeatureDependencies(
 			// F1 = priority 1, F2 = priority 2, etc.
 			const key = `${initiativeId}-${dep.value}`;
 			const featureId = featurePriorityMap.get(key);
-			if (featureId && !resolved.includes(featureId)) {
+			// Filter self-references
+			if (
+				featureId &&
+				featureId !== currentFeatureId &&
+				!resolved.includes(featureId)
+			) {
 				resolved.push(featureId);
 			}
 		}
@@ -733,6 +739,7 @@ async function main() {
 		if (rawDeps && rawDeps.length > 0) {
 			feature.dependencies = resolveFeatureDependencies(
 				rawDeps,
+				feature.id,
 				feature.initiative_id,
 				featurePriorityMap,
 			);

@@ -14,7 +14,7 @@ const LoadingState = () => (
 		<div className="sticky top-0 flex h-screen items-center justify-center">
 			<div className="mx-auto w-full max-w-6xl px-4">
 				<div className="relative">
-					<div className="mx-auto -mt-12 h-[30rem] w-full max-w-5xl rounded-[30px] bg-transparent p-2 md:h-[40rem] md:p-6">
+					<div className="mx-auto -mt-12 h-[30rem] w-full max-w-full rounded-[30px] bg-transparent p-2 sm:max-w-5xl md:h-[40rem] md:p-6">
 						<div className="h-full w-full rounded-2xl bg-transparent" />
 					</div>
 				</div>

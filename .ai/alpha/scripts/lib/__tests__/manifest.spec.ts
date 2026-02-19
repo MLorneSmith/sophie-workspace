@@ -25,6 +25,7 @@ import {
 	generateSpecManifest,
 	loadManifest,
 	saveManifest,
+	syncSandboxProgressToManifest,
 	writeOverallProgress,
 } from "../manifest.js";
 
@@ -538,6 +539,372 @@ describe("writeOverallProgress", () => {
 		const progress = JSON.parse(fs.readFileSync(progressFile, "utf-8"));
 
 		expect(progress.runId).toBe("run-abc123-xyz9");
+	});
+});
+
+describe("syncSandboxProgressToManifest", () => {
+	it("updates in-progress feature tasks_completed from sandbox progress file", () => {
+		const progressDir = path.join(tempDir, UI_PROGRESS_DIR);
+		fs.mkdirSync(progressDir, { recursive: true });
+
+		// Write sandbox progress file with 3 completed tasks
+		fs.writeFileSync(
+			path.join(progressDir, "sbx-a-progress.json"),
+			JSON.stringify({
+				completed_tasks: ["S2045.I1.F1.T1", "S2045.I1.F1.T2", "S2045.I1.F1.T3"],
+				status: "in_progress",
+			}),
+		);
+
+		const manifest = createTestManifest({
+			feature_queue: [
+				{
+					id: "S2045.I1.F1",
+					initiative_id: "S2045.I1",
+					title: "Feature 1",
+					priority: 1,
+					global_priority: 1,
+					status: "in_progress",
+					tasks_file: "/test",
+					feature_dir: "/test",
+					task_count: 5,
+					tasks_completed: 0, // Stale: 0 during execution
+					sequential_hours: 1,
+					parallel_hours: 1,
+					dependencies: [],
+					github_issue: null,
+					requires_database: false,
+					database_task_count: 0,
+					assigned_sandbox: "sbx-a",
+				},
+			],
+		});
+
+		syncSandboxProgressToManifest(manifest, progressDir);
+
+		expect(manifest.feature_queue[0]?.tasks_completed).toBe(3);
+	});
+
+	it("updates multiple features from different sandboxes independently", () => {
+		const progressDir = path.join(tempDir, UI_PROGRESS_DIR);
+		fs.mkdirSync(progressDir, { recursive: true });
+
+		// Sandbox A: 2 tasks completed
+		fs.writeFileSync(
+			path.join(progressDir, "sbx-a-progress.json"),
+			JSON.stringify({ completed_tasks: ["T1", "T2"] }),
+		);
+
+		// Sandbox B: 1 task completed
+		fs.writeFileSync(
+			path.join(progressDir, "sbx-b-progress.json"),
+			JSON.stringify({ completed_tasks: ["T1"] }),
+		);
+
+		const manifest = createTestManifest({
+			feature_queue: [
+				{
+					id: "F1",
+					initiative_id: "I1",
+					title: "Feature 1",
+					priority: 1,
+					global_priority: 1,
+					status: "in_progress",
+					tasks_file: "/test",
+					feature_dir: "/test",
+					task_count: 5,
+					tasks_completed: 0,
+					sequential_hours: 1,
+					parallel_hours: 1,
+					dependencies: [],
+					github_issue: null,
+					requires_database: false,
+					database_task_count: 0,
+					assigned_sandbox: "sbx-a",
+				},
+				{
+					id: "F2",
+					initiative_id: "I1",
+					title: "Feature 2",
+					priority: 2,
+					global_priority: 2,
+					status: "in_progress",
+					tasks_file: "/test",
+					feature_dir: "/test",
+					task_count: 3,
+					tasks_completed: 0,
+					sequential_hours: 1,
+					parallel_hours: 1,
+					dependencies: [],
+					github_issue: null,
+					requires_database: false,
+					database_task_count: 0,
+					assigned_sandbox: "sbx-b",
+				},
+			],
+		});
+
+		syncSandboxProgressToManifest(manifest, progressDir);
+
+		expect(manifest.feature_queue[0]?.tasks_completed).toBe(2);
+		expect(manifest.feature_queue[1]?.tasks_completed).toBe(1);
+	});
+
+	it("skips completed features (does not overwrite their count)", () => {
+		const progressDir = path.join(tempDir, UI_PROGRESS_DIR);
+		fs.mkdirSync(progressDir, { recursive: true });
+
+		const manifest = createTestManifest({
+			feature_queue: [
+				{
+					id: "F1",
+					initiative_id: "I1",
+					title: "Feature 1",
+					priority: 1,
+					global_priority: 1,
+					status: "completed",
+					tasks_file: "/test",
+					feature_dir: "/test",
+					task_count: 5,
+					tasks_completed: 5,
+					sequential_hours: 1,
+					parallel_hours: 1,
+					dependencies: [],
+					github_issue: null,
+					requires_database: false,
+					database_task_count: 0,
+				},
+			],
+		});
+
+		syncSandboxProgressToManifest(manifest, progressDir);
+
+		// Should remain 5 (not changed)
+		expect(manifest.feature_queue[0]?.tasks_completed).toBe(5);
+	});
+
+	it("skips features without assigned sandbox", () => {
+		const progressDir = path.join(tempDir, UI_PROGRESS_DIR);
+		fs.mkdirSync(progressDir, { recursive: true });
+
+		const manifest = createTestManifest({
+			feature_queue: [
+				{
+					id: "F1",
+					initiative_id: "I1",
+					title: "Feature 1",
+					priority: 1,
+					global_priority: 1,
+					status: "in_progress",
+					tasks_file: "/test",
+					feature_dir: "/test",
+					task_count: 5,
+					tasks_completed: 0,
+					sequential_hours: 1,
+					parallel_hours: 1,
+					dependencies: [],
+					github_issue: null,
+					requires_database: false,
+					database_task_count: 0,
+					// No assigned_sandbox
+				},
+			],
+		});
+
+		syncSandboxProgressToManifest(manifest, progressDir);
+
+		expect(manifest.feature_queue[0]?.tasks_completed).toBe(0);
+	});
+
+	it("never regresses task count (keeps higher value)", () => {
+		const progressDir = path.join(tempDir, UI_PROGRESS_DIR);
+		fs.mkdirSync(progressDir, { recursive: true });
+
+		// Sandbox progress shows only 1 task (possibly stale/reset)
+		fs.writeFileSync(
+			path.join(progressDir, "sbx-a-progress.json"),
+			JSON.stringify({ completed_tasks: ["T1"] }),
+		);
+
+		const manifest = createTestManifest({
+			feature_queue: [
+				{
+					id: "F1",
+					initiative_id: "I1",
+					title: "Feature 1",
+					priority: 1,
+					global_priority: 1,
+					status: "in_progress",
+					tasks_file: "/test",
+					feature_dir: "/test",
+					task_count: 5,
+					tasks_completed: 3, // Already has 3 from previous sync
+					sequential_hours: 1,
+					parallel_hours: 1,
+					dependencies: [],
+					github_issue: null,
+					requires_database: false,
+					database_task_count: 0,
+					assigned_sandbox: "sbx-a",
+				},
+			],
+		});
+
+		syncSandboxProgressToManifest(manifest, progressDir);
+
+		// Should stay at 3 (not regress to 1)
+		expect(manifest.feature_queue[0]?.tasks_completed).toBe(3);
+	});
+
+	it("handles missing sandbox progress file gracefully", () => {
+		const progressDir = path.join(tempDir, UI_PROGRESS_DIR);
+		fs.mkdirSync(progressDir, { recursive: true });
+
+		// No sbx-a-progress.json file exists
+
+		const manifest = createTestManifest({
+			feature_queue: [
+				{
+					id: "F1",
+					initiative_id: "I1",
+					title: "Feature 1",
+					priority: 1,
+					global_priority: 1,
+					status: "in_progress",
+					tasks_file: "/test",
+					feature_dir: "/test",
+					task_count: 5,
+					tasks_completed: 0,
+					sequential_hours: 1,
+					parallel_hours: 1,
+					dependencies: [],
+					github_issue: null,
+					requires_database: false,
+					database_task_count: 0,
+					assigned_sandbox: "sbx-a",
+				},
+			],
+		});
+
+		// Should not throw
+		syncSandboxProgressToManifest(manifest, progressDir);
+
+		expect(manifest.feature_queue[0]?.tasks_completed).toBe(0);
+	});
+
+	it("handles malformed sandbox progress file gracefully", () => {
+		const progressDir = path.join(tempDir, UI_PROGRESS_DIR);
+		fs.mkdirSync(progressDir, { recursive: true });
+
+		// Write invalid JSON
+		fs.writeFileSync(
+			path.join(progressDir, "sbx-a-progress.json"),
+			"not valid json{{{",
+		);
+
+		const manifest = createTestManifest({
+			feature_queue: [
+				{
+					id: "F1",
+					initiative_id: "I1",
+					title: "Feature 1",
+					priority: 1,
+					global_priority: 1,
+					status: "in_progress",
+					tasks_file: "/test",
+					feature_dir: "/test",
+					task_count: 5,
+					tasks_completed: 0,
+					sequential_hours: 1,
+					parallel_hours: 1,
+					dependencies: [],
+					github_issue: null,
+					requires_database: false,
+					database_task_count: 0,
+					assigned_sandbox: "sbx-a",
+				},
+			],
+		});
+
+		// Should not throw
+		syncSandboxProgressToManifest(manifest, progressDir);
+
+		expect(manifest.feature_queue[0]?.tasks_completed).toBe(0);
+	});
+
+	it("integrates with writeOverallProgress to show real-time counts", () => {
+		const progressDir = path.join(tempDir, UI_PROGRESS_DIR);
+		fs.mkdirSync(progressDir, { recursive: true });
+
+		// Write sandbox progress with 3 completed tasks
+		fs.writeFileSync(
+			path.join(progressDir, "sbx-a-progress.json"),
+			JSON.stringify({ completed_tasks: ["T1", "T2", "T3"] }),
+		);
+
+		const manifest = createTestManifest({
+			feature_queue: [
+				{
+					id: "F1",
+					initiative_id: "I1",
+					title: "Completed Feature",
+					priority: 1,
+					global_priority: 1,
+					status: "completed",
+					tasks_file: "/test",
+					feature_dir: "/test",
+					task_count: 5,
+					tasks_completed: 5,
+					sequential_hours: 1,
+					parallel_hours: 1,
+					dependencies: [],
+					github_issue: null,
+					requires_database: false,
+					database_task_count: 0,
+				},
+				{
+					id: "F2",
+					initiative_id: "I1",
+					title: "In Progress Feature",
+					priority: 2,
+					global_priority: 2,
+					status: "in_progress",
+					tasks_file: "/test",
+					feature_dir: "/test",
+					task_count: 5,
+					tasks_completed: 0, // Bug: stays at 0 during execution
+					sequential_hours: 1,
+					parallel_hours: 1,
+					dependencies: [],
+					github_issue: null,
+					requires_database: false,
+					database_task_count: 0,
+					assigned_sandbox: "sbx-a",
+				},
+			],
+			progress: {
+				status: "in_progress",
+				initiatives_completed: 0,
+				initiatives_total: 1,
+				features_completed: 1,
+				features_total: 2,
+				tasks_completed: 0,
+				tasks_total: 10,
+				next_feature_id: null,
+				last_completed_feature_id: null,
+				started_at: null,
+				completed_at: null,
+				last_checkpoint: null,
+			},
+		});
+
+		writeOverallProgress(manifest);
+
+		const overallFile = path.join(progressDir, "overall-progress.json");
+		const overall = JSON.parse(fs.readFileSync(overallFile, "utf-8"));
+
+		// Should be 5 (completed feature) + 3 (synced from sandbox) = 8
+		expect(overall.tasksCompleted).toBe(8);
 	});
 });
 

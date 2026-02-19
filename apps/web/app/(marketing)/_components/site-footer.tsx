@@ -2,6 +2,7 @@ import { cn } from "@kit/ui/utils";
 
 import featureFlagsConfig from "~/config/feature-flags.config";
 
+import { FooterSpotlightText } from "./footer-spotlight-text";
 import { FooterLinkList } from "./site-footer-link-list";
 import { FooterLogoSection } from "./site-footer-logo-section";
 
@@ -12,7 +13,7 @@ const PRODUCT_BASE = [
 	},
 	{
 		title: "Pricing",
-		href: "/#pricing",
+		href: "/pricing",
 	},
 	{
 		title: "AI Presentation Builder",
@@ -157,22 +158,30 @@ const PROGRAMMATIC_SEO_PAGES = [
 
 export function SiteFooter() {
 	return (
-		<footer
-			className={cn(
-				"dark:bg-background border-t border-gray-200 bg-gray-50 dark:border-gray-800",
-			)}
-		>
+		<footer className={cn("border-t border-white/10 bg-black")}>
 			<div className="container py-8">
-				<div
-					className={cn("border-b border-gray-200 pb-6 dark:border-gray-800")}
-				>
+				<div className={cn("border-b border-white/10 pb-6")}>
 					<FooterLogoSection />
 				</div>
 				<div
 					className={cn(
-						"grid grid-cols-2 gap-8 border-b border-gray-200 py-8 md:grid-cols-4 dark:border-gray-800",
+						"relative grid grid-cols-2 gap-8 border-b border-white/10 py-8 md:grid-cols-4",
 					)}
 				>
+					{/* Payload-style vertical column dividers */}
+					<div
+						aria-hidden="true"
+						className="pointer-events-none absolute inset-y-0 hidden md:block left-1/4 w-px bg-white/10"
+					/>
+					<div
+						aria-hidden="true"
+						className="pointer-events-none absolute inset-y-0 hidden md:block left-1/2 w-px bg-white/10"
+					/>
+					<div
+						aria-hidden="true"
+						className="pointer-events-none absolute inset-y-0 hidden md:block left-3/4 w-px bg-white/10"
+					/>
+
 					<FooterLinkList title="Product" items={PRODUCT} />
 					<FooterLinkList title="Company" items={COMPANY} />
 					<FooterLinkList title="Resources" items={RESOURCES} />
@@ -181,11 +190,9 @@ export function SiteFooter() {
 						items={PROGRAMMATIC_SEO_PAGES}
 					/>
 				</div>
-
-				<p className={cn("pt-6 text-sm text-gray-600 dark:text-gray-400")}>
-					&copy; 2025 SlideHeroes Incorporated. All Rights Reserved.
-				</p>
 			</div>
+
+			<FooterSpotlightText />
 		</footer>
 	);
 }

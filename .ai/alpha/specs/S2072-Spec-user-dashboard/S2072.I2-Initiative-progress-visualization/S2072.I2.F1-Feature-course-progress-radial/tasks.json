@@ -1,0 +1,353 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I2.F1",
+    "feature_name": "Course Progress Radial Widget",
+    "feature_slug": "course-progress-radial",
+    "initiative_id": "S2072.I2",
+    "spec_id": "2072",
+    "created_at": "2026-02-12T12:30:00Z",
+    "complexity": {
+      "score": 31.25,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2072.I2.F1.T1",
+      "type": "task",
+      "name": "Create CourseProgressRadial component skeleton with Card wrapper",
+      "action": {
+        "verb": "Create",
+        "target": "CourseProgressRadial component skeleton"
+      },
+      "purpose": "Establish component structure with Card, CardHeader, CardTitle, and ChartContainer wrapper before adding chart logic",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "packages/ui/src/shadcn/chart.tsx"
+        ],
+        "dependencies": [
+          "Card, CardContent, CardHeader, CardTitle from @kit/ui/card",
+          "ChartContainer from @kit/ui/chart"
+        ],
+        "constraints": [
+          "Must use ChartContainer for CSS variable theming",
+          "Must follow Card wrapper pattern for consistency with other widgets",
+          "Component must be client component ('use client')"
+        ]
+      },
+      "input_state": "Dashboard page exists but has no widgets. ChartContainer and Card components available from @kit/ui.",
+      "output_state": "Empty CourseProgressRadial component with Card wrapper and placeholder div for chart.",
+      "acceptance_criterion": "Component file exists at apps/web/app/home/(user)/_components/dashboard/course-progress-radial.tsx with Card, CardHeader, CardTitle, and ChartContainer structure.",
+      "verification_command": "grep -q 'Card\\|ChartContainer' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-radial.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-radial.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I2.F1.T2",
+      "type": "task",
+      "name": "Add Recharts PieChart with donut configuration",
+      "action": {
+        "verb": "Add",
+        "target": "Recharts PieChart with donut configuration"
+      },
+      "purpose": "Configure PieChart with innerRadius for donut effect and center text displaying percentage",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/course-progress-radial.tsx",
+          "apps/web/app/home/(user)/course/_components/RadialProgress.tsx"
+        ],
+        "dependencies": [
+          "PieChart, Pie, Cell from recharts",
+          "ChartContainer from @kit/ui/chart"
+        ],
+        "constraints": [
+          "Use PieChart with innerRadius for donut effect (not custom SVG)",
+          "Center text must show percentage (e.g., '75%')",
+          "Must handle responsive sizing via ChartContainer",
+          "Chart config must use CSS variables for theming"
+        ]
+      },
+      "input_state": "CourseProgressRadial component skeleton exists with Card and ChartContainer wrapper.",
+      "output_state": "Component renders donut chart with mock data showing 75% completion in center.",
+      "acceptance_criterion": "PieChart renders with innerRadius showing donut chart. Center displays percentage text. Component works with mock data.",
+      "verification_command": "grep -q 'PieChart\\|innerRadius' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-radial.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-radial.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I2.F1.T1"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I2.F1.T3",
+      "type": "task",
+      "name": "Add data transformation logic with zero-progress handling",
+      "action": {
+        "verb": "Add",
+        "target": "data transformation logic with zero-progress handling"
+      },
+      "purpose": "Transform course_progress data from loader format to chart data format with special handling for 0% completion state",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/course-progress-radial.tsx"
+        ],
+        "dependencies": [
+          "Course progress data structure from I1 loader (when available)"
+        ],
+        "constraints": [
+          "Accept course_progress data as prop (percentage, total_lessons, completed_lessons)",
+          "Transform to Recharts pie data format [{ value, fill }]",
+          "Zero-progress (0%) must render empty ring with 'Start Course' CTA",
+          "Non-zero progress must show lessons count below chart (e.g., '12 of 18 lessons')"
+        ]
+      },
+      "input_state": "PieChart renders with mock data. Component needs real data transformation.",
+      "output_state": "Component accepts course_progress data prop, transforms to chart format, and handles zero-progress with CTA.",
+      "acceptance_criterion": "Component transforms data correctly. Zero-progress shows 'Start Course' CTA. Non-zero shows lessons count.",
+      "verification_command": "grep -q 'completed_lessons\\|Start Course' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-radial.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-radial.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I2.F1.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I2.F1.T4",
+      "type": "task",
+      "name": "Wire CourseProgressRadial to dashboard page",
+      "action": {
+        "verb": "Wire",
+        "target": "CourseProgressRadial to dashboard page"
+      },
+      "purpose": "Import and place CourseProgressRadial widget in Row 1, Column 1 of dashboard grid layout",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Course Progress"
+          },
+          {
+            "command": "find role",
+            "target": "img"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/dashboard/course-progress-radial.tsx"
+        ],
+        "dependencies": [
+          "Dashboard grid layout from S2072.I1"
+        ],
+        "constraints": [
+          "Place widget in Row 1, Column 1 of dashboard grid",
+          "Pass mock data initially (loader data comes from I1)",
+          "Widget must be responsive on mobile and desktop"
+        ]
+      },
+      "input_state": "CourseProgressRadial component complete with data transformation. Dashboard page exists without widgets.",
+      "output_state": "CourseProgressRadial widget renders on dashboard at /home route in correct grid position.",
+      "acceptance_criterion": "Widget appears on dashboard page at /home. Renders in Row 1, Column 1. Responsive on all screen sizes.",
+      "verification_command": "grep -q 'CourseProgressRadial' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I2.F1.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I2.F1.T5",
+      "type": "task",
+      "name": "Create unit tests for CourseProgressRadial",
+      "action": {
+        "verb": "Create",
+        "target": "unit tests for CourseProgressRadial"
+      },
+      "purpose": "Add comprehensive tests covering normal progress, zero-progress state, and data transformation logic",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/course-progress-radial.tsx"
+        ],
+        "dependencies": [
+          "Vitest testing framework",
+          "@testing-library/react"
+        ],
+        "constraints": [
+          "Test normal progress rendering (75% complete)",
+          "Test zero-progress state with 'Start Course' CTA",
+          "Test data transformation from loader format to chart format",
+          "Test accessibility (aria-labels, roles)"
+        ]
+      },
+      "input_state": "CourseProgressRadial component complete and integrated on dashboard.",
+      "output_state": "Test file exists with comprehensive coverage of all component states.",
+      "acceptance_criterion": "Test file exists with passing tests for all states. Tests run successfully with 'pnpm --filter web test -- --grep course-progress-radial'.",
+      "verification_command": "pnpm --filter web test -- --grep course-progress-radial --run && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-radial.test.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I2.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Structure & Chart",
+        "task_ids": ["S2072.I2.F1.T1", "S2072.I2.F1.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 5
+      },
+      {
+        "id": 2,
+        "name": "Data Logic & Integration",
+        "task_ids": ["S2072.I2.F1.T3", "S2072.I2.F1.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Testing",
+        "task_ids": ["S2072.I2.F1.T5"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2072.I2.F1.T1", "S2072.I2.F1.T2", "S2072.I2.F1.T3", "S2072.I2.F1.T4", "S2072.I2.F1.T5"],
+      "total_hours": 11
+    },
+    "duration": {
+      "sequential": 11,
+      "parallel": 8,
+      "time_saved_percent": 27
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

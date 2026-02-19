@@ -1,0 +1,297 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I5.F5",
+    "feature_name": "Final CTA Section",
+    "feature_slug": "final-cta-section",
+    "initiative_id": "S2086.I5",
+    "spec_id": 2086,
+    "created_at": "2026-02-13T13:50:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": "layer-decomposition"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": [],
+    "requires_ui": true,
+    "ui_tasks": ["S2086.I5.F5.T2", "S2086.I5.F5.T3"]
+  },
+  "tasks": [
+    {
+      "id": "S2086.I5.F5.T1",
+      "type": "task",
+      "name": "Add final CTA content configuration",
+      "action": { "verb": "Add", "target": "final CTA content to homepage-content.config.ts" },
+      "purpose": "Define final CTA section content (headline, subtitle, CTA button labels/links, trust badge text) in centralized config for easy maintenance",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/config/homepage-content.config.ts"],
+        "dependencies": [],
+        "constraints": [
+          "Follow existing config structure (hero, sticky, features, etc.)",
+          "Use TypeScript interface for type safety",
+          "Include: headline, subtitle, primaryCTA (label, href), secondaryCTA (label, href), trustBadges array",
+          "Trust badges: 'No credit card required', 'Free plan available', 'Cancel anytime'"
+        ]
+      },
+      "input_state": "homepage-content.config.ts exists with hero, sticky, features, testimonials, essentialReads, pricing sections",
+      "output_state": "finalCta section added to config with all content fields",
+      "acceptance_criterion": "finalCta key exists in homepageContentConfig with headline, subtitle, primaryCTA, secondaryCTA, and trustBadges array",
+      "verification_command": "grep -q 'finalCta:' apps/web/config/homepage-content.config.ts && grep -q 'trustBadges:' apps/web/config/homepage-content.config.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/config/homepage-content.config.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I5.F5.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F5.T2",
+      "type": "task",
+      "name": "Create HomeFinalCtaSection component",
+      "action": { "verb": "Create", "target": "HomeFinalCtaSection component" },
+      "purpose": "Build final CTA section with gradient orb background, centered headline/subtitle, dual CTA buttons, and trust badges row for bottom-of-page conversion",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Ready to transform" },
+          { "command": "find role", "target": "link" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts",
+          "packages/ui/src/makerkit/marketing/cta-button.tsx",
+          "packages/ui/src/makerkit/marketing/gradient-text.tsx"
+        ],
+        "dependencies": [
+          "CtaButton from @kit/ui",
+          "GradientText from @kit/ui",
+          "Check, Shield from lucide-react",
+          "AnimateOnScroll from apps/web/app/(marketing)/_components/animate-on-scroll.tsx"
+        ],
+        "constraints": [
+          "Must use 'use client' directive (AnimateOnScroll + gradient orb animation)",
+          "Full-width section with relative positioning",
+          "Gradient orb: absolute-positioned div with radial-gradient + blur(80px) + opacity-20",
+          "Orb color: accent/background gradient at center",
+          "Headline: GradientText with gradient from accent to background",
+          "CTA buttons: CtaButton component, primary (variant='default'), secondary (variant='outline')",
+          "Trust badges: flex row with Check icons, text-muted-foreground",
+          "Wrap entire content in AnimateOnScroll with fade-up animation",
+          "Mobile responsive: stack on mobile, row on desktop for badges"
+        ]
+      },
+      "input_state": "homepage-content.config.ts has finalCta section, AnimateOnScroll exists from I1.F2",
+      "output_state": "HomeFinalCtaSection component ready for integration into homepage",
+      "acceptance_criterion": "Component renders gradient orb background, headline with gradient text, dual CTA buttons, and trust badges row with icons",
+      "verification_command": "test -f apps/web/app/\\(marketing\\)/_components/home-final-cta-section.tsx && grep -q 'GradientText' apps/web/app/\\(marketing\\)/_components/home-final-cta-section.tsx && grep -q 'CtaButton' apps/web/app/\\(marketing\\)/_components/home-final-cta-section.tsx && grep -q 'AnimateOnScroll' apps/web/app/\\(marketing\\)/_components/home-final-cta-section.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/home-final-cta-section.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F5.T1"],
+        "blocks": ["S2086.I5.F5.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F5.T3",
+      "type": "task",
+      "name": "Integrate Final CTA section into homepage",
+      "action": { "verb": "Integrate", "target": "Final CTA section into page.tsx" },
+      "purpose": "Add HomeFinalCtaSection as the last content section before footer in the marketing homepage",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Ready to transform" }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-final-cta-section.tsx",
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": ["HomeFinalCtaSection", "homepageContentConfig"],
+        "constraints": [
+          "Place after Blog Posts section (line ~283)",
+          "Before closing </div> of main page container",
+          "Use same spacing pattern as other sections (spacing.section)",
+          "Use same container pattern (containerBase + widths.content)",
+          "Wrap in Suspense fallback as other sections do",
+          "Pass homepageContentConfig.finalCta as prop"
+        ]
+      },
+      "input_state": "HomeFinalCtaSection component exists, homepage has Blog Posts section at line 252-283",
+      "output_state": "Final CTA section renders as last section before footer on marketing homepage",
+      "acceptance_criterion": "HomeFinalCtaSection imported and rendered in page.tsx after Blog Posts section, passes finalCta config",
+      "verification_command": "grep -q 'HomeFinalCtaSection' apps/web/app/\\(marketing\\)/page.tsx && grep -q 'homepageContentConfig.finalCta' apps/web/app/\\(marketing\\)/page.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F5.T2"],
+        "blocks": ["S2086.I5.F5.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F5.T4",
+      "type": "task",
+      "name": "Verify Final CTA section implementation",
+      "action": { "verb": "Verify", "target": "Final CTA section implementation quality" },
+      "purpose": "Ensure component passes type checking, linting, and visual inspection requirements",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-final-cta-section.tsx",
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Run pnpm typecheck to verify no type errors",
+          "Run pnpm lint to verify code quality",
+          "Visual inspection: gradient orb renders with blur",
+          "Visual inspection: buttons are functional and styled correctly",
+          "Visual inspection: trust badges display with icons",
+          "Visual inspection: scroll animation triggers on viewport entry"
+        ]
+      },
+      "input_state": "Final CTA section integrated into homepage",
+      "output_state": "Implementation validated, typecheck passes, lint passes, all requirements met",
+      "acceptance_criterion": "pnpm typecheck passes, pnpm lint passes, visual inspection confirms all UI elements render correctly",
+      "verification_command": "pnpm typecheck && pnpm lint",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F5.T3"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Content Configuration",
+        "task_ids": ["S2086.I5.F5.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 2,
+        "name": "Component Development",
+        "task_ids": ["S2086.I5.F5.T2"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Page Integration",
+        "task_ids": ["S2086.I5.F5.T3"],
+        "depends_on_groups": [2],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 4,
+        "name": "Quality Validation",
+        "task_ids": ["S2086.I5.F5.T4"],
+        "depends_on_groups": [3],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2086.I5.F5.T1", "S2086.I5.F5.T2", "S2086.I5.F5.T3", "S2086.I5.F5.T4"],
+      "total_hours": 7
+    },
+    "duration": {
+      "sequential": 7,
+      "parallel": 7,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

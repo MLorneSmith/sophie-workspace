@@ -1,0 +1,653 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I5.F3",
+    "feature_name": "Pricing Redesign",
+    "feature_slug": "pricing-redesign",
+    "initiative_id": "S2086.I5",
+    "spec_id": "2086",
+    "created_at": "2026-02-13T13:30:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2086.I5.F3.T1",
+      "type": "task",
+      "name": "Update pricing section content configuration",
+      "action": {
+        "verb": "Update",
+        "target": "pricing section content in homepage-content.config.ts"
+      },
+      "purpose": "Update pricing section title, subtitle, and pill text to match redesigned homepage messaging",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Maintain existing config structure",
+          "Use descriptive, professional copy"
+        ]
+      },
+      "input_state": "homepage-content.config.ts exists with current pricing content",
+      "output_state": "homepage-content.config.ts updated with new pricing.title, pricing.subtitle, pricing.pill text",
+      "acceptance_criterion": "Config file contains updated pricing section content with new title, subtitle, and pill text",
+      "verification_command": "grep -A 3 'pricing:' apps/web/config/homepage-content.config.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/config/homepage-content.config.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S2086.I5.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F3.T2",
+      "type": "task",
+      "name": "Create home pricing section component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "home-pricing-section.tsx component with glass card layout"
+      },
+      "purpose": "Create the foundational pricing section component with 3-tier glass card layout structure",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        ],
+        "dependencies": [
+          "packages/ui/src/makerkit/marketing/secondary-hero.tsx (SecondaryHero component)",
+          "Design tokens from I1.F1 (glass card styling)"
+        ],
+        "constraints": [
+          "Client component (use client)",
+          "Use design tokens from I1.F1 for glass card styling",
+          "3-tier layout: Free, Pro, Enterprise",
+          "Responsive grid layout"
+        ]
+      },
+      "input_state": "No home-pricing-section.tsx exists; design tokens available from I1.F1",
+      "output_state": "home-pricing-section.tsx created with glass card structure, SecondaryHero header, 3 pricing card slots",
+      "acceptance_criterion": "Component exists with 3 glass card placeholders, SecondaryHero section header, and responsive grid layout",
+      "verification_command": "test -f apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && grep 'SecondaryHero' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S2086.I5.F3.T3",
+          "S2086.I5.F3.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F3.T3",
+      "type": "task",
+      "name": "Add pricing data display from billing config",
+      "action": {
+        "verb": "Add",
+        "target": "pricing data reading and display from billing.config.ts"
+      },
+      "purpose": "Read pricing data from existing billing.config.ts and display prices, product names, and descriptions in glass cards",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        ],
+        "dependencies": [
+          "apps/web/config/billing.config.ts (pricing data)",
+          "@kit/billing (getPlanIntervals, getPrimaryLineItem helpers)"
+        ],
+        "constraints": [
+          "Read from billing.config.ts (no hardcoded prices)",
+          "Display product name, description, price, and currency",
+          "Use existing billing helpers for data extraction",
+          "Support monthly and annual intervals"
+        ]
+      },
+      "input_state": "home-pricing-section.tsx has glass card structure with placeholders",
+      "output_state": "home-pricing-section.tsx displays pricing data from billing.config.ts in each glass card",
+      "acceptance_criterion": "Component reads billing config and displays prices, product names, and descriptions dynamically",
+      "verification_command": "grep 'billingConfig' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && grep 'getPlanIntervals\\|getPrimaryLineItem' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I5.F3.T2"
+        ],
+        "blocks": [
+          "S2086.I5.F3.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F3.T4",
+      "type": "task",
+      "name": "Add feature lists to pricing cards",
+      "action": {
+        "verb": "Add",
+        "target": "feature checkmark lists to each pricing card"
+      },
+      "purpose": "Display feature lists with checkmark icons from billing config on each pricing tier",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        ],
+        "dependencies": [
+          "lucide-react (CheckCircle icon)",
+          "@kit/ui/utils (cn utility)"
+        ],
+        "constraints": [
+          "Read features array from billing config products",
+          "Use CheckCircle icon for each feature",
+          "Consistent spacing and styling",
+          "Accessible list structure"
+        ]
+      },
+      "input_state": "home-pricing-section.tsx displays pricing data without feature lists",
+      "output_state": "home-pricing-section.tsx displays feature checkmark lists on each pricing card",
+      "acceptance_criterion": "Each pricing card displays its feature list with checkmark icons",
+      "verification_command": "grep 'features' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && grep 'CheckCircle' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I5.F3.T3"
+        ],
+        "blocks": [
+          "S2086.I5.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F3.T5",
+      "type": "task",
+      "name": "Create monthly/annual toggle switch component",
+      "action": {
+        "verb": "Create",
+        "target": "monthly/annual toggle switch with interval state"
+      },
+      "purpose": "Add toggle switch component to switch between monthly and annual pricing intervals with state management",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        ],
+        "dependencies": [
+          "@kit/ui/switch (Switch component)",
+          "React useState hook"
+        ],
+        "constraints": [
+          "Use shadcn/ui Switch component",
+          "useState for interval state (month/year)",
+          "Display 'Save X%' label on annual option",
+          "Center toggle above pricing cards"
+        ]
+      },
+      "input_state": "home-pricing-section.tsx has glass card structure without toggle",
+      "output_state": "home-pricing-section.tsx has toggle switch component with interval state",
+      "acceptance_criterion": "Toggle switch exists above pricing cards with monthly/annual options and 'Save X%' label",
+      "verification_command": "grep 'Switch' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && grep 'useState' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I5.F3.T2"
+        ],
+        "blocks": [
+          "S2086.I5.F3.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F3.T6",
+      "type": "task",
+      "name": "Wire toggle to price display logic",
+      "action": {
+        "verb": "Wire",
+        "target": "toggle switch to price display logic"
+      },
+      "purpose": "Connect interval state to price rendering so prices update when toggling monthly/annual",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        ],
+        "dependencies": [
+          "Interval state from T5",
+          "billing config plan filtering logic"
+        ],
+        "constraints": [
+          "Filter plans by selected interval",
+          "Update displayed price when interval changes",
+          "Recalculate 'Save X%' percentage dynamically",
+          "Smooth price transition (no jarring jumps)"
+        ]
+      },
+      "input_state": "home-pricing-section.tsx has toggle switch and static price display",
+      "output_state": "home-pricing-section.tsx updates prices dynamically when toggle is switched",
+      "acceptance_criterion": "Toggling monthly/annual updates all displayed prices and 'Save X%' label",
+      "verification_command": "grep 'interval' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && pnpm typecheck",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "state_update",
+            "target": "interval state",
+            "expected_action": "filters billing config plans by selected interval",
+            "file_path": "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+          }
+        ]
+      },
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I5.F3.T3",
+          "S2086.I5.F3.T5"
+        ],
+        "blocks": [
+          "S2086.I5.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F3.T7",
+      "type": "task",
+      "name": "Add highlighted styling to Pro tier",
+      "action": {
+        "verb": "Add",
+        "target": "highlighted styling to Pro (Most Popular) tier"
+      },
+      "purpose": "Apply elevated styling to the Pro pricing tier including accent border, badge, and slight scale to make it stand out",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        ],
+        "dependencies": [
+          "@kit/ui/badge (Badge component)",
+          "Design tokens from I1.F1 (accent colors, borders)"
+        ],
+        "constraints": [
+          "Check product.highlighted from billing config",
+          "Add 'Most Popular' badge to highlighted tier",
+          "Apply accent border using design tokens",
+          "Slight scale transform (e.g., scale-105)",
+          "Elevated z-index for visual prominence"
+        ]
+      },
+      "input_state": "home-pricing-section.tsx displays 3 pricing tiers with equal styling",
+      "output_state": "home-pricing-section.tsx displays Pro tier with elevated styling and 'Most Popular' badge",
+      "acceptance_criterion": "Pro tier has 'Most Popular' badge, accent border, and elevated scale compared to other tiers",
+      "verification_command": "grep 'highlighted' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && grep 'Badge' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && grep 'scale' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I5.F3.T2"
+        ],
+        "blocks": [
+          "S2086.I5.F3.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F3.T8",
+      "type": "task",
+      "name": "Add glow pulse animation to Pro CTA button",
+      "action": {
+        "verb": "Add",
+        "target": "glow pulse animation to Pro tier CTA button"
+      },
+      "purpose": "Apply glow pulse CSS animation to the highlighted tier's CTA button to draw attention",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        ],
+        "dependencies": [
+          "Animation keyframes from I1.F2 (glowPulse animation)",
+          "@kit/ui/button (Button component)"
+        ],
+        "constraints": [
+          "Apply animation only to highlighted tier CTA",
+          "Use CSS @keyframes glowPulse from I1.F2",
+          "Animation runs continuously (infinite)",
+          "Respects prefers-reduced-motion media query"
+        ]
+      },
+      "input_state": "home-pricing-section.tsx has highlighted tier without CTA animation",
+      "output_state": "home-pricing-section.tsx has glow pulse animation on Pro tier CTA button",
+      "acceptance_criterion": "Pro tier CTA button has continuous glow pulse animation that respects reduced motion preferences",
+      "verification_command": "grep 'glowPulse\\|@keyframes' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && grep 'animate' apps/web/app/\\(marketing\\)/_components/home-pricing-section.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I5.F3.T7"
+        ],
+        "blocks": [
+          "S2086.I5.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F3.T9",
+      "type": "task",
+      "name": "Replace existing pricing section in homepage",
+      "action": {
+        "verb": "Replace",
+        "target": "existing PricingTable with HomePricingSection in page.tsx"
+      },
+      "purpose": "Integrate the new pricing component into the marketing homepage, replacing the existing PricingTable",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 9,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Pricing"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-pricing-section.tsx"
+        ],
+        "dependencies": [
+          "HomePricingSection component from T2-T8",
+          "homepage-content.config.ts from T1"
+        ],
+        "constraints": [
+          "Replace PricingTable import with HomePricingSection",
+          "Maintain existing section structure and spacing",
+          "Keep Suspense boundary for loading state",
+          "No billing paths needed (visual only)"
+        ]
+      },
+      "input_state": "apps/web/app/(marketing)/page.tsx uses PricingTable from @kit/billing-gateway/marketing",
+      "output_state": "apps/web/app/(marketing)/page.tsx uses HomePricingSection with new glass card design",
+      "acceptance_criterion": "Homepage displays new pricing section with glass cards, toggle, and highlighted Pro tier",
+      "verification_command": "grep 'HomePricingSection' apps/web/app/\\(marketing\\)/page.tsx && ! grep 'PricingTable' apps/web/app/\\(marketing\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I5.F3.T1",
+          "S2086.I5.F3.T4",
+          "S2086.I5.F3.T6",
+          "S2086.I5.F3.T8"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Content Configuration",
+        "task_ids": [
+          "S2086.I5.F3.T1"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 2,
+        "name": "Pricing Component Foundation",
+        "task_ids": [
+          "S2086.I5.F3.T2",
+          "S2086.I5.F3.T3",
+          "S2086.I5.F3.T4"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 6,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Toggle Functionality",
+        "task_ids": [
+          "S2086.I5.F3.T5",
+          "S2086.I5.F3.T6"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Visual Enhancements",
+        "task_ids": [
+          "S2086.I5.F3.T7",
+          "S2086.I5.F3.T8"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      },
+      {
+        "id": 5,
+        "name": "Integration",
+        "task_ids": [
+          "S2086.I5.F3.T9"
+        ],
+        "depends_on_groups": [
+          1,
+          3,
+          4
+        ],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S2086.I5.F3.T2",
+        "S2086.I5.F3.T3",
+        "S2086.I5.F3.T5",
+        "S2086.I5.F3.T6",
+        "S2086.I5.F3.T9"
+      ],
+      "total_hours": 9
+    },
+    "duration": {
+      "sequential": 15,
+      "parallel": 7,
+      "time_saved_percent": 53.33
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

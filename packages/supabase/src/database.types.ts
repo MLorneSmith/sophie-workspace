@@ -34,7 +34,2872 @@ export type Database = {
 	};
 	payload: {
 		Tables: {
-			[_ in never]: never;
+			_course_lessons_v: {
+				Row: {
+					created_at: string;
+					id: string;
+					latest: boolean | null;
+					parent_id: string | null;
+					updated_at: string;
+					version__status:
+						| Database["payload"]["Enums"]["enum__course_lessons_v_version_status"]
+						| null;
+					version_bunny_library_id: string | null;
+					version_bunny_video_id: string | null;
+					version_content: Json | null;
+					version_course_id_id: string | null;
+					version_created_at: string | null;
+					version_description: string | null;
+					version_estimated_duration: number | null;
+					version_lesson_image_id: string | null;
+					version_lesson_number: number | null;
+					version_published_at: string | null;
+					version_quiz_id_id: string | null;
+					version_slug: string | null;
+					version_survey_id_id: string | null;
+					version_thumbnail_id: string | null;
+					version_title: string | null;
+					version_todo: Json | null;
+					version_todo_complete_quiz: boolean | null;
+					version_todo_course_project: Json | null;
+					version_todo_read_content: Json | null;
+					version_todo_watch_content: Json | null;
+					version_updated_at: string | null;
+					version_video_source_type:
+						| Database["payload"]["Enums"]["enum__course_lessons_v_version_video_source_type"]
+						| null;
+					version_youtube_video_id: string | null;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__course_lessons_v_version_status"]
+						| null;
+					version_bunny_library_id?: string | null;
+					version_bunny_video_id?: string | null;
+					version_content?: Json | null;
+					version_course_id_id?: string | null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_estimated_duration?: number | null;
+					version_lesson_image_id?: string | null;
+					version_lesson_number?: number | null;
+					version_published_at?: string | null;
+					version_quiz_id_id?: string | null;
+					version_slug?: string | null;
+					version_survey_id_id?: string | null;
+					version_thumbnail_id?: string | null;
+					version_title?: string | null;
+					version_todo?: Json | null;
+					version_todo_complete_quiz?: boolean | null;
+					version_todo_course_project?: Json | null;
+					version_todo_read_content?: Json | null;
+					version_todo_watch_content?: Json | null;
+					version_updated_at?: string | null;
+					version_video_source_type?:
+						| Database["payload"]["Enums"]["enum__course_lessons_v_version_video_source_type"]
+						| null;
+					version_youtube_video_id?: string | null;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__course_lessons_v_version_status"]
+						| null;
+					version_bunny_library_id?: string | null;
+					version_bunny_video_id?: string | null;
+					version_content?: Json | null;
+					version_course_id_id?: string | null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_estimated_duration?: number | null;
+					version_lesson_image_id?: string | null;
+					version_lesson_number?: number | null;
+					version_published_at?: string | null;
+					version_quiz_id_id?: string | null;
+					version_slug?: string | null;
+					version_survey_id_id?: string | null;
+					version_thumbnail_id?: string | null;
+					version_title?: string | null;
+					version_todo?: Json | null;
+					version_todo_complete_quiz?: boolean | null;
+					version_todo_course_project?: Json | null;
+					version_todo_read_content?: Json | null;
+					version_todo_watch_content?: Json | null;
+					version_updated_at?: string | null;
+					version_video_source_type?:
+						| Database["payload"]["Enums"]["enum__course_lessons_v_version_video_source_type"]
+						| null;
+					version_youtube_video_id?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_course_lessons_v_parent_id_course_lessons_id_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "course_lessons";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_course_lessons_v_version_course_id_id_courses_id_fk";
+						columns: ["version_course_id_id"];
+						isOneToOne: false;
+						referencedRelation: "courses";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_course_lessons_v_version_lesson_image_id_media_id_fk";
+						columns: ["version_lesson_image_id"];
+						isOneToOne: false;
+						referencedRelation: "media";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_course_lessons_v_version_quiz_id_id_course_quizzes_id_fk";
+						columns: ["version_quiz_id_id"];
+						isOneToOne: false;
+						referencedRelation: "course_quizzes";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_course_lessons_v_version_survey_id_id_surveys_id_fk";
+						columns: ["version_survey_id_id"];
+						isOneToOne: false;
+						referencedRelation: "surveys";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_course_lessons_v_version_thumbnail_id_media_id_fk";
+						columns: ["version_thumbnail_id"];
+						isOneToOne: false;
+						referencedRelation: "media";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_course_lessons_v_rels: {
+				Row: {
+					downloads_id: string | null;
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Insert: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Update: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_course_lessons_v_rels_downloads_fk";
+						columns: ["downloads_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_course_lessons_v_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_course_lessons_v";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_course_quizzes_v: {
+				Row: {
+					created_at: string;
+					id: string;
+					latest: boolean | null;
+					parent_id: string | null;
+					updated_at: string;
+					version__status:
+						| Database["payload"]["Enums"]["enum__course_quizzes_v_version_status"]
+						| null;
+					version_course_id_id: string | null;
+					version_created_at: string | null;
+					version_description: string | null;
+					version_pass_threshold: number | null;
+					version_slug: string | null;
+					version_title: string | null;
+					version_updated_at: string | null;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__course_quizzes_v_version_status"]
+						| null;
+					version_course_id_id?: string | null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_pass_threshold?: number | null;
+					version_slug?: string | null;
+					version_title?: string | null;
+					version_updated_at?: string | null;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__course_quizzes_v_version_status"]
+						| null;
+					version_course_id_id?: string | null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_pass_threshold?: number | null;
+					version_slug?: string | null;
+					version_title?: string | null;
+					version_updated_at?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_course_quizzes_v_parent_id_course_quizzes_id_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "course_quizzes";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_course_quizzes_v_version_course_id_id_courses_id_fk";
+						columns: ["version_course_id_id"];
+						isOneToOne: false;
+						referencedRelation: "courses";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_course_quizzes_v_rels: {
+				Row: {
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+					quiz_questions_id: string | null;
+				};
+				Insert: {
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+					quiz_questions_id?: string | null;
+				};
+				Update: {
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+					quiz_questions_id?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_course_quizzes_v_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_course_quizzes_v";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_course_quizzes_v_rels_quiz_questions_fk";
+						columns: ["quiz_questions_id"];
+						isOneToOne: false;
+						referencedRelation: "quiz_questions";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_courses_v: {
+				Row: {
+					created_at: string;
+					id: string;
+					latest: boolean | null;
+					parent_id: string | null;
+					updated_at: string;
+					version__status:
+						| Database["payload"]["Enums"]["enum__courses_v_version_status"]
+						| null;
+					version_content: Json | null;
+					version_created_at: string | null;
+					version_description: string | null;
+					version_published_at: string | null;
+					version_slug: string | null;
+					version_status:
+						| Database["payload"]["Enums"]["enum__courses_v_version_status"]
+						| null;
+					version_title: string | null;
+					version_updated_at: string | null;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__courses_v_version_status"]
+						| null;
+					version_content?: Json | null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_published_at?: string | null;
+					version_slug?: string | null;
+					version_status?:
+						| Database["payload"]["Enums"]["enum__courses_v_version_status"]
+						| null;
+					version_title?: string | null;
+					version_updated_at?: string | null;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__courses_v_version_status"]
+						| null;
+					version_content?: Json | null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_published_at?: string | null;
+					version_slug?: string | null;
+					version_status?:
+						| Database["payload"]["Enums"]["enum__courses_v_version_status"]
+						| null;
+					version_title?: string | null;
+					version_updated_at?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_courses_v_parent_id_courses_id_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "courses";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_courses_v_rels: {
+				Row: {
+					downloads_id: string | null;
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Insert: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Update: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_courses_v_rels_downloads_fk";
+						columns: ["downloads_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_courses_v_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_courses_v";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_documentation_v: {
+				Row: {
+					created_at: string;
+					id: string;
+					latest: boolean | null;
+					parent_id: string | null;
+					updated_at: string;
+					version__status:
+						| Database["payload"]["Enums"]["enum__documentation_v_version_status"]
+						| null;
+					version_content: Json | null;
+					version_created_at: string | null;
+					version_description: string | null;
+					version_order: number | null;
+					version_parent_id: string | null;
+					version_published_at: string | null;
+					version_slug: string | null;
+					version_status:
+						| Database["payload"]["Enums"]["enum__documentation_v_version_status"]
+						| null;
+					version_title: string | null;
+					version_updated_at: string | null;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__documentation_v_version_status"]
+						| null;
+					version_content?: Json | null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_order?: number | null;
+					version_parent_id?: string | null;
+					version_published_at?: string | null;
+					version_slug?: string | null;
+					version_status?:
+						| Database["payload"]["Enums"]["enum__documentation_v_version_status"]
+						| null;
+					version_title?: string | null;
+					version_updated_at?: string | null;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__documentation_v_version_status"]
+						| null;
+					version_content?: Json | null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_order?: number | null;
+					version_parent_id?: string | null;
+					version_published_at?: string | null;
+					version_slug?: string | null;
+					version_status?:
+						| Database["payload"]["Enums"]["enum__documentation_v_version_status"]
+						| null;
+					version_title?: string | null;
+					version_updated_at?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_documentation_v_parent_id_documentation_id_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "documentation";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_documentation_v_version_parent_id_documentation_id_fk";
+						columns: ["version_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "documentation";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_documentation_v_rels: {
+				Row: {
+					downloads_id: string | null;
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Insert: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Update: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_documentation_v_rels_downloads_fk";
+						columns: ["downloads_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_documentation_v_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_documentation_v";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_documentation_v_version_breadcrumbs: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					_uuid: string | null;
+					doc_id: string | null;
+					id: string;
+					label: string | null;
+					url: string | null;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					_uuid?: string | null;
+					doc_id?: string | null;
+					id?: string;
+					label?: string | null;
+					url?: string | null;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					_uuid?: string | null;
+					doc_id?: string | null;
+					id?: string;
+					label?: string | null;
+					url?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_documentation_v_version_breadcrumbs_doc_id_documentation_id_fk";
+						columns: ["doc_id"];
+						isOneToOne: false;
+						referencedRelation: "documentation";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_documentation_v_version_breadcrumbs_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_documentation_v";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_documentation_v_version_categories: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					_uuid: string | null;
+					category: string | null;
+					id: string;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					_uuid?: string | null;
+					category?: string | null;
+					id?: string;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					_uuid?: string | null;
+					category?: string | null;
+					id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_documentation_v_version_categories_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_documentation_v";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_documentation_v_version_tags: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					_uuid: string | null;
+					id: string;
+					tag: string | null;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					_uuid?: string | null;
+					id?: string;
+					tag?: string | null;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					_uuid?: string | null;
+					id?: string;
+					tag?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_documentation_v_version_tags_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_documentation_v";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_posts_v: {
+				Row: {
+					created_at: string;
+					id: string;
+					latest: boolean | null;
+					parent_id: string | null;
+					updated_at: string;
+					version__status:
+						| Database["payload"]["Enums"]["enum__posts_v_version_status"]
+						| null;
+					version_content: Json | null;
+					version_created_at: string | null;
+					version_description: string | null;
+					version_image_id_id: string | null;
+					version_published_at: string | null;
+					version_slug: string | null;
+					version_status:
+						| Database["payload"]["Enums"]["enum__posts_v_version_status"]
+						| null;
+					version_title: string | null;
+					version_updated_at: string | null;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__posts_v_version_status"]
+						| null;
+					version_content?: Json | null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_image_id_id?: string | null;
+					version_published_at?: string | null;
+					version_slug?: string | null;
+					version_status?:
+						| Database["payload"]["Enums"]["enum__posts_v_version_status"]
+						| null;
+					version_title?: string | null;
+					version_updated_at?: string | null;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__posts_v_version_status"]
+						| null;
+					version_content?: Json | null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_image_id_id?: string | null;
+					version_published_at?: string | null;
+					version_slug?: string | null;
+					version_status?:
+						| Database["payload"]["Enums"]["enum__posts_v_version_status"]
+						| null;
+					version_title?: string | null;
+					version_updated_at?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_posts_v_parent_id_posts_id_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "posts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_posts_v_version_image_id_id_media_id_fk";
+						columns: ["version_image_id_id"];
+						isOneToOne: false;
+						referencedRelation: "media";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_posts_v_rels: {
+				Row: {
+					downloads_id: string | null;
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Insert: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Update: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_posts_v_rels_downloads_fk";
+						columns: ["downloads_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_posts_v_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_posts_v";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_posts_v_version_categories: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					_uuid: string | null;
+					category: string | null;
+					id: string;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					_uuid?: string | null;
+					category?: string | null;
+					id?: string;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					_uuid?: string | null;
+					category?: string | null;
+					id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_posts_v_version_categories_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_posts_v";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_posts_v_version_tags: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					_uuid: string | null;
+					id: string;
+					tag: string | null;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					_uuid?: string | null;
+					id?: string;
+					tag?: string | null;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					_uuid?: string | null;
+					id?: string;
+					tag?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_posts_v_version_tags_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_posts_v";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_private_posts_v: {
+				Row: {
+					created_at: string;
+					id: string;
+					latest: boolean | null;
+					parent_id: string | null;
+					updated_at: string;
+					version__status:
+						| Database["payload"]["Enums"]["enum__private_posts_v_version_status"]
+						| null;
+					version_content: Json | null;
+					version_created_at: string | null;
+					version_description: string | null;
+					version_featured_image_id_id: string | null;
+					version_image_id_id: string | null;
+					version_published_at: string | null;
+					version_slug: string | null;
+					version_status:
+						| Database["payload"]["Enums"]["enum__private_posts_v_version_status"]
+						| null;
+					version_title: string | null;
+					version_updated_at: string | null;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__private_posts_v_version_status"]
+						| null;
+					version_content?: Json | null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_featured_image_id_id?: string | null;
+					version_image_id_id?: string | null;
+					version_published_at?: string | null;
+					version_slug?: string | null;
+					version_status?:
+						| Database["payload"]["Enums"]["enum__private_posts_v_version_status"]
+						| null;
+					version_title?: string | null;
+					version_updated_at?: string | null;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__private_posts_v_version_status"]
+						| null;
+					version_content?: Json | null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_featured_image_id_id?: string | null;
+					version_image_id_id?: string | null;
+					version_published_at?: string | null;
+					version_slug?: string | null;
+					version_status?:
+						| Database["payload"]["Enums"]["enum__private_posts_v_version_status"]
+						| null;
+					version_title?: string | null;
+					version_updated_at?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_private_posts_v_parent_id_private_posts_id_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "private_posts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_private_posts_v_version_featured_image_id_id_downloads_id_fk";
+						columns: ["version_featured_image_id_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_private_posts_v_version_image_id_id_downloads_id_fk";
+						columns: ["version_image_id_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_private_posts_v_rels: {
+				Row: {
+					downloads_id: string | null;
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Insert: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Update: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_private_posts_v_rels_downloads_fk";
+						columns: ["downloads_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_private_posts_v_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_private_posts_v";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_private_posts_v_version_categories: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					_uuid: string | null;
+					category: string | null;
+					id: string;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					_uuid?: string | null;
+					category?: string | null;
+					id?: string;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					_uuid?: string | null;
+					category?: string | null;
+					id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_private_posts_v_version_categories_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_private_posts_v";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_private_posts_v_version_tags: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					_uuid: string | null;
+					id: string;
+					tag: string | null;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					_uuid?: string | null;
+					id?: string;
+					tag?: string | null;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					_uuid?: string | null;
+					id?: string;
+					tag?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_private_posts_v_version_tags_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_private_posts_v";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_survey_questions_v: {
+				Row: {
+					created_at: string;
+					id: string;
+					latest: boolean | null;
+					parent_id: string | null;
+					updated_at: string;
+					version__status:
+						| Database["payload"]["Enums"]["enum__survey_questions_v_version_status"]
+						| null;
+					version_category: string | null;
+					version_created_at: string | null;
+					version_description: string | null;
+					version_position: number | null;
+					version_question_slug: string | null;
+					version_questionspin:
+						| Database["payload"]["Enums"]["enum__survey_questions_v_version_questionspin"]
+						| null;
+					version_required: boolean | null;
+					version_text: string | null;
+					version_type:
+						| Database["payload"]["Enums"]["enum__survey_questions_v_version_type"]
+						| null;
+					version_updated_at: string | null;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__survey_questions_v_version_status"]
+						| null;
+					version_category?: string | null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_position?: number | null;
+					version_question_slug?: string | null;
+					version_questionspin?:
+						| Database["payload"]["Enums"]["enum__survey_questions_v_version_questionspin"]
+						| null;
+					version_required?: boolean | null;
+					version_text?: string | null;
+					version_type?:
+						| Database["payload"]["Enums"]["enum__survey_questions_v_version_type"]
+						| null;
+					version_updated_at?: string | null;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__survey_questions_v_version_status"]
+						| null;
+					version_category?: string | null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_position?: number | null;
+					version_question_slug?: string | null;
+					version_questionspin?:
+						| Database["payload"]["Enums"]["enum__survey_questions_v_version_questionspin"]
+						| null;
+					version_required?: boolean | null;
+					version_text?: string | null;
+					version_type?:
+						| Database["payload"]["Enums"]["enum__survey_questions_v_version_type"]
+						| null;
+					version_updated_at?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_survey_questions_v_parent_id_survey_questions_id_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "survey_questions";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_survey_questions_v_version_options: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					_uuid: string | null;
+					id: string;
+					option: string | null;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					_uuid?: string | null;
+					id?: string;
+					option?: string | null;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					_uuid?: string | null;
+					id?: string;
+					option?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_survey_questions_v_version_options_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_survey_questions_v";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_surveys_v: {
+				Row: {
+					created_at: string;
+					id: string;
+					latest: boolean | null;
+					parent_id: string | null;
+					updated_at: string;
+					version__status:
+						| Database["payload"]["Enums"]["enum__surveys_v_version_status"]
+						| null;
+					version_created_at: string | null;
+					version_description: string | null;
+					version_published_at: string | null;
+					version_slug: string | null;
+					version_title: string | null;
+					version_updated_at: string | null;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__surveys_v_version_status"]
+						| null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_published_at?: string | null;
+					version_slug?: string | null;
+					version_title?: string | null;
+					version_updated_at?: string | null;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					latest?: boolean | null;
+					parent_id?: string | null;
+					updated_at?: string;
+					version__status?:
+						| Database["payload"]["Enums"]["enum__surveys_v_version_status"]
+						| null;
+					version_created_at?: string | null;
+					version_description?: string | null;
+					version_published_at?: string | null;
+					version_slug?: string | null;
+					version_title?: string | null;
+					version_updated_at?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_surveys_v_parent_id_surveys_id_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "surveys";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			_surveys_v_rels: {
+				Row: {
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+					survey_questions_id: string | null;
+				};
+				Insert: {
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+					survey_questions_id?: string | null;
+				};
+				Update: {
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+					survey_questions_id?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "_surveys_v_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "_surveys_v";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_surveys_v_rels_survey_questions_fk";
+						columns: ["survey_questions_id"];
+						isOneToOne: false;
+						referencedRelation: "survey_questions";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			course_lessons: {
+				Row: {
+					_status:
+						| Database["payload"]["Enums"]["enum_course_lessons_status"]
+						| null;
+					bunny_library_id: string | null;
+					bunny_video_id: string | null;
+					content: Json | null;
+					course_id_id: string | null;
+					created_at: string;
+					description: string | null;
+					estimated_duration: number | null;
+					id: string;
+					lesson_image_id: string | null;
+					lesson_number: number | null;
+					published_at: string | null;
+					quiz_id_id: string | null;
+					slug: string | null;
+					survey_id_id: string | null;
+					thumbnail_id: string | null;
+					title: string | null;
+					todo: Json | null;
+					todo_complete_quiz: boolean | null;
+					todo_course_project: Json | null;
+					todo_read_content: Json | null;
+					todo_watch_content: Json | null;
+					updated_at: string;
+					video_source_type:
+						| Database["payload"]["Enums"]["enum_course_lessons_video_source_type"]
+						| null;
+					youtube_video_id: string | null;
+				};
+				Insert: {
+					_status?:
+						| Database["payload"]["Enums"]["enum_course_lessons_status"]
+						| null;
+					bunny_library_id?: string | null;
+					bunny_video_id?: string | null;
+					content?: Json | null;
+					course_id_id?: string | null;
+					created_at?: string;
+					description?: string | null;
+					estimated_duration?: number | null;
+					id?: string;
+					lesson_image_id?: string | null;
+					lesson_number?: number | null;
+					published_at?: string | null;
+					quiz_id_id?: string | null;
+					slug?: string | null;
+					survey_id_id?: string | null;
+					thumbnail_id?: string | null;
+					title?: string | null;
+					todo?: Json | null;
+					todo_complete_quiz?: boolean | null;
+					todo_course_project?: Json | null;
+					todo_read_content?: Json | null;
+					todo_watch_content?: Json | null;
+					updated_at?: string;
+					video_source_type?:
+						| Database["payload"]["Enums"]["enum_course_lessons_video_source_type"]
+						| null;
+					youtube_video_id?: string | null;
+				};
+				Update: {
+					_status?:
+						| Database["payload"]["Enums"]["enum_course_lessons_status"]
+						| null;
+					bunny_library_id?: string | null;
+					bunny_video_id?: string | null;
+					content?: Json | null;
+					course_id_id?: string | null;
+					created_at?: string;
+					description?: string | null;
+					estimated_duration?: number | null;
+					id?: string;
+					lesson_image_id?: string | null;
+					lesson_number?: number | null;
+					published_at?: string | null;
+					quiz_id_id?: string | null;
+					slug?: string | null;
+					survey_id_id?: string | null;
+					thumbnail_id?: string | null;
+					title?: string | null;
+					todo?: Json | null;
+					todo_complete_quiz?: boolean | null;
+					todo_course_project?: Json | null;
+					todo_read_content?: Json | null;
+					todo_watch_content?: Json | null;
+					updated_at?: string;
+					video_source_type?:
+						| Database["payload"]["Enums"]["enum_course_lessons_video_source_type"]
+						| null;
+					youtube_video_id?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "course_lessons_course_id_id_courses_id_fk";
+						columns: ["course_id_id"];
+						isOneToOne: false;
+						referencedRelation: "courses";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "course_lessons_lesson_image_id_media_id_fk";
+						columns: ["lesson_image_id"];
+						isOneToOne: false;
+						referencedRelation: "media";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "course_lessons_quiz_id_id_course_quizzes_id_fk";
+						columns: ["quiz_id_id"];
+						isOneToOne: false;
+						referencedRelation: "course_quizzes";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "course_lessons_survey_id_id_surveys_id_fk";
+						columns: ["survey_id_id"];
+						isOneToOne: false;
+						referencedRelation: "surveys";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "course_lessons_thumbnail_id_media_id_fk";
+						columns: ["thumbnail_id"];
+						isOneToOne: false;
+						referencedRelation: "media";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			course_lessons_rels: {
+				Row: {
+					downloads_id: string | null;
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Insert: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Update: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "course_lessons_rels_downloads_fk";
+						columns: ["downloads_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "course_lessons_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "course_lessons";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			course_quizzes: {
+				Row: {
+					_status:
+						| Database["payload"]["Enums"]["enum_course_quizzes_status"]
+						| null;
+					course_id_id: string | null;
+					created_at: string;
+					description: string | null;
+					id: string;
+					pass_threshold: number | null;
+					slug: string | null;
+					title: string | null;
+					updated_at: string;
+				};
+				Insert: {
+					_status?:
+						| Database["payload"]["Enums"]["enum_course_quizzes_status"]
+						| null;
+					course_id_id?: string | null;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					pass_threshold?: number | null;
+					slug?: string | null;
+					title?: string | null;
+					updated_at?: string;
+				};
+				Update: {
+					_status?:
+						| Database["payload"]["Enums"]["enum_course_quizzes_status"]
+						| null;
+					course_id_id?: string | null;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					pass_threshold?: number | null;
+					slug?: string | null;
+					title?: string | null;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "course_quizzes_course_id_id_courses_id_fk";
+						columns: ["course_id_id"];
+						isOneToOne: false;
+						referencedRelation: "courses";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			course_quizzes_rels: {
+				Row: {
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+					quiz_questions_id: string | null;
+				};
+				Insert: {
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+					quiz_questions_id?: string | null;
+				};
+				Update: {
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+					quiz_questions_id?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "course_quizzes_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "course_quizzes";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "course_quizzes_rels_quiz_questions_fk";
+						columns: ["quiz_questions_id"];
+						isOneToOne: false;
+						referencedRelation: "quiz_questions";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			courses: {
+				Row: {
+					_status: Database["payload"]["Enums"]["enum_courses_status"] | null;
+					content: Json | null;
+					created_at: string;
+					description: string | null;
+					id: string;
+					published_at: string | null;
+					slug: string | null;
+					status: Database["payload"]["Enums"]["enum_courses_status"] | null;
+					title: string | null;
+					updated_at: string;
+				};
+				Insert: {
+					_status?: Database["payload"]["Enums"]["enum_courses_status"] | null;
+					content?: Json | null;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					published_at?: string | null;
+					slug?: string | null;
+					status?: Database["payload"]["Enums"]["enum_courses_status"] | null;
+					title?: string | null;
+					updated_at?: string;
+				};
+				Update: {
+					_status?: Database["payload"]["Enums"]["enum_courses_status"] | null;
+					content?: Json | null;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					published_at?: string | null;
+					slug?: string | null;
+					status?: Database["payload"]["Enums"]["enum_courses_status"] | null;
+					title?: string | null;
+					updated_at?: string;
+				};
+				Relationships: [];
+			};
+			courses_rels: {
+				Row: {
+					downloads_id: string | null;
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Insert: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Update: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "courses_rels_downloads_fk";
+						columns: ["downloads_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "courses_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "courses";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			documentation: {
+				Row: {
+					_status:
+						| Database["payload"]["Enums"]["enum_documentation_status"]
+						| null;
+					content: Json | null;
+					created_at: string;
+					description: string | null;
+					id: string;
+					order: number | null;
+					parent_id: string | null;
+					published_at: string | null;
+					slug: string | null;
+					status:
+						| Database["payload"]["Enums"]["enum_documentation_status"]
+						| null;
+					title: string | null;
+					updated_at: string;
+				};
+				Insert: {
+					_status?:
+						| Database["payload"]["Enums"]["enum_documentation_status"]
+						| null;
+					content?: Json | null;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					order?: number | null;
+					parent_id?: string | null;
+					published_at?: string | null;
+					slug?: string | null;
+					status?:
+						| Database["payload"]["Enums"]["enum_documentation_status"]
+						| null;
+					title?: string | null;
+					updated_at?: string;
+				};
+				Update: {
+					_status?:
+						| Database["payload"]["Enums"]["enum_documentation_status"]
+						| null;
+					content?: Json | null;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					order?: number | null;
+					parent_id?: string | null;
+					published_at?: string | null;
+					slug?: string | null;
+					status?:
+						| Database["payload"]["Enums"]["enum_documentation_status"]
+						| null;
+					title?: string | null;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "documentation_parent_id_documentation_id_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "documentation";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			documentation_breadcrumbs: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					doc_id: string | null;
+					id: string;
+					label: string | null;
+					url: string | null;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					doc_id?: string | null;
+					id: string;
+					label?: string | null;
+					url?: string | null;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					doc_id?: string | null;
+					id?: string;
+					label?: string | null;
+					url?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "documentation_breadcrumbs_doc_id_documentation_id_fk";
+						columns: ["doc_id"];
+						isOneToOne: false;
+						referencedRelation: "documentation";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "documentation_breadcrumbs_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "documentation";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			documentation_categories: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					category: string | null;
+					id: string;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					category?: string | null;
+					id: string;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					category?: string | null;
+					id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "documentation_categories_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "documentation";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			documentation_rels: {
+				Row: {
+					downloads_id: string | null;
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Insert: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Update: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "documentation_rels_downloads_fk";
+						columns: ["downloads_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "documentation_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "documentation";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			documentation_tags: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					id: string;
+					tag: string | null;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					id: string;
+					tag?: string | null;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					id?: string;
+					tag?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "documentation_tags_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "documentation";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			downloads: {
+				Row: {
+					access_level:
+						| Database["payload"]["Enums"]["enum_downloads_access_level"]
+						| null;
+					category:
+						| Database["payload"]["Enums"]["enum_downloads_category"]
+						| null;
+					created_at: string;
+					description: string | null;
+					download_count: number | null;
+					featured: boolean | null;
+					filename: string | null;
+					filesize: number | null;
+					focal_x: number | null;
+					focal_y: number | null;
+					height: number | null;
+					id: string;
+					mime_type: string | null;
+					thumbnail_u_r_l: string | null;
+					title: string;
+					updated_at: string;
+					url: string | null;
+					width: number | null;
+				};
+				Insert: {
+					access_level?:
+						| Database["payload"]["Enums"]["enum_downloads_access_level"]
+						| null;
+					category?:
+						| Database["payload"]["Enums"]["enum_downloads_category"]
+						| null;
+					created_at?: string;
+					description?: string | null;
+					download_count?: number | null;
+					featured?: boolean | null;
+					filename?: string | null;
+					filesize?: number | null;
+					focal_x?: number | null;
+					focal_y?: number | null;
+					height?: number | null;
+					id?: string;
+					mime_type?: string | null;
+					thumbnail_u_r_l?: string | null;
+					title: string;
+					updated_at?: string;
+					url?: string | null;
+					width?: number | null;
+				};
+				Update: {
+					access_level?:
+						| Database["payload"]["Enums"]["enum_downloads_access_level"]
+						| null;
+					category?:
+						| Database["payload"]["Enums"]["enum_downloads_category"]
+						| null;
+					created_at?: string;
+					description?: string | null;
+					download_count?: number | null;
+					featured?: boolean | null;
+					filename?: string | null;
+					filesize?: number | null;
+					focal_x?: number | null;
+					focal_y?: number | null;
+					height?: number | null;
+					id?: string;
+					mime_type?: string | null;
+					thumbnail_u_r_l?: string | null;
+					title?: string;
+					updated_at?: string;
+					url?: string | null;
+					width?: number | null;
+				};
+				Relationships: [];
+			};
+			downloads_tags: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					id: string;
+					tag: string | null;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					id: string;
+					tag?: string | null;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					id?: string;
+					tag?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "downloads_tags_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			media: {
+				Row: {
+					alt: string;
+					caption: string | null;
+					created_at: string;
+					filename: string | null;
+					filesize: number | null;
+					focal_x: number | null;
+					focal_y: number | null;
+					height: number | null;
+					id: string;
+					mime_type: string | null;
+					thumbnail_u_r_l: string | null;
+					type: Database["payload"]["Enums"]["enum_media_type"] | null;
+					updated_at: string;
+					url: string | null;
+					width: number | null;
+				};
+				Insert: {
+					alt: string;
+					caption?: string | null;
+					created_at?: string;
+					filename?: string | null;
+					filesize?: number | null;
+					focal_x?: number | null;
+					focal_y?: number | null;
+					height?: number | null;
+					id?: string;
+					mime_type?: string | null;
+					thumbnail_u_r_l?: string | null;
+					type?: Database["payload"]["Enums"]["enum_media_type"] | null;
+					updated_at?: string;
+					url?: string | null;
+					width?: number | null;
+				};
+				Update: {
+					alt?: string;
+					caption?: string | null;
+					created_at?: string;
+					filename?: string | null;
+					filesize?: number | null;
+					focal_x?: number | null;
+					focal_y?: number | null;
+					height?: number | null;
+					id?: string;
+					mime_type?: string | null;
+					thumbnail_u_r_l?: string | null;
+					type?: Database["payload"]["Enums"]["enum_media_type"] | null;
+					updated_at?: string;
+					url?: string | null;
+					width?: number | null;
+				};
+				Relationships: [];
+			};
+			media_tags: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					id: string;
+					tag: string | null;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					id: string;
+					tag?: string | null;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					id?: string;
+					tag?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "media_tags_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "media";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			payload_kv: {
+				Row: {
+					data: Json;
+					id: string;
+					key: string;
+				};
+				Insert: {
+					data: Json;
+					id?: string;
+					key: string;
+				};
+				Update: {
+					data?: Json;
+					id?: string;
+					key?: string;
+				};
+				Relationships: [];
+			};
+			payload_locked_documents: {
+				Row: {
+					created_at: string;
+					global_slug: string | null;
+					id: string;
+					updated_at: string;
+				};
+				Insert: {
+					created_at?: string;
+					global_slug?: string | null;
+					id?: string;
+					updated_at?: string;
+				};
+				Update: {
+					created_at?: string;
+					global_slug?: string | null;
+					id?: string;
+					updated_at?: string;
+				};
+				Relationships: [];
+			};
+			payload_locked_documents_rels: {
+				Row: {
+					course_lessons_id: string | null;
+					course_quizzes_id: string | null;
+					courses_id: string | null;
+					documentation_id: string | null;
+					downloads_id: string | null;
+					id: number;
+					media_id: string | null;
+					order: number | null;
+					parent_id: string;
+					path: string;
+					posts_id: string | null;
+					private_posts_id: string | null;
+					quiz_questions_id: string | null;
+					survey_questions_id: string | null;
+					surveys_id: string | null;
+					users_id: string | null;
+				};
+				Insert: {
+					course_lessons_id?: string | null;
+					course_quizzes_id?: string | null;
+					courses_id?: string | null;
+					documentation_id?: string | null;
+					downloads_id?: string | null;
+					id?: number;
+					media_id?: string | null;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+					posts_id?: string | null;
+					private_posts_id?: string | null;
+					quiz_questions_id?: string | null;
+					survey_questions_id?: string | null;
+					surveys_id?: string | null;
+					users_id?: string | null;
+				};
+				Update: {
+					course_lessons_id?: string | null;
+					course_quizzes_id?: string | null;
+					courses_id?: string | null;
+					documentation_id?: string | null;
+					downloads_id?: string | null;
+					id?: number;
+					media_id?: string | null;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+					posts_id?: string | null;
+					private_posts_id?: string | null;
+					quiz_questions_id?: string | null;
+					survey_questions_id?: string | null;
+					surveys_id?: string | null;
+					users_id?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "payload_locked_documents_rels_course_lessons_fk";
+						columns: ["course_lessons_id"];
+						isOneToOne: false;
+						referencedRelation: "course_lessons";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "payload_locked_documents_rels_course_quizzes_fk";
+						columns: ["course_quizzes_id"];
+						isOneToOne: false;
+						referencedRelation: "course_quizzes";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "payload_locked_documents_rels_courses_fk";
+						columns: ["courses_id"];
+						isOneToOne: false;
+						referencedRelation: "courses";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "payload_locked_documents_rels_documentation_fk";
+						columns: ["documentation_id"];
+						isOneToOne: false;
+						referencedRelation: "documentation";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "payload_locked_documents_rels_downloads_fk";
+						columns: ["downloads_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "payload_locked_documents_rels_media_fk";
+						columns: ["media_id"];
+						isOneToOne: false;
+						referencedRelation: "media";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "payload_locked_documents_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "payload_locked_documents";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "payload_locked_documents_rels_posts_fk";
+						columns: ["posts_id"];
+						isOneToOne: false;
+						referencedRelation: "posts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "payload_locked_documents_rels_private_posts_fk";
+						columns: ["private_posts_id"];
+						isOneToOne: false;
+						referencedRelation: "private_posts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "payload_locked_documents_rels_quiz_questions_fk";
+						columns: ["quiz_questions_id"];
+						isOneToOne: false;
+						referencedRelation: "quiz_questions";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "payload_locked_documents_rels_survey_questions_fk";
+						columns: ["survey_questions_id"];
+						isOneToOne: false;
+						referencedRelation: "survey_questions";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "payload_locked_documents_rels_surveys_fk";
+						columns: ["surveys_id"];
+						isOneToOne: false;
+						referencedRelation: "surveys";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "payload_locked_documents_rels_users_fk";
+						columns: ["users_id"];
+						isOneToOne: false;
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			payload_migrations: {
+				Row: {
+					batch: number | null;
+					created_at: string;
+					id: string;
+					name: string | null;
+					updated_at: string;
+				};
+				Insert: {
+					batch?: number | null;
+					created_at?: string;
+					id?: string;
+					name?: string | null;
+					updated_at?: string;
+				};
+				Update: {
+					batch?: number | null;
+					created_at?: string;
+					id?: string;
+					name?: string | null;
+					updated_at?: string;
+				};
+				Relationships: [];
+			};
+			payload_preferences: {
+				Row: {
+					created_at: string;
+					id: string;
+					key: string | null;
+					updated_at: string;
+					value: Json | null;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					key?: string | null;
+					updated_at?: string;
+					value?: Json | null;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					key?: string | null;
+					updated_at?: string;
+					value?: Json | null;
+				};
+				Relationships: [];
+			};
+			payload_preferences_rels: {
+				Row: {
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+					users_id: string | null;
+				};
+				Insert: {
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+					users_id?: string | null;
+				};
+				Update: {
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+					users_id?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "payload_preferences_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "payload_preferences";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "payload_preferences_rels_users_fk";
+						columns: ["users_id"];
+						isOneToOne: false;
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			posts: {
+				Row: {
+					_status: Database["payload"]["Enums"]["enum_posts_status"] | null;
+					content: Json | null;
+					created_at: string;
+					description: string | null;
+					id: string;
+					image_id_id: string | null;
+					published_at: string | null;
+					slug: string | null;
+					status: Database["payload"]["Enums"]["enum_posts_status"] | null;
+					title: string | null;
+					updated_at: string;
+				};
+				Insert: {
+					_status?: Database["payload"]["Enums"]["enum_posts_status"] | null;
+					content?: Json | null;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					image_id_id?: string | null;
+					published_at?: string | null;
+					slug?: string | null;
+					status?: Database["payload"]["Enums"]["enum_posts_status"] | null;
+					title?: string | null;
+					updated_at?: string;
+				};
+				Update: {
+					_status?: Database["payload"]["Enums"]["enum_posts_status"] | null;
+					content?: Json | null;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					image_id_id?: string | null;
+					published_at?: string | null;
+					slug?: string | null;
+					status?: Database["payload"]["Enums"]["enum_posts_status"] | null;
+					title?: string | null;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "posts_image_id_id_media_id_fk";
+						columns: ["image_id_id"];
+						isOneToOne: false;
+						referencedRelation: "media";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			posts_categories: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					category: string | null;
+					id: string;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					category?: string | null;
+					id: string;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					category?: string | null;
+					id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "posts_categories_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "posts";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			posts_rels: {
+				Row: {
+					downloads_id: string | null;
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Insert: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Update: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "posts_rels_downloads_fk";
+						columns: ["downloads_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "posts_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "posts";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			posts_tags: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					id: string;
+					tag: string | null;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					id: string;
+					tag?: string | null;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					id?: string;
+					tag?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "posts_tags_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "posts";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			private_posts: {
+				Row: {
+					_status:
+						| Database["payload"]["Enums"]["enum_private_posts_status"]
+						| null;
+					content: Json | null;
+					created_at: string;
+					description: string | null;
+					featured_image_id_id: string | null;
+					id: string;
+					image_id_id: string | null;
+					published_at: string | null;
+					slug: string | null;
+					status:
+						| Database["payload"]["Enums"]["enum_private_posts_status"]
+						| null;
+					title: string | null;
+					updated_at: string;
+				};
+				Insert: {
+					_status?:
+						| Database["payload"]["Enums"]["enum_private_posts_status"]
+						| null;
+					content?: Json | null;
+					created_at?: string;
+					description?: string | null;
+					featured_image_id_id?: string | null;
+					id?: string;
+					image_id_id?: string | null;
+					published_at?: string | null;
+					slug?: string | null;
+					status?:
+						| Database["payload"]["Enums"]["enum_private_posts_status"]
+						| null;
+					title?: string | null;
+					updated_at?: string;
+				};
+				Update: {
+					_status?:
+						| Database["payload"]["Enums"]["enum_private_posts_status"]
+						| null;
+					content?: Json | null;
+					created_at?: string;
+					description?: string | null;
+					featured_image_id_id?: string | null;
+					id?: string;
+					image_id_id?: string | null;
+					published_at?: string | null;
+					slug?: string | null;
+					status?:
+						| Database["payload"]["Enums"]["enum_private_posts_status"]
+						| null;
+					title?: string | null;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "private_posts_featured_image_id_id_downloads_id_fk";
+						columns: ["featured_image_id_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "private_posts_image_id_id_downloads_id_fk";
+						columns: ["image_id_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			private_posts_categories: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					category: string | null;
+					id: string;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					category?: string | null;
+					id: string;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					category?: string | null;
+					id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "private_posts_categories_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "private_posts";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			private_posts_rels: {
+				Row: {
+					downloads_id: string | null;
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Insert: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+				};
+				Update: {
+					downloads_id?: string | null;
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "private_posts_rels_downloads_fk";
+						columns: ["downloads_id"];
+						isOneToOne: false;
+						referencedRelation: "downloads";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "private_posts_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "private_posts";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			private_posts_tags: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					id: string;
+					tag: string | null;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					id: string;
+					tag?: string | null;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					id?: string;
+					tag?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "private_posts_tags_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "private_posts";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			quiz_questions: {
+				Row: {
+					created_at: string;
+					explanation: Json | null;
+					id: string;
+					order: number | null;
+					question: string;
+					question_slug: string;
+					questiontype:
+						| Database["payload"]["Enums"]["enum_quiz_questions_questiontype"]
+						| null;
+					type: Database["payload"]["Enums"]["enum_quiz_questions_type"];
+					updated_at: string;
+				};
+				Insert: {
+					created_at?: string;
+					explanation?: Json | null;
+					id?: string;
+					order?: number | null;
+					question: string;
+					question_slug: string;
+					questiontype?:
+						| Database["payload"]["Enums"]["enum_quiz_questions_questiontype"]
+						| null;
+					type?: Database["payload"]["Enums"]["enum_quiz_questions_type"];
+					updated_at?: string;
+				};
+				Update: {
+					created_at?: string;
+					explanation?: Json | null;
+					id?: string;
+					order?: number | null;
+					question?: string;
+					question_slug?: string;
+					questiontype?:
+						| Database["payload"]["Enums"]["enum_quiz_questions_questiontype"]
+						| null;
+					type?: Database["payload"]["Enums"]["enum_quiz_questions_type"];
+					updated_at?: string;
+				};
+				Relationships: [];
+			};
+			quiz_questions_options: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					id: string;
+					is_correct: boolean | null;
+					text: string;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					id: string;
+					is_correct?: boolean | null;
+					text: string;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					id?: string;
+					is_correct?: boolean | null;
+					text?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "quiz_questions_options_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "quiz_questions";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			survey_questions: {
+				Row: {
+					_status:
+						| Database["payload"]["Enums"]["enum_survey_questions_status"]
+						| null;
+					category: string | null;
+					created_at: string;
+					description: string | null;
+					id: string;
+					position: number | null;
+					question_slug: string | null;
+					questionspin:
+						| Database["payload"]["Enums"]["enum_survey_questions_questionspin"]
+						| null;
+					required: boolean | null;
+					text: string | null;
+					type:
+						| Database["payload"]["Enums"]["enum_survey_questions_type"]
+						| null;
+					updated_at: string;
+				};
+				Insert: {
+					_status?:
+						| Database["payload"]["Enums"]["enum_survey_questions_status"]
+						| null;
+					category?: string | null;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					position?: number | null;
+					question_slug?: string | null;
+					questionspin?:
+						| Database["payload"]["Enums"]["enum_survey_questions_questionspin"]
+						| null;
+					required?: boolean | null;
+					text?: string | null;
+					type?:
+						| Database["payload"]["Enums"]["enum_survey_questions_type"]
+						| null;
+					updated_at?: string;
+				};
+				Update: {
+					_status?:
+						| Database["payload"]["Enums"]["enum_survey_questions_status"]
+						| null;
+					category?: string | null;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					position?: number | null;
+					question_slug?: string | null;
+					questionspin?:
+						| Database["payload"]["Enums"]["enum_survey_questions_questionspin"]
+						| null;
+					required?: boolean | null;
+					text?: string | null;
+					type?:
+						| Database["payload"]["Enums"]["enum_survey_questions_type"]
+						| null;
+					updated_at?: string;
+				};
+				Relationships: [];
+			};
+			survey_questions_options: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					id: string;
+					option: string | null;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					id: string;
+					option?: string | null;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					id?: string;
+					option?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "survey_questions_options_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "survey_questions";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			surveys: {
+				Row: {
+					_status: Database["payload"]["Enums"]["enum_surveys_status"] | null;
+					created_at: string;
+					description: string | null;
+					id: string;
+					published_at: string | null;
+					slug: string | null;
+					title: string | null;
+					updated_at: string;
+				};
+				Insert: {
+					_status?: Database["payload"]["Enums"]["enum_surveys_status"] | null;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					published_at?: string | null;
+					slug?: string | null;
+					title?: string | null;
+					updated_at?: string;
+				};
+				Update: {
+					_status?: Database["payload"]["Enums"]["enum_surveys_status"] | null;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					published_at?: string | null;
+					slug?: string | null;
+					title?: string | null;
+					updated_at?: string;
+				};
+				Relationships: [];
+			};
+			surveys_rels: {
+				Row: {
+					id: number;
+					order: number | null;
+					parent_id: string;
+					path: string;
+					survey_questions_id: string | null;
+				};
+				Insert: {
+					id?: number;
+					order?: number | null;
+					parent_id: string;
+					path: string;
+					survey_questions_id?: string | null;
+				};
+				Update: {
+					id?: number;
+					order?: number | null;
+					parent_id?: string;
+					path?: string;
+					survey_questions_id?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "surveys_rels_parent_fk";
+						columns: ["parent_id"];
+						isOneToOne: false;
+						referencedRelation: "surveys";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "surveys_rels_survey_questions_fk";
+						columns: ["survey_questions_id"];
+						isOneToOne: false;
+						referencedRelation: "survey_questions";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			users: {
+				Row: {
+					created_at: string;
+					email: string;
+					hash: string | null;
+					id: string;
+					lock_until: string | null;
+					login_attempts: number | null;
+					name: string | null;
+					reset_password_expiration: string | null;
+					reset_password_token: string | null;
+					role: Database["payload"]["Enums"]["enum_users_role"];
+					salt: string | null;
+					updated_at: string;
+				};
+				Insert: {
+					created_at?: string;
+					email: string;
+					hash?: string | null;
+					id?: string;
+					lock_until?: string | null;
+					login_attempts?: number | null;
+					name?: string | null;
+					reset_password_expiration?: string | null;
+					reset_password_token?: string | null;
+					role?: Database["payload"]["Enums"]["enum_users_role"];
+					salt?: string | null;
+					updated_at?: string;
+				};
+				Update: {
+					created_at?: string;
+					email?: string;
+					hash?: string | null;
+					id?: string;
+					lock_until?: string | null;
+					login_attempts?: number | null;
+					name?: string | null;
+					reset_password_expiration?: string | null;
+					reset_password_token?: string | null;
+					role?: Database["payload"]["Enums"]["enum_users_role"];
+					salt?: string | null;
+					updated_at?: string;
+				};
+				Relationships: [];
+			};
+			users_sessions: {
+				Row: {
+					_order: number;
+					_parent_id: string;
+					created_at: string | null;
+					expires_at: string;
+					id: string;
+				};
+				Insert: {
+					_order: number;
+					_parent_id: string;
+					created_at?: string | null;
+					expires_at: string;
+					id: string;
+				};
+				Update: {
+					_order?: number;
+					_parent_id?: string;
+					created_at?: string | null;
+					expires_at?: string;
+					id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "users_sessions_parent_id_fk";
+						columns: ["_parent_id"];
+						isOneToOne: false;
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+				];
+			};
 		};
 		Views: {
 			[_ in never]: never;
@@ -74,7 +2939,49 @@ export type Database = {
 			safe_uuid_conversion: { Args: { text_value: string }; Returns: string };
 		};
 		Enums: {
-			[_ in never]: never;
+			enum__course_lessons_v_version_status: "draft" | "published";
+			enum__course_lessons_v_version_video_source_type: "youtube" | "vimeo";
+			enum__course_quizzes_v_version_status: "draft" | "published";
+			enum__courses_v_version_status: "draft" | "published";
+			enum__documentation_v_version_status: "draft" | "published";
+			enum__posts_v_version_status: "draft" | "published";
+			enum__private_posts_v_version_status: "draft" | "published";
+			enum__survey_questions_v_version_questionspin: "Positive" | "Negative";
+			enum__survey_questions_v_version_status: "draft" | "published";
+			enum__survey_questions_v_version_type:
+				| "multiple_choice"
+				| "text_field"
+				| "textarea"
+				| "scale";
+			enum__surveys_v_version_status: "draft" | "published";
+			enum_course_lessons_status: "draft" | "published";
+			enum_course_lessons_video_source_type: "youtube" | "vimeo";
+			enum_course_quizzes_status: "draft" | "published";
+			enum_courses_status: "draft" | "published";
+			enum_documentation_status: "draft" | "published";
+			enum_downloads_access_level: "public" | "registered" | "premium";
+			enum_downloads_category:
+				| "document"
+				| "template"
+				| "resource"
+				| "software"
+				| "media"
+				| "archive"
+				| "other";
+			enum_media_type: "image" | "video" | "document";
+			enum_posts_status: "draft" | "published";
+			enum_private_posts_status: "draft" | "published";
+			enum_quiz_questions_questiontype: "single-answer" | "multi-answer";
+			enum_quiz_questions_type: "multiple_choice";
+			enum_survey_questions_questionspin: "Positive" | "Negative";
+			enum_survey_questions_status: "draft" | "published";
+			enum_survey_questions_type:
+				| "multiple_choice"
+				| "text_field"
+				| "textarea"
+				| "scale";
+			enum_surveys_status: "draft" | "published";
+			enum_users_role: "admin" | "user";
 		};
 		CompositeTypes: {
 			[_ in never]: never;
@@ -497,6 +3404,150 @@ export type Database = {
 					},
 				];
 			};
+			assemble_outputs: {
+				Row: {
+					account_id: string;
+					argument_map: Json;
+					complication: string;
+					created_at: string;
+					id: string;
+					presentation_id: string;
+					presentation_type: string;
+					question_type: string;
+					situation: string;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					account_id: string;
+					argument_map?: Json;
+					complication?: string;
+					created_at?: string;
+					id?: string;
+					presentation_id: string;
+					presentation_type: string;
+					question_type: string;
+					situation?: string;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					account_id?: string;
+					argument_map?: Json;
+					complication?: string;
+					created_at?: string;
+					id?: string;
+					presentation_id?: string;
+					presentation_type?: string;
+					question_type?: string;
+					situation?: string;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "assemble_outputs_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "assemble_outputs_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_account_workspace";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "assemble_outputs_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "assemble_outputs_presentation_id_fkey";
+						columns: ["presentation_id"];
+						isOneToOne: true;
+						referencedRelation: "presentations";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			audience_profiles: {
+				Row: {
+					account_id: string;
+					adaptive_answers: Json;
+					brief_structured: Json;
+					brief_text: string | null;
+					company: string | null;
+					created_at: string;
+					enrichment_data: Json;
+					id: string;
+					linkedin_url: string | null;
+					person_name: string;
+					presentation_id: string | null;
+					title: string | null;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					account_id: string;
+					adaptive_answers?: Json;
+					brief_structured?: Json;
+					brief_text?: string | null;
+					company?: string | null;
+					created_at?: string;
+					enrichment_data?: Json;
+					id?: string;
+					linkedin_url?: string | null;
+					person_name: string;
+					presentation_id?: string | null;
+					title?: string | null;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					account_id?: string;
+					adaptive_answers?: Json;
+					brief_structured?: Json;
+					brief_text?: string | null;
+					company?: string | null;
+					created_at?: string;
+					enrichment_data?: Json;
+					id?: string;
+					linkedin_url?: string | null;
+					person_name?: string;
+					presentation_id?: string | null;
+					title?: string | null;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "audience_profiles_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "audience_profiles_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_account_workspace";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "audience_profiles_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_accounts";
+						referencedColumns: ["id"];
+					},
+				];
+			};
 			billing_customers: {
 				Row: {
 					account_id: string;
@@ -675,6 +3726,74 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			generate_outputs: {
+				Row: {
+					account_id: string;
+					created_at: string;
+					export_format: string | null;
+					export_url: string | null;
+					generated_at: string | null;
+					id: string;
+					presentation_id: string;
+					template_id: string;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					account_id: string;
+					created_at?: string;
+					export_format?: string | null;
+					export_url?: string | null;
+					generated_at?: string | null;
+					id?: string;
+					presentation_id: string;
+					template_id: string;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					account_id?: string;
+					created_at?: string;
+					export_format?: string | null;
+					export_url?: string | null;
+					generated_at?: string | null;
+					id?: string;
+					presentation_id?: string;
+					template_id?: string;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "generate_outputs_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "generate_outputs_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_account_workspace";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "generate_outputs_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "generate_outputs_presentation_id_fkey";
+						columns: ["presentation_id"];
+						isOneToOne: true;
+						referencedRelation: "presentations";
+						referencedColumns: ["id"];
+					},
+				];
+			};
 			invitations: {
 				Row: {
 					account_id: string;
@@ -796,6 +3915,53 @@ export type Database = {
 					status?: string;
 				};
 				Relationships: [];
+			};
+			materials: {
+				Row: {
+					content: string | null;
+					created_at: string;
+					file_url: string | null;
+					id: string;
+					mime_type: string | null;
+					name: string;
+					presentation_id: string;
+					type: string;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					content?: string | null;
+					created_at?: string;
+					file_url?: string | null;
+					id?: string;
+					mime_type?: string | null;
+					name: string;
+					presentation_id: string;
+					type: string;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					content?: string | null;
+					created_at?: string;
+					file_url?: string | null;
+					id?: string;
+					mime_type?: string | null;
+					name?: string;
+					presentation_id?: string;
+					type?: string;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "materials_presentation_id_fkey";
+						columns: ["presentation_id"];
+						isOneToOne: false;
+						referencedRelation: "presentations";
+						referencedColumns: ["id"];
+					},
+				];
 			};
 			nonces: {
 				Row: {
@@ -1078,6 +4244,133 @@ export type Database = {
 					},
 				];
 			};
+			outline_contents: {
+				Row: {
+					account_id: string;
+					created_at: string;
+					id: string;
+					presentation_id: string;
+					sections: Json;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					account_id: string;
+					created_at?: string;
+					id?: string;
+					presentation_id: string;
+					sections?: Json;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					account_id?: string;
+					created_at?: string;
+					id?: string;
+					presentation_id?: string;
+					sections?: Json;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "outline_contents_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "outline_contents_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_account_workspace";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "outline_contents_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "outline_contents_presentation_id_fkey";
+						columns: ["presentation_id"];
+						isOneToOne: true;
+						referencedRelation: "presentations";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			presentations: {
+				Row: {
+					account_id: string;
+					audience_profile_id: string | null;
+					completed_steps: string[];
+					created_at: string;
+					current_step: string;
+					id: string;
+					template_id: string | null;
+					title: string;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					account_id: string;
+					audience_profile_id?: string | null;
+					completed_steps?: string[];
+					created_at?: string;
+					current_step?: string;
+					id?: string;
+					template_id?: string | null;
+					title?: string;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					account_id?: string;
+					audience_profile_id?: string | null;
+					completed_steps?: string[];
+					created_at?: string;
+					current_step?: string;
+					id?: string;
+					template_id?: string | null;
+					title?: string;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "presentations_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "presentations_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_account_workspace";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "presentations_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "presentations_audience_profile_id_fkey";
+						columns: ["audience_profile_id"];
+						isOneToOne: false;
+						referencedRelation: "audience_profiles";
+						referencedColumns: ["id"];
+					},
+				];
+			};
 			quiz_attempts: {
 				Row: {
 					answers: Json | null;
@@ -1157,6 +4450,65 @@ export type Database = {
 					name?: string;
 				};
 				Relationships: [];
+			};
+			storyboard_contents: {
+				Row: {
+					account_id: string;
+					created_at: string;
+					id: string;
+					presentation_id: string;
+					slides: Json;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					account_id: string;
+					created_at?: string;
+					id?: string;
+					presentation_id: string;
+					slides?: Json;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					account_id?: string;
+					created_at?: string;
+					id?: string;
+					presentation_id?: string;
+					slides?: Json;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "storyboard_contents_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "storyboard_contents_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_account_workspace";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "storyboard_contents_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "storyboard_contents_presentation_id_fkey";
+						columns: ["presentation_id"];
+						isOneToOne: true;
+						referencedRelation: "presentations";
+						referencedColumns: ["id"];
+					},
+				];
 			};
 			subscription_items: {
 				Row: {
@@ -2502,7 +5854,54 @@ export const Constants = {
 		Enums: {},
 	},
 	payload: {
-		Enums: {},
+		Enums: {
+			enum__course_lessons_v_version_status: ["draft", "published"],
+			enum__course_lessons_v_version_video_source_type: ["youtube", "vimeo"],
+			enum__course_quizzes_v_version_status: ["draft", "published"],
+			enum__courses_v_version_status: ["draft", "published"],
+			enum__documentation_v_version_status: ["draft", "published"],
+			enum__posts_v_version_status: ["draft", "published"],
+			enum__private_posts_v_version_status: ["draft", "published"],
+			enum__survey_questions_v_version_questionspin: ["Positive", "Negative"],
+			enum__survey_questions_v_version_status: ["draft", "published"],
+			enum__survey_questions_v_version_type: [
+				"multiple_choice",
+				"text_field",
+				"textarea",
+				"scale",
+			],
+			enum__surveys_v_version_status: ["draft", "published"],
+			enum_course_lessons_status: ["draft", "published"],
+			enum_course_lessons_video_source_type: ["youtube", "vimeo"],
+			enum_course_quizzes_status: ["draft", "published"],
+			enum_courses_status: ["draft", "published"],
+			enum_documentation_status: ["draft", "published"],
+			enum_downloads_access_level: ["public", "registered", "premium"],
+			enum_downloads_category: [
+				"document",
+				"template",
+				"resource",
+				"software",
+				"media",
+				"archive",
+				"other",
+			],
+			enum_media_type: ["image", "video", "document"],
+			enum_posts_status: ["draft", "published"],
+			enum_private_posts_status: ["draft", "published"],
+			enum_quiz_questions_questiontype: ["single-answer", "multi-answer"],
+			enum_quiz_questions_type: ["multiple_choice"],
+			enum_survey_questions_questionspin: ["Positive", "Negative"],
+			enum_survey_questions_status: ["draft", "published"],
+			enum_survey_questions_type: [
+				"multiple_choice",
+				"text_field",
+				"textarea",
+				"scale",
+			],
+			enum_surveys_status: ["draft", "published"],
+			enum_users_role: ["admin", "user"],
+		},
 	},
 	public: {
 		Enums: {

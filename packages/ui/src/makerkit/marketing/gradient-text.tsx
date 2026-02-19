@@ -2,12 +2,30 @@ import type React from "react";
 
 import { cn } from "../../lib/utils";
 
-export const GradientText: React.FC<React.HTMLAttributes<HTMLSpanElement>> =
-	function GradientTextComponent({ className, children, ...props }) {
+interface GradientTextProps extends React.HTMLAttributes<HTMLSpanElement> {
+	variant?: "default" | "cyan";
+}
+
+const variantStyles: Record<
+	NonNullable<GradientTextProps["variant"]>,
+	string
+> = {
+	default: "bg-linear-to-r",
+	cyan: "bg-[linear-gradient(135deg,#1e9dd0,#1a6fb5)]",
+};
+
+export const GradientText: React.FC<GradientTextProps> =
+	function GradientTextComponent({
+		className,
+		children,
+		variant = "default",
+		...props
+	}) {
 		return (
 			<span
 				className={cn(
-					"bg-linear-to-r bg-clip-text text-transparent",
+					"bg-clip-text text-transparent",
+					variantStyles[variant],
 					className,
 				)}
 				{...props}

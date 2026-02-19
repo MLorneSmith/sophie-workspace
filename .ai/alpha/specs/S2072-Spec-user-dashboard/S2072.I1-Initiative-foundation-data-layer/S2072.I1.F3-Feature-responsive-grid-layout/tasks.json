@@ -1,0 +1,371 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I1.F3",
+    "feature_name": "Responsive Grid Layout",
+    "feature_slug": "responsive-grid-layout",
+    "initiative_id": "S2072.I1",
+    "spec_id": 2072,
+    "created_at": "2026-02-12T12:30:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["T1", "T2", "T3", "T4", "T5", "T6"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "type": "task",
+      "name": "Create DashboardGrid component structure",
+      "action": { "verb": "Create", "target": "DashboardGrid component skeleton" },
+      "purpose": "Establish client component structure with responsive grid container for dashboard widgets",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Dashboard" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["apps/web/app/home/(user)/_components/"],
+        "dependencies": ["@kit/ui/card", "Tailwind CSS"],
+        "constraints": ["Client component with 'use client' directive", "Must use responsive grid classes"]
+      },
+      "input_state": "DashboardGrid component does not exist",
+      "output_state": "DashboardGrid component exists with basic grid structure (no placeholder cards yet)",
+      "acceptance_criterion": "DashboardGrid component renders empty grid container at /home",
+      "verification_command": "grep -q 'dashboard-grid' apps/web/app/home/(user)/_components/dashboard-grid.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["T2", "T3", "T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T2",
+      "type": "task",
+      "name": "Add Row 1 placeholder cards (Course Progress, Skills Radar, Kanban Summary)",
+      "action": { "verb": "Add", "target": "Row 1 placeholder cards" },
+      "purpose": "Create first row of 3-column grid with appropriately titled placeholder cards for progress widgets",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Course Progress" },
+          { "command": "is visible", "target": "Skills Radar" },
+          { "command": "is visible", "target": "Kanban Summary" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["apps/web/app/home/(user)/_components/dashboard-grid.tsx"],
+        "dependencies": ["Card, CardHeader, CardTitle from @kit/ui/card"],
+        "constraints": ["3-column grid layout", "Each card must have title and appropriate height (h-64)"]
+      },
+      "input_state": "DashboardGrid component exists with grid structure but no cards",
+      "output_state": "Row 1 renders 3 placeholder cards (Course Progress, Skills Radar, Kanban Summary)",
+      "acceptance_criterion": "Row 1 displays 3 cards with correct titles in desktop view",
+      "verification_command": "grep -q 'Course Progress' apps/web/app/home/(user)/_components/dashboard-grid.tsx && grep -q 'Skills Radar' apps/web/app/home/(user)/_components/dashboard-grid.tsx && grep -q 'Kanban Summary' apps/web/app/home/(user)/_components/dashboard-grid.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["T1"],
+        "blocks": ["T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T3",
+      "type": "task",
+      "name": "Add Row 2 placeholder cards (Activity Feed, Quick Actions, Coaching Sessions)",
+      "action": { "verb": "Add", "target": "Row 2 placeholder cards" },
+      "purpose": "Create second row of 3-column grid with appropriately titled placeholder cards for activity and action widgets",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Activity Feed" },
+          { "command": "is visible", "target": "Quick Actions" },
+          { "command": "is visible", "target": "Coaching Sessions" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["apps/web/app/home/(user)/_components/dashboard-grid.tsx"],
+        "dependencies": ["Card, CardHeader, CardTitle from @kit/ui/card"],
+        "constraints": ["3-column grid layout", "Each card must have title and appropriate height (h-64)"]
+      },
+      "input_state": "Row 1 exists with 3 cards, Row 2 does not exist",
+      "output_state": "Row 2 renders 3 placeholder cards (Activity Feed, Quick Actions, Coaching Sessions)",
+      "acceptance_criterion": "Row 2 displays 3 cards with correct titles in desktop view",
+      "verification_command": "grep -q 'Activity Feed' apps/web/app/home/(user)/_components/dashboard-grid.tsx && grep -q 'Quick Actions' apps/web/app/home/(user)/_components/dashboard-grid.tsx && grep -q 'Coaching Sessions' apps/web/app/home/(user)/_components/dashboard-grid.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["T1"],
+        "blocks": ["T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T4",
+      "type": "task",
+      "name": "Add Row 3 placeholder card (Presentations Table)",
+      "action": { "verb": "Add", "target": "Row 3 full-width placeholder card" },
+      "purpose": "Create full-width third row with placeholder card for presentations table widget",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Presentations Table" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["apps/web/app/home/(user)/_components/dashboard-grid.tsx"],
+        "dependencies": ["Card, CardHeader, CardTitle from @kit/ui/card"],
+        "constraints": ["Full-width grid layout (col-span-3 or grid-cols-1)", "Appropriate height for table view (h-96)"]
+      },
+      "input_state": "Row 1 and Row 2 exist with cards, Row 3 does not exist",
+      "output_state": "Row 3 renders full-width Presentations Table placeholder card",
+      "acceptance_criterion": "Row 3 displays full-width card spanning all columns in desktop view",
+      "verification_command": "grep -q 'Presentations Table' apps/web/app/home/(user)/_components/dashboard-grid.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["T1"],
+        "blocks": ["T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T5",
+      "type": "task",
+      "name": "Implement responsive grid classes",
+      "action": { "verb": "Configure", "target": "responsive grid breakpoints" },
+      "purpose": "Add Tailwind responsive classes to achieve mobile (1 col), tablet (2 cols), desktop (3 cols) layout",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Course Progress" },
+          { "command": "find role", "target": "grid" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["apps/web/app/home/(user)/_components/dashboard-grid.tsx"],
+        "dependencies": ["Tailwind CSS responsive utilities"],
+        "constraints": ["Use grid-cols-1 md:grid-cols-2 xl:grid-cols-3 pattern", "Row 3 always full-width across breakpoints"]
+      },
+      "input_state": "All 7 cards exist with fixed layout (no responsive behavior)",
+      "output_state": "Grid responds to breakpoints: mobile (1 col), tablet (2 cols), desktop (3 cols)",
+      "acceptance_criterion": "Grid layout changes correctly at 768px and 1024px breakpoints",
+      "verification_command": "grep -q 'grid-cols-1' apps/web/app/home/(user)/_components/dashboard-grid.tsx && grep -q 'md:grid-cols-2' apps/web/app/home/(user)/_components/dashboard-grid.tsx && grep -q 'xl:grid-cols-3' apps/web/app/home/(user)/_components/dashboard-grid.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["T2", "T3", "T4"],
+        "blocks": ["T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T6",
+      "type": "task",
+      "name": "Wire DashboardGrid to dashboard page",
+      "action": { "verb": "Wire", "target": "DashboardGrid to page.tsx" },
+      "purpose": "Import and render DashboardGrid component within PageBody in the dashboard page",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Course Progress" },
+          { "command": "is visible", "target": "Skills Radar" },
+          { "command": "is visible", "target": "Kanban Summary" },
+          { "command": "is visible", "target": "Activity Feed" },
+          { "command": "is visible", "target": "Quick Actions" },
+          { "command": "is visible", "target": "Coaching Sessions" },
+          { "command": "is visible", "target": "Presentations Table" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["apps/web/app/home/(user)/page.tsx", "apps/web/app/home/(user)/_components/dashboard-grid.tsx"],
+        "dependencies": ["PageBody from @kit/ui/page", "DashboardGrid component"],
+        "constraints": ["Must render inside PageBody component", "No props needed (placeholder content)"]
+      },
+      "input_state": "DashboardGrid component exists but not used in page.tsx",
+      "output_state": "DashboardGrid renders inside PageBody at /home route",
+      "acceptance_criterion": "Navigating to /home displays the responsive grid with all 7 placeholder cards",
+      "verification_command": "grep -q 'DashboardGrid' apps/web/app/home/(user)/page.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation",
+        "task_ids": ["T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Placeholder Cards (Parallel)",
+        "task_ids": ["T2", "T3", "T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 6,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Responsive Layout",
+        "task_ids": ["T5"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Integration",
+        "task_ids": ["T6"],
+        "depends_on_groups": [3],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["T1", "T2", "T5", "T6"],
+      "total_hours": 7
+    },
+    "duration": {
+      "sequential": 11,
+      "parallel": 7,
+      "time_saved_percent": 36
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
