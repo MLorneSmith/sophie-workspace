@@ -1,0 +1,621 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2045.I4.F4",
+    "feature_name": "Responsive & Accessibility Polish",
+    "feature_slug": "responsive-accessibility-polish",
+    "initiative_id": "S2045.I4",
+    "spec_id": "S2045",
+    "created_at": "2026-02-09T13:30:00Z",
+    "complexity": {
+      "score": 45,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null,
+      "signals": {
+        "files_affected": 15,
+        "files_weight": 0.75,
+        "dependencies": "few",
+        "deps_weight": 0.5,
+        "estimated_loc": 120,
+        "loc_weight": 0.5,
+        "feature_type": "enhancement",
+        "type_weight": 0.25
+      },
+      "calculation": "(0.75 * 25) + (0.5 * 25) + (0.5 * 25) + (0.25 * 25) = 45"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S2045.I4.F4.T1", "S2045.I4.F4.T2", "S2045.I4.F4.T3"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2045.I4.F4.T1",
+      "type": "task",
+      "name": "Add responsive grid classes to dashboard page",
+      "action": {
+        "verb": "Add",
+        "target": "responsive grid classes"
+      },
+      "purpose": "Configure responsive breakpoints for mobile single-column, tablet 2-column, and desktop 3-3-1 grid layouts with mobile priority ordering via Tailwind order-* utilities",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Dashboard" },
+          { "command": "find role", "target": "main" }
+        ],
+        "screenshot": true
+      },
+      "skill_hints": [
+        "tailwind-responsive-design",
+        "css-grid-layout",
+        "mobile-first-design"
+      ],
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "@kit/ui/page (PageBody)",
+          "Tailwind CSS grid utilities"
+        ],
+        "constraints": [
+          "Mobile (<768px): Single column with order-1 through order-7 for priority stacking",
+          "Tablet (768-1024px): 2-column grid (md:grid-cols-2) with table full-width",
+          "Desktop (>1024px): 3-column grid (lg:grid-cols-3) with table spanning 3 columns",
+          "Priority order: Quick Actions (1), Course Progress (2), Kanban (3), Activity Feed (4), Spider Diagram (5), Coaching (6), Presentations Table (7)"
+        ]
+      },
+      "input_state": "Dashboard page exists with 7 widgets but no responsive grid classes applied",
+      "output_state": "Dashboard page has responsive grid classes: grid-cols-1 md:grid-cols-2 lg:grid-cols-3 with order-* utilities for mobile priority",
+      "acceptance_criterion": "Dashboard renders in single column on mobile (<768px), 2 columns on tablet (768-1024px), and 3 columns on desktop (>1024px) with correct widget priority order",
+      "verification_command": "grep -E '(grid-cols-1|md:grid-cols-2|lg:grid-cols-3|order-[1-7])' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2045.I4.F4.T2", "S2045.I4.F4.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F4.T2",
+      "type": "task",
+      "name": "Audit and fix dark mode rendering across all widgets",
+      "action": {
+        "verb": "Update",
+        "target": "dark mode color classes"
+      },
+      "purpose": "Replace hard-coded color values with semantic Tailwind classes (bg-background, text-muted-foreground, border-border) across all 7 widget components and their empty states to ensure correct dark mode rendering",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Dashboard" },
+          { "command": "snapshot" }
+        ],
+        "screenshot": true
+      },
+      "skill_hints": [
+        "tailwind-dark-mode",
+        "semantic-color-classes",
+        "css-theming"
+      ],
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/*.tsx (all widget and empty state files)"
+        ],
+        "dependencies": [
+          "Tailwind semantic color tokens (bg-background, text-foreground, text-muted-foreground, border-border)",
+          "@kit/ui/card components"
+        ],
+        "constraints": [
+          "No hard-coded colors (e.g., bg-white, text-black, border-gray-200)",
+          "Use semantic classes for all backgrounds, text, borders",
+          "Charts must use theme-appropriate colors (no light-mode-only colors)"
+        ]
+      },
+      "input_state": "Widget components may have hard-coded color values that don't adapt to dark mode",
+      "output_state": "All 7 widgets and their empty states use semantic Tailwind color classes exclusively",
+      "acceptance_criterion": "All widgets render correctly in dark mode with no hard-coded color values; grep finds no instances of bg-white, text-black, or border-gray in widget files",
+      "verification_command": "! grep -rE '(bg-white|text-black|border-gray-[0-9])' apps/web/app/home/\\(user\\)/_components/dashboard/ && grep -rE '(bg-background|text-foreground|text-muted-foreground)' apps/web/app/home/\\(user\\)/_components/dashboard/ && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/spider-diagram-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/kanban-summary-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/activity-feed-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/quick-actions-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/coaching-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/presentations-table-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-empty.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/spider-diagram-empty.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/kanban-summary-empty.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/activity-feed-empty.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I4.F4.T1"],
+        "blocks": ["S2045.I4.F4.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S2045.I4.F4.T3",
+      "type": "task",
+      "name": "Add ARIA labels to interactive elements across all widgets",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA labels to buttons and links"
+      },
+      "purpose": "Add descriptive aria-label attributes to all CTA buttons, navigation links, and interactive elements across the 7 widgets to support screen readers",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "find role", "target": "button" },
+          { "command": "find role", "target": "link" },
+          { "command": "snapshot" }
+        ],
+        "screenshot": false
+      },
+      "skill_hints": [
+        "web-accessibility",
+        "aria-labels",
+        "screen-reader-support"
+      ],
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/*.tsx (all widget files)"
+        ],
+        "dependencies": [
+          "@kit/ui/button",
+          "React Button/Link components",
+          "ARIA attribute patterns"
+        ],
+        "constraints": [
+          "All interactive buttons need aria-label describing their action",
+          "Navigation links need aria-label when text is not descriptive",
+          "Icon-only buttons MUST have aria-label",
+          "Empty state CTAs need descriptive labels beyond button text"
+        ]
+      },
+      "input_state": "Interactive elements exist but may lack ARIA labels for screen reader support",
+      "output_state": "All buttons, links, and interactive elements have descriptive aria-label attributes",
+      "acceptance_criterion": "All CTA buttons, navigation links, and interactive elements have aria-label attributes; grep confirms presence of aria-label in widget files",
+      "verification_command": "grep -rE 'aria-label=\"[^\"]+\"' apps/web/app/home/\\(user\\)/_components/dashboard/ | wc -l | awk '{if ($1 >= 10) exit 0; else exit 1}' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/quick-actions-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/presentations-table-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I4.F4.T1"],
+        "blocks": ["S2045.I4.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F4.T4",
+      "type": "task",
+      "name": "Add title props to chart components for screen readers",
+      "action": {
+        "verb": "Add",
+        "target": "title props to Recharts components"
+      },
+      "purpose": "Add descriptive title props to PieChart (Course Progress) and RadarChart (Spider Diagram) components to provide screen reader descriptions of chart data",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "snapshot" }
+        ],
+        "screenshot": false
+      },
+      "skill_hints": [
+        "recharts-accessibility",
+        "screen-reader-support",
+        "chart-components"
+      ],
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx",
+          "apps/web/app/home/(user)/_components/dashboard/spider-diagram-widget.tsx"
+        ],
+        "dependencies": [
+          "Recharts PieChart component",
+          "Recharts RadarChart component",
+          "@kit/ui/chart"
+        ],
+        "constraints": [
+          "PieChart title should describe completion percentage",
+          "RadarChart title should describe category scores",
+          "Title text should be dynamic based on data",
+          "Titles must be meaningful when read by screen readers"
+        ]
+      },
+      "input_state": "Chart components render visually but lack screen reader descriptions",
+      "output_state": "Both chart components have descriptive title props that announce data to screen readers",
+      "acceptance_criterion": "PieChart has title prop with completion percentage; RadarChart has title prop with category summary; both verified in component code",
+      "verification_command": "grep -E 'title=.*progress' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-widget.tsx && grep -E 'title=.*assessment' apps/web/app/home/\\(user\\)/_components/dashboard/spider-diagram-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/spider-diagram-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2045.I4.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F4.T5",
+      "type": "task",
+      "name": "Add title attribute to Cal.com iframe",
+      "action": {
+        "verb": "Add",
+        "target": "title attribute to iframe"
+      },
+      "purpose": "Add descriptive title attribute to the Cal.com booking iframe in the Coaching widget to provide context for screen reader users",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "find role", "target": "iframe" }
+        ],
+        "screenshot": false
+      },
+      "skill_hints": [
+        "web-accessibility",
+        "iframe-accessibility",
+        "screen-reader-support"
+      ],
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/coaching-widget.tsx"
+        ],
+        "dependencies": [
+          "Cal.com iframe embed"
+        ],
+        "constraints": [
+          "Iframe title should describe booking widget purpose",
+          "Title should be concise but informative",
+          "Example: 'Book a coaching session with SlideHeroes'"
+        ]
+      },
+      "input_state": "Cal.com iframe exists without a descriptive title attribute",
+      "output_state": "Iframe has a descriptive title attribute for screen readers",
+      "acceptance_criterion": "Iframe in coaching widget has title attribute with descriptive text verified in component code",
+      "verification_command": "grep -E '<iframe[^>]*title=\"[^\"]+coaching[^\"]*\"' apps/web/app/home/\\(user\\)/_components/dashboard/coaching-widget.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/coaching-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2045.I4.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F4.T6",
+      "type": "task",
+      "name": "Verify keyboard navigation flow through all widgets",
+      "action": {
+        "verb": "Test",
+        "target": "keyboard navigation"
+      },
+      "purpose": "Test Tab key navigation through all interactive elements on the dashboard to ensure logical order with no focus traps, and document any issues requiring fixes",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "find role", "target": "button" },
+          { "command": "find role", "target": "link" },
+          { "command": "snapshot" }
+        ],
+        "screenshot": false
+      },
+      "skill_hints": [
+        "keyboard-navigation",
+        "web-accessibility",
+        "manual-testing"
+      ],
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "All widget components"
+        ],
+        "dependencies": [
+          "Browser Tab key navigation",
+          "Focus indicators"
+        ],
+        "constraints": [
+          "Tab order should follow visual layout (top-to-bottom, left-to-right)",
+          "All interactive elements must be reachable via Tab",
+          "No focus traps (can Tab out of all components)",
+          "Enter/Space should activate buttons and links",
+          "Focus indicators must be visible"
+        ]
+      },
+      "input_state": "Interactive elements exist with ARIA labels but keyboard navigation flow is unverified",
+      "output_state": "Keyboard navigation tested and documented; any issues identified for fixing",
+      "acceptance_criterion": "Manual test confirms Tab key navigates through all interactive elements in logical order with no focus traps; test results documented",
+      "verification_command": "test -f .ai/alpha/specs/S2045-Spec-user-dashboard/S2045.I4-Initiative-empty-states-polish/S2045.I4.F4-Feature-responsive-accessibility-polish/keyboard-nav-test-results.md && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": ".ai/alpha/specs/S2045-Spec-user-dashboard/S2045.I4-Initiative-empty-states-polish/S2045.I4.F4-Feature-responsive-accessibility-polish/keyboard-nav-test-results.md"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I4.F4.T3", "S2045.I4.F4.T4", "S2045.I4.F4.T5"],
+        "blocks": ["S2045.I4.F4.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F4.T7",
+      "type": "task",
+      "name": "Run Lighthouse accessibility audit and fix violations",
+      "action": {
+        "verb": "Test",
+        "target": "accessibility with Lighthouse"
+      },
+      "purpose": "Run Lighthouse accessibility audit on /home page, verify score is 90+, and fix any detected violations to ensure production-ready accessibility compliance",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "snapshot" }
+        ],
+        "screenshot": true
+      },
+      "skill_hints": [
+        "lighthouse-auditing",
+        "web-accessibility",
+        "wcag-compliance"
+      ],
+      "context": {
+        "files": [
+          "All dashboard widget and empty state components"
+        ],
+        "dependencies": [
+          "Lighthouse CLI or Chrome DevTools",
+          "Running dev server"
+        ],
+        "constraints": [
+          "Accessibility score must be 90 or higher",
+          "All critical violations must be fixed",
+          "Common issues: missing alt text, poor contrast, missing labels",
+          "Report should be saved for documentation"
+        ]
+      },
+      "input_state": "Dashboard has ARIA labels and dark mode support but hasn't been audited with Lighthouse",
+      "output_state": "Lighthouse accessibility audit completed with score 90+; all violations fixed; report saved",
+      "acceptance_criterion": "Lighthouse accessibility score is 90 or higher on /home page; audit report saved; no critical violations remain",
+      "verification_command": "test -f .ai/alpha/specs/S2045-Spec-user-dashboard/S2045.I4-Initiative-empty-states-polish/S2045.I4.F4-Feature-responsive-accessibility-polish/lighthouse-accessibility-report.html && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": ".ai/alpha/specs/S2045-Spec-user-dashboard/S2045.I4-Initiative-empty-states-polish/S2045.I4.F4-Feature-responsive-accessibility-polish/lighthouse-accessibility-report.html"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/*.tsx (as needed for fixes)"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2045.I4.F4.T2", "S2045.I4.F4.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Responsive Layout & Dark Mode",
+        "task_ids": ["S2045.I4.F4.T1", "S2045.I4.F4.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 7,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Accessibility Attributes",
+        "task_ids": ["S2045.I4.F4.T3", "S2045.I4.F4.T4", "S2045.I4.F4.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 6,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Accessibility Validation",
+        "task_ids": ["S2045.I4.F4.T6", "S2045.I4.F4.T7"],
+        "depends_on_groups": [2],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2045.I4.F4.T1", "S2045.I4.F4.T2", "S2045.I4.F4.T6", "S2045.I4.F4.T7"],
+      "total_hours": 12
+    },
+    "duration": {
+      "sequential": 18,
+      "parallel": 10,
+      "time_saved_percent": 44
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 90,
+      "task_count": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100,
+    "validation_notes": "All tasks are atomic (single verb, under 8 hours). Task T2 intentionally modifies 11 files but is still atomic (same action repeated across files). Dependencies are explicit and logical. No database tasks. All UI tasks have visual_verification and skill_hints. Responsive layout and accessibility are the two key concerns addressed systematically."
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

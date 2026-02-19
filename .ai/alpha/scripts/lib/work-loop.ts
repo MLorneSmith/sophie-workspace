@@ -10,13 +10,10 @@
 import {
 	HEALTH_CHECK_INTERVAL_MS,
 	HEARTBEAT_TIMEOUT_MS,
-	MIN_FEATURE_AGE_FOR_RECOVERY_MS,
 	PROMISE_TIMEOUT_MS,
-	SANDBOX_EXTENSION_MS,
 	SANDBOX_KEEPALIVE_INTERVAL_MS,
 	SANDBOX_KEEPALIVE_STAGGER_MS,
 	SANDBOX_MAX_AGE_MS,
-	SANDBOX_MAX_EXTENSION_ATTEMPTS,
 } from "../config/index.js";
 import type {
 	FeatureEntry,
@@ -37,17 +34,15 @@ import {
 	createPromiseAgeTracker,
 } from "./promise-age-tracker.js";
 import { runHealthChecks } from "./health.js";
-import { saveManifest, writeOverallProgress } from "./manifest.js";
+import { saveManifest } from "./manifest.js";
 import { writeIdleProgress } from "./progress.js";
 import {
 	isFeatureCompleted,
 	isProgressFileStale,
 	readProgressFile,
 } from "./progress-file.js";
-import { RecoveryCoordinator } from "./recovery-coordinator.js";
 import {
 	createSandbox,
-	extendSandboxTimeout,
 	getSandboxesNeedingRestart,
 	keepAliveSandboxes,
 } from "./sandbox.js";
@@ -117,7 +112,6 @@ export class WorkLoop {
 	private isRunning = false;
 	private log: Logger;
 	private promiseTracker!: PromiseAgeTracker;
-	private coordinator: RecoveryCoordinator;
 
 	constructor(options: WorkLoopOptions, log?: Logger) {
 		this.instances = options.instances;
@@ -131,13 +125,6 @@ export class WorkLoop {
 		this.promiseTracker = createPromiseAgeTracker(
 			PROMISE_TIMEOUT_MS,
 			HEARTBEAT_TIMEOUT_MS,
-		);
-		this.coordinator = new RecoveryCoordinator(
-			this.manifest,
-			this.instances,
-			this.uiEnabled,
-			this.provider,
-			this.log,
 		);
 	}
 
@@ -199,7 +186,6 @@ export class WorkLoop {
 					this.manifest,
 					this.uiEnabled,
 					this.provider,
-					this.coordinator,
 				);
 
 				for (const instance of needsRestart) {
@@ -226,24 +212,16 @@ export class WorkLoop {
 	private async restartFailedSandbox(instance: SandboxInstance): Promise<void> {
 		this.log(`   🔄 Attempting to restart failed sandbox ${instance.label}...`);
 
-		// Bug fix #2064: Clean up old promise from activeWork BEFORE creating new sandbox
-		// Without this, the old promise's finally block deletes the new promise from activeWork,
-		// causing the new promise to become orphaned (running but untracked)
-		this.activeWork.delete(instance.label);
-		this.promiseTracker.remove(instance.label);
-
-		// Bug fix #1858, #2077: Reset any in-progress features on this sandbox to pending
-		// Recovery delegated to coordinator for mutex protection and centralized retry tracking
+		// Bug fix #1858: Reset any in-progress features on this sandbox to pending
+		// This ensures features can be retried on another sandbox after sandbox death
 		const featureOnSandbox = this.manifest.feature_queue.find(
 			(f) =>
 				f.assigned_sandbox === instance.label && f.status === "in_progress",
 		);
 		if (featureOnSandbox) {
-			await this.coordinator.recoverFeature(
-				featureOnSandbox.id,
+			this.resetFeatureForRetryOnSandboxDeath(
+				featureOnSandbox,
 				`Sandbox ${instance.label} died - retrying on another sandbox`,
-				"sandbox_death",
-				{ skipKill: true }, // sandbox is already dead
 			);
 		}
 
@@ -325,11 +303,6 @@ export class WorkLoop {
 
 	/**
 	 * Handle preemptive restarts for sandboxes approaching max age.
-	 *
-	 * Bug fix #2074: Instead of killing sandboxes that are actively executing
-	 * features, attempt to extend the sandbox timeout via the E2B API. Only
-	 * kill if: (1) no features are running, (2) extension fails, or (3) max
-	 * extension attempts exceeded.
 	 */
 	private async handlePreemptiveRestarts(): Promise<void> {
 		const needsPreemptiveRestart = getSandboxesNeedingRestart(
@@ -345,7 +318,7 @@ export class WorkLoop {
 				(Date.now() - instance.createdAt.getTime()) / 60000,
 			);
 
-			// Check if a feature is actively running on this sandbox
+			// Check if feature is almost done (80%+ tasks completed)
 			const feature = this.manifest.feature_queue.find(
 				(f) => f.assigned_sandbox === label && f.status === "in_progress",
 			);
@@ -356,39 +329,11 @@ export class WorkLoop {
 						? (feature.tasks_completed / feature.task_count) * 100
 						: 0;
 
-				// Bug fix #2074: For ANY in-progress feature (not just >80%), attempt
-				// to extend the sandbox lifetime instead of killing it mid-execution.
-				const extensionCount = feature.extension_count ?? 0;
-
-				if (extensionCount >= SANDBOX_MAX_EXTENSION_ATTEMPTS) {
+				if (percentDone >= 80) {
 					this.log(
-						`   ⏰ Sandbox ${label} is ${ageMinutes}min old, feature #${feature.id} at ${Math.round(percentDone)}% - max extensions (${SANDBOX_MAX_EXTENSION_ATTEMPTS}) reached, forcing restart`,
+						`   ⏰ Sandbox ${label} is ${ageMinutes}min old, but feature #${feature.id} is ${Math.round(percentDone)}% done - skipping preemptive restart`,
 					);
-				} else {
-					// Attempt to extend sandbox lifetime
-					this.log(
-						`   ⏰ [SANDBOX_EXTEND] Sandbox ${label} is ${ageMinutes}min old, feature #${feature.id} at ${Math.round(percentDone)}% - extending sandbox (attempt ${extensionCount + 1}/${SANDBOX_MAX_EXTENSION_ATTEMPTS})`,
-					);
-
-					const extended = await extendSandboxTimeout(
-						instance.sandbox,
-						SANDBOX_EXTENSION_MS,
-					);
-
-					if (extended) {
-						feature.extension_count = extensionCount + 1;
-						// Reset createdAt to prevent immediate re-triggering
-						instance.createdAt = new Date();
-						instance.lastKeepaliveAt = new Date();
-						this.log(
-							`   ✅ [SANDBOX_EXTEND] Sandbox ${label} extended by ${SANDBOX_EXTENSION_MS / 60000}min for feature #${feature.id}`,
-						);
-						continue;
-					}
-
-					this.log(
-						`   ⚠️ [SANDBOX_EXTEND] Failed to extend sandbox ${label} (sandbox may be dead) - proceeding with restart`,
-					);
+					continue;
 				}
 			}
 
@@ -397,14 +342,11 @@ export class WorkLoop {
 			);
 
 			// Reset any in-progress feature assigned to this sandbox
-			// Bug fix #2077: Use coordinator for infrastructure reset (no retry consumed)
 			if (feature) {
 				await this.gracefulShutdownClaude(instance);
-				await this.coordinator.recoverFeature(
-					feature.id,
+				this.resetFeatureForReassignment(
+					feature,
 					"Preemptive restart before expiration",
-					"preemptive_restart",
-					{ skipKill: true, skipRetryIncrement: true },
 				);
 			}
 
@@ -422,17 +364,11 @@ export class WorkLoop {
 		this.log(`   ⚠️ Sandbox ${label} expired, attempting restart...`);
 
 		// Reset any in-progress feature assigned to this sandbox
-		// Bug fix #2077: Use coordinator for infrastructure reset (no retry consumed)
 		const feature = this.manifest.feature_queue.find(
 			(f) => f.assigned_sandbox === label && f.status === "in_progress",
 		);
 		if (feature) {
-			await this.coordinator.recoverFeature(
-				feature.id,
-				"Sandbox expired - restarting",
-				"sandbox_expired",
-				{ skipKill: true, skipRetryIncrement: true },
-			);
+			this.resetFeatureForReassignment(feature, "Sandbox expired - restarting");
 		}
 
 		await this.restartSandbox(instance, label);
@@ -512,14 +448,11 @@ export class WorkLoop {
 	private async mainLoop(): Promise<boolean> {
 		while (this.isRunning) {
 			// Check if we're done
-			// Bug fix #2064: Exclude permanently-failed features (retry_count >= max)
-			// from workable set so the loop can exit when only exhausted features remain
 			const workableFeatures = this.manifest.feature_queue.filter(
 				(f) =>
 					f.status === "pending" ||
 					f.status === "in_progress" ||
-					(f.status === "failed" &&
-						shouldRetryFailedFeature(f, DEFAULT_MAX_RETRIES)),
+					f.status === "failed",
 			);
 
 			if (workableFeatures.length === 0) {
@@ -540,13 +473,6 @@ export class WorkLoop {
 				}
 				continue;
 			}
-
-			// Bug fix #2054: Update overall progress periodically during execution.
-			// writeOverallProgress() calls syncSandboxProgressToManifest() (#2050)
-			// which reads real-time task counts from sandbox progress files.
-			// Without this, overall progress only updates on state transitions
-			// (feature start/complete/fail), staying at 0 during execution.
-			writeOverallProgress(this.manifest);
 
 			// Monitor promise ages and recover stuck promises (Bug fix #1841)
 			await this.monitorPromiseAges();
@@ -587,14 +513,6 @@ export class WorkLoop {
 		for (const feature of this.manifest.feature_queue) {
 			if (feature.status !== "pending" && feature.status !== "failed") continue;
 			if (feature.assigned_sandbox) continue;
-
-			// Bug fix #2064: Skip permanently-failed features that exceeded max retries
-			if (
-				feature.status === "failed" &&
-				!shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)
-			) {
-				continue;
-			}
 
 			// Check if deps are satisfied
 			const completedFeatureIds = new Set(
@@ -714,14 +632,15 @@ export class WorkLoop {
 			this.log(
 				`│   ❌ Feature #${feature.id} implementation error: ${errorMessage}`,
 			);
+			// Mark sandbox as ready for next feature
+			instance.status = "ready";
+			instance.currentFeature = null;
 
-			// Bug fix #1858, #2077: Delegate recovery to coordinator
-			// Coordinator handles mutex, retry budget, and sandbox cleanup
-			await this.coordinator.recoverFeature(
-				feature.id,
+			// Bug fix #1858: Reset feature for retry instead of marking as failed
+			// Only mark as failed if max retries are exceeded
+			this.resetFeatureForRetryOnSandboxDeath(
+				feature,
 				`Implementation error: ${errorMessage}`,
-				"sandbox_death",
-				{ skipKill: true }, // process already exited
 			);
 		} finally {
 			this.activeWork.delete(instance.label);
@@ -735,12 +654,11 @@ export class WorkLoop {
 	 * @returns true if should exit (deadlock), false to continue
 	 */
 	private async handleIdleState(): Promise<boolean> {
-		// Check for deadlock condition (Bug fix #1777, #2077)
-		const deadlockResult = await detectAndHandleDeadlock(
+		// Check for deadlock condition (Bug fix #1777)
+		const deadlockResult = detectAndHandleDeadlock(
 			this.instances,
 			this.manifest,
 			this.uiEnabled,
-			this.coordinator,
 		);
 
 		if (deadlockResult.shouldExit) {
@@ -832,13 +750,15 @@ export class WorkLoop {
 					`   ⚠️ Stuck task detected: Feature #${feature.id} on ${sandboxInstance.label} has ${tasksRemaining} tasks remaining but sandbox is ${sandboxInstance.status}`,
 				);
 
-				// Bug fix #2077: Delegate recovery to coordinator
-				await this.coordinator.recoverFeature(
-					feature.id,
+				// Reset the feature to pending for reassignment
+				this.resetFeatureForReassignment(
+					feature,
 					`Stuck: ${tasksRemaining} tasks remaining but sandbox idle for ${Math.round(assignedDuration / 1000)}s`,
-					"stuck_task",
-					{ skipKill: true, skipRetryIncrement: true }, // sandbox already idle, infrastructure issue
 				);
+
+				// Mark sandbox as ready
+				sandboxInstance.status = "ready";
+				sandboxInstance.currentFeature = null;
 
 				this.log(
 					`   🔄 Feature #${feature.id} reset to pending for reassignment`,
@@ -881,17 +801,51 @@ export class WorkLoop {
 			);
 			this.log(`      Reason: ${staleInfo.reason}`);
 
-			if (!staleInfo.featureId) {
-				this.log("   ⚠️ [PROMISE_TIMEOUT] No feature ID for recovery");
+			// Find the feature and sandbox
+			const feature = this.manifest.feature_queue.find(
+				(f) => f.id === staleInfo.featureId,
+			);
+			const sandboxInstance = this.instances.find(
+				(i) => i.label === staleInfo.sandboxLabel,
+			);
+
+			if (!feature || !sandboxInstance) {
+				this.log(
+					"   ⚠️ [PROMISE_TIMEOUT] Could not find feature or sandbox for recovery",
+				);
 				continue;
 			}
 
-			// Bug fix #2077: Delegate recovery to coordinator
-			const result = await this.coordinator.recoverFeature(
-				staleInfo.featureId,
-				`Promise timeout: ${Math.round(staleInfo.promiseAgeMs / 1000 / 60)}min elapsed, heartbeat stale`,
-				"promise_timeout",
-			);
+			// Check if we should retry or fail permanently
+			const canRetry = shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES);
+			const currentRetryCount = feature.retry_count ?? 0;
+
+			if (canRetry) {
+				// Increment retry count and reset to pending for retry
+				feature.retry_count = currentRetryCount + 1;
+				feature.error = `Promise timeout (attempt ${feature.retry_count}/${DEFAULT_MAX_RETRIES}): ${Math.round(staleInfo.promiseAgeMs / 1000 / 60)}min elapsed, heartbeat stale`;
+				transitionFeatureStatus(feature, this.manifest, "pending", {
+					reason: "promise timeout retry",
+				});
+
+				this.log(
+					`   🔄 [PROMISE_TIMEOUT] Feature #${staleInfo.featureId} reset to pending (retry ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`,
+				);
+			} else {
+				// Max retries exceeded - mark as permanently failed
+				feature.error = `Promise timeout: Max retries (${DEFAULT_MAX_RETRIES}) exceeded after ${Math.round(staleInfo.promiseAgeMs / 1000 / 60)}min timeout`;
+				transitionFeatureStatus(feature, this.manifest, "failed", {
+					reason: "promise timeout max retries exceeded",
+				});
+
+				this.log(
+					`   ❌ [PROMISE_TIMEOUT] Feature #${staleInfo.featureId} marked as FAILED (max retries exceeded)`,
+				);
+			}
+
+			// Mark sandbox as ready for new work
+			sandboxInstance.status = "ready";
+			sandboxInstance.currentFeature = null;
 
 			// Remove from activeWork (the promise is stuck, so we abandon it)
 			this.activeWork.delete(staleInfo.sandboxLabel);
@@ -909,9 +863,9 @@ export class WorkLoop {
 					promiseAgeMs: staleInfo.promiseAgeMs,
 					heartbeatAgeMs: staleInfo.heartbeatAgeMs,
 					reason: staleInfo.reason,
-					retryCount: result.retryCount,
+					retryCount: feature.retry_count ?? 0,
 					maxRetries: DEFAULT_MAX_RETRIES,
-					markedAsFailed: !result.willRetry,
+					markedAsFailed: !canRetry,
 				},
 			);
 		}
@@ -919,29 +873,13 @@ export class WorkLoop {
 
 	/**
 	 * Check and recover feature via progress file when PTY times out.
-	 * Bug fix #1767, #2063
-	 *
-	 * Three-layer defense against stale progress file race condition (#2063):
-	 * 1. Time-based guard: Skip recovery for features < 90s old
-	 * 2. Feature ID validation: Reject progress files from other features
-	 * 3. Completion threshold: Require 80% task completion for recovery
+	 * Bug fix #1767
 	 */
 	private async checkPTYFallbackRecovery(
 		feature: FeatureEntry,
 		sandboxInstance: SandboxInstance,
 	): Promise<boolean> {
 		try {
-			// Layer 1: Time-based guard (Bug fix #2063)
-			// Skip recovery for recently-assigned features to prevent reading
-			// stale progress files from the previous feature.
-			const featureAge = Date.now() - (feature.assigned_at ?? 0);
-			if (featureAge < MIN_FEATURE_AGE_FOR_RECOVERY_MS) {
-				this.log(
-					`   ⏳ [PTY_FALLBACK] Skipping recovery for feature #${feature.id} (age: ${Math.round(featureAge / 1000)}s < ${MIN_FEATURE_AGE_FOR_RECOVERY_MS / 1000}s threshold)`,
-				);
-				return false;
-			}
-
 			const progressResult = await readProgressFile(sandboxInstance.sandbox);
 			if (
 				progressResult.success &&
@@ -949,38 +887,13 @@ export class WorkLoop {
 				!isProgressFileStale(progressResult.data) &&
 				isFeatureCompleted(progressResult.data)
 			) {
-				// Layer 2: Feature ID validation (Bug fix #2063)
-				// Reject progress files that don't match the current feature.
-				if (
-					progressResult.data.feature_id &&
-					progressResult.data.feature_id !== feature.id
-				) {
-					this.log(
-						`   ⚠️ [PTY_FALLBACK] Feature ID mismatch: expected ${feature.id}, got ${progressResult.data.feature_id}. Skipping recovery.`,
-					);
-					return false;
-				}
-
-				// Layer 3: Completion threshold (Bug fix #2063)
-				// Require at least 80% task completion before marking as recovered.
-				const completedCount = progressResult.data.completed_tasks?.length ?? 0;
-				const completionPercent =
-					feature.task_count > 0
-						? (completedCount / feature.task_count) * 100
-						: 0;
-				if (completionPercent < 80) {
-					this.log(
-						`   ⚠️ [PTY_FALLBACK] Feature #${feature.id}: ${Math.round(completionPercent)}% complete (${completedCount}/${feature.task_count} tasks, needs 80% for recovery)`,
-					);
-					return false;
-				}
-
 				this.log(
-					`   🔄 [PTY_FALLBACK] Feature #${feature.id} on ${sandboxInstance.label}: PTY stuck but progress file shows completed (${completedCount}/${feature.task_count} tasks)`,
+					`   🔄 [PTY_FALLBACK] Feature #${feature.id} on ${sandboxInstance.label}: PTY stuck but progress file shows completed`,
 				);
 
 				// Force manifest update to mark feature as completed
-				feature.tasks_completed = completedCount || feature.task_count;
+				feature.tasks_completed =
+					progressResult.data.completed_tasks?.length || feature.task_count;
 
 				// Update progress tracking
 				this.manifest.progress.last_completed_feature_id = feature.id;
@@ -1073,8 +986,56 @@ export class WorkLoop {
 		saveManifest(this.manifest);
 	}
 
-	// NOTE: resetFeatureForReassignment() and resetFeatureForRetryOnSandboxDeath()
-	// were removed in bug fix #2077. All recovery paths now use RecoveryCoordinator.
+	/**
+	 * Reset a feature for reassignment.
+	 */
+	private resetFeatureForReassignment(
+		feature: FeatureEntry,
+		errorMessage: string,
+	): void {
+		feature.error = errorMessage;
+		transitionFeatureStatus(feature, this.manifest, "pending", {
+			reason: `reset for reassignment: ${errorMessage}`,
+		});
+	}
+
+	/**
+	 * Reset a feature for retry when its sandbox dies.
+	 *
+	 * Bug fix #1858: When a sandbox dies, reset the feature to pending for
+	 * reassignment rather than marking it as failed. Only mark as failed
+	 * if max retries are exceeded.
+	 *
+	 * @param feature - The feature to reset
+	 * @param errorMessage - Description of why the feature is being reset
+	 */
+	private resetFeatureForRetryOnSandboxDeath(
+		feature: FeatureEntry,
+		errorMessage: string,
+	): void {
+		if (shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)) {
+			// Increment retry count and reset to pending for reassignment
+			feature.retry_count = (feature.retry_count ?? 0) + 1;
+			feature.error = `${errorMessage} (attempt ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`;
+			transitionFeatureStatus(feature, this.manifest, "pending", {
+				reason: `retry after sandbox death: ${errorMessage}`,
+			});
+
+			this.log(
+				`   🔄 Feature #${feature.id} reset to pending for retry (attempt ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`,
+			);
+		} else {
+			// Max retries exceeded - mark as permanently failed
+			feature.error = `${errorMessage} - max retries (${DEFAULT_MAX_RETRIES}) exceeded`;
+			transitionFeatureStatus(feature, this.manifest, "failed", {
+				reason: `sandbox death max retries exceeded: ${errorMessage}`,
+			});
+
+			this.log(
+				`   ❌ Feature #${feature.id} marked as FAILED (max retries exceeded)`,
+			);
+		}
+	}
 
 	/**
 	 * Clean up intervals on exit.

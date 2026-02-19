@@ -14,12 +14,12 @@ import {
 } from "./feature-transitions.js";
 import { saveManifest } from "./manifest.js";
 import { createLogger } from "./logger.js";
-import type { RecoveryCoordinator } from "./recovery-coordinator.js";
 import {
 	DEFAULT_MAX_RETRIES,
 	getBlockingFailedFeatures,
 	getNextAvailableFeature,
 	getPhantomCompletedFeatures,
+	resetFailedFeatureForRetry,
 	shouldRetryFailedFeature,
 } from "./work-queue.js";
 
@@ -150,20 +150,14 @@ export function recoverPhantomCompletedFeatures(
 /**
  * Handle failed features that are blocking the queue.
  *
- * Bug fix #2077: Recovery delegated to RecoveryCoordinator for centralized
- * retry budget management. Initiative-failure cascade remains here since
- * it's a deadlock-specific concern.
- *
  * @param manifest - The spec manifest
  * @param log - Logger function
- * @param coordinator - Optional recovery coordinator for centralized recovery
  * @returns Object with retry count and list of failed initiatives
  */
-export async function handleBlockingFailedFeatures(
+export function handleBlockingFailedFeatures(
 	manifest: SpecManifest,
 	log: (...args: unknown[]) => void = console.log,
-	coordinator?: RecoveryCoordinator,
-): Promise<{ retriedCount: number; failedInitiatives: string[] }> {
+): { retriedCount: number; failedInitiatives: string[] } {
 	const blockingFailedFeatures = getBlockingFailedFeatures(manifest);
 
 	if (blockingFailedFeatures.length === 0) {
@@ -175,101 +169,51 @@ export async function handleBlockingFailedFeatures(
 
 	// Process each blocking failed feature
 	for (const feature of blockingFailedFeatures) {
-		if (coordinator) {
-			// Bug fix #2077: Delegate to coordinator
-			const result = await coordinator.recoverFeature(
-				feature.id,
-				"Deadlock recovery: blocking failed feature retry",
-				"deadlock_blocking",
-				{ skipKill: true }, // feature already stopped
+		if (shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)) {
+			// Retry this feature
+			const newRetryCount = (feature.retry_count ?? 0) + 1;
+			log(
+				`\n🔄 Retrying failed feature #${feature.id} (attempt ${newRetryCount}/${DEFAULT_MAX_RETRIES})`,
 			);
 
-			if (result.willRetry) {
-				retriedCount++;
-				emitOrchestratorEvent(
-					"feature_retry",
-					`Retrying feature #${feature.id} after deadlock detection`,
-					{
-						featureId: feature.id,
-						retryCount: result.retryCount,
-						maxRetries: DEFAULT_MAX_RETRIES,
-					},
-				);
-			} else {
-				// Max retries exceeded - mark initiative as failed
-				const initiative = manifest.initiatives.find(
-					(i) => i.id === feature.initiative_id,
-				);
-				if (initiative && initiative.status !== "failed") {
-					log(
-						`\n❌ Max retries exceeded for feature #${feature.id} - marking initiative ${initiative.id} as failed`,
-					);
-					transitionInitiativeStatus(initiative, manifest, "failed", {
-						reason: `deadlock recovery: max retries exceeded for feature #${feature.id}`,
-						skipSave: true,
-					});
-					failedInitiatives.push(initiative.id);
+			resetFailedFeatureForRetry(feature, manifest);
+			retriedCount++;
 
-					emitOrchestratorEvent(
-						"initiative_failed",
-						`Initiative ${initiative.id} marked as failed due to feature #${feature.id} exhausting retries`,
-						{
-							initiativeId: initiative.id,
-							featureId: feature.id,
-							retryCount: result.retryCount,
-						},
-					);
-				}
-			}
+			// Emit event for UI visibility
+			emitOrchestratorEvent(
+				"feature_retry",
+				`Retrying feature #${feature.id} after deadlock detection`,
+				{
+					featureId: feature.id,
+					retryCount: newRetryCount,
+					maxRetries: DEFAULT_MAX_RETRIES,
+				},
+			);
 		} else {
-			// Fallback: direct retry without coordinator
-			if (shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)) {
-				const newRetryCount = (feature.retry_count ?? 0) + 1;
+			// Max retries exceeded - mark initiative as failed
+			const initiative = manifest.initiatives.find(
+				(i) => i.id === feature.initiative_id,
+			);
+			if (initiative && initiative.status !== "failed") {
 				log(
-					`\n🔄 Retrying failed feature #${feature.id} (attempt ${newRetryCount}/${DEFAULT_MAX_RETRIES})`,
+					`\n❌ Max retries exceeded for feature #${feature.id} - marking initiative ${initiative.id} as failed`,
 				);
-
-				feature.retry_count = newRetryCount;
-				feature.error = undefined;
-				transitionFeatureStatus(feature, manifest, "pending", {
-					reason: "reset failed feature for retry (no coordinator)",
-					skipSave: true,
+				transitionInitiativeStatus(initiative, manifest, "failed", {
+					reason: `deadlock recovery: max retries exceeded for feature #${feature.id}`,
+					skipSave: true, // batch save by caller
 				});
-				retriedCount++;
+				failedInitiatives.push(initiative.id);
 
+				// Emit event for UI visibility
 				emitOrchestratorEvent(
-					"feature_retry",
-					`Retrying feature #${feature.id} after deadlock detection`,
+					"initiative_failed",
+					`Initiative ${initiative.id} marked as failed due to feature #${feature.id} exhausting retries`,
 					{
+						initiativeId: initiative.id,
 						featureId: feature.id,
-						retryCount: newRetryCount,
-						maxRetries: DEFAULT_MAX_RETRIES,
+						retryCount: feature.retry_count ?? 0,
 					},
 				);
-			} else {
-				const initiative = manifest.initiatives.find(
-					(i) => i.id === feature.initiative_id,
-				);
-				if (initiative && initiative.status !== "failed") {
-					log(
-						`\n❌ Max retries exceeded for feature #${feature.id} - marking initiative ${initiative.id} as failed`,
-					);
-					transitionInitiativeStatus(initiative, manifest, "failed", {
-						reason: `deadlock recovery: max retries exceeded for feature #${feature.id}`,
-						skipSave: true,
-					});
-					failedInitiatives.push(initiative.id);
-
-					emitOrchestratorEvent(
-						"initiative_failed",
-						`Initiative ${initiative.id} marked as failed due to feature #${feature.id} exhausting retries`,
-						{
-							initiativeId: initiative.id,
-							featureId: feature.id,
-							retryCount: feature.retry_count ?? 0,
-						},
-					);
-				}
 			}
 		}
 	}
@@ -299,12 +243,11 @@ export async function handleBlockingFailedFeatures(
  * @param uiEnabled - Whether UI mode is enabled
  * @returns Object with { shouldExit: boolean, retriedCount: number, failedInitiatives: string[] }
  */
-export async function detectAndHandleDeadlock(
+export function detectAndHandleDeadlock(
 	instances: SandboxInstance[],
 	manifest: SpecManifest,
 	uiEnabled: boolean,
-	coordinator?: RecoveryCoordinator,
-): Promise<DeadlockResult> {
+): DeadlockResult {
 	const { log } = createLogger(uiEnabled);
 
 	// Check condition 1: All sandboxes are idle (not busy)
@@ -379,64 +322,52 @@ export async function detectAndHandleDeadlock(
 				`   #${feature.id}: assigned to ${feature.assigned_sandbox} but not running`,
 			);
 
-			if (coordinator) {
-				// Bug fix #2077: Delegate to coordinator
-				const result = await coordinator.recoverFeature(
-					feature.id,
-					"Orphaned in_progress feature reset",
-					"deadlock_orphaned",
-					{ skipKill: true }, // sandbox is idle
+			if (shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)) {
+				feature.retry_count = (feature.retry_count ?? 0) + 1;
+				feature.error = `Orphaned in_progress feature reset (attempt ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`;
+				const previousSandbox = feature.assigned_sandbox;
+				transitionFeatureStatus(feature, manifest, "pending", {
+					reason: "orphaned in_progress feature reset",
+					skipSave: true, // batch save below
+				});
+				resetCount++;
+
+				log(
+					`   ✅ Reset to pending for reassignment (retry ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`,
 				);
 
-				if (result.willRetry) {
-					resetCount++;
-					log(
-						`   ✅ Reset to pending for reassignment (retry ${result.retryCount}/${DEFAULT_MAX_RETRIES})`,
-					);
-				} else {
-					log("   ❌ Max retries exceeded - marked as failed");
-				}
-
 				emitOrchestratorEvent(
-					result.willRetry
-						? "orphaned_feature_reset"
-						: "orphaned_feature_failed",
-					`Feature #${feature.id} orphaned - ${result.willRetry ? "reset to pending" : "max retries exceeded"}`,
+					"orphaned_feature_reset",
+					`Feature #${feature.id} orphaned in_progress reset to pending`,
 					{
 						featureId: feature.id,
-						retryCount: result.retryCount,
+						retryCount: feature.retry_count,
 						maxRetries: DEFAULT_MAX_RETRIES,
-						previousSandbox: feature.assigned_sandbox,
+						previousSandbox,
 					},
 				);
 			} else {
-				// Fallback: direct recovery without coordinator
-				if (shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)) {
-					feature.retry_count = (feature.retry_count ?? 0) + 1;
-					feature.error = `Orphaned in_progress feature reset (attempt ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`;
-					transitionFeatureStatus(feature, manifest, "pending", {
-						reason: "orphaned in_progress feature reset",
-						skipSave: true,
-					});
-					resetCount++;
+				feature.error = `Orphaned in_progress feature - max retries (${DEFAULT_MAX_RETRIES}) exceeded`;
+				transitionFeatureStatus(feature, manifest, "failed", {
+					reason: "orphaned feature max retries exceeded",
+					skipSave: true, // batch save below
+				});
 
-					log(
-						`   ✅ Reset to pending for reassignment (retry ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`,
-					);
-				} else {
-					feature.error = `Orphaned in_progress feature - max retries (${DEFAULT_MAX_RETRIES}) exceeded`;
-					transitionFeatureStatus(feature, manifest, "failed", {
-						reason: "orphaned feature max retries exceeded",
-						skipSave: true,
-					});
-					log("   ❌ Max retries exceeded - marked as failed");
-				}
+				log("   ❌ Max retries exceeded - marked as failed");
+
+				emitOrchestratorEvent(
+					"orphaned_feature_failed",
+					`Feature #${feature.id} orphaned - max retries exceeded`,
+					{
+						featureId: feature.id,
+						retryCount: feature.retry_count ?? 0,
+						maxRetries: DEFAULT_MAX_RETRIES,
+					},
+				);
 			}
 		}
 
-		if (!coordinator) {
-			saveManifest(manifest);
-		}
+		saveManifest(manifest);
 
 		return {
 			shouldExit: false,
@@ -473,40 +404,26 @@ export async function detectAndHandleDeadlock(
 			let retriedCount = 0;
 
 			for (const feature of retryableFailedFeatures) {
-				if (coordinator) {
-					// Bug fix #2077: Delegate to coordinator
-					const result = await coordinator.recoverFeature(
-						feature.id,
-						"Deadlock recovery: retryable failed feature",
-						"deadlock_retryable",
-						{ skipKill: true },
-					);
-					if (result.willRetry) retriedCount++;
-				} else {
-					// Fallback: direct retry
-					feature.retry_count = (feature.retry_count ?? 0) + 1;
-					feature.error = undefined;
-					transitionFeatureStatus(feature, manifest, "pending", {
-						reason: "reset failed feature for retry (deadlock, no coordinator)",
-						skipSave: true,
-					});
-					retriedCount++;
-				}
+				const newRetryCount = (feature.retry_count ?? 0) + 1;
+				log(
+					`   🔄 Retrying feature #${feature.id} (attempt ${newRetryCount}/${DEFAULT_MAX_RETRIES})`,
+				);
+				resetFailedFeatureForRetry(feature, manifest);
+				retriedCount++;
 
+				// Emit event for UI visibility
 				emitOrchestratorEvent(
 					"feature_retry",
 					`Retrying feature #${feature.id} from deadlock recovery`,
 					{
 						featureId: feature.id,
-						retryCount: feature.retry_count ?? 0,
+						retryCount: newRetryCount,
 						maxRetries: DEFAULT_MAX_RETRIES,
 					},
 				);
 			}
 
-			if (!coordinator) {
-				saveManifest(manifest);
-			}
+			saveManifest(manifest);
 			log(`\n✅ Retried ${retriedCount} feature(s) - continuing work loop`);
 			return { shouldExit: false, retriedCount, failedInitiatives: [] };
 		}
@@ -531,13 +448,13 @@ export async function detectAndHandleDeadlock(
 	}
 
 	// Handle blocking failed features
-	const { retriedCount, failedInitiatives } =
-		await handleBlockingFailedFeatures(manifest, log, coordinator);
+	const { retriedCount, failedInitiatives } = handleBlockingFailedFeatures(
+		manifest,
+		log,
+	);
 
-	// Save manifest with updates (only if no coordinator — coordinator saves per-feature)
-	if (!coordinator) {
-		saveManifest(manifest);
-	}
+	// Save manifest with updates
+	saveManifest(manifest);
 
 	// Determine if we should exit
 	// Exit if: all blocking features have exhausted retries (no features were retried)
