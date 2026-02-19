@@ -26,9 +26,9 @@ vi.mock("../utils.js", () => ({
 
 // Mock config constants
 vi.mock("../../config/index.js", async () => {
-	const actual = await vi.importActual<
-		typeof import("../../config/index.js")
-	>("../../config/index.js");
+	const actual = await vi.importActual<typeof import("../../config/index.js")>(
+		"../../config/index.js",
+	);
 	return {
 		...actual,
 		SANDBOX_CREATION_MAX_RETRIES: 2,
