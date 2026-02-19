@@ -159,9 +159,7 @@ export function filterManifestByPhase(
 				if (earlierInitiativeIds.has(depId)) return false;
 
 				// If the dependency is a feature from an earlier phase's initiative, remove it
-				const depFeature = manifest.feature_queue.find(
-					(df) => df.id === depId,
-				);
+				const depFeature = manifest.feature_queue.find((df) => df.id === depId);
 				if (depFeature && earlierInitiativeIds.has(depFeature.initiative_id)) {
 					return false;
 				}
@@ -183,10 +181,7 @@ export function filterManifestByPhase(
 
 	// Calculate totals for the filtered set
 	const featuresTotal = filteredFeatures.length;
-	const tasksTotal = filteredFeatures.reduce(
-		(sum, f) => sum + f.task_count,
-		0,
-	);
+	const tasksTotal = filteredFeatures.reduce((sum, f) => sum + f.task_count, 0);
 	const featuresCompleted = filteredFeatures.filter(
 		(f) => f.status === "completed",
 	).length;
@@ -291,9 +286,7 @@ export function validatePhase(
 
 	for (const feature of phaseFeatures) {
 		for (const depId of feature.dependencies) {
-			const depFeature = manifest.feature_queue.find(
-				(f) => f.id === depId,
-			);
+			const depFeature = manifest.feature_queue.find((f) => f.id === depId);
 			if (depFeature && laterInitiativeIds.has(depFeature.initiative_id)) {
 				errors.push(
 					`Feature ${feature.id} depends on ${depId} which is in a later phase`,
@@ -339,17 +332,13 @@ export function getPhaseBranchName(specId: string, phaseId: string): string {
  * @param featureQueue - Array of features to analyze
  * @returns Maximum dependency chain depth (0 if no dependencies)
  */
-export function calculateDependencyDepth(
-	featureQueue: FeatureEntry[],
-): number {
+export function calculateDependencyDepth(featureQueue: FeatureEntry[]): number {
 	const featureIds = new Set(featureQueue.map((f) => f.id));
 	const depMap = new Map<string, string[]>();
 
 	for (const feature of featureQueue) {
 		// Only include dependencies that exist in this feature set
-		const internalDeps = feature.dependencies.filter((d) =>
-			featureIds.has(d),
-		);
+		const internalDeps = feature.dependencies.filter((d) => featureIds.has(d));
 		depMap.set(feature.id, internalDeps);
 	}
 
