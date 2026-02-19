@@ -2,12 +2,15 @@ import { PageBody } from "@kit/ui/page";
 
 import { HomeLayoutPageHeader } from "../_components/home-page-header";
 import PresentationsList from "./_components/PresentationsList";
+import { loadPresentations } from "./_lib/server/list-presentations.loader";
 
 export const metadata = {
 	title: "Presentations",
 };
 
-export default function AIPage() {
+export default async function AIPage() {
+	const presentations = await loadPresentations();
+
 	return (
 		<>
 			<HomeLayoutPageHeader
@@ -16,7 +19,7 @@ export default function AIPage() {
 			/>
 
 			<PageBody>
-				<PresentationsList />
+				<PresentationsList presentations={presentations} />
 			</PageBody>
 		</>
 	);
