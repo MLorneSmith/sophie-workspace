@@ -107,9 +107,7 @@ export function ProfileStepForm(props: {
 
 					<div className="grid gap-4 sm:grid-cols-2">
 						<div className="grid gap-2">
-							<Label htmlFor={`${reactId}-company`}>
-								Company (optional)
-							</Label>
+							<Label htmlFor={`${reactId}-company`}>Company (optional)</Label>
 							<Input
 								id={`${reactId}-company`}
 								value={company}
@@ -147,9 +145,7 @@ export function ProfileStepForm(props: {
 					</div>
 
 					<div className="grid gap-2">
-						<Label htmlFor={`${reactId}-briefText`}>
-							Notes (optional)
-						</Label>
+						<Label htmlFor={`${reactId}-briefText`}>Notes (optional)</Label>
 						<Textarea
 							id={`${reactId}-briefText`}
 							value={briefText}
@@ -159,7 +155,9 @@ export function ProfileStepForm(props: {
 						/>
 					</div>
 
-					{error ? <p className="text-app-sm text-destructive">{error}</p> : null}
+					{error ? (
+						<p className="text-app-sm text-destructive">{error}</p>
+					) : null}
 
 					<div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
 						<Button

@@ -441,15 +441,15 @@ export function SetupForm({
 				});
 
 				if (!response.success) {
-					const errorMessage = (response as unknown as { error?: string }).error;
+					const errorMessage = (response as unknown as { error?: string })
+						.error;
 					logger.error("Assemble save failed:", {
 						error: errorMessage,
 						presentationId,
 					});
 					setErrors({
 						answer:
-							errorMessage ||
-							"Failed to save assemble step. Please try again.",
+							errorMessage || "Failed to save assemble step. Please try again.",
 					});
 					return;
 				}
