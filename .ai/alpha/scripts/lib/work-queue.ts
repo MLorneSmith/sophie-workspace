@@ -106,16 +106,6 @@ export function getNextAvailableFeature(
 			continue;
 		}
 
-		// Bug fix #2064: Skip permanently-failed features that exceeded max retries
-		// Without this check, failed features with retry_count >= DEFAULT_MAX_RETRIES
-		// get re-assigned indefinitely since transitionFeatureStatus clears assigned_sandbox
-		if (
-			feature.status === "failed" &&
-			!shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)
-		) {
-			continue;
-		}
-
 		// Skip if already assigned to a sandbox
 		if (feature.assigned_sandbox) {
 			continue;
@@ -319,27 +309,10 @@ export function cleanupStaleState(
 			feature.assigned_at = undefined;
 		}
 
-		// Reset failed features for fresh retry on re-run
-		// Clear error, retry_count, and transition to pending so getNextAvailableFeature picks them up
-		// The retry budget is per-run protection (prevents infinite loops within a single run),
-		// not cross-run protection. When a user explicitly re-runs the orchestrator,
-		// failed features should get a fresh retry budget.
-		if (feature.status === "failed") {
-			const hadError = !!feature.error;
-			const hadRetries = (feature.retry_count ?? 0) > 0;
-			if (hadError || hadRetries) {
-				log(
-					`   🔄 Resetting for retry: #${feature.id} - ${feature.title} (retries: ${feature.retry_count ?? 0} → 0)`,
-				);
-				feature.error = undefined;
-				feature.retry_count = 0;
-				transitionFeatureStatus(feature, manifest, "pending", {
-					reason: "cleanup failed feature for fresh retry on re-run",
-					skipSave: true,
-					skipInitiativeCascade: true,
-				});
-				cleanedCount++;
-			}
+		// Clear error messages from failed features (they'll be retried fresh)
+		if (feature.status === "failed" && feature.error) {
+			log(`   🔄 Marking for retry: #${feature.id} - ${feature.title}`);
+			feature.error = undefined;
 		}
 	}
 
@@ -435,9 +408,6 @@ export function getBlockingFailedFeatures(
 		failedFeatures.map((f) => f.initiative_id),
 	);
 
-	// Bug fix #2056: Also track failed feature IDs for feature-level dependency checks
-	const failedFeatureIds = new Set(failedFeatures.map((f) => f.id));
-
 	// Get completed initiatives and features for dependency checking
 	const completedFeatureIds = new Set(
 		manifest.feature_queue
@@ -450,23 +420,22 @@ export function getBlockingFailedFeatures(
 			.map((i) => i.id),
 	);
 
-	// Find features that are blocked by failed features or initiatives with failures
+	// Find features that are blocked by initiatives with failures
 	const featuresBlockedByFailures = manifest.feature_queue.filter((f) => {
 		// Only consider pending/failed features (not completed/in_progress)
 		if (f.status !== "pending" && f.status !== "failed") {
 			return false;
 		}
 
-		// Check if any dependency is a failed feature or an initiative with failures
+		// Check if any dependency is an initiative with a failed feature
 		return f.dependencies.some((depId) => {
 			// If dep is already completed, it doesn't block
 			if (completedFeatureIds.has(depId) || completedInitiativeIds.has(depId)) {
 				return false;
 			}
 
-			// Bug fix #2056: Check both feature-level and initiative-level deps
-			// depId can be a feature ID (e.g. "S2045.I4.F1") or initiative ID (e.g. "S2045.I4")
-			return failedFeatureIds.has(depId) || initiativesWithFailures.has(depId);
+			// Check if this dep is an initiative with failures
+			return initiativesWithFailures.has(depId);
 		});
 	});
 
@@ -496,8 +465,35 @@ export function shouldRetryFailedFeature(
 	return retryCount < maxRetries;
 }
 
-// NOTE: resetFailedFeatureForRetry() was removed in bug fix #2077.
-// All feature retry logic is now handled by RecoveryCoordinator.
+/**
+ * Reset a failed feature for retry.
+ *
+ * This function:
+ * - Sets status back to "pending"
+ * - Clears the error message
+ * - Clears sandbox assignment (assigned_sandbox, assigned_at)
+ * - Increments retry_count
+ *
+ * Note: The caller must save the manifest after calling this function.
+ *
+ * @param feature - The failed feature to reset
+ */
+export function resetFailedFeatureForRetry(
+	feature: FeatureEntry,
+	manifest: SpecManifest,
+): void {
+	// Increment retry count FIRST (before resetting status)
+	feature.retry_count = (feature.retry_count ?? 0) + 1;
+
+	// Clear error message for fresh attempt
+	feature.error = undefined;
+
+	// Use centralized transition (handles assignment clearing, initiative cascade)
+	transitionFeatureStatus(feature, manifest, "pending", {
+		reason: "reset failed feature for retry",
+		skipSave: true, // callers save the manifest themselves
+	});
+}
 
 // ============================================================================
 // Phantom Completion Detection (Bug fix #1782)

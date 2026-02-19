@@ -50,7 +50,6 @@ import {
 	writeUIProgress,
 } from "./progress.js";
 import { validateProgressStatus } from "./progress-file.js";
-import { SandboxProgressSchema, safeParseProgress } from "./schemas/index.js";
 import {
 	PTYTimeoutError,
 	type WaitWithTimeoutResult,
@@ -66,77 +65,6 @@ import {
 import { createLogger } from "./logger.js";
 import { stripAnsiCodes } from "./utils.js";
 import { updateNextFeatureId } from "./work-queue.js";
-
-// ============================================================================
-// Task Audit (Bug fix #2060)
-// ============================================================================
-
-/**
- * Result of auditing task completion numbers after agent execution.
- */
-export interface TaskAuditResult {
-	/** Adjusted completed count (capped to task_count) */
-	adjustedCompleted: number;
-	/** Adjusted failed count (capped to remaining after completed) */
-	adjustedFailed: number;
-	/** Number of tasks not accounted for in completed or failed */
-	droppedTasks: number;
-	/** Whether agent reported more completed than tasks exist */
-	hasOvercount: boolean;
-	/** Original reported completed count before adjustment */
-	reportedCompleted: number;
-	/** Whether the audit found any anomalies */
-	hasAnomalies: boolean;
-}
-
-/**
- * Audit task completion numbers reported by an agent.
- *
- * GPT agents sometimes report more completed tasks than exist (phantom
- * overcounts) or leave tasks unaccounted for (silently dropped). This
- * function detects and corrects both conditions.
- *
- * Bug fix #2060: Prevents false completion with GPT agents.
- *
- * @param completedCount - Number of completed tasks reported by agent
- * @param failedCount - Number of failed tasks reported by agent
- * @param taskCount - Total tasks in the feature
- * @returns Audit result with adjusted counts and anomaly flags
- */
-export function auditTaskCompletion(
-	completedCount: number,
-	failedCount: number,
-	taskCount: number,
-): TaskAuditResult {
-	const reportedCompleted = completedCount;
-	let hasOvercount = false;
-
-	// Cap completed to task_count — prevents phantom overcounts
-	let adjustedCompleted = completedCount;
-	if (adjustedCompleted > taskCount) {
-		adjustedCompleted = taskCount;
-		hasOvercount = true;
-	}
-
-	// Cap failed to remaining tasks after completed
-	let adjustedFailed = failedCount;
-	const maxFailed = taskCount - adjustedCompleted;
-	if (adjustedFailed > maxFailed) {
-		adjustedFailed = maxFailed;
-	}
-
-	const accountedFor = adjustedCompleted + adjustedFailed;
-	const droppedTasks = taskCount - accountedFor;
-
-	return {
-		adjustedCompleted,
-		adjustedFailed,
-		droppedTasks,
-		hasOvercount,
-		reportedCompleted,
-		hasAnomalies: hasOvercount || droppedTasks > 0,
-	};
-}
 
 // ============================================================================
 // Log File Management
@@ -204,69 +132,6 @@ ${separator}
 }
 
 // ============================================================================
-// DNS-Resilient Git Operations (Bug fix #2070)
-// ============================================================================
-
-/**
- * Maximum retry attempts for git operations that may fail due to DNS.
- */
-const GIT_RETRY_MAX_ATTEMPTS = 3;
-
-/**
- * Run a sandbox command with retry logic for transient DNS failures.
- *
- * DNS failures in E2B sandboxes are transient ("Could not resolve host: github.com").
- * This function retries with exponential backoff (3s, 6s, 9s) on failure.
- *
- * Bug fix #2070: Prevents cascade failure from DNS issues during git push.
- *
- * @param sandbox - The E2B sandbox instance
- * @param command - The command to run
- * @param timeoutMs - Timeout for each attempt
- * @param maxAttempts - Maximum retry attempts (default: 3)
- * @returns The command result from the successful attempt
- * @throws The last error if all attempts fail
- */
-async function runGitWithDNSRetry(
-	sandbox: SandboxInstance["sandbox"],
-	command: string,
-	timeoutMs: number,
-	maxAttempts: number = GIT_RETRY_MAX_ATTEMPTS,
-): Promise<{ exitCode: number; stdout: string; stderr: string }> {
-	let lastError: unknown;
-
-	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-		try {
-			const result = await sandbox.commands.run(command, { timeoutMs });
-			if (result.exitCode === 0) {
-				return result;
-			}
-			// Non-zero exit — check if DNS-related
-			const output = `${result.stdout} ${result.stderr}`;
-			const isDNSFailure =
-				output.includes("Could not resolve host") ||
-				output.includes("Name or service not known") ||
-				output.includes("Temporary failure in name resolution");
-
-			if (isDNSFailure && attempt < maxAttempts) {
-				const delay = 3000 * attempt; // 3s, 6s, 9s
-				await new Promise((resolve) => setTimeout(resolve, delay));
-				continue;
-			}
-			return result;
-		} catch (error) {
-			lastError = error;
-			if (attempt < maxAttempts) {
-				const delay = 3000 * attempt;
-				await new Promise((resolve) => setTimeout(resolve, delay));
-			}
-		}
-	}
-
-	throw lastError;
-}
-
-// ============================================================================
 // Feature Implementation
 // ============================================================================
 
@@ -330,12 +195,10 @@ export async function runFeatureImplementation(
 		log("   │   ℹ️ Remote branch not yet pushed - skipping pull");
 	} else {
 		log("   │   Pulling latest code...");
-		// Bug fix #2070: Use DNS retry for git fetch
 		try {
-			await runGitWithDNSRetry(
-				instance.sandbox,
+			await instance.sandbox.commands.run(
 				`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git reset --hard FETCH_HEAD`,
-				60000,
+				{ timeoutMs: 60000 },
 			);
 			log("   │   ✓ Code synced");
 		} catch (pullError) {
@@ -355,7 +218,6 @@ export async function runFeatureImplementation(
 		// Ignore - file may not exist
 	}
 	// Initialize progress file immediately to avoid PTY recovery failures
-	// Bug fix #2063: Include feature_id for recovery validation
 	try {
 		await instance.sandbox.commands.run(
 			`cd ${WORKSPACE_DIR} && python3 - <<'PY'\n` +
@@ -364,7 +226,6 @@ export async function runFeatureImplementation(
 				"progress = {\n" +
 				`  "status": "in_progress",\n` +
 				`  "phase": "starting",\n` +
-				`  "feature_id": "${feature.id}",\n` +
 				`  "completed_tasks": [],\n` +
 				`  "failed_tasks": [],\n` +
 				`  "context_usage_percent": 0,\n` +
@@ -812,20 +673,13 @@ export async function runFeatureImplementation(
 		);
 
 		let tasksCompleted = 0;
-		let tasksFailed = 0;
 		// Bug fix #1938: Don't default to "completed" - require evidence
 		let status: FeatureEntry["status"] = "pending";
 		let progressFileStatus: string | undefined;
 
 		try {
-			const rawParsed = JSON.parse(progressResult.stdout || "{}");
-			const parsed = safeParseProgress(
-				SandboxProgressSchema,
-				rawParsed,
-				"featureResult",
-			);
+			const parsed = JSON.parse(progressResult.stdout || "{}");
 			tasksCompleted = parsed.completed_tasks?.length || 0;
-			tasksFailed = parsed.failed_tasks?.length || 0;
 			const validatedStatus = validateProgressStatus(parsed.status);
 			progressFileStatus = validatedStatus;
 
@@ -849,7 +703,6 @@ export async function runFeatureImplementation(
 		// Fallback: Use last polled progress if available
 		if (tasksCompleted === 0 && lastPolledProgress?.completed_tasks) {
 			tasksCompleted = lastPolledProgress.completed_tasks.length;
-			tasksFailed = lastPolledProgress.failed_tasks?.length || 0;
 		}
 
 		// Bug fix #1938: Try to extract task count from output, but NEVER assume all tasks done
@@ -866,65 +719,22 @@ export async function runFeatureImplementation(
 			// DO NOT fallback to feature.task_count - that's the bug we're fixing
 		}
 
-		// Bug fix #2060: Post-execution task audit
-		const audit = auditTaskCompletion(
-			tasksCompleted,
-			tasksFailed,
-			feature.task_count,
-		);
-		tasksCompleted = audit.adjustedCompleted;
-		tasksFailed = audit.adjustedFailed;
-
-		if (audit.hasOvercount) {
-			log(
-				`   │   ⚠️ [TASK_AUDIT] Phantom overcount: agent reported ${audit.reportedCompleted} completed but feature only has ${feature.task_count} tasks. Capped to ${tasksCompleted}.`,
-			);
-		}
-
-		if (audit.droppedTasks > 0 && status === "completed") {
-			log(
-				`   │   ⚠️ [TASK_AUDIT] ${audit.droppedTasks} task(s) silently dropped (${tasksCompleted} completed + ${tasksFailed} failed = ${tasksCompleted + tasksFailed}/${feature.task_count})`,
-			);
-			// If dropped tasks push actual completion below 80%, downgrade
-			const completionPct = (tasksCompleted / feature.task_count) * 100;
-			if (completionPct < 80) {
-				log(
-					`   │   ⚠️ [TASK_AUDIT] Completion at ${completionPct.toFixed(0)}% after audit — downgrading to failed`,
-				);
-				status = "failed";
-			}
-		}
-
-		if (audit.hasAnomalies || tasksFailed > 0) {
-			log(
-				`   │   📊 [TASK_AUDIT] Summary: ${tasksCompleted} completed, ${tasksFailed} failed, ${audit.droppedTasks} dropped (reported: ${audit.reportedCompleted})`,
-			);
-		}
-
-		// Bug fix #1938, #2063: Require meaningful evidence before marking completed
+		// Bug fix #1938: Require meaningful evidence before marking completed
 		// A feature is only "completed" if:
 		// 1. Progress file explicitly says status: "completed", OR
-		// 2. At least 80% of tasks were completed (indicates real progress)
-		// Raised from 50% to 80% to prevent partially-completed features from
-		// being incorrectly marked done during stale progress file races.
-		const completionThreshold = Math.ceil(feature.task_count * 0.8);
+		// 2. At least 50% of tasks were completed (indicates real progress)
+		const completionThreshold = Math.ceil(feature.task_count * 0.5);
 		if (status === "completed" && tasksCompleted < completionThreshold) {
 			// Progress file said completed but we have no evidence of task completion
 			// This likely means the agent exited without doing the work
 			log(
-				`   │   ⚠️ [COMPLETION_VALIDATION] Progress file claimed completed but only ${tasksCompleted}/${feature.task_count} tasks verified (need ${completionThreshold})`,
+				`   │   ⚠️ [COMPLETION_VALIDATION] Progress file claimed completed but only ${tasksCompleted}/${feature.task_count} tasks verified`,
 			);
 			if (progressFileStatus === "completed" && tasksCompleted === 0) {
 				// Explicit completion claim with zero tasks - suspicious, mark for retry
 				status = "pending";
 				log(
 					"   │   ⚠️ [COMPLETION_VALIDATION] Marking as pending for retry (zero tasks completed)",
-				);
-			} else {
-				// Some tasks done but below threshold — mark failed for retry
-				status = "failed";
-				log(
-					"   │   ⚠️ [COMPLETION_VALIDATION] Below 80% threshold — marking as failed for retry",
 				);
 			}
 		}
@@ -956,12 +766,10 @@ export async function runFeatureImplementation(
 			manifest.progress.last_completed_feature_id = feature.id;
 
 			// CRITICAL: Push after completing feature
-			// Bug fix #2070: Use DNS retry to handle transient DNS failures in E2B
 			try {
-				await runGitWithDNSRetry(
-					instance.sandbox,
+				await instance.sandbox.commands.run(
 					`cd ${WORKSPACE_DIR} && git push origin "${manifest.sandbox.branch_name}"`,
-					120000,
+					{ timeoutMs: 120000 },
 				);
 			} catch (pushError) {
 				log(`   │   ⚠ Push failed: ${pushError}`);

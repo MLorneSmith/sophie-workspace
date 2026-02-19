@@ -152,23 +152,6 @@ export const SANDBOX_KEEPALIVE_STAGGER_MS = 2 * 60 * 1000;
 export const SANDBOX_MAX_AGE_MS = 60 * 60 * 1000;
 
 // ============================================================================
-// Sandbox Extension Configuration (Bug fix #2074)
-// ============================================================================
-
-/** Duration to extend sandbox timeout when features are actively executing (ms) - 15 minutes
- * Same as keepalive interval. This gives the in-progress feature another 15 minutes
- * to complete instead of being killed by the preemptive restart.
- * See bug fix #2074 for rationale.
- */
-export const SANDBOX_EXTENSION_MS = 15 * 60 * 1000;
-
-/** Maximum number of sandbox extension attempts before forcing restart.
- * Prevents infinite extension loops where a feature never completes.
- * After this many extensions, the sandbox is killed and the feature retried.
- */
-export const SANDBOX_MAX_EXTENSION_ATTEMPTS = 3;
-
-// ============================================================================
 // Startup Retry Configuration
 // ============================================================================
 
@@ -282,19 +265,3 @@ export const MAX_TASKS_PER_PHASE = 100;
  * Deep dependency chains create long critical paths that exceed sandbox lifetimes.
  */
 export const MAX_DEPENDENCY_DEPTH = 5;
-
-// ============================================================================
-// Recovery Guard Configuration (Bug fix #2063)
-// ============================================================================
-
-/**
- * Minimum feature age before PTY fallback recovery checks are allowed (ms).
- * Prevents reading stale progress files from the previous feature during the
- * async gap between feature assignment and progress file initialization.
- *
- * Diagnosis (#2062) measured a 34-second race window. A 90-second guard provides
- * a 2.6x safety margin. Can be tuned based on actual execution data.
- *
- * See bug fix #2063 for rationale.
- */
-export const MIN_FEATURE_AGE_FOR_RECOVERY_MS = 90_000;
