@@ -1,11 +1,13 @@
+import type { Metadata } from "next";
+
 import { PageBody } from "@kit/ui/page";
 
 import { HomeLayoutPageHeader } from "../_components/home-page-header";
 import PresentationsList from "./_components/PresentationsList";
 import { loadPresentations } from "./_lib/server/list-presentations.loader";
 
-export const metadata = {
-	title: "Presentations",
+export const metadata: Metadata = {
+	title: "AI Workflow",
 };
 
 export default async function AIPage() {
@@ -14,7 +16,7 @@ export default async function AIPage() {
 	return (
 		<>
 			<HomeLayoutPageHeader
-				title="Presentations"
+				title="AI Workflow"
 				description="Browse, resume, and create AI presentation projects."
 			/>
 

@@ -202,7 +202,6 @@ export const presentationPaths: PathConfig = {
 	general: [
 		"presentation_type",
 		"title",
-		"audience",
 		"situation",
 		"complication",
 		"question_type",
@@ -211,7 +210,6 @@ export const presentationPaths: PathConfig = {
 	sales: [
 		"presentation_type",
 		"title",
-		"audience",
 		"situation",
 		"complication",
 		"question_type",
@@ -220,7 +218,6 @@ export const presentationPaths: PathConfig = {
 	consulting: [
 		"presentation_type",
 		"title",
-		"audience",
 		"situation",
 		"complication",
 		"question_type",
@@ -229,7 +226,6 @@ export const presentationPaths: PathConfig = {
 	fundraising: [
 		"presentation_type",
 		"title",
-		"audience",
 		"situation",
 		"complication",
 		"question_type",

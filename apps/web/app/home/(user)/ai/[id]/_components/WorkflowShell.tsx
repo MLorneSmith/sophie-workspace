@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import { useContext, useEffect, useMemo, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
+import { SidebarContext } from "@kit/ui/shadcn-sidebar";
 import { cn } from "@kit/ui/utils";
 
 import { ContinueButton } from "../../_components/ContinueButton";
@@ -54,18 +55,45 @@ export function WorkflowShell(props: {
 		currentStep === "storyboard" ||
 		currentStep === "generate";
 
+	// Auto-collapse sidebar on workflow pages to maximize workspace
+	const sidebar = useContext(SidebarContext);
+	const sidebarRef = useRef(sidebar);
+	const previousOpenRef = useRef<boolean | null>(null);
+	sidebarRef.current = sidebar;
+
+	useEffect(() => {
+		const ctx = sidebarRef.current;
+		if (!ctx) return;
+
+		// Remember the sidebar state before we collapse it
+		previousOpenRef.current = ctx.open;
+
+		if (ctx.open) {
+			ctx.setOpen(false);
+		}
+
+		return () => {
+			// Restore sidebar state when leaving workflow
+			if (previousOpenRef.current) {
+				sidebarRef.current?.setOpen(true);
+			}
+		};
+	}, []);
+
 	return (
 		<div className="min-h-[calc(100vh-3.5rem)]">
 			<WorkflowStepBar presentationId={props.presentationId} />
 
 			<div
 				className={cn(
-					"mx-auto grid max-w-6xl gap-0 px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10",
-					showAgentRail ? "grid-cols-[1fr_48px]" : "grid-cols-1",
+					"mx-auto grid gap-0 px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10",
+					showAgentRail
+						? "max-w-7xl grid-cols-[1fr_48px]"
+						: "max-w-5xl grid-cols-1",
 				)}
 			>
 				<div className="min-w-0">
-					<div className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+					<div className="rounded-xl border border-white/10 bg-white/5 p-6 sm:p-8 backdrop-blur-xl">
 						{props.children}
 
 						<ContinueButton
