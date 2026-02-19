@@ -9,7 +9,6 @@ import {
 	CardTitle,
 } from "@kit/ui/card";
 import { Input } from "@kit/ui/input";
-import { Progress } from "@kit/ui/progress";
 import { Spinner } from "@kit/ui/spinner";
 import { Textarea } from "@kit/ui/textarea";
 import { useQueryClient } from "@tanstack/react-query";
@@ -192,16 +191,16 @@ const MultipleChoiceQuestion = ({
 				type="button"
 				onClick={() => onChange(option.id)}
 				onBlur={onBlur}
-				className={`focus:ring-primary w-full rounded-lg p-4 text-left transition-colors duration-200 ease-in-out focus:ring-2 focus:outline-none ${
+				className={`w-full rounded-lg border p-4 text-left transition-all duration-200 ease-in-out focus:ring-2 focus:ring-[#24A9E0] focus:outline-none ${
 					value === option.id
-						? "bg-primary text-white"
-						: "bg-background hover:bg-muted"
+						? "border-[#24A9E0] bg-[#24A9E0]/15 text-foreground"
+						: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
 				}`}
 			>
 				<div className="font-medium">{option.label}</div>
 				<div
 					className={`text-sm ${
-						value === option.id ? "text-white" : "text-muted-foreground"
+						value === option.id ? "text-[#24A9E0]" : "text-muted-foreground"
 					}`}
 				>
 					{option.description}
@@ -230,16 +229,16 @@ const PresentationTypeQuestion = ({
 				type="button"
 				onClick={() => onChange(type.id)}
 				onBlur={onBlur}
-				className={`focus:ring-primary w-full rounded-lg p-4 text-left transition-colors duration-200 ease-in-out focus:ring-2 focus:outline-none ${
+				className={`w-full rounded-lg border p-4 text-left transition-all duration-200 ease-in-out focus:ring-2 focus:ring-[#24A9E0] focus:outline-none ${
 					value === type.id
-						? "bg-primary text-white"
-						: "bg-background hover:bg-muted"
+						? "border-[#24A9E0] bg-[#24A9E0]/15 text-foreground"
+						: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
 				}`}
 			>
 				<div className="font-medium">{type.label}</div>
 				<div
 					className={`text-sm ${
-						value === type.id ? "text-white" : "text-muted-foreground"
+						value === type.id ? "text-[#24A9E0]" : "text-muted-foreground"
 					}`}
 				>
 					{type.description}
@@ -641,15 +640,8 @@ export function SetupForm({
 	const fallbackQuestionData = getQuestion(currentPath[0] as QuestionField);
 
 	return (
-		<div className="container mx-auto p-4">
-			<h2 className="mb-6 text-2xl font-bold">
-				{currentQuestionData?.section || fallbackQuestionData?.section}
-			</h2>
-			<Progress
-				value={((currentQuestion + 1) / currentPath.length) * 100}
-				className="mb-6"
-			/>
-			<Card>
+		<div className="mx-auto w-full max-w-3xl">
+			<Card className="border-white/10 bg-white/5">
 				<CardHeader>
 					<CardTitle>
 						{currentQuestionData?.label || fallbackQuestionData?.label}
