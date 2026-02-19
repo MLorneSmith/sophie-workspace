@@ -2,7 +2,6 @@
 
 import { Button } from "@kit/ui/button";
 import { Input } from "@kit/ui/input";
-import { Textarea } from "@kit/ui/textarea";
 import {
 	Select,
 	SelectContent,
@@ -10,6 +9,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@kit/ui/select";
+import { Textarea } from "@kit/ui/textarea";
 import { cn } from "@kit/ui/utils";
 import Bold from "@tiptap/extension-bold";
 import BulletList from "@tiptap/extension-bullet-list";
@@ -19,8 +19,9 @@ import ListItem from "@tiptap/extension-list-item";
 import OrderedList from "@tiptap/extension-ordered-list";
 import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
-import StarterKit from "@tiptap/starter-kit";
 import { type Editor, EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import debounce from "lodash/debounce";
 import {
 	Bold as BoldIcon,
 	Italic as ItalicIcon,
@@ -30,7 +31,6 @@ import {
 	Underline as UnderlineIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo } from "react";
-import debounce from "lodash/debounce";
 
 import type {
 	SlideLayout,
@@ -41,8 +41,6 @@ interface SlideEditorProps {
 	slide: StoryboardSlide;
 	onUpdate: (slide: StoryboardSlide) => void;
 	onDelete: (slideId: string) => void;
-	isSelected: boolean;
-	onSelect: () => void;
 }
 
 function NotesToolbar({ editor }: { editor: Editor | null }) {
@@ -115,13 +113,7 @@ function NotesToolbar({ editor }: { editor: Editor | null }) {
 	);
 }
 
-export function SlideEditor({
-	slide,
-	onUpdate,
-	onDelete,
-	isSelected,
-	onSelect,
-}: SlideEditorProps) {
+export function SlideEditor({ slide, onUpdate, onDelete }: SlideEditorProps) {
 	const notesContent = useMemo(() => {
 		if (!slide.speaker_notes) {
 			return {
@@ -178,7 +170,7 @@ export function SlideEditor({
 		content: notesContent,
 		editorProps: {
 			attributes: {
-				class: "outline-none min-h-[60px] px-2 py-1.5 text-xs",
+				class: "outline-none min-h-[120px] px-3 py-2 text-sm",
 			},
 		},
 		onBlur: ({ editor }) => {
@@ -207,30 +199,16 @@ export function SlideEditor({
 	}, [debouncedNotesChange]);
 
 	return (
-		<button
-			type="button"
-			className={cn(
-				"group w-full cursor-pointer rounded-lg border text-left transition-colors",
-				isSelected
-					? "border-blue-500/40 bg-blue-500/5"
-					: "border-white/10 bg-white/5 hover:border-white/20",
-			)}
-			onClick={onSelect}
-		>
-			{/* Slide header */}
+		<div className="rounded-lg border border-blue-500/40 bg-blue-500/5">
 			<div className="flex items-center gap-2 border-b border-white/10 p-3">
 				<span className="text-muted-foreground flex h-6 w-6 shrink-0 items-center justify-center rounded bg-white/10 text-xs font-medium">
 					{slide.order + 1}
 				</span>
 				<Input
 					value={slide.title}
-					onChange={(e) => {
-						e.stopPropagation();
-						onUpdate({ ...slide, title: e.target.value });
-					}}
-					onClick={(e) => e.stopPropagation()}
+					onChange={(e) => onUpdate({ ...slide, title: e.target.value })}
 					placeholder="Slide title"
-					className="h-7 border-0 bg-transparent px-2 text-sm font-medium focus-visible:ring-0"
+					className="h-8 border-white/10 bg-white/5 px-2 text-sm font-medium"
 				/>
 				<Select
 					value={slide.layout}
@@ -238,10 +216,7 @@ export function SlideEditor({
 						onUpdate({ ...slide, layout: value });
 					}}
 				>
-					<SelectTrigger
-						className="h-7 w-[140px] shrink-0 border-white/10 text-xs"
-						onClick={(e) => e.stopPropagation()}
-					>
+					<SelectTrigger className="h-8 w-[180px] shrink-0 border-white/10 bg-white/5 text-xs">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
@@ -253,61 +228,53 @@ export function SlideEditor({
 				<Button
 					variant="ghost"
 					size="sm"
-					onClick={(e) => {
-						e.stopPropagation();
-						onDelete(slide.id);
-					}}
-					className="text-muted-foreground hover:text-destructive h-7 w-7 shrink-0 p-0 opacity-0 transition-opacity group-hover:opacity-100"
+					onClick={() => onDelete(slide.id)}
+					className="text-muted-foreground hover:text-destructive h-8 w-8 shrink-0 p-0"
 					aria-label="Delete slide"
 				>
 					<Trash2 className="h-3.5 w-3.5" />
 				</Button>
 			</div>
 
-			{/* Slide content */}
-			{isSelected && (
-				<div className="space-y-3 p-3">
-					{slide.layout !== "title-only" && (
-						<div>
-							<p className="text-muted-foreground mb-1 text-xs font-medium">
-								Content
-							</p>
-							<Textarea
-								value={slide.content}
-								onChange={(e) =>
-									onUpdate({ ...slide, content: e.target.value })
-								}
-								placeholder="Slide content..."
-								className="min-h-[80px] border-white/10 bg-white/5 text-sm"
-							/>
-						</div>
-					)}
-
+			<div className="space-y-4 p-4">
+				{slide.layout !== "title-only" && (
 					<div>
 						<p className="text-muted-foreground mb-1 text-xs font-medium">
-							Visual Notes
+							Content
 						</p>
-						<Input
-							value={slide.visual_notes}
-							onChange={(e) =>
-								onUpdate({ ...slide, visual_notes: e.target.value })
-							}
-							placeholder="e.g., 'Chart showing market trends'"
-							className="h-8 border-white/10 bg-white/5 text-sm"
+						<Textarea
+							value={slide.content}
+							onChange={(e) => onUpdate({ ...slide, content: e.target.value })}
+							placeholder="Slide content..."
+							className="min-h-[120px] border-white/10 bg-white/5 text-sm"
 						/>
 					</div>
+				)}
 
-					<div>
-						<p className="text-muted-foreground mb-1 text-xs font-medium">
-							Speaker Notes
-						</p>
-						<div className="rounded-md border border-white/10 bg-white/5">
-							<NotesToolbar editor={notesEditor} />
-							<EditorContent editor={notesEditor} />
-						</div>
+				<div>
+					<p className="text-muted-foreground mb-1 text-xs font-medium">
+						Visual Notes
+					</p>
+					<Input
+						value={slide.visual_notes}
+						onChange={(e) =>
+							onUpdate({ ...slide, visual_notes: e.target.value })
+						}
+						placeholder="e.g., 'Chart showing market trends'"
+						className="h-9 border-white/10 bg-white/5 text-sm"
+					/>
+				</div>
+
+				<div>
+					<p className="text-muted-foreground mb-1 text-xs font-medium">
+						Speaker Notes
+					</p>
+					<div className="rounded-md border border-white/10 bg-white/5">
+						<NotesToolbar editor={notesEditor} />
+						<EditorContent editor={notesEditor} />
 					</div>
 				</div>
-			)}
-		</button>
+			</div>
+		</div>
 	);
 }
