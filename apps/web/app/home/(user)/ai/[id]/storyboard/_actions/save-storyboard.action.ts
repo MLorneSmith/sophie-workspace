@@ -5,19 +5,19 @@ import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
 
-import { saveOutlineContent } from "../_lib/server/outline-contents-db.service";
+import { saveStoryboardContent } from "../_lib/server/storyboard-contents-db.service";
 
-const SaveOutlineSchema = z.object({
+const SaveStoryboardSchema = z.object({
 	presentationId: z.string().min(1),
-	content: z.unknown(),
+	slides: z.unknown(),
 });
 
-export const saveOutlineAction = enhanceAction(
+export const saveStoryboardAction = enhanceAction(
 	async (data, user) => {
 		const client = getSupabaseServerClient();
 		const logger = await getLogger();
 		const ctx = {
-			name: "saveOutlineAction",
+			name: "saveStoryboardAction",
 			presentationId: data.presentationId,
 		};
 
@@ -34,16 +34,16 @@ export const saveOutlineAction = enhanceAction(
 			throw new Error("Presentation not found");
 		}
 
-		// Save outline content using upsert
+		// Save storyboard content using upsert
 		try {
-			await saveOutlineContent(client, {
+			await saveStoryboardContent(client, {
 				presentationId: data.presentationId,
 				userId: user.id,
 				accountId: presentation.account_id,
-				sections: JSON.parse(JSON.stringify(data.content)),
+				slides: JSON.parse(JSON.stringify(data.slides)),
 			});
 		} catch (error) {
-			logger.error(ctx, "Failed to save outline content: %o", error);
+			logger.error(ctx, "Failed to save storyboard content: %o", error);
 			throw error;
 		}
 
@@ -52,14 +52,14 @@ export const saveOutlineAction = enhanceAction(
 			? [...presentation.completed_steps]
 			: [];
 
-		if (!completedSteps.includes("outline")) {
-			completedSteps.push("outline");
+		if (!completedSteps.includes("storyboard")) {
+			completedSteps.push("storyboard");
 		}
 
 		const { error: updatePresentationError } = await client
 			.from("presentations")
 			.update({
-				current_step: "storyboard",
+				current_step: "generate",
 				completed_steps: completedSteps,
 				updated_at: new Date().toISOString(),
 			})
@@ -74,12 +74,12 @@ export const saveOutlineAction = enhanceAction(
 			throw updatePresentationError;
 		}
 
-		logger.info(ctx, "Outline saved successfully");
+		logger.info(ctx, "Storyboard saved successfully");
 
 		return { success: true };
 	},
 	{
-		schema: SaveOutlineSchema,
+		schema: SaveStoryboardSchema,
 		auth: true,
 	},
 );

@@ -19,10 +19,10 @@ export const SubmitBuildingBlocksSchema = z.object({
 		.string()
 		.min(1, "Complication is required")
 		.max(5000, "Complication must be less than 5000 characters"),
-	answer: z
+	argument_map: z
 		.string()
-		.min(1, "Answer is required")
-		.max(5000, "Answer must be less than 5000 characters"),
+		.min(1, "Argument map is required")
+		.max(50000, "Argument map must be less than 50000 characters"),
 });
 
 export type SubmitBuildingBlocksData = z.infer<

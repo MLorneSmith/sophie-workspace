@@ -5,19 +5,22 @@ import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
 
-import { saveOutlineContent } from "../_lib/server/outline-contents-db.service";
+import { saveGenerateOutput } from "../_lib/server/generate-outputs-db.service";
 
-const SaveOutlineSchema = z.object({
+const SaveGenerateSchema = z.object({
 	presentationId: z.string().min(1),
-	content: z.unknown(),
+	templateId: z.string().min(1),
+	exportFormat: z.enum(["pptx", "pdf"]).nullish(),
+	exportUrl: z.string().nullish(),
+	generatedAt: z.string().nullish(),
 });
 
-export const saveOutlineAction = enhanceAction(
+export const saveGenerateAction = enhanceAction(
 	async (data, user) => {
 		const client = getSupabaseServerClient();
 		const logger = await getLogger();
 		const ctx = {
-			name: "saveOutlineAction",
+			name: "saveGenerateAction",
 			presentationId: data.presentationId,
 		};
 
@@ -34,16 +37,19 @@ export const saveOutlineAction = enhanceAction(
 			throw new Error("Presentation not found");
 		}
 
-		// Save outline content using upsert
+		// Save generate output using upsert
 		try {
-			await saveOutlineContent(client, {
+			await saveGenerateOutput(client, {
 				presentationId: data.presentationId,
 				userId: user.id,
 				accountId: presentation.account_id,
-				sections: JSON.parse(JSON.stringify(data.content)),
+				templateId: data.templateId,
+				exportFormat: data.exportFormat ?? null,
+				exportUrl: data.exportUrl ?? null,
+				generatedAt: data.generatedAt ?? null,
 			});
 		} catch (error) {
-			logger.error(ctx, "Failed to save outline content: %o", error);
+			logger.error(ctx, "Failed to save generate output: %o", error);
 			throw error;
 		}
 
@@ -52,14 +58,13 @@ export const saveOutlineAction = enhanceAction(
 			? [...presentation.completed_steps]
 			: [];
 
-		if (!completedSteps.includes("outline")) {
-			completedSteps.push("outline");
+		if (!completedSteps.includes("generate")) {
+			completedSteps.push("generate");
 		}
 
 		const { error: updatePresentationError } = await client
 			.from("presentations")
 			.update({
-				current_step: "storyboard",
 				completed_steps: completedSteps,
 				updated_at: new Date().toISOString(),
 			})
@@ -74,12 +79,12 @@ export const saveOutlineAction = enhanceAction(
 			throw updatePresentationError;
 		}
 
-		logger.info(ctx, "Outline saved successfully");
+		logger.info(ctx, "Generate output saved successfully");
 
 		return { success: true };
 	},
 	{
-		schema: SaveOutlineSchema,
+		schema: SaveGenerateSchema,
 		auth: true,
 	},
 );

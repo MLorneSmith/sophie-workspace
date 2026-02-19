@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getSuggestions } from "../_actions/ai-suggestions-action";
 import { submitBuildingBlocksAction } from "../_actions/submitBuildingBlocksAction";
+import { saveAssembleStepAction } from "../../[id]/assemble/_actions/save-assemble-step.action";
 import {
 	getQuestion,
 	presentationTypes,
@@ -57,6 +58,8 @@ const logger = {
 
 interface SetupFormProps {
 	userId: string; // For cache namespacing
+	mode?: "blocks" | "assemble";
+	presentationId?: string;
 }
 
 function useSuggestions(_userId: string) {
@@ -68,7 +71,7 @@ function useSuggestions(_userId: string) {
 		() =>
 			debounce(
 				async (
-					field: "title" | "audience" | "situation" | "complication" | "answer",
+					field: "title" | "audience" | "situation" | "complication",
 					presentationType?: string,
 					title?: string,
 					setIsLoadingSuggestions?: (loading: boolean) => void,
@@ -113,7 +116,7 @@ function useSuggestions(_userId: string) {
 	// Use the debounced function inside useCallback
 	const fetchSuggestions = useCallback(
 		(
-			field: "title" | "audience" | "situation" | "complication" | "answer",
+			field: "title" | "audience" | "situation" | "complication",
 			presentationType?: string,
 			title?: string,
 		) => {
@@ -247,7 +250,11 @@ const PresentationTypeQuestion = ({
 	</div>
 );
 
-export function SetupForm({ userId: _userId }: SetupFormProps) {
+export function SetupForm({
+	userId: _userId,
+	mode = "blocks",
+	presentationId,
+}: SetupFormProps) {
 	const {
 		formData,
 		setFormData,
@@ -394,7 +401,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 		setIsSubmitting(true);
 		try {
 			await handleSubmit(e);
-			// First submit to building_blocks_submissions table
+
 			const {
 				title,
 				audience,
@@ -402,8 +409,55 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 				question_type,
 				situation,
 				complication,
-				answer,
+				argument_map,
 			} = formData;
+
+			if (mode === "assemble") {
+				if (!presentationId) {
+					throw new Error("Missing presentationId for assemble submit");
+				}
+
+				const response = await saveAssembleStepAction({
+					presentationId,
+					title,
+					audience,
+					presentationType: presentation_type as
+						| "general"
+						| "sales"
+						| "consulting"
+						| "fundraising",
+					questionType: question_type as
+						| "strategy"
+						| "assessment"
+						| "implementation"
+						| "diagnostic"
+						| "alternatives"
+						| "postmortem",
+					situation,
+					complication,
+					// Prefer argument_map if present (future flow), otherwise default.
+					argumentMap: argument_map ?? {},
+				});
+
+				if (!response.success) {
+					const errorMessage = (response as unknown as { error?: string })
+						.error;
+					logger.error("Assemble save failed:", {
+						error: errorMessage,
+						presentationId,
+					});
+					setErrors({
+						answer:
+							errorMessage || "Failed to save assemble step. Please try again.",
+					});
+					return;
+				}
+
+				router.push(`/home/ai/${presentationId}/outline`);
+				return;
+			}
+
+			// Default behavior (Blocks tab): submit to building_blocks_submissions.
 			const response = await submitBuildingBlocksAction({
 				title,
 				audience,
@@ -411,7 +465,10 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 				question_type: getQuestionTypeLabel(question_type),
 				situation,
 				complication,
-				answer,
+				argument_map:
+					typeof argument_map === "string"
+						? argument_map
+						: JSON.stringify(argument_map ?? {}),
 			});
 
 			if (!response.success) {
@@ -516,7 +573,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 
 		const commonProps = {
 			id: field,
-			value: formData[field],
+			value: typeof formData[field] === "string" ? formData[field] : "",
 			onChange: handleInputChange(field),
 			onBlur: handleBlur(field),
 			className: `${
@@ -561,7 +618,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 			case "multiple_choice":
 				return (
 					<MultipleChoiceQuestion
-						value={formData[field]}
+						value={typeof formData[field] === "string" ? formData[field] : ""}
 						onChange={(value) => {
 							setFormData({ ...formData, [field]: value });
 							setTouchedFields(new Set(touchedFields).add(field));

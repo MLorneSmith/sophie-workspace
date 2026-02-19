@@ -45,8 +45,9 @@ export const exportPowerPointAction = enhanceAction(
 		const pptx = new pptxgen();
 		pptx.title = presentation?.title ?? "Presentation";
 
-		for (const slide of slides) {
+		for (const [index, slide] of slides.entries()) {
 			const pptxSlide = pptx.addSlide();
+			const bulletContent = formatSlideContentAsBullets(slide.content);
 
 			if (slide.layout === "title-only") {
 				pptxSlide.addText(slide.title, {
@@ -69,7 +70,7 @@ export const exportPowerPointAction = enhanceAction(
 					bold: true,
 					color: "1a1a2e",
 				});
-				pptxSlide.addText(slide.content || "", {
+				pptxSlide.addText(bulletContent, {
 					x: "5%",
 					y: "25%",
 					w: "42%",
@@ -99,7 +100,7 @@ export const exportPowerPointAction = enhanceAction(
 					bold: true,
 					color: "1a1a2e",
 				});
-				pptxSlide.addText(slide.content || "", {
+				pptxSlide.addText(bulletContent, {
 					x: "5%",
 					y: "25%",
 					w: "90%",
@@ -108,6 +109,8 @@ export const exportPowerPointAction = enhanceAction(
 					color: "333333",
 				});
 			}
+
+			addSlideNumberFooter(pptxSlide, index + 1, slides.length);
 
 			// Add speaker notes
 			if (slide.speaker_notes) {
@@ -139,6 +142,33 @@ export const exportPowerPointAction = enhanceAction(
 		auth: true,
 	},
 );
+
+function formatSlideContentAsBullets(content: string): string {
+	if (!content) return "";
+
+	return content
+		.split("\n")
+		.map((line) => line.trim())
+		.filter(Boolean)
+		.map((line) => `• ${line}`)
+		.join("\n");
+}
+
+function addSlideNumberFooter(
+	slide: { addText: (text: string, options: Record<string, unknown>) => void },
+	current: number,
+	total: number,
+) {
+	slide.addText(`${current}/${total}`, {
+		x: "90%",
+		y: "94%",
+		w: "8%",
+		h: "4%",
+		fontSize: 10,
+		color: "666666",
+		align: "right",
+	});
+}
 
 function extractTextFromTipTap(json: unknown): string {
 	if (!json || typeof json !== "object") return "";

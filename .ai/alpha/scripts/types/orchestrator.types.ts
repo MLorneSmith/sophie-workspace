@@ -100,6 +100,8 @@ export interface FeatureEntry {
 	database_task_count: number;
 	/** Number of retry attempts for deadlock recovery (Bug fix #1777) */
 	retry_count?: number;
+	/** Reason for last retry: infrastructure_reset (no budget consumed) or feature_failure (Bug fix #2077) */
+	retry_reason?: "infrastructure_reset" | "feature_failure";
 }
 
 export interface InitiativeEntry {
