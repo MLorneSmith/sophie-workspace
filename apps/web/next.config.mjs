@@ -5,11 +5,14 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === "true";
 
-// PostHog source map uploads require credentials (CI/CD only)
+// PostHog source map uploads require the CLI credentials file (~/.posthog/credentials.json).
+// Only enable in CI where credentials are configured; local builds skip the wrapper entirely.
+const IS_CI = Boolean(process.env.CI);
 const POSTHOG_PROJECT_ID =
 	process.env.POSTHOG_PROJECT_ID || process.env.POSTHOG_ENV_ID;
 const POSTHOG_SOURCEMAPS_ENABLED =
 	IS_PRODUCTION &&
+	IS_CI &&
 	Boolean(process.env.POSTHOG_PERSONAL_API_KEY) &&
 	Boolean(POSTHOG_PROJECT_ID);
 
@@ -110,7 +113,7 @@ const configWithBundleAnalyzer = withBundleAnalyzer({
 // Only wrap with PostHog config when project ID is available.
 // CI environments without PostHog credentials skip the wrapper to avoid
 // build failures from the plugin's validation (projectId is required).
-export default POSTHOG_PROJECT_ID
+export default POSTHOG_SOURCEMAPS_ENABLED
 	? withPostHogConfig(configWithBundleAnalyzer, {
 			personalApiKey: process.env.POSTHOG_PERSONAL_API_KEY,
 			projectId: POSTHOG_PROJECT_ID,
