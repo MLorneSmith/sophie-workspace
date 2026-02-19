@@ -223,6 +223,12 @@ export function SlideEditor({ slide, onUpdate, onDelete }: SlideEditorProps) {
 						<SelectItem value="title-only">Title Only</SelectItem>
 						<SelectItem value="title-content">Title + Content</SelectItem>
 						<SelectItem value="title-two-column">Two Column</SelectItem>
+						<SelectItem value="section-divider">Section Divider</SelectItem>
+						<SelectItem value="image-text">Image + Text</SelectItem>
+						<SelectItem value="comparison">Comparison</SelectItem>
+						<SelectItem value="data-chart">Data / Chart</SelectItem>
+						<SelectItem value="quote">Quote</SelectItem>
+						<SelectItem value="blank">Blank</SelectItem>
 					</SelectContent>
 				</Select>
 				<Button
@@ -237,7 +243,37 @@ export function SlideEditor({ slide, onUpdate, onDelete }: SlideEditorProps) {
 			</div>
 
 			<div className="space-y-4 p-4">
-				{slide.layout !== "title-only" && (
+				<div>
+					<p className="text-muted-foreground mb-1 text-xs font-medium">
+						Purpose
+					</p>
+					<Input
+						value={slide.purpose}
+						onChange={(e) => onUpdate({ ...slide, purpose: e.target.value })}
+						placeholder="What does this slide do? e.g., 'Establishes the market opportunity'"
+						className="h-9 border-white/10 bg-white/5 text-sm"
+					/>
+				</div>
+
+				<div>
+					<p className="text-muted-foreground mb-1 text-xs font-medium">
+						Takeaway Headline
+					</p>
+					<Input
+						value={slide.takeaway_headline}
+						onChange={(e) =>
+							onUpdate({ ...slide, takeaway_headline: e.target.value })
+						}
+						placeholder="The one thing the audience should remember from this slide"
+						className="h-9 border-white/10 bg-white/5 text-sm"
+					/>
+				</div>
+
+				{(slide.layout === "title-content" ||
+					slide.layout === "image-text" ||
+					slide.layout === "data-chart" ||
+					slide.layout === "quote" ||
+					slide.layout === "blank") && (
 					<div>
 						<p className="text-muted-foreground mb-1 text-xs font-medium">
 							Content
@@ -245,11 +281,62 @@ export function SlideEditor({ slide, onUpdate, onDelete }: SlideEditorProps) {
 						<Textarea
 							value={slide.content}
 							onChange={(e) => onUpdate({ ...slide, content: e.target.value })}
-							placeholder="Slide content..."
+							placeholder={
+								slide.layout === "quote" ? "Quote text..." : "Slide content..."
+							}
 							className="min-h-[120px] border-white/10 bg-white/5 text-sm"
 						/>
 					</div>
 				)}
+
+				{(slide.layout === "title-two-column" ||
+					slide.layout === "comparison") && (
+					<div className="grid gap-3 md:grid-cols-2">
+						<div>
+							<p className="text-muted-foreground mb-1 text-xs font-medium">
+								Left Content
+							</p>
+							<Textarea
+								value={slide.content_left ?? ""}
+								onChange={(e) =>
+									onUpdate({ ...slide, content_left: e.target.value })
+								}
+								placeholder="Left column content..."
+								className="min-h-[120px] border-white/10 bg-white/5 text-sm"
+							/>
+						</div>
+						<div>
+							<p className="text-muted-foreground mb-1 text-xs font-medium">
+								Right Content
+							</p>
+							<Textarea
+								value={slide.content_right ?? ""}
+								onChange={(e) =>
+									onUpdate({ ...slide, content_right: e.target.value })
+								}
+								placeholder="Right column content..."
+								className="min-h-[120px] border-white/10 bg-white/5 text-sm"
+							/>
+						</div>
+					</div>
+				)}
+
+				<div>
+					<p className="text-muted-foreground mb-1 text-xs font-medium">
+						Evidence Needed
+					</p>
+					<Input
+						value={slide.evidence_needed}
+						onChange={(e) =>
+							onUpdate({ ...slide, evidence_needed: e.target.value })
+						}
+						placeholder="What data or proof supports this? e.g., 'Q3 revenue chart, customer quote'"
+						className={cn(
+							"h-9 border-white/10 bg-white/5 text-sm",
+							slide.layout === "data-chart" && "border-blue-500/40",
+						)}
+					/>
+				</div>
 
 				<div>
 					<p className="text-muted-foreground mb-1 text-xs font-medium">
@@ -260,8 +347,15 @@ export function SlideEditor({ slide, onUpdate, onDelete }: SlideEditorProps) {
 						onChange={(e) =>
 							onUpdate({ ...slide, visual_notes: e.target.value })
 						}
-						placeholder="e.g., 'Chart showing market trends'"
-						className="h-9 border-white/10 bg-white/5 text-sm"
+						placeholder={
+							slide.layout === "quote"
+								? "Quote attribution (person/source)"
+								: "e.g., 'Chart showing market trends'"
+						}
+						className={cn(
+							"h-9 border-white/10 bg-white/5 text-sm",
+							slide.layout === "image-text" && "border-blue-500/40",
+						)}
 					/>
 				</div>
 

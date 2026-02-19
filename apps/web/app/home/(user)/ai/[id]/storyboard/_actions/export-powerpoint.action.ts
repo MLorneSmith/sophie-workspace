@@ -47,9 +47,21 @@ export const exportPowerPointAction = enhanceAction(
 
 		for (const [index, slide] of slides.entries()) {
 			const pptxSlide = pptx.addSlide();
-			const bulletContent = formatSlideContentAsBullets(slide.content);
+			const baseContent = slide.content || "";
+			const bulletContent = formatSlideContentAsBullets(baseContent);
+			const addStandardTitle = () => {
+				pptxSlide.addText(slide.title, {
+					x: "5%",
+					y: "5%",
+					w: "90%",
+					h: "15%",
+					fontSize: 24,
+					bold: true,
+					color: "1a1a2e",
+				});
+			};
 
-			if (slide.layout === "title-only") {
+			if (slide.layout === "title-only" || slide.layout === "section-divider") {
 				pptxSlide.addText(slide.title, {
 					x: "10%",
 					y: "35%",
@@ -60,17 +72,18 @@ export const exportPowerPointAction = enhanceAction(
 					align: "center",
 					color: "1a1a2e",
 				});
-			} else if (slide.layout === "title-two-column") {
-				pptxSlide.addText(slide.title, {
-					x: "5%",
-					y: "5%",
-					w: "90%",
-					h: "15%",
-					fontSize: 24,
-					bold: true,
-					color: "1a1a2e",
-				});
-				pptxSlide.addText(bulletContent, {
+			} else if (
+				slide.layout === "title-two-column" ||
+				slide.layout === "comparison"
+			) {
+				addStandardTitle();
+				const leftContent = formatSlideContentAsBullets(
+					slide.content_left || baseContent,
+				);
+				const rightContent = formatSlideContentAsBullets(
+					slide.content_right || slide.visual_notes || "",
+				);
+				pptxSlide.addText(leftContent, {
 					x: "5%",
 					y: "25%",
 					w: "42%",
@@ -78,36 +91,67 @@ export const exportPowerPointAction = enhanceAction(
 					fontSize: 14,
 					color: "333333",
 				});
-				if (slide.visual_notes) {
-					pptxSlide.addText(`[${slide.visual_notes}]`, {
-						x: "53%",
-						y: "25%",
-						w: "42%",
-						h: "65%",
-						fontSize: 12,
-						color: "666666",
-						italic: true,
-					});
-				}
-			} else {
-				// title-content (default)
-				pptxSlide.addText(slide.title, {
-					x: "5%",
-					y: "5%",
-					w: "90%",
-					h: "15%",
-					fontSize: 24,
-					bold: true,
-					color: "1a1a2e",
-				});
-				pptxSlide.addText(bulletContent, {
-					x: "5%",
+				pptxSlide.addText(rightContent, {
+					x: "53%",
 					y: "25%",
-					w: "90%",
+					w: "42%",
 					h: "65%",
 					fontSize: 14,
 					color: "333333",
 				});
+			} else if (slide.layout === "blank") {
+				if (baseContent) {
+					pptxSlide.addText(bulletContent, {
+						x: "8%",
+						y: "10%",
+						w: "84%",
+						h: "80%",
+						fontSize: 16,
+						color: "333333",
+					});
+				}
+			} else {
+				addStandardTitle();
+				let contentText = bulletContent;
+				if (slide.layout === "image-text" && slide.visual_notes) {
+					contentText = `${contentText}${contentText ? "\n\n" : ""}[Image placeholder: ${slide.visual_notes}]`;
+				}
+				if (slide.layout === "data-chart" && slide.evidence_needed) {
+					contentText = `${contentText}${contentText ? "\n\n" : ""}[Chart placeholder: ${slide.evidence_needed}]`;
+				}
+				if (slide.layout === "quote") {
+					const quoteText = baseContent ? `“${baseContent}”` : "";
+					pptxSlide.addText(quoteText, {
+						x: "10%",
+						y: "35%",
+						w: "80%",
+						h: "30%",
+						fontSize: 28,
+						italic: true,
+						align: "center",
+						color: "1a1a2e",
+					});
+					if (slide.visual_notes) {
+						pptxSlide.addText(`— ${slide.visual_notes}`, {
+							x: "10%",
+							y: "68%",
+							w: "80%",
+							h: "10%",
+							fontSize: 14,
+							align: "right",
+							color: "666666",
+						});
+					}
+				} else {
+					pptxSlide.addText(contentText, {
+						x: "5%",
+						y: "25%",
+						w: "90%",
+						h: "65%",
+						fontSize: 14,
+						color: "333333",
+					});
+				}
 			}
 
 			addSlideNumberFooter(pptxSlide, index + 1, slides.length);
