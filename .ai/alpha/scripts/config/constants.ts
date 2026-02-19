@@ -109,13 +109,30 @@ export const FEATURE_TIMEOUT_MS = 1800000;
 export const SANDBOX_TIMEOUT_MULTIPLIER = 1000;
 
 /** Stagger delay between sandbox creation (ms)
- * Increased to 60 seconds to prevent API thundering herd problem
- * where multiple Claude CLI instances start simultaneously.
- * This longer delay reduces concurrent API connections and helps
- * avoid OAuth session limits and rate limiting issues.
- * See bug fix #1449 for details.
+ * Reduced from 60s to 30s after E2B hardware upgrade to 4 vCPU / 4 GB RAM (Q1).
+ * Original 60s was conservative prevention for OAuth session limits (#1449).
+ * Now relies on targeted retry backoff (createSandboxWithRetry) instead of
+ * blanket delay for handling creation failures.
+ * Can be overridden via ALPHA_SANDBOX_STAGGER_MS environment variable.
+ * See chore #1959 for details.
  */
-export const SANDBOX_STAGGER_DELAY_MS = 60000;
+export const SANDBOX_STAGGER_DELAY_MS = Number.parseInt(
+	process.env.ALPHA_SANDBOX_STAGGER_MS ?? "30000",
+	10,
+);
+
+/** Maximum retry attempts for sandbox creation failures.
+ * On creation failure (OAuth session limits, rate limiting, E2B API errors),
+ * the orchestrator retries with exponential backoff before giving up.
+ * See chore #1959 for details.
+ */
+export const SANDBOX_CREATION_MAX_RETRIES = 2;
+
+/** Base delay for sandbox creation retry backoff (ms).
+ * Retry delays use linear backoff: base * attempt (10s, 20s).
+ * See chore #1959 for details.
+ */
+export const SANDBOX_CREATION_RETRY_BASE_DELAY_MS = 10000;
 
 /** Interval for extending sandbox timeouts (keepalive) - 15 minutes
  * Reduced from 30 minutes to provide better overlap with 1-hour sandbox lifetime
@@ -227,3 +244,24 @@ export const HEARTBEAT_TIMEOUT_MS = Number.parseInt(
 	process.env.HEARTBEAT_TIMEOUT_MS ?? String(5 * 60 * 1000),
 	10,
 );
+
+// ============================================================================
+// Phase Execution Limits
+// ============================================================================
+
+/** Maximum features per phase (recommended: 7-8, hard max: 10).
+ * Industry consensus (SWE-bench, Devin, Cursor, PARC) recommends 7-10 features
+ * per execution unit for optimal completion rates.
+ * See assessment report: .ai/reports/research-reports/2026-02-06/alpha-orchestrator-comprehensive-assessment.md
+ */
+export const MAX_FEATURES_PER_PHASE = 10;
+
+/** Maximum tasks per phase.
+ * Keeps total work volume manageable within a single orchestration run.
+ */
+export const MAX_TASKS_PER_PHASE = 100;
+
+/** Maximum dependency depth within a phase.
+ * Deep dependency chains create long critical paths that exceed sandbox lifetimes.
+ */
+export const MAX_DEPENDENCY_DEPTH = 5;

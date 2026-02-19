@@ -35,7 +35,7 @@ function createTestProgress(
 	overrides: Partial<SandboxProgress> = {},
 ): SandboxProgress {
 	return {
-		status: "running",
+		status: "in_progress",
 		phase: "executing",
 		context_usage_percent: 25,
 		last_heartbeat: new Date().toISOString(),
@@ -563,14 +563,14 @@ describe("startProgressPolling race condition", () => {
 
 		// Feature A's progress data
 		const featureAProgress = createTestProgress({
-			status: "running",
+			status: "in_progress",
 			phase: "executing",
 			completed_tasks: ["task-1"],
 		});
 
 		// Feature B's progress data
 		const featureBProgress = createTestProgress({
-			status: "running",
+			status: "in_progress",
 			phase: "planning",
 			completed_tasks: ["task-b1", "task-b2"],
 		});

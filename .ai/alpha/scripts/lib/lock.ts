@@ -17,6 +17,7 @@ import {
 	ORCHESTRATOR_LOCK_FILE,
 } from "../config/index.js";
 import type { OrchestratorLock } from "../types/index.js";
+import { createLogger } from "./logger.js";
 
 // ============================================================================
 // Process Termination Constants
@@ -27,27 +28,6 @@ const GRACEFUL_SHUTDOWN_TIMEOUT_MS = 2000;
 
 /** Short delay after SIGKILL to ensure process is fully terminated (ms) */
 const POST_KILL_DELAY_MS = 100;
-
-// ============================================================================
-// Logging Helper
-// ============================================================================
-
-/**
- * Create a conditional logger that only outputs when UI is disabled.
- * When UI is enabled, all console output is suppressed to avoid interfering
- * with the Ink-based dashboard.
- */
-function createLogger(uiEnabled: boolean) {
-	return {
-		log: (...args: unknown[]) => {
-			if (!uiEnabled) console.log(...args);
-		},
-		error: (...args: unknown[]) => {
-			// Always log errors, even in UI mode
-			console.error(...args);
-		},
-	};
-}
 
 // ============================================================================
 // Project Root Detection

@@ -20,31 +20,7 @@ import {
 } from "./environment.js";
 import { emitOrchestratorEvent } from "./event-emitter.js";
 import { getProjectRoot, releaseLock, updateLockResetState } from "./lock.js";
-
-// ============================================================================
-// Logging Helper
-// ============================================================================
-
-/**
-
-* Create a conditional logger that only outputs when UI is disabled.
-* When UI is enabled, all console output is suppressed to avoid interfering
-* with the Ink-based dashboard.
- */
-function createLogger(uiEnabled: boolean) {
-	return {
-		log: (...args: unknown[]) => {
-			if (!uiEnabled) console.log(...args);
-		},
-		warn: (...args: unknown[]) => {
-			if (!uiEnabled) console.warn(...args);
-		},
-		error: (...args: unknown[]) => {
-			// Always log errors, even in UI mode
-			console.error(...args);
-		},
-	};
-}
+import { createLogger } from "./logger.js";
 
 // ============================================================================
 // Database Capacity

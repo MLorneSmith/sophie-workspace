@@ -23,6 +23,7 @@ import type {
 	SandboxValidationResult,
 	SpecManifest,
 } from "../types/index.js";
+import { createLogger } from "./logger.js";
 import {
 	E2B_API_KEY,
 	GITHUB_TOKEN,
@@ -350,22 +351,6 @@ export async function executeInstallWithRetry(
 			timeoutMs: config.timeoutMs,
 			lastExitCode,
 			lastStderr: lastStderr?.slice(0, 1000), // Truncate for manifest storage
-		},
-	};
-}
-
-// ============================================================================
-// Logging Helper
-// ============================================================================
-
-/**
-
-* Create a conditional logger that only outputs when UI is disabled.
- */
-function createLogger(uiEnabled: boolean) {
-	return {
-		log: (...args: unknown[]) => {
-			if (!uiEnabled) console.log(...args);
 		},
 	};
 }
@@ -851,6 +836,8 @@ export async function createSandbox(
 	uiEnabled: boolean = false,
 	runId?: string,
 	provider: AgentProvider = "claude",
+	baseBranch?: string,
+	phase?: string,
 ): Promise<SandboxInstance> {
 	// Create conditional logger
 	const { log } = createLogger(uiEnabled);
@@ -894,7 +881,10 @@ export async function createSandbox(
 	}
 
 	// Fetch and setup branch
-	const branchName = `alpha/spec-${manifest.metadata.spec_id}`;
+	// Phase-aware branch naming: alpha/spec-{specId}-{phaseId} when phase is set
+	const branchName = phase
+		? `alpha/spec-${manifest.metadata.spec_id}-${phase}`
+		: `alpha/spec-${manifest.metadata.spec_id}`;
 
 	// Check if origin remote exists (GPT templates may have empty git repos)
 	const remoteCheck = await sandbox.commands.run(
@@ -929,10 +919,13 @@ export async function createSandbox(
 			{ timeoutMs: 60000 },
 		);
 	} else {
-		log(`Creating new branch from dev: ${branchName}`);
-		// Force reset local dev to match remote state (template may have stale/diverged dev branch)
+		// Determine fork point: baseBranch (for phase chaining) or dev (default)
+		const forkRef = baseBranch ? `origin/${baseBranch}` : "origin/dev";
+		const forkSource = baseBranch ?? "dev";
+		log(`Creating new branch from ${forkSource}: ${branchName}`);
+		// Force reset local to match remote state (template may have stale/diverged branch)
 		await sandbox.commands.run(
-			`cd ${WORKSPACE_DIR} && git fetch origin dev && git reset --hard origin/dev && git checkout -b "${branchName}"`,
+			`cd ${WORKSPACE_DIR} && git fetch origin ${forkSource} && git reset --hard ${forkRef} && git checkout -b "${branchName}"`,
 			{ timeoutMs: 60000 },
 		);
 		// Push new branch to remote so other sandboxes can pull from it
@@ -954,11 +947,12 @@ export async function createSandbox(
 		timeoutMs: 5000,
 	});
 
-	// Check if lockfile changed compared to dev branch (Bug fix #1803)
+	// Check if lockfile changed compared to fork point (Bug fix #1803)
 	// If the branch added new dependencies, we need to run pnpm install (not --frozen-lockfile)
 	// to sync those dependencies into the sandbox's node_modules
+	const diffRef = baseBranch ? `origin/${baseBranch}` : "origin/dev";
 	const lockfileChanged = await sandbox.commands.run(
-		`cd ${WORKSPACE_DIR} && git diff origin/dev -- pnpm-lock.yaml | head -1`,
+		`cd ${WORKSPACE_DIR} && git diff ${diffRef} -- pnpm-lock.yaml | head -1`,
 		{ timeoutMs: 30000 },
 	);
 

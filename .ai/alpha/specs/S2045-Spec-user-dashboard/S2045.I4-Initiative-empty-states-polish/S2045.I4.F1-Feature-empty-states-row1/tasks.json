@@ -1,0 +1,1048 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2045.I4.F1",
+    "feature_name": "Widget Empty States — Row 1",
+    "feature_slug": "empty-states-row1",
+    "initiative_id": "S2045.I4",
+    "spec_id": "S2045",
+    "created_at": "2026-02-09T19:30:00Z",
+    "complexity": {
+      "score": 69,
+      "level": "HIGH",
+      "target_steps": {
+        "min": 10,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S2045.I4.F1.T1",
+      "S2045.I4.F1.T2",
+      "S2045.I4.F1.T3",
+      "S2045.I4.F1.T4",
+      "S2045.I4.F1.T5",
+      "S2045.I4.F1.T6",
+      "S2045.I4.F1.T7",
+      "S2045.I4.F1.T8",
+      "S2045.I4.F1.T9",
+      "S2045.I4.F1.T10",
+      "S2045.I4.F1.T11",
+      "S2045.I4.F1.T12"
+    ],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2045.I4.F1.T1",
+      "type": "task",
+      "name": "Create Course Progress empty state component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "course-progress-empty.tsx skeleton"
+      },
+      "purpose": "Establish base structure with Card wrapper and empty state layout for Course Progress 0% ring visualization",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": [
+        "react",
+        "typescript",
+        "ui-components"
+      ],
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Start your learning journey today!"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "packages/ui/src/makerkit/empty-state.tsx"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardContent from @kit/ui/card",
+          "EmptyStateHeading, EmptyStateText from @kit/ui/empty-state"
+        ],
+        "constraints": [
+          "Use client component directive",
+          "Match existing widget card styling",
+          "Prepare for PieChart integration in next task"
+        ]
+      },
+      "input_state": "No course-progress-empty.tsx component exists",
+      "output_state": "course-progress-empty.tsx exists with Card structure, heading 'Start your learning journey today!', and placeholder for chart",
+      "acceptance_criterion": "Component renders Card with heading and empty space for chart visualization",
+      "verification_command": "pnpm typecheck && grep -q 'Start your learning journey today!' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-empty.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-empty.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S2045.I4.F1.T2",
+          "S2045.I4.F1.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F1.T2",
+      "type": "task",
+      "name": "Add PieChart visualization to Course Progress empty state",
+      "action": {
+        "verb": "Add",
+        "target": "PieChart with 0% data to course-progress-empty.tsx"
+      },
+      "purpose": "Render grayed-out donut ring showing 0% completion with centered text and muted colors",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": [
+        "recharts",
+        "data-visualization",
+        "ui-components"
+      ],
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "img"
+          },
+          {
+            "command": "is visible",
+            "target": "0%"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          ".ai/alpha/specs/S2045-Spec-user-dashboard/research-library/context7-recharts-radial-radar-charts.md",
+          "packages/ui/src/shadcn/chart.tsx"
+        ],
+        "dependencies": [
+          "ChartContainer, ChartConfig from @kit/ui/chart",
+          "PieChart, Pie, Cell from recharts"
+        ],
+        "constraints": [
+          "Use innerRadius for donut shape",
+          "Gray fill color for empty state (#e5e7eb)",
+          "Center text showing '0%'",
+          "Match existing chart theming from ChartContainer"
+        ]
+      },
+      "input_state": "course-progress-empty.tsx exists with Card structure but no chart",
+      "output_state": "Component renders PieChart with 0% grayed-out donut ring, centered '0%' text, and 'Start Course' CTA placeholder",
+      "acceptance_criterion": "PieChart renders with gray donut ring and centered '0%' text visible",
+      "verification_command": "pnpm typecheck && grep -q 'PieChart' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-empty.tsx && grep -q 'innerRadius' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-empty.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-empty.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2045.I4.F1.T1"
+        ],
+        "blocks": [
+          "S2045.I4.F1.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F1.T3",
+      "type": "task",
+      "name": "Create Spider Diagram empty state component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "spider-diagram-empty.tsx skeleton"
+      },
+      "purpose": "Establish base structure with Card wrapper and empty state layout for Spider Diagram radar chart visualization",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": [
+        "react",
+        "typescript",
+        "ui-components"
+      ],
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Discover your strengths"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "packages/ui/src/makerkit/empty-state.tsx"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardContent from @kit/ui/card",
+          "EmptyStateHeading, EmptyStateText from @kit/ui/empty-state"
+        ],
+        "constraints": [
+          "Use client component directive",
+          "Match existing widget card styling",
+          "Prepare for RadarChart integration in next task"
+        ]
+      },
+      "input_state": "No spider-diagram-empty.tsx component exists",
+      "output_state": "spider-diagram-empty.tsx exists with Card structure, heading 'Discover your strengths', and placeholder for radar chart",
+      "acceptance_criterion": "Component renders Card with heading and empty space for radar chart visualization",
+      "verification_command": "pnpm typecheck && grep -q 'Discover your strengths' apps/web/app/home/\\(user\\)/_components/dashboard/spider-diagram-empty.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/dashboard/spider-diagram-empty.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S2045.I4.F1.T4",
+          "S2045.I4.F1.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F1.T4",
+      "type": "task",
+      "name": "Add RadarChart visualization to Spider Diagram empty state",
+      "action": {
+        "verb": "Add",
+        "target": "RadarChart with 0-value data to spider-diagram-empty.tsx"
+      },
+      "purpose": "Render radar chart with dashed outline at 0 values showing axes and grid structure",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 4,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": [
+        "recharts",
+        "data-visualization",
+        "ui-components"
+      ],
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "img"
+          },
+          {
+            "command": "snapshot"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          ".ai/alpha/specs/S2045-Spec-user-dashboard/research-library/context7-recharts-radial-radar-charts.md",
+          "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx",
+          "packages/ui/src/shadcn/chart.tsx"
+        ],
+        "dependencies": [
+          "ChartContainer, ChartConfig from @kit/ui/chart",
+          "RadarChart, Radar, PolarGrid, PolarAngleAxis from recharts"
+        ],
+        "constraints": [
+          "Use 0-value data for all radar points",
+          "Apply dashed stroke (strokeDasharray)",
+          "Show PolarGrid axes",
+          "Muted gray colors for empty state",
+          "Match existing RadarChart pattern from assessment"
+        ]
+      },
+      "input_state": "spider-diagram-empty.tsx exists with Card structure but no chart",
+      "output_state": "Component renders RadarChart with 0-value data points, dashed outline, PolarGrid axes, and 'Take Assessment' CTA placeholder",
+      "acceptance_criterion": "RadarChart renders with dashed outline at 0 values and visible axes",
+      "verification_command": "pnpm typecheck && grep -q 'RadarChart' apps/web/app/home/\\(user\\)/_components/dashboard/spider-diagram-empty.tsx && grep -q 'PolarGrid' apps/web/app/home/\\(user\\)/_components/dashboard/spider-diagram-empty.tsx && grep -q 'strokeDasharray' apps/web/app/home/\\(user\\)/_components/dashboard/spider-diagram-empty.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/spider-diagram-empty.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2045.I4.F1.T3"
+        ],
+        "blocks": [
+          "S2045.I4.F1.T10"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F1.T5",
+      "type": "task",
+      "name": "Create Kanban Summary empty state component",
+      "action": {
+        "verb": "Create",
+        "target": "kanban-summary-empty.tsx"
+      },
+      "purpose": "Create text-only empty state with 'No tasks yet' message and CTA placeholder",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": [
+        "react",
+        "typescript",
+        "ui-components"
+      ],
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "No tasks yet"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/empty-state.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "EmptyState, EmptyStateHeading, EmptyStateText from @kit/ui/empty-state",
+          "Card from @kit/ui/card"
+        ],
+        "constraints": [
+          "Use client component directive",
+          "Text-only pattern (no charts)",
+          "EmptyState component with dashed border",
+          "Explanatory text about Kanban board"
+        ]
+      },
+      "input_state": "No kanban-summary-empty.tsx component exists",
+      "output_state": "kanban-summary-empty.tsx exists with EmptyState component showing 'No tasks yet' heading, explanatory text, and CTA placeholder",
+      "acceptance_criterion": "Component renders EmptyState with 'No tasks yet' heading and explanatory text visible",
+      "verification_command": "pnpm typecheck && grep -q 'No tasks yet' apps/web/app/home/\\(user\\)/_components/dashboard/kanban-summary-empty.tsx && grep -q 'EmptyState' apps/web/app/home/\\(user\\)/_components/dashboard/kanban-summary-empty.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/dashboard/kanban-summary-empty.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S2045.I4.F1.T8",
+          "S2045.I4.F1.T11"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F1.T6",
+      "type": "task",
+      "name": "Integrate Course Progress empty state into widget",
+      "action": {
+        "verb": "Add",
+        "target": "conditional rendering to course-progress-widget.tsx"
+      },
+      "purpose": "Show empty state when no course progress data exists",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": [
+        "react",
+        "conditional-rendering"
+      ],
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Start your learning journey today!"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx",
+          "apps/web/app/home/(user)/_components/dashboard/course-progress-empty.tsx"
+        ],
+        "dependencies": [
+          "CourseProgressEmpty component from course-progress-empty.tsx"
+        ],
+        "constraints": [
+          "Check if data is null/undefined or completion_percentage === 0",
+          "Import and render CourseProgressEmpty component",
+          "Preserve existing populated state rendering"
+        ]
+      },
+      "input_state": "course-progress-widget.tsx exists without empty state handling",
+      "output_state": "Widget conditionally renders CourseProgressEmpty when no data exists",
+      "acceptance_criterion": "Widget shows empty state component when data is empty or completion is 0%",
+      "verification_command": "pnpm typecheck && grep -q 'CourseProgressEmpty' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-widget.tsx && grep -q 'if.*completion_percentage.*0' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2045.I4.F1.T1"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F1.T7",
+      "type": "task",
+      "name": "Integrate Spider Diagram empty state into widget",
+      "action": {
+        "verb": "Add",
+        "target": "conditional rendering to spider-diagram-widget.tsx"
+      },
+      "purpose": "Show empty state when no survey response data exists",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": [
+        "react",
+        "conditional-rendering"
+      ],
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Discover your strengths"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/spider-diagram-widget.tsx",
+          "apps/web/app/home/(user)/_components/dashboard/spider-diagram-empty.tsx"
+        ],
+        "dependencies": [
+          "SpiderDiagramEmpty component from spider-diagram-empty.tsx"
+        ],
+        "constraints": [
+          "Check if survey_responses data is null/undefined or empty",
+          "Import and render SpiderDiagramEmpty component",
+          "Preserve existing populated state rendering"
+        ]
+      },
+      "input_state": "spider-diagram-widget.tsx exists without empty state handling",
+      "output_state": "Widget conditionally renders SpiderDiagramEmpty when no survey data exists",
+      "acceptance_criterion": "Widget shows empty state component when survey data is empty or null",
+      "verification_command": "pnpm typecheck && grep -q 'SpiderDiagramEmpty' apps/web/app/home/\\(user\\)/_components/dashboard/spider-diagram-widget.tsx && grep -q 'if.*survey.*null\\|undefined\\|length.*0' apps/web/app/home/\\(user\\)/_components/dashboard/spider-diagram-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/spider-diagram-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2045.I4.F1.T3"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F1.T8",
+      "type": "task",
+      "name": "Integrate Kanban Summary empty state into widget",
+      "action": {
+        "verb": "Add",
+        "target": "conditional rendering to kanban-summary-widget.tsx"
+      },
+      "purpose": "Show empty state when no tasks exist with 'doing' or 'do' status",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": [
+        "react",
+        "conditional-rendering"
+      ],
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "No tasks yet"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/kanban-summary-widget.tsx",
+          "apps/web/app/home/(user)/_components/dashboard/kanban-summary-empty.tsx"
+        ],
+        "dependencies": [
+          "KanbanSummaryEmpty component from kanban-summary-empty.tsx"
+        ],
+        "constraints": [
+          "Check if tasks data is null/undefined or empty array",
+          "Import and render KanbanSummaryEmpty component",
+          "Preserve existing populated state rendering"
+        ]
+      },
+      "input_state": "kanban-summary-widget.tsx exists without empty state handling",
+      "output_state": "Widget conditionally renders KanbanSummaryEmpty when no tasks exist",
+      "acceptance_criterion": "Widget shows empty state component when tasks array is empty or null",
+      "verification_command": "pnpm typecheck && grep -q 'KanbanSummaryEmpty' apps/web/app/home/\\(user\\)/_components/dashboard/kanban-summary-widget.tsx && grep -q 'if.*tasks.*length.*0\\|null\\|undefined' apps/web/app/home/\\(user\\)/_components/dashboard/kanban-summary-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/kanban-summary-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2045.I4.F1.T5"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F1.T9",
+      "type": "task",
+      "name": "Wire Start Course CTA to course page",
+      "action": {
+        "verb": "Wire",
+        "target": "Start Course button to /home/course"
+      },
+      "purpose": "Enable navigation from Course Progress empty state to course page",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 9,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": [
+        "next-link",
+        "navigation"
+      ],
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Start Course",
+            "expected_action": "navigate to /home/course",
+            "file_path": "apps/web/app/home/(user)/_components/dashboard/course-progress-empty.tsx"
+          }
+        ]
+      },
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "link"
+          },
+          {
+            "command": "is visible",
+            "target": "Start Course"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/course-progress-empty.tsx"
+        ],
+        "dependencies": [
+          "Link from next/link",
+          "EmptyStateButton from @kit/ui/empty-state"
+        ],
+        "constraints": [
+          "Use Next.js Link component for navigation",
+          "Target route: /home/course",
+          "Wrap EmptyStateButton with Link or use asChild pattern",
+          "Ensure keyboard accessibility"
+        ]
+      },
+      "input_state": "course-progress-empty.tsx has CTA placeholder without navigation",
+      "output_state": "Start Course button navigates to /home/course when clicked",
+      "acceptance_criterion": "Clicking Start Course button navigates to /home/course route",
+      "verification_command": "pnpm typecheck && grep -Pzo 'Start Course[^<]*href=\"/home/course\"' apps/web/app/home/\\(user\\)/_components/dashboard/course-progress-empty.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-empty.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2045.I4.F1.T2"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F1.T10",
+      "type": "task",
+      "name": "Wire Take Assessment CTA to assessment page",
+      "action": {
+        "verb": "Wire",
+        "target": "Take Assessment button to /home/assessment"
+      },
+      "purpose": "Enable navigation from Spider Diagram empty state to assessment page",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 10,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": [
+        "next-link",
+        "navigation"
+      ],
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Take Assessment",
+            "expected_action": "navigate to /home/assessment",
+            "file_path": "apps/web/app/home/(user)/_components/dashboard/spider-diagram-empty.tsx"
+          }
+        ]
+      },
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "link"
+          },
+          {
+            "command": "is visible",
+            "target": "Take Assessment"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/spider-diagram-empty.tsx"
+        ],
+        "dependencies": [
+          "Link from next/link",
+          "EmptyStateButton from @kit/ui/empty-state"
+        ],
+        "constraints": [
+          "Use Next.js Link component for navigation",
+          "Target route: /home/assessment",
+          "Wrap EmptyStateButton with Link or use asChild pattern",
+          "Ensure keyboard accessibility"
+        ]
+      },
+      "input_state": "spider-diagram-empty.tsx has CTA placeholder without navigation",
+      "output_state": "Take Assessment button navigates to /home/assessment when clicked",
+      "acceptance_criterion": "Clicking Take Assessment button navigates to /home/assessment route",
+      "verification_command": "pnpm typecheck && grep -Pzo 'Take Assessment[^<]*href=\"/home/assessment\"' apps/web/app/home/\\(user\\)/_components/dashboard/spider-diagram-empty.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/spider-diagram-empty.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2045.I4.F1.T4"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F1.T11",
+      "type": "task",
+      "name": "Wire Go to Kanban Board CTA to kanban page",
+      "action": {
+        "verb": "Wire",
+        "target": "Go to Kanban Board button to /home/kanban"
+      },
+      "purpose": "Enable navigation from Kanban Summary empty state to kanban board page",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 11,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": [
+        "next-link",
+        "navigation"
+      ],
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Go to Kanban Board",
+            "expected_action": "navigate to /home/kanban",
+            "file_path": "apps/web/app/home/(user)/_components/dashboard/kanban-summary-empty.tsx"
+          }
+        ]
+      },
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "link"
+          },
+          {
+            "command": "is visible",
+            "target": "Go to Kanban Board"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/kanban-summary-empty.tsx"
+        ],
+        "dependencies": [
+          "Link from next/link",
+          "EmptyStateButton from @kit/ui/empty-state"
+        ],
+        "constraints": [
+          "Use Next.js Link component for navigation",
+          "Target route: /home/kanban",
+          "Wrap EmptyStateButton with Link or use asChild pattern",
+          "Ensure keyboard accessibility"
+        ]
+      },
+      "input_state": "kanban-summary-empty.tsx has CTA placeholder without navigation",
+      "output_state": "Go to Kanban Board button navigates to /home/kanban when clicked",
+      "acceptance_criterion": "Clicking Go to Kanban Board button navigates to /home/kanban route",
+      "verification_command": "pnpm typecheck && grep -Pzo 'Go to Kanban Board[^<]*href=\"/home/kanban\"' apps/web/app/home/\\(user\\)/_components/dashboard/kanban-summary-empty.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/kanban-summary-empty.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2045.I4.F1.T5"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2045.I4.F1.T12",
+      "type": "task",
+      "name": "Verify dark mode and add ARIA labels",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA labels and verify dark mode rendering"
+      },
+      "purpose": "Ensure accessibility and dark mode compatibility for all empty state components",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 12,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "skill_hints": [
+        "accessibility",
+        "dark-mode",
+        "aria"
+      ],
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "snapshot"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/course-progress-empty.tsx",
+          "apps/web/app/home/(user)/_components/dashboard/spider-diagram-empty.tsx",
+          "apps/web/app/home/(user)/_components/dashboard/kanban-summary-empty.tsx"
+        ],
+        "dependencies": [
+          "Existing semantic color classes (text-muted-foreground, bg-background, etc.)"
+        ],
+        "constraints": [
+          "Add aria-label to all interactive buttons",
+          "Add title prop to chart components for screen readers",
+          "Verify all components use semantic color classes",
+          "Test dark mode toggle shows correct colors",
+          "Ensure keyboard Tab navigation works for all CTAs"
+        ]
+      },
+      "input_state": "All 3 empty state components exist but may lack ARIA labels and dark mode verification",
+      "output_state": "All components have ARIA labels, keyboard navigation works, and dark mode renders correctly",
+      "acceptance_criterion": "All CTAs have aria-label attributes and dark mode renders with correct semantic colors",
+      "verification_command": "pnpm typecheck && grep -l 'aria-label' apps/web/app/home/\\(user\\)/_components/dashboard/*-empty.tsx | wc -l | grep -q 3",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-empty.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/spider-diagram-empty.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard/kanban-summary-empty.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2045.I4.F1.T9",
+          "S2045.I4.F1.T10",
+          "S2045.I4.F1.T11"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Empty State Components",
+        "task_ids": [
+          "S2045.I4.F1.T1",
+          "S2045.I4.F1.T2",
+          "S2045.I4.F1.T3",
+          "S2045.I4.F1.T4",
+          "S2045.I4.F1.T5"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 13,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Widget Integration",
+        "task_ids": [
+          "S2045.I4.F1.T6",
+          "S2045.I4.F1.T7",
+          "S2045.I4.F1.T8"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 6,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "CTA Wiring",
+        "task_ids": [
+          "S2045.I4.F1.T9",
+          "S2045.I4.F1.T10",
+          "S2045.I4.F1.T11"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 1
+      },
+      {
+        "id": 4,
+        "name": "Accessibility & Testing",
+        "task_ids": [
+          "S2045.I4.F1.T12"
+        ],
+        "depends_on_groups": [
+          3
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S2045.I4.F1.T1",
+        "S2045.I4.F1.T2",
+        "S2045.I4.F1.T9",
+        "S2045.I4.F1.T12"
+      ],
+      "total_hours": 8
+    },
+    "duration": {
+      "sequential": 24,
+      "parallel": 9,
+      "time_saved_percent": 62.5
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "initiative_id": "S2045.I3",
+  "initiative_name": "Interactive Widgets",
+  "status": "in_progress",
+  "current_phase": "decomposition",
+  "features": {
+    "S2045.I3.F1": { "name": "Presentation Outlines Table", "status": "pending", "task_count": 0 },
+    "S2045.I3.F2": { "name": "Coaching Sessions Card", "status": "pending", "task_count": 0 },
+    "S2045.I3.F3": { "name": "Quick Actions Panel", "status": "pending", "task_count": 0 },
+    "S2045.I3.F4": { "name": "Recent Activity Feed", "status": "pending", "task_count": 0 }
+  },
+  "total_features": 4,
+  "completed_features": 0,
+  "total_tasks": 0,
+  "total_spikes": 0,
+  "spikes_pending": [],
+  "started_at": "2026-02-09T00:00:00Z"
+}

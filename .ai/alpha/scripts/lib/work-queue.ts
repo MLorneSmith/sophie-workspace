@@ -8,28 +8,11 @@
 
 import type { FeatureEntry, SpecManifest } from "../types/index.js";
 import { hasSelfReference } from "./cycle-detector.js";
-import { saveManifest } from "./manifest.js";
-
-// ============================================================================
-// Logging Helper
-// ============================================================================
-
-/**
- * Create a conditional logger that only outputs when UI is disabled.
- * When UI is enabled, all console output is suppressed to avoid interfering
- * with the Ink-based dashboard.
- */
-function createLogger(uiEnabled: boolean) {
-	return {
-		log: (...args: unknown[]) => {
-			if (!uiEnabled) console.log(...args);
-		},
-		error: (...args: unknown[]) => {
-			// Always log errors, even in UI mode
-			console.error(...args);
-		},
-	};
-}
+import {
+	transitionFeatureStatus,
+	updateInitiativeStatusFromFeatures,
+} from "./feature-transitions.js";
+import { createLogger } from "./logger.js";
 
 // ============================================================================
 // Constants
@@ -111,9 +94,9 @@ export function getNextAvailableFeature(
 				log(
 					`🔧 Fixing inconsistent state: #${feature.id} was in_progress with error "${feature.error}" for ${Math.round(timeSinceAssignment / 1000)}s, resetting to failed`,
 				);
-				feature.status = "failed";
-				feature.assigned_sandbox = undefined;
-				feature.assigned_at = undefined;
+				transitionFeatureStatus(feature, manifest, "failed", {
+					reason: `stale in_progress with error for >${Math.round(timeSinceAssignment / 1000)}s`,
+				});
 			}
 		}
 
@@ -241,16 +224,17 @@ export function assignFeatureToSandbox(
 		}
 	}
 
-	// Claim the feature
-	feature.status = "in_progress";
+	// Claim the feature - set sandbox before transition (transition preserves these)
 	feature.assigned_sandbox = sandboxLabel;
 	feature.assigned_at = now;
 	// Clear any previous error - this is a fresh assignment
 	feature.error = undefined;
 
-	// CRITICAL: Save manifest immediately to make assignment atomic
+	// CRITICAL: Transition to in_progress and save atomically
 	// This prevents race conditions where multiple sandboxes check-then-assign
-	saveManifest(manifest);
+	transitionFeatureStatus(feature, manifest, "in_progress", {
+		reason: "feature claimed by sandbox",
+	});
 
 	log(`✅ Feature #${feature.id} assigned to ${sandboxLabel} at ${now}`);
 	return true;
@@ -301,9 +285,11 @@ export function cleanupStaleState(
 			log(
 				`🧹 Resetting stale in_progress: #${feature.id} (was ${feature.assigned_sandbox})`,
 			);
-			feature.status = "pending";
-			feature.assigned_sandbox = undefined;
-			feature.assigned_at = undefined;
+			transitionFeatureStatus(feature, manifest, "pending", {
+				reason: "cleanup stale assignment",
+				skipSave: true, // batch save at end
+				skipInitiativeCascade: true, // cascade once at end
+			});
 			cleanedCount++;
 		}
 
@@ -330,27 +316,10 @@ export function cleanupStaleState(
 		}
 	}
 
-	// Update initiative statuses based on feature cleanup
-	for (const initiative of manifest.initiatives) {
-		const initFeatures = manifest.feature_queue.filter(
-			(f) => f.initiative_id === initiative.id,
-		);
-		const completedCount = initFeatures.filter(
-			(f) => f.status === "completed",
-		).length;
-		const inProgressCount = initFeatures.filter(
-			(f) => f.status === "in_progress",
-		).length;
-
-		initiative.features_completed = completedCount;
-
-		if (completedCount === initiative.feature_count) {
-			initiative.status = "completed";
-		} else if (inProgressCount > 0 || completedCount > 0) {
-			initiative.status = "in_progress";
-		} else {
-			initiative.status = "pending";
-		}
+	// Update initiative statuses based on feature cleanup (centralized)
+	const initiativeIds = new Set(manifest.initiatives.map((i) => i.id));
+	for (const initiativeId of initiativeIds) {
+		updateInitiativeStatusFromFeatures(initiativeId, manifest, true);
 	}
 
 	return cleanedCount;
@@ -509,19 +478,21 @@ export function shouldRetryFailedFeature(
  *
  * @param feature - The failed feature to reset
  */
-export function resetFailedFeatureForRetry(feature: FeatureEntry): void {
+export function resetFailedFeatureForRetry(
+	feature: FeatureEntry,
+	manifest: SpecManifest,
+): void {
 	// Increment retry count FIRST (before resetting status)
 	feature.retry_count = (feature.retry_count ?? 0) + 1;
-
-	// Reset to pending status
-	feature.status = "pending";
 
 	// Clear error message for fresh attempt
 	feature.error = undefined;
 
-	// Clear sandbox assignment
-	feature.assigned_sandbox = undefined;
-	feature.assigned_at = undefined;
+	// Use centralized transition (handles assignment clearing, initiative cascade)
+	transitionFeatureStatus(feature, manifest, "pending", {
+		reason: "reset failed feature for retry",
+		skipSave: true, // callers save the manifest themselves
+	});
 }
 
 // ============================================================================

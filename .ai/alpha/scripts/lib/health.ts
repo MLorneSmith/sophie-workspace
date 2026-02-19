@@ -21,26 +21,12 @@ import type {
 	SandboxProgress,
 	SpecManifest,
 } from "../types/index.js";
+import { transitionFeatureStatus } from "./feature-transitions.js";
+import { validateProgressStatus } from "./progress-file.js";
+import { createLogger } from "./logger.js";
 import { saveManifest } from "./manifest.js";
 import { getForceKillCommand, getProviderDisplayName } from "./provider.js";
 import { sleep } from "./utils.js";
-
-// ============================================================================
-// Logging Helper
-// ============================================================================
-
-/**
- * Create a conditional logger that only outputs when UI is disabled.
- * When UI is enabled, all console output is suppressed to avoid interfering
- * with the Ink-based dashboard.
- */
-function createLogger(uiEnabled: boolean) {
-	return {
-		log: (...args: unknown[]) => {
-			if (!uiEnabled) console.log(...args);
-		},
-	};
-}
 
 // ============================================================================
 // Startup Timeout Configuration
@@ -127,8 +113,12 @@ export async function checkSandboxHealth(
 			return { healthy: true, timeSinceStart };
 		}
 
-		// Parse progress file
-		const progress: SandboxProgress = JSON.parse(result.stdout);
+		// Parse progress file (validate status to prevent #1952 propagation)
+		const raw = JSON.parse(result.stdout);
+		const progress: SandboxProgress = {
+			...raw,
+			status: raw.status ? validateProgressStatus(raw.status) : undefined,
+		};
 		instance.lastProgressSeen = new Date();
 
 		// Check heartbeat
@@ -302,9 +292,10 @@ export async function runHealthChecks(
 						(f) => f.id === instance.currentFeature,
 					);
 					if (feature) {
-						feature.status = "pending";
-						feature.assigned_sandbox = undefined;
-						feature.assigned_at = undefined;
+						transitionFeatureStatus(feature, manifest, "pending", {
+							reason: "health check recovery - retrying",
+							skipSave: true,
+						});
 					}
 
 					instance.currentFeature = null;
@@ -330,10 +321,11 @@ export async function runHealthChecks(
 					(f) => f.id === instance.currentFeature,
 				);
 				if (feature) {
-					feature.status = "failed";
 					feature.error = `Health check failed: ${health.message}`;
-					feature.assigned_sandbox = undefined;
-					feature.assigned_at = undefined;
+					transitionFeatureStatus(feature, manifest, "failed", {
+						reason: "health check failed - max retries exceeded",
+						skipSave: true,
+					});
 				}
 
 				instance.currentFeature = null;

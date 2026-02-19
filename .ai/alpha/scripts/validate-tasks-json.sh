@@ -14,7 +14,8 @@
 #   3. Each task has required fields
 #   4. m=1 compliance checks (single verb, no conjunctions, etc.)
 #   5. Hours within range (2-8)
-#   6. Dependency validation (via validate-dependencies.py)
+#   6. Task count limits (max 12 tasks per feature)
+#   7. Dependency validation (via validate-dependencies.py)
 #
 # Output (JSON):
 #   {
@@ -25,6 +26,7 @@
 #       "task_fields": true,
 #       "m1_compliance": true,
 #       "hours_range": true,
+#       "task_count": true,
 #       "dependencies": true
 #     },
 #     "errors": [],
@@ -201,7 +203,19 @@ else
     set_check "hours_range" "true"
 fi
 
-# Check 7: Dependencies (use Python script)
+# Check 7: Task count limits (max 12 tasks per feature)
+MAX_TASKS=12
+if (( TASK_COUNT > MAX_TASKS )); then
+    add_error "Task count ($TASK_COUNT) exceeds maximum ($MAX_TASKS). Split feature into smaller sub-features."
+    set_check "task_count" "false"
+elif (( TASK_COUNT == 0 )); then
+    add_error "Feature has 0 tasks"
+    set_check "task_count" "false"
+else
+    set_check "task_count" "true"
+fi
+
+# Check 8: Dependencies (use Python script)
 if [[ -x "$SCRIPT_DIR/validate-dependencies.py" ]]; then
     DEP_RESULT=$("$SCRIPT_DIR/validate-dependencies.py" "$TASKS_FILE" 2>/dev/null || echo '{"valid": false}')
     DEP_VALID=$(echo "$DEP_RESULT" | jq -r '.valid')

@@ -24,6 +24,7 @@ import type {
 	FeatureEntry,
 	FeatureImplementationResult,
 	SandboxInstance,
+	SandboxProgress,
 	SpecManifest,
 	StartupAttemptRecord,
 } from "../types/index.js";
@@ -33,6 +34,7 @@ import {
 	getAuthMethod,
 	getOpenAIAuthMethod,
 } from "./environment.js";
+import { transitionFeatureStatus } from "./feature-transitions.js";
 import { killClaudeProcess } from "./health.js";
 import { getProjectRoot } from "./lock.js";
 import { saveManifest } from "./manifest.js";
@@ -47,6 +49,7 @@ import {
 	startProgressPolling,
 	writeUIProgress,
 } from "./progress.js";
+import { validateProgressStatus } from "./progress-file.js";
 import {
 	PTYTimeoutError,
 	type WaitWithTimeoutResult,
@@ -59,24 +62,9 @@ import {
 	getRetryDelay,
 	updateOutputTracker,
 } from "./startup-monitor.js";
+import { createLogger } from "./logger.js";
 import { stripAnsiCodes } from "./utils.js";
 import { updateNextFeatureId } from "./work-queue.js";
-
-// ============================================================================
-// Logging Helper
-// ============================================================================
-
-/**
-
-* Create a conditional logger that only outputs when UI is disabled.
- */
-function createLogger(uiEnabled: boolean) {
-	return {
-		log: (...args: unknown[]) => {
-			if (!uiEnabled) console.log(...args);
-		},
-	};
-}
 
 // ============================================================================
 // Log File Management
@@ -175,9 +163,10 @@ export async function runFeatureImplementation(
 		feature.status !== "in_progress" ||
 		feature.assigned_sandbox !== instance.label
 	) {
-		feature.status = "in_progress";
 		feature.assigned_sandbox = instance.label;
-		saveManifest(manifest);
+		transitionFeatureStatus(feature, manifest, "in_progress", {
+			reason: "feature execution starting",
+		});
 	}
 
 	// Update instance state
@@ -691,15 +680,15 @@ export async function runFeatureImplementation(
 		try {
 			const parsed = JSON.parse(progressResult.stdout || "{}");
 			tasksCompleted = parsed.completed_tasks?.length || 0;
-			progressFileStatus = parsed.status;
+			const validatedStatus = validateProgressStatus(parsed.status);
+			progressFileStatus = validatedStatus;
 
 			// Bug fix #1938: Only trust explicit "completed" status from progress file
 			// Exit code 0 alone is NOT sufficient evidence of completion
-			if (parsed.status === "completed") {
+			// Bug fix #1952: "blocked" is remapped to "failed" by validateProgressStatus
+			if (validatedStatus === "completed") {
 				status = "completed";
-			} else if (parsed.status === "blocked") {
-				status = "blocked";
-			} else if (parsed.status === "failed" || result.exitCode !== 0) {
+			} else if (validatedStatus === "failed" || result.exitCode !== 0) {
 				status = "failed";
 			} else {
 				// Progress file exists but status is not "completed"
@@ -758,42 +747,23 @@ export async function runFeatureImplementation(
 		}
 
 		// Update feature
-		feature.status = status;
 		feature.tasks_completed = tasksCompleted;
-		feature.assigned_sandbox = undefined;
-		feature.assigned_at = undefined;
 		instance.currentFeature = null;
 		instance.status = "ready";
 		instance.outputLineCount = 0;
 		instance.hasReceivedOutput = false;
+
+		// Transition feature status (handles initiative cascade and manifest save)
+		transitionFeatureStatus(feature, manifest, status, {
+			reason: "feature completion finalization",
+			skipSave: true, // We save below after all updates
+		});
 
 		// Update progress
 		if (status === "completed") {
 			// NOTE: features_completed is now calculated from manifest state in writeOverallProgress()
 			// This prevents counts from exceeding totals when features are retried
 			manifest.progress.last_completed_feature_id = feature.id;
-
-			// Update initiative status
-			const initiative = manifest.initiatives.find(
-				(i) => i.id === feature.initiative_id,
-			);
-			if (initiative) {
-				// Calculate features_completed from state instead of incrementing
-				// This prevents counts from exceeding totals when features are retried
-				const initFeatures = manifest.feature_queue.filter(
-					(f) => f.initiative_id === initiative.id,
-				);
-				initiative.features_completed = initFeatures.filter(
-					(f) => f.status === "completed",
-				).length;
-
-				if (initFeatures.every((f) => f.status === "completed")) {
-					initiative.status = "completed";
-					// NOTE: initiatives_completed is calculated from manifest state in writeOverallProgress()
-				} else {
-					initiative.status = "in_progress";
-				}
-			}
 
 			// CRITICAL: Push after completing feature
 			try {
@@ -827,10 +797,17 @@ export async function runFeatureImplementation(
 		// Write final UI progress to ensure UI reflects completion status
 		// This fixes stale UI after session recovery (see #1499, #1495)
 		if (uiEnabled) {
+			// Map "pending" (retry) to "in_progress" for SandboxProgress UI display
+			const uiStatus: SandboxProgress["status"] =
+				status === "completed"
+					? "completed"
+					: status === "failed"
+						? "failed"
+						: "in_progress";
 			writeUIProgress(
 				instance.label,
 				{
-					status,
+					status: uiStatus,
 					phase: status === "completed" ? "completed" : "finished",
 					completed_tasks: Array.from(
 						{ length: tasksCompleted },
@@ -848,13 +825,7 @@ export async function runFeatureImplementation(
 
 		// Bug fix #1938: Add icon for pending status (retry)
 		const icon =
-			status === "completed"
-				? "✅"
-				: status === "blocked"
-					? "🚫"
-					: status === "pending"
-						? "🔄"
-						: "❌";
+			status === "completed" ? "✅" : status === "pending" ? "🔄" : "❌";
 		log(
 			`   └── ${icon} ${status} (${tasksCompleted}/${feature.task_count} tasks)`,
 		);
@@ -896,16 +867,15 @@ export async function runFeatureImplementation(
 			finalError = errorMessage;
 		}
 
-		feature.status = "failed";
 		feature.error = finalError;
-		feature.assigned_sandbox = undefined;
-		feature.assigned_at = undefined;
 		instance.currentFeature = null;
 		instance.status = "ready";
 		instance.outputLineCount = 0;
 		instance.hasReceivedOutput = false;
 		updateNextFeatureId(manifest);
-		saveManifest(manifest);
+		transitionFeatureStatus(feature, manifest, "failed", {
+			reason: "unhandled exception in feature execution",
+		});
 
 		log(`   └── ❌ Error: ${finalError}`);
 

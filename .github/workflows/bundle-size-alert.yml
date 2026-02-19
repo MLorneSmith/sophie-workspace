@@ -12,7 +12,7 @@ permissions:
 
 env:
   NODE_VERSION: '20'
-  PNPM_VERSION: '10.14.0'
+  PNPM_VERSION: '10.29.2'
 
 jobs:
   bundle-size-alert:
@@ -49,7 +49,7 @@ jobs:
       # Optimization #1: Cache base branch bundle sizes to skip rebuilding
       - name: Restore base bundle cache
         id: base-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: /tmp/base-analysis
           key: bundle-sizes-${{ github.event.pull_request.base.ref }}-${{ github.event.pull_request.base.sha }}
@@ -96,7 +96,7 @@ jobs:
 
       - name: Save base bundle cache
         if: steps.base-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: /tmp/base-analysis
           key: bundle-sizes-${{ github.event.pull_request.base.ref }}-${{ github.event.pull_request.base.sha }}

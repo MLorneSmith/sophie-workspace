@@ -747,6 +747,11 @@ Before finalizing task decomposition:
 - [ ] Verification commands include typegen steps
 - [ ] Type-dependent tasks have proper `blockedBy` dependencies
 
+### Task Count
+- [ ] No feature has more than 12 tasks
+- [ ] Task count aligns with complexity target_steps range
+- [ ] If >12 tasks needed, recommend splitting feature in `/alpha:feature-decompose`
+
 ### Git Commit
 - [ ] Spec files staged and committed
 - [ ] Pushed to `origin/dev`
