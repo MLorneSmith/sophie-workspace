@@ -1,4 +1,5 @@
 import type { JWTUserData } from "@kit/supabase/types";
+import Script from "next/script";
 
 import { GridLines } from "~/(marketing)/_components/grid-lines";
 import { MotionProvider } from "~/(marketing)/_components/motion-provider";
@@ -22,6 +23,8 @@ function SiteLayout(props: React.PropsWithChildren) {
 			<MotionProvider>{props.children}</MotionProvider>
 
 			<SiteFooter />
+
+			<Script src="/scripts/rb2b.js" strategy="afterInteractive" />
 		</div>
 	);
 }

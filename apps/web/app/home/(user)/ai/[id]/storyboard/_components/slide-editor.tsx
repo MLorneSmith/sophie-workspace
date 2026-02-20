@@ -27,6 +27,8 @@ import {
 	Italic as ItalicIcon,
 	List,
 	ListOrdered,
+	Loader2,
+	RefreshCw,
 	Trash2,
 	Underline as UnderlineIcon,
 } from "lucide-react";
@@ -41,6 +43,8 @@ interface SlideEditorProps {
 	slide: StoryboardSlide;
 	onUpdate: (slide: StoryboardSlide) => void;
 	onDelete: (slideId: string) => void;
+	onRegenerate: (slideId: string) => void;
+	isRegenerating?: boolean;
 }
 
 function NotesToolbar({ editor }: { editor: Editor | null }) {
@@ -113,7 +117,13 @@ function NotesToolbar({ editor }: { editor: Editor | null }) {
 	);
 }
 
-export function SlideEditor({ slide, onUpdate, onDelete }: SlideEditorProps) {
+export function SlideEditor({
+	slide,
+	onUpdate,
+	onDelete,
+	onRegenerate,
+	isRegenerating = false,
+}: SlideEditorProps) {
 	const notesContent = useMemo(() => {
 		if (!slide.speaker_notes) {
 			return {
@@ -234,6 +244,20 @@ export function SlideEditor({ slide, onUpdate, onDelete }: SlideEditorProps) {
 				<Button
 					variant="ghost"
 					size="sm"
+					onClick={() => onRegenerate(slide.id)}
+					disabled={isRegenerating}
+					className="text-muted-foreground hover:text-foreground h-8 w-8 shrink-0 p-0"
+					aria-label="Regenerate slide"
+				>
+					{isRegenerating ? (
+						<Loader2 className="h-3.5 w-3.5 animate-spin" />
+					) : (
+						<RefreshCw className="h-3.5 w-3.5" />
+					)}
+				</Button>
+				<Button
+					variant="ghost"
+					size="sm"
 					onClick={() => onDelete(slide.id)}
 					className="text-muted-foreground hover:text-destructive h-8 w-8 shrink-0 p-0"
 					aria-label="Delete slide"
@@ -291,30 +315,38 @@ export function SlideEditor({ slide, onUpdate, onDelete }: SlideEditorProps) {
 
 				{(slide.layout === "title-two-column" ||
 					slide.layout === "comparison") && (
-					<div className="grid gap-3 md:grid-cols-2">
-						<div>
+					<div className="flex flex-col gap-3 md:flex-row">
+						<div className="flex-1">
 							<p className="text-muted-foreground mb-1 text-xs font-medium">
-								Left Content
+								{slide.layout === "comparison" ? "Option A" : "Left Column"}
 							</p>
 							<Textarea
 								value={slide.content_left ?? ""}
 								onChange={(e) =>
 									onUpdate({ ...slide, content_left: e.target.value })
 								}
-								placeholder="Left column content..."
+								placeholder={
+									slide.layout === "comparison"
+										? "Option A content..."
+										: "Left column content..."
+								}
 								className="min-h-[120px] border-white/10 bg-white/5 text-sm"
 							/>
 						</div>
-						<div>
+						<div className="flex-1">
 							<p className="text-muted-foreground mb-1 text-xs font-medium">
-								Right Content
+								{slide.layout === "comparison" ? "Option B" : "Right Column"}
 							</p>
 							<Textarea
 								value={slide.content_right ?? ""}
 								onChange={(e) =>
 									onUpdate({ ...slide, content_right: e.target.value })
 								}
-								placeholder="Right column content..."
+								placeholder={
+									slide.layout === "comparison"
+										? "Option B content..."
+										: "Right column content..."
+								}
 								className="min-h-[120px] border-white/10 bg-white/5 text-sm"
 							/>
 						</div>

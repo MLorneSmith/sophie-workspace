@@ -19,6 +19,7 @@ const CROSS_ORIGIN_EMBEDDER_POLICY = false;
 const ALLOWED_ORIGINS = [
 	SUPABASE_URL,
 	WEBSOCKET_URL,
+	"https://ddwl4m2hdecbv.cloudfront.net",
 	// add here additional allowed origins
 ] as never[];
 
@@ -54,6 +55,10 @@ export async function createCspResponse() {
 		contentSecurityPolicy: {
 			directives: {
 				...noseconeConfig.contentSecurityPolicy.directives,
+				scriptSrc: [
+					...noseconeConfig.contentSecurityPolicy.directives.scriptSrc,
+					"https://ddwl4m2hdecbv.cloudfront.net",
+				],
 				connectSrc: [
 					...noseconeConfig.contentSecurityPolicy.directives.connectSrc,
 					...ALLOWED_ORIGINS,
