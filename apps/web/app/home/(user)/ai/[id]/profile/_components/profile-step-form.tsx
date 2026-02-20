@@ -10,7 +10,10 @@ import { Input } from "@kit/ui/input";
 import { Label } from "@kit/ui/label";
 import { Textarea } from "@kit/ui/textarea";
 
-import { researchAudienceAction } from "../_actions/research-audience.action";
+import {
+	researchAudienceAction,
+	searchAudienceAction,
+} from "../_actions/research-audience.action";
 import { saveProfileStepAction } from "../_actions/save-profile-step.action";
 
 // ---------------------------------------------------------------------------
@@ -52,7 +55,24 @@ interface BriefStructured {
 	briefSummary?: string;
 }
 
-type FormState = "input" | "researching" | "brief" | "editing";
+type FormState =
+	| "input"
+	| "searching"
+	| "selecting"
+	| "researching"
+	| "brief"
+	| "editing";
+
+interface PersonSearchResult {
+	id: number;
+	urn: string;
+	username: string;
+	firstName: string;
+	lastName: string;
+	headline: string;
+	profilePicture: string | null;
+	linkedinURL?: string;
+}
 
 const RESEARCH_STEPS = [
 	"Finding LinkedIn profile…",
@@ -105,53 +125,91 @@ export function ProfileStepForm(props: {
 	);
 	const [hasPersonData, setHasPersonData] = useState(false);
 	const [hasCompanyData, setHasCompanyData] = useState(false);
+	const [searchResults, setSearchResults] = useState<PersonSearchResult[]>([]);
 
 	// -----------------------------------------------------------------------
 	// Research handler
 	// -----------------------------------------------------------------------
 
-	const handleResearch = useCallback(async () => {
-		setError(null);
-		setFormState("researching");
-		setResearchStep(0);
+	// Step 1b: Research with selected person (or without)
+	const handleResearchWithSelection = useCallback(
+		async (selectedLinkedinUrl: string | undefined) => {
+			setError(null);
+			setFormState("researching");
+			setResearchStep(0);
 
-		// Animate through research steps
-		const stepTimer = setInterval(() => {
-			setResearchStep((prev) =>
-				prev < RESEARCH_STEPS.length - 1 ? prev + 1 : prev,
-			);
-		}, 2500);
+			const stepTimer = setInterval(() => {
+				setResearchStep((prev) =>
+					prev < RESEARCH_STEPS.length - 1 ? prev + 1 : prev,
+				);
+			}, 2500);
+
+			try {
+				const result = await researchAudienceAction({
+					presentationId: props.presentationId,
+					personName,
+					company,
+					context: context || undefined,
+					selectedLinkedinUrl,
+				});
+
+				clearInterval(stepTimer);
+
+				if (!result.success) {
+					throw new Error(
+						"error" in result ? String(result.error) : "Research failed",
+					);
+				}
+
+				const profile = result.profile as AudienceProfileRow;
+				const structured =
+					(profile.brief_structured as BriefStructured) ?? null;
+
+				setBrief(structured);
+				setBriefText(profile.brief_text ?? "");
+				setHasPersonData(!!result.hasPersonData);
+				setHasCompanyData(!!result.hasCompanyData);
+				setFormState("brief");
+			} catch (err) {
+				clearInterval(stepTimer);
+				setError(err instanceof Error ? err.message : "Research failed");
+				setFormState("input");
+			}
+		},
+		[props.presentationId, personName, company, context],
+	);
+
+	// Step 1a: Search for candidates
+	const handleSearch = useCallback(async () => {
+		setError(null);
+		setFormState("searching");
 
 		try {
-			const result = await researchAudienceAction({
-				presentationId: props.presentationId,
+			const result = await searchAudienceAction({
 				personName,
 				company,
-				context: context || undefined,
 			});
-
-			clearInterval(stepTimer);
 
 			if (!result.success) {
 				throw new Error(
-					"error" in result ? String(result.error) : "Research failed",
+					"error" in result ? String(result.error) : "Search failed",
 				);
 			}
 
-			const profile = result.profile as AudienceProfileRow;
-			const structured = (profile.brief_structured as BriefStructured) ?? null;
+			const persons = (result.personResults ?? []) as PersonSearchResult[];
+			setSearchResults(persons);
 
-			setBrief(structured);
-			setBriefText(profile.brief_text ?? "");
-			setHasPersonData(!!result.hasPersonData);
-			setHasCompanyData(!!result.hasCompanyData);
-			setFormState("brief");
+			if (persons.length === 0) {
+				// No results — go straight to research without LinkedIn data
+				handleResearchWithSelection(undefined);
+			} else {
+				setFormState("selecting");
+			}
 		} catch (err) {
-			clearInterval(stepTimer);
-			setError(err instanceof Error ? err.message : "Research failed");
+			setError(err instanceof Error ? err.message : "Search failed");
 			setFormState("input");
 		}
-	}, [props.presentationId, personName, company, context]);
+	}, [personName, company, handleResearchWithSelection]);
 
 	// -----------------------------------------------------------------------
 	// Save & continue handler
@@ -183,6 +241,122 @@ export function ProfileStepForm(props: {
 			}
 		});
 	}, [props.presentationId, personName, company, briefText, router]);
+
+	// -----------------------------------------------------------------------
+	// Render: Searching for candidates
+	// -----------------------------------------------------------------------
+
+	if (formState === "searching") {
+		return (
+			<div className="mx-auto w-full max-w-3xl space-y-8">
+				<div className="text-center">
+					<h2 className="text-app-h3 font-semibold">Searching for profiles…</h2>
+					<p className="mt-2 text-app-sm text-muted-foreground">
+						Looking up{" "}
+						<span className="font-medium text-foreground">{personName}</span>
+						{company ? (
+							<>
+								{" "}
+								at{" "}
+								<span className="font-medium text-foreground">{company}</span>
+							</>
+						) : null}
+					</p>
+				</div>
+				<div className="flex justify-center">
+					<div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+				</div>
+			</div>
+		);
+	}
+
+	// -----------------------------------------------------------------------
+	// Render: Select from search results
+	// -----------------------------------------------------------------------
+
+	if (formState === "selecting") {
+		return (
+			<div className="mx-auto w-full max-w-3xl space-y-6">
+				<div>
+					<h2 className="text-app-h3 font-semibold">Select the right person</h2>
+					<p className="mt-2 text-app-sm text-muted-foreground">
+						We found {searchResults.length} result
+						{searchResults.length !== 1 ? "s" : ""} for{" "}
+						<span className="font-medium text-foreground">{personName}</span>
+						{company ? (
+							<>
+								{" "}
+								at{" "}
+								<span className="font-medium text-foreground">{company}</span>
+							</>
+						) : null}
+					</p>
+				</div>
+
+				<div className="grid gap-3">
+					{searchResults.map((person) => {
+						const linkedinUrl =
+							person.linkedinURL ??
+							(person.username
+								? `https://www.linkedin.com/in/${person.username}/`
+								: undefined);
+						const initials =
+							`${person.firstName?.[0] ?? ""}${person.lastName?.[0] ?? ""}`.toUpperCase();
+
+						return (
+							<button
+								key={person.urn || person.id}
+								type="button"
+								className="flex items-center gap-4 rounded-lg border border-white/10 bg-white/5 p-4 text-left transition-colors hover:border-primary/50 hover:bg-white/10"
+								onClick={() => handleResearchWithSelection(linkedinUrl)}
+							>
+								{person.profilePicture ? (
+									<img
+										src={person.profilePicture}
+										alt=""
+										className="size-12 rounded-full object-cover"
+									/>
+								) : (
+									<div className="flex size-12 items-center justify-center rounded-full bg-primary/20 text-sm font-medium text-primary">
+										{initials}
+									</div>
+								)}
+								<div className="min-w-0 flex-1">
+									<p className="font-medium">
+										{person.firstName} {person.lastName}
+									</p>
+									<p className="truncate text-sm text-muted-foreground">
+										{person.headline}
+									</p>
+								</div>
+								<Badge variant="secondary" className="shrink-0">
+									Select
+								</Badge>
+							</button>
+						);
+					})}
+				</div>
+
+				<div className="flex items-center gap-3">
+					<Button
+						variant="ghost"
+						onClick={() => {
+							setSearchResults([]);
+							setFormState("input");
+						}}
+					>
+						← Back
+					</Button>
+					<Button
+						variant="secondary"
+						onClick={() => handleResearchWithSelection(undefined)}
+					>
+						None of these — continue without LinkedIn
+					</Button>
+				</div>
+			</div>
+		);
+	}
 
 	// -----------------------------------------------------------------------
 	// Render: Research in progress
@@ -464,7 +638,7 @@ export function ProfileStepForm(props: {
 						<Button
 							variant="secondary"
 							disabled={isSaving}
-							onClick={() => handleResearch()}
+							onClick={() => handleSearch()}
 						>
 							Re-research
 						</Button>
@@ -585,7 +759,7 @@ export function ProfileStepForm(props: {
 						disabled={
 							personName.trim().length === 0 || company.trim().length === 0
 						}
-						onClick={handleResearch}
+						onClick={handleSearch}
 						className="bg-primary text-primary-foreground hover:bg-primary/90"
 					>
 						✨ Research &amp; build profile

@@ -22,17 +22,27 @@ import {
 import {
 	type NetrowsEnrichmentResult,
 	researchPerson,
+	searchPersonFuzzy,
+	searchCompany,
+	getPersonProfile,
+	getCompanyDetails,
 } from "../../../_lib/server/netrows.service";
 
 // ---------------------------------------------------------------------------
 // Schema
 // ---------------------------------------------------------------------------
 
+const SearchAudienceSchema = z.object({
+	personName: z.string().min(1, "Person name is required"),
+	company: z.string().min(1, "Company is required"),
+});
+
 const ResearchAudienceSchema = z.object({
 	presentationId: z.string().min(1),
 	personName: z.string().min(1, "Person name is required"),
 	company: z.string().min(1, "Company is required"),
 	context: z.string().optional(),
+	selectedLinkedinUrl: z.string().optional(),
 });
 
 function withTimeout<T>(
@@ -137,7 +147,30 @@ Respond with ONLY the JSON object, no markdown fences.`;
 }
 
 // ---------------------------------------------------------------------------
-// Action
+// Search Action (returns candidates for user selection)
+// ---------------------------------------------------------------------------
+
+export const searchAudienceAction = enhanceAction(
+	async (data) => {
+		const [personResults, companyResults] = await Promise.all([
+			searchPersonFuzzy(data.personName, data.company),
+			searchCompany(data.company),
+		]);
+
+		return {
+			success: true as const,
+			personResults: personResults ?? [],
+			companyResults: companyResults ?? [],
+		};
+	},
+	{
+		schema: SearchAudienceSchema,
+		auth: true,
+	},
+);
+
+// ---------------------------------------------------------------------------
+// Research Action (generates brief for selected person)
 // ---------------------------------------------------------------------------
 
 export const researchAudienceAction = enhanceAction(
@@ -167,16 +200,45 @@ export const researchAudienceAction = enhanceAction(
 		}
 
 		// Step 1: Research via Netrows
+		// If a selectedLinkedinUrl was provided (user picked from search results),
+		// skip search and go directly to profile fetch
 		logger.info(
 			ctx,
-			"Starting Netrows research for %s at %s",
+			"Starting Netrows research for %s at %s (selectedUrl: %s)",
 			data.personName,
 			data.company,
+			data.selectedLinkedinUrl ?? "none",
 		);
 
 		let enrichment: NetrowsEnrichmentResult;
 		try {
-			enrichment = await researchPerson(data.personName, data.company);
+			if (data.selectedLinkedinUrl) {
+				// User selected a specific person — fetch their profile directly
+				const [personProfile, companySearchResults] = await Promise.all([
+					getPersonProfile(data.selectedLinkedinUrl),
+					searchCompany(data.company),
+				]);
+
+				let companyDetailsResult = null;
+				if (companySearchResults && companySearchResults.length > 0) {
+					const firstCompany = companySearchResults[0];
+					if (firstCompany?.linkedinURL) {
+						companyDetailsResult = await getCompanyDetails(
+							firstCompany.linkedinURL,
+						);
+					}
+				}
+
+				enrichment = {
+					personSearchResults: null,
+					personProfile,
+					companySearchResults,
+					companyDetails: companyDetailsResult,
+				};
+			} else {
+				// No selection — use original full search flow
+				enrichment = await researchPerson(data.personName, data.company);
+			}
 		} catch (err) {
 			logger.error(ctx, "Netrows research failed: %o", err);
 			// Return partial result — allow user to proceed with manual entry
