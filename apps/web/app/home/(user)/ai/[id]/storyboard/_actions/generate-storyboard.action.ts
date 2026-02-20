@@ -98,6 +98,7 @@ function formatContextForPrompt(value: unknown): string {
 	}
 }
 
+<<<<<<< HEAD
 function splitContentForTwoColumns(content: string): {
 	left: string;
 	right: string;
@@ -122,6 +123,8 @@ function splitContentForTwoColumns(content: string): {
 	};
 }
 
+=======
+>>>>>>> origin/staging
 function normalizeGeneratedSlide(
 	slide: Partial<StoryboardSlide>,
 	index: number,
@@ -324,7 +327,10 @@ Guidelines:
 - Purpose must clearly state which argument-map node or narrative step the slide advances
 - Evidence suggestions must be specific and actionable (metrics, sources, benchmarks, case examples)
 - Layout choices must match content type (data → "data-chart", comparisons → "comparison", quotes → "quote", transitions → "section-divider")
+<<<<<<< HEAD
 - For "title-two-column" and "comparison" layouts, always populate both "content_left" and "content_right" with meaningful text (do not leave them empty or only use "content")
+=======
+>>>>>>> origin/staging
 - Speaker notes should elaborate key points in a style suited to the audience's communication preferences
 - Visual notes should suggest concrete charts, images, or diagrams tied to the claim`;
 
