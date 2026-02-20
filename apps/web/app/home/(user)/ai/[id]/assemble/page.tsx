@@ -42,9 +42,17 @@ export default async function AssembleStepPage({
 		throw new Error("Presentation not found");
 	}
 
+	// Build audience string from profile data
+	const audienceLabel = [
+		audienceProfile?.person_name,
+		audienceProfile?.company ? `at ${audienceProfile.company}` : null,
+	]
+		.filter(Boolean)
+		.join(" ");
+
 	const initialFormData: Partial<FormData> = {
 		title: presentation.title ?? "",
-		audience: audienceProfile?.person_name ?? "",
+		audience: audienceLabel || "",
 		presentation_type: assembleOutput?.presentation_type ?? "",
 		question_type: assembleOutput?.question_type ?? "",
 		situation: assembleOutput?.situation ?? "",
@@ -53,6 +61,8 @@ export default async function AssembleStepPage({
 		answer: "",
 		argument_map: assembleOutput?.argument_map ?? undefined,
 	};
+
+	// TODO(#550): Pass brief_structured to BlocksMultistepForm for SCQA generation
 
 	return (
 		<BlocksMultistepForm
