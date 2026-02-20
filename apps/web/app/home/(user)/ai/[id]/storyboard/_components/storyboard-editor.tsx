@@ -54,7 +54,6 @@ import type {
 } from "../../_lib/types/storyboard.types";
 import { exportPowerPointAction } from "../_actions/export-powerpoint.action";
 import { generateStoryboardAction } from "../_actions/generate-storyboard.action";
-import { regenerateSlideAction } from "../_actions/regenerate-slide.action";
 import {
 	useSaveStoryboardSlides,
 	useStoryboardContents,
@@ -221,9 +220,6 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 	const [activeDragSlideId, setActiveDragSlideId] = useState<string | null>(
 		null,
 	);
-	const [regeneratingSlideId, setRegeneratingSlideId] = useState<string | null>(
-		null,
-	);
 	const hasInitialized = useRef(false);
 
 	const sensors = useSensors(
@@ -276,35 +272,6 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 			});
 		},
 		[presentationId],
-	);
-
-	const handleSlideRegenerate = useCallback(
-		async (slideId: string) => {
-			const slide = slides.find((s) => s.id === slideId);
-			if (!slide) return;
-
-			setRegeneratingSlideId(slideId);
-			try {
-				const result = await regenerateSlideAction({
-					presentationId,
-					slideId,
-					slideIndex: slides.indexOf(slide),
-					totalSlides: slides.length,
-					slideTitle: slide.title,
-					slidePurpose: slide.purpose,
-				});
-
-				if (result && "data" in result && result.data?.slide) {
-					const regenerated = normalizeSlide(result.data.slide);
-					setSlides((prev) =>
-						prev.map((s) => (s.id === slideId ? regenerated : s)),
-					);
-				}
-			} finally {
-				setRegeneratingSlideId(null);
-			}
-		},
-		[presentationId, slides],
 	);
 
 	useEffect(() => {
@@ -597,8 +564,6 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 								slide={selectedSlide}
 								onUpdate={handleSlideUpdate}
 								onDelete={handleSlideDelete}
-								onRegenerate={handleSlideRegenerate}
-								isRegenerating={regeneratingSlideId === selectedSlide.id}
 							/>
 						)}
 					</div>
