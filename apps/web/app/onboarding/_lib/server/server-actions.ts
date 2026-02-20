@@ -4,6 +4,8 @@ import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
+import { sendUserSignedUpEvent } from "./loops-events";
+
 import { ServerFormSchema } from "../onboarding-form.schema";
 
 // Define the onboarding data type
@@ -109,6 +111,17 @@ export const submitOnboardingFormAction = enhanceAction(
 					{ userId: user.id },
 					"User marked as onboarded successfully",
 				);
+
+				// Send Loops event (fire-and-forget, don't block onboarding)
+				const { data: userData } = await supabase.auth.getUser();
+
+				if (userData?.user?.email) {
+					void sendUserSignedUpEvent({
+						email: userData.user.email,
+						userId: user.id,
+						firstName,
+					});
+				}
 
 				// Refresh the session to ensure the middleware sees the updated metadata
 				const { error: refreshError } = await supabase.auth.refreshSession();
