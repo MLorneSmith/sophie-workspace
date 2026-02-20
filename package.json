@@ -87,6 +87,9 @@
 	"packageManager": "pnpm@10.29.2+sha512.bef43fa759d91fd2da4b319a5a0d13ef7a45bb985a3d7342058470f9d2051a3ba8674e629672654686ef9443ad13a82da2beb9eeb3e0221c87b8154fff9d74b8",
 	"pnpm": {
 		"overrides": {
+			"axios": ">=1.13.5",
+			"fast-xml-parser": ">=5.3.6",
+			"markdown-it": ">=14.1.1",
 			"diff": ">=8.0.3",
 			"undici": ">=7.18.2",
 			"preact": ">=10.27.3",
@@ -96,7 +99,7 @@
 			"require-in-the-middle": "7.5.2",
 			"import-in-the-middle": "1.15.0",
 			"tar-fs": "^3.1.1",
-			"tar": "^7.5.2",
+			"tar": ">=7.5.8",
 			"dompurify": "^3.2.4",
 			"lexical": "0.35.0",
 			"@lexical/clipboard": "0.35.0",
@@ -148,7 +151,7 @@
 		"js-yaml": "^4.1.1",
 		"knip": "^5.72.0",
 		"lint-staged": "^16.2.7",
-		"markdownlint-cli2": "^0.20.0",
+		"markdownlint-cli2": "^0.21.0",
 		"patch-package": "^8.0.0",
 		"react": "19.2.1",
 		"react-dom": "19.2.1",

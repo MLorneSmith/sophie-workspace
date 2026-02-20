@@ -1,0 +1,40 @@
+name: Trigger Deploy on Promotion Merge
+
+# Watches for merged promotion PRs and explicitly triggers the deploy workflow.
+# This is needed because GitHub's auto-merge and GITHUB_TOKEN merges don't
+# reliably emit push events that trigger downstream workflows.
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - staging
+      - main
+
+permissions:
+  actions: write
+
+jobs:
+  trigger-deploy:
+    name: Trigger Deploy
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Trigger deploy workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
+
+          if [ "$TARGET_BRANCH" = "staging" ]; then
+            WORKFLOW="staging-deploy.yml"
+          elif [ "$TARGET_BRANCH" = "main" ]; then
+            WORKFLOW="production-deploy.yml"
+          else
+            echo "Unknown target branch: $TARGET_BRANCH, skipping"
+            exit 0
+          fi
+
+          echo "PR #${{ github.event.pull_request.number }} merged to $TARGET_BRANCH"
+          echo "Triggering $WORKFLOW via workflow_dispatch"
+          gh workflow run "$WORKFLOW" --ref "$TARGET_BRANCH" -R "${{ github.repository }}"
