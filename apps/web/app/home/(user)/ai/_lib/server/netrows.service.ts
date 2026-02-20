@@ -206,6 +206,31 @@ export async function searchPerson(
 }
 
 /**
+ * Fuzzy person search with fallback strategies.
+ * Tries: exact name + company → first name + company → full name only.
+ * Returns all matching results (up to 10) for user selection.
+ */
+export async function searchPersonFuzzy(
+	name: string,
+	company: string,
+): Promise<NetrowsPersonSearchItem[]> {
+	// Try exact name + company
+	let results = await searchPerson(name, company);
+	if (results && results.length > 0) return results;
+
+	// Fallback: first name only + company (handles Ajay vs Ajaypal)
+	const firstName = name.split(/\s+/)[0];
+	if (firstName && firstName !== name) {
+		results = await searchPerson(firstName, company);
+		if (results && results.length > 0) return results;
+	}
+
+	// Fallback: full name without company filter
+	results = await searchPerson(name, "");
+	return results ?? [];
+}
+
+/**
  * Get a full person profile from a LinkedIn URL.
  * Returns the profile, or null if not found.
  */
