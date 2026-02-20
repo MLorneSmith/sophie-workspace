@@ -87,6 +87,17 @@ const GenerateStoryboardSchema = z.object({
 	forceRegenerate: z.boolean().default(false),
 });
 
+function formatContextForPrompt(value: unknown): string {
+	if (value == null) return "";
+	if (typeof value === "string") return value;
+
+	try {
+		return JSON.stringify(value, null, 2);
+	} catch {
+		return "";
+	}
+}
+
 function normalizeGeneratedSlide(
 	slide: Partial<StoryboardSlide>,
 	index: number,
@@ -163,20 +174,76 @@ export const generateStoryboardAction = enhanceAction(
 			}
 		}
 
-		// Fetch assemble_outputs for additional context
-		const { data: assembleOutput } = await client
-			.from("assemble_outputs")
-			.select("presentation_type, question_type")
-			.eq("presentation_id", data.presentationId)
-			.maybeSingle();
+		// Fetch upstream context (if present). Missing records should not block generation.
+		const [
+			{ data: audienceProfile, error: audienceError },
+			{ data: assembleOutput, error: assembleError },
+		] = await Promise.all([
+			client
+				.from("audience_profiles")
+				.select("brief_structured, brief_text")
+				.eq("presentation_id", data.presentationId)
+				.maybeSingle(),
+			client
+				.from("assemble_outputs")
+				.select(
+					"presentation_type, question_type, situation, complication, argument_map",
+				)
+				.eq("presentation_id", data.presentationId)
+				.maybeSingle(),
+		]);
+
+		if (audienceError) {
+			logger.warn("Failed to fetch audience profile for storyboard context", {
+				presentationId: data.presentationId,
+				error: audienceError,
+			});
+		}
+
+		if (assembleError) {
+			logger.warn("Failed to fetch assemble output for storyboard context", {
+				presentationId: data.presentationId,
+				error: assembleError,
+			});
+		}
 
 		// Format outline for the prompt
 		const outlineText = outlineSections
 			.map((s, i) => `Section ${i + 1} - ${s.title}:\n${s.content}`)
 			.join("\n\n");
 
+		const audienceBriefStructured = formatContextForPrompt(
+			audienceProfile?.brief_structured,
+		);
+		const audienceBriefText = audienceProfile?.brief_text?.trim() ?? "";
+		const argumentMapText = formatContextForPrompt(
+			assembleOutput?.argument_map,
+		);
+		const scqaContext = [
+			assembleOutput?.situation
+				? `Situation: ${assembleOutput.situation}`
+				: "Situation: Not provided",
+			assembleOutput?.complication
+				? `Complication: ${assembleOutput.complication}`
+				: "Complication: Not provided",
+			assembleOutput?.question_type
+				? `Question type: ${assembleOutput.question_type}`
+				: "Question type: Not provided",
+			assembleOutput?.presentation_type
+				? `Presentation type: ${assembleOutput.presentation_type}`
+				: "Presentation type: Not provided",
+		].join("\n");
+
 		// Build AI prompt
-		const systemPrompt = `You are a presentation storyboard designer. Given a presentation outline, generate slide layouts with content, speaker notes, and visual suggestions.
+		const systemPrompt = `You are a presentation storyboard designer. Given an outline plus upstream workflow context, generate slide layouts with content, speaker notes, and visual suggestions.
+
+Use upstream context when available:
+- Audience brief (structured/text): adapt communication style, tone, what to lead with, and data density.
+- SCQA context (situation + complication): make the storyline reflect the business context.
+- Argument map (pyramid principle tree): align slide purposes and sequence to argument nodes and supporting points.
+- Presentation type awareness: tailor slide count, depth, and layout choices to match presentation intent.
+
+If any upstream context is missing, gracefully fall back to strong generic best practices.
 
 Return ONLY valid JSON in this exact format:
 {
@@ -218,21 +285,35 @@ Layout guidance:
 - Use "title-two-column" for structured two-column lists or arguments
 
 Guidelines:
-- Create 1-2 slides per outline section
+- Create 1-2 slides per outline section, adjusted for presentation type and narrative complexity
 - First slide should be a title slide (layout: "title-only")
 - Last slide should be a conclusion/CTA
 - Keep content concise - bullet points, not paragraphs
-- Speaker notes should elaborate on key points
-- Purpose, takeaway_headline, and evidence_needed must be meaningful for every slide
-- Visual notes suggest charts, images, or diagrams`;
+- Takeaway headlines must be audience-specific (e.g., lead with numbers for a data-driven CFO)
+- Purpose must clearly state which argument-map node or narrative step the slide advances
+- Evidence suggestions must be specific and actionable (metrics, sources, benchmarks, case examples)
+- Layout choices must match content type (data → "data-chart", comparisons → "comparison", quotes → "quote", transitions → "section-divider")
+- Speaker notes should elaborate key points in a style suited to the audience's communication preferences
+- Visual notes should suggest concrete charts, images, or diagrams tied to the claim`;
 
 		const userPrompt = `Create a storyboard from this outline:
 
 ${outlineText}
 
-${assembleOutput ? `Presentation type: ${assembleOutput.presentation_type}\nQuestion type: ${assembleOutput.question_type}` : ""}
+Audience brief summary (if available):
+${
+	audienceBriefText || audienceBriefStructured
+		? `${audienceBriefText || "No freeform audience brief text provided."}\n${audienceBriefStructured ? `Structured audience brief:\n${audienceBriefStructured}` : ""}`
+		: "Not provided. Use generic audience-aware communication best practices."
+}
 
-Generate slides that bring this outline to life with clear layouts and content.`;
+SCQA context:
+${scqaContext}
+
+Argument map (pyramid principle tree):
+${argumentMapText || "Not provided."}
+
+Instruction: Use audience preferences (tone, communication style, what to lead with, and data density) to shape headlines, evidence depth, structure, and speaker notes.`;
 
 		const messages: ChatMessage[] = [
 			{ role: "system", content: systemPrompt },

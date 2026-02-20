@@ -1,5 +1,21 @@
 "use client";
 
+import {
+	closestCenter,
+	DndContext,
+	DragOverlay,
+	type DragEndEvent,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from "@dnd-kit/core";
+import {
+	arrayMove,
+	SortableContext,
+	useSortable,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import { cn } from "@kit/ui/utils";
@@ -10,6 +26,7 @@ import {
 	Columns2,
 	Download,
 	FileText,
+	GripVertical,
 	Image,
 	Layers,
 	Loader2,
@@ -22,6 +39,7 @@ import {
 	Type,
 } from "lucide-react";
 import {
+	type ComponentPropsWithoutRef,
 	useCallback,
 	useEffect,
 	useMemo,
@@ -84,6 +102,110 @@ function normalizeSlide(slide: StoryboardSlide): StoryboardSlide {
 	};
 }
 
+interface SlideThumbCardProps {
+	slide: StoryboardSlide;
+	isSelected: boolean;
+	isDragging?: boolean;
+	onSelect?: () => void;
+	handleProps?: Omit<ComponentPropsWithoutRef<"button">, "ref">;
+	handleRef?: (element: HTMLButtonElement | null) => void;
+}
+
+function SlideThumbCard({
+	slide,
+	isSelected,
+	isDragging = false,
+	onSelect,
+	handleProps,
+	handleRef,
+}: SlideThumbCardProps) {
+	const LayoutIcon = getLayoutIcon(slide.layout);
+
+	return (
+		<div
+			className={cn(
+				"flex w-full items-center gap-2 rounded-lg border px-2.5 py-2 text-left transition-colors",
+				isSelected
+					? "border-blue-500/40 bg-blue-500/5"
+					: "border-white/10 bg-white/5 hover:border-white/20",
+				isDragging && "opacity-40",
+			)}
+		>
+			<button
+				ref={handleRef}
+				type="button"
+				aria-label="Drag to reorder slide"
+				className="text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing"
+				{...handleProps}
+				onClick={(event) => event.preventDefault()}
+			>
+				<GripVertical className="h-4 w-4" />
+			</button>
+			<button
+				type="button"
+				onClick={onSelect}
+				className="flex min-w-0 flex-1 items-center gap-2 text-left"
+			>
+				<span className="text-muted-foreground flex h-6 w-6 shrink-0 items-center justify-center rounded bg-white/10 text-xs font-medium">
+					{slide.order + 1}
+				</span>
+				<div className="min-w-0 flex-1">
+					<p className="truncate text-sm font-medium">
+						{slide.title || "Untitled slide"}
+					</p>
+					{slide.takeaway_headline ? (
+						<p className="text-muted-foreground truncate text-xs">
+							{slide.takeaway_headline}
+						</p>
+					) : null}
+				</div>
+				<LayoutIcon className="text-muted-foreground h-4 w-4 shrink-0" />
+			</button>
+		</div>
+	);
+}
+
+interface SortableSlideThumbProps {
+	slide: StoryboardSlide;
+	isSelected: boolean;
+	onSelect: () => void;
+}
+
+function SortableSlideThumb({
+	slide,
+	isSelected,
+	onSelect,
+}: SortableSlideThumbProps) {
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		setActivatorNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({ id: slide.id });
+
+	return (
+		<div
+			ref={setNodeRef}
+			style={{
+				transform: CSS.Transform.toString(transform),
+				transition,
+			}}
+		>
+			<SlideThumbCard
+				slide={slide}
+				isSelected={isSelected}
+				isDragging={isDragging}
+				onSelect={onSelect}
+				handleProps={{ ...attributes, ...listeners }}
+				handleRef={setActivatorNodeRef}
+			/>
+		</div>
+	);
+}
+
 export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 	const { data: storyboardData, isPending: isLoading } =
 		useStoryboardContents(presentationId);
@@ -95,7 +217,18 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 	const [isExporting, startExporting] = useTransition();
 	const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
 	const [generationError, setGenerationError] = useState<string | null>(null);
+	const [activeDragSlideId, setActiveDragSlideId] = useState<string | null>(
+		null,
+	);
 	const hasInitialized = useRef(false);
+
+	const sensors = useSensors(
+		useSensor(PointerSensor, {
+			activationConstraint: {
+				distance: 6,
+			},
+		}),
+	);
 
 	const sortedSlides = useMemo(
 		() => [...slides].sort((a, b) => a.order - b.order),
@@ -105,6 +238,8 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 		sortedSlides.find((slide) => slide.id === selectedSlideId) ??
 		sortedSlides[0] ??
 		null;
+	const activeDragSlide =
+		sortedSlides.find((slide) => slide.id === activeDragSlideId) ?? null;
 
 	const handleGenerate = useCallback(
 		(forceRegenerate: boolean) => {
@@ -266,6 +401,32 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 		handleSave(newSlides);
 	}, [sortedSlides, handleSave]);
 
+	const handleDragEnd = useCallback(
+		(event: DragEndEvent) => {
+			setActiveDragSlideId(null);
+			const { active, over } = event;
+
+			if (!over || active.id === over.id) return;
+
+			const oldIndex = sortedSlides.findIndex(
+				(slide) => slide.id === active.id,
+			);
+			const newIndex = sortedSlides.findIndex((slide) => slide.id === over.id);
+			if (oldIndex === -1 || newIndex === -1) return;
+
+			const reorderedSlides = arrayMove(sortedSlides, oldIndex, newIndex).map(
+				(slide, index) => ({
+					...slide,
+					order: index,
+				}),
+			);
+
+			setSlides(reorderedSlides);
+			handleSave(reorderedSlides);
+		},
+		[sortedSlides, handleSave],
+	);
+
 	if (isLoading) {
 		return (
 			<div className="flex min-h-[300px] items-center justify-center">
@@ -356,41 +517,44 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 			) : (
 				<div className="flex h-[min(70vh,720px)] gap-4">
 					<div className="w-[300px] shrink-0 rounded-lg border border-white/10 bg-white/5 p-2">
-						<div className="h-full space-y-2 overflow-y-auto pr-1">
-							{sortedSlides.map((slide) => {
-								const LayoutIcon = getLayoutIcon(slide.layout);
-								const isSelected = slide.id === selectedSlide?.id;
+						<DndContext
+							sensors={sensors}
+							collisionDetection={closestCenter}
+							onDragStart={(event) =>
+								setActiveDragSlideId(String(event.active.id))
+							}
+							onDragEnd={handleDragEnd}
+							onDragCancel={() => setActiveDragSlideId(null)}
+						>
+							<div className="h-full overflow-y-auto pr-1">
+								<SortableContext
+									items={sortedSlides.map((slide) => slide.id)}
+									strategy={verticalListSortingStrategy}
+								>
+									<div className="space-y-2">
+										{sortedSlides.map((slide) => (
+											<SortableSlideThumb
+												key={slide.id}
+												slide={slide}
+												isSelected={slide.id === selectedSlide?.id}
+												onSelect={() => setSelectedSlideId(slide.id)}
+											/>
+										))}
+									</div>
+								</SortableContext>
+							</div>
 
-								return (
-									<button
-										key={slide.id}
-										type="button"
-										onClick={() => setSelectedSlideId(slide.id)}
-										className={cn(
-											"flex w-full items-center gap-2 rounded-lg border px-2.5 py-2 text-left transition-colors",
-											isSelected
-												? "border-blue-500/40 bg-blue-500/5"
-												: "border-white/10 bg-white/5 hover:border-white/20",
-										)}
-									>
-										<span className="text-muted-foreground flex h-6 w-6 shrink-0 items-center justify-center rounded bg-white/10 text-xs font-medium">
-											{slide.order + 1}
-										</span>
-										<div className="min-w-0 flex-1">
-											<p className="truncate text-sm font-medium">
-												{slide.title || "Untitled slide"}
-											</p>
-											{slide.takeaway_headline ? (
-												<p className="text-muted-foreground truncate text-xs">
-													{slide.takeaway_headline}
-												</p>
-											) : null}
-										</div>
-										<LayoutIcon className="text-muted-foreground h-4 w-4 shrink-0" />
-									</button>
-								);
-							})}
-						</div>
+							<DragOverlay>
+								{activeDragSlide ? (
+									<div className="w-[282px]">
+										<SlideThumbCard
+											slide={activeDragSlide}
+											isSelected={activeDragSlide.id === selectedSlide?.id}
+										/>
+									</div>
+								) : null}
+							</DragOverlay>
+						</DndContext>
 					</div>
 
 					<div className="min-w-0 flex-1 overflow-y-auto rounded-lg border border-white/10 bg-white/5 p-1">
