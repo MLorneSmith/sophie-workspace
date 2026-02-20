@@ -11,6 +11,10 @@ import { Label } from "@kit/ui/label";
 import { Textarea } from "@kit/ui/textarea";
 
 import {
+	type AdaptiveQuestion,
+	generateAdaptiveQuestionsAction,
+} from "../_actions/generate-adaptive-questions.action";
+import {
 	researchAudienceAction,
 	searchAudienceAction,
 } from "../_actions/research-audience.action";
@@ -163,6 +167,14 @@ export function ProfileStepForm(props: {
 			)?.companyBrief ?? null,
 		);
 	const [searchResults, setSearchResults] = useState<PersonSearchResult[]>([]);
+	const [adaptiveQuestions, setAdaptiveQuestions] = useState<
+		AdaptiveQuestion[]
+	>([]);
+	const [adaptiveAnswers, setAdaptiveAnswers] = useState<
+		Record<string, string>
+	>({});
+	const [showAdaptive, setShowAdaptive] = useState(false);
+	const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
 
 	// -----------------------------------------------------------------------
 	// Research handler
@@ -258,11 +270,47 @@ export function ProfileStepForm(props: {
 	}, [personName, company, handleResearchWithSelection]);
 
 	// -----------------------------------------------------------------------
+	// Adaptive questions handler
+	// -----------------------------------------------------------------------
+
+	const handleGenerateQuestions = useCallback(async () => {
+		if (!brief) return;
+		setIsLoadingQuestions(true);
+
+		try {
+			const result = await generateAdaptiveQuestionsAction({
+				briefStructured: brief as Record<string, unknown>,
+				companyBrief: companyBrief as Record<string, unknown> | null,
+				personName,
+				company,
+			});
+
+			if (result.success && result.questions.length > 0) {
+				setAdaptiveQuestions(result.questions);
+				setShowAdaptive(true);
+			}
+		} catch {
+			// Non-blocking — user can continue without adaptive questions
+		} finally {
+			setIsLoadingQuestions(false);
+		}
+	}, [brief, companyBrief, personName, company]);
+
+	// -----------------------------------------------------------------------
 	// Save & continue handler
 	// -----------------------------------------------------------------------
 
 	const handleContinue = useCallback(() => {
 		setError(null);
+
+		// Collect adaptive answers (if any) for saving
+		const answersToSave = adaptiveQuestions
+			.filter((q) => adaptiveAnswers[q.id]?.trim())
+			.map((q) => ({
+				questionId: q.id,
+				question: q.question,
+				answer: adaptiveAnswers[q.id]?.trim() ?? "",
+			}));
 
 		startSaving(async () => {
 			try {
@@ -273,6 +321,7 @@ export function ProfileStepForm(props: {
 					title: "",
 					linkedinUrl: "",
 					briefText,
+					adaptiveAnswers: answersToSave.length > 0 ? answersToSave : undefined,
 				});
 
 				if (!result.success) {
@@ -286,7 +335,15 @@ export function ProfileStepForm(props: {
 				setError(err instanceof Error ? err.message : "Failed to save");
 			}
 		});
-	}, [props.presentationId, personName, company, briefText, router]);
+	}, [
+		props.presentationId,
+		personName,
+		company,
+		briefText,
+		router,
+		adaptiveQuestions,
+		adaptiveAnswers,
+	]);
 
 	// -----------------------------------------------------------------------
 	// Render: Searching for candidates
@@ -770,6 +827,48 @@ export function ProfileStepForm(props: {
 					</Card>
 				) : null}
 
+				{/* Adaptive Follow-up Questions */}
+				{showAdaptive && adaptiveQuestions.length > 0 ? (
+					<Card>
+						<CardHeader className="pb-3">
+							<CardTitle className="text-app-sm font-semibold">
+								🎯 Refine Your Brief
+							</CardTitle>
+							<p className="text-app-xs text-muted-foreground">
+								Answer these questions to sharpen the recommendations. Skip any
+								you don&apos;t know.
+							</p>
+						</CardHeader>
+						<CardContent className="space-y-4">
+							{adaptiveQuestions.map((q) => (
+								<div key={q.id} className="space-y-1.5">
+									<Label
+										htmlFor={`adaptive-${q.id}`}
+										className="text-app-xs font-medium"
+									>
+										{q.question}
+									</Label>
+									<p className="text-[11px] text-muted-foreground/70">
+										{q.why}
+									</p>
+									<Textarea
+										id={`adaptive-${q.id}`}
+										value={adaptiveAnswers[q.id] ?? ""}
+										onChange={(e) =>
+											setAdaptiveAnswers((prev) => ({
+												...prev,
+												[q.id]: e.target.value,
+											}))
+										}
+										placeholder="Optional — skip if unsure"
+										className="min-h-[60px] text-app-xs"
+									/>
+								</div>
+							))}
+						</CardContent>
+					</Card>
+				) : null}
+
 				{error ? <p className="text-app-sm text-destructive">{error}</p> : null}
 
 				<div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
@@ -777,6 +876,9 @@ export function ProfileStepForm(props: {
 						variant="ghost"
 						onClick={() => {
 							setBrief(null);
+							setShowAdaptive(false);
+							setAdaptiveQuestions([]);
+							setAdaptiveAnswers({});
 							setFormState("input");
 						}}
 					>
@@ -784,6 +886,16 @@ export function ProfileStepForm(props: {
 					</Button>
 
 					<div className="flex gap-2">
+						{!showAdaptive ? (
+							<Button
+								variant="secondary"
+								disabled={isSaving || isLoadingQuestions}
+								onClick={handleGenerateQuestions}
+							>
+								{isLoadingQuestions ? "Loading…" : "✨ Refine brief"}
+							</Button>
+						) : null}
+
 						<Button
 							variant="secondary"
 							disabled={isSaving}

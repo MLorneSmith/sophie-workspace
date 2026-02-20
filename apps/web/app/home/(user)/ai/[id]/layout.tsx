@@ -21,7 +21,7 @@ export default async function PresentationWorkflowLayout(props: {
 
 	const { data: presentation, error } = await client
 		.from("presentations")
-		.select("id")
+		.select("id, completed_steps")
 		.eq("id", params.id)
 		.eq("user_id", auth.data.id)
 		.maybeSingle();
@@ -34,7 +34,13 @@ export default async function PresentationWorkflowLayout(props: {
 		redirect("/home/ai");
 	}
 
+	const completedSteps = Array.isArray(presentation.completed_steps)
+		? (presentation.completed_steps as string[])
+		: [];
+
 	return (
-		<WorkflowShell presentationId={params.id}>{props.children}</WorkflowShell>
+		<WorkflowShell presentationId={params.id} completedSteps={completedSteps}>
+			{props.children}
+		</WorkflowShell>
 	);
 }

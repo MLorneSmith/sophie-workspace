@@ -38,8 +38,17 @@ function getNextStep(current: PresentationStep): PresentationStep {
 	return next?.key ?? "generate";
 }
 
+const STEP_HINTS: Record<string, string> = {
+	profile: "Research your audience to continue.",
+	assemble: "Complete the presentation setup to continue.",
+	outline: "Generate or write your outline to continue.",
+	storyboard: "Generate your storyboard to continue.",
+	generate: "Export your presentation.",
+};
+
 export function WorkflowShell(props: {
 	presentationId: string;
+	completedSteps: string[];
 	children: React.ReactNode;
 }) {
 	const pathname = usePathname();
@@ -97,8 +106,10 @@ export function WorkflowShell(props: {
 						{props.children}
 
 						<ContinueButton
-							enabled={false}
-							hint="Complete the minimum requirements for this step to continue."
+							enabled={props.completedSteps.includes(currentStep)}
+							hint={
+								STEP_HINTS[currentStep] ?? "Complete this step to continue."
+							}
 							onContinue={() => {
 								const next = getNextStep(currentStep);
 								router.push(`/home/ai/${props.presentationId}/${next}`);

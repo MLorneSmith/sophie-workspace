@@ -181,7 +181,7 @@ export const generateStoryboardAction = enhanceAction(
 		] = await Promise.all([
 			client
 				.from("audience_profiles")
-				.select("brief_structured, brief_text")
+				.select("brief_structured, brief_text, enrichment_data")
 				.eq("presentation_id", data.presentationId)
 				.maybeSingle(),
 			client
@@ -216,6 +216,51 @@ export const generateStoryboardAction = enhanceAction(
 			audienceProfile?.brief_structured,
 		);
 		const audienceBriefText = audienceProfile?.brief_text?.trim() ?? "";
+
+		// Extract company brief from enrichment data (if available)
+		const enrichment = audienceProfile?.enrichment_data as {
+			companyBrief?: {
+				companySnapshot?: {
+					name?: string;
+					industry?: string;
+					size?: string;
+					marketPosition?: string;
+				};
+				currentSituation?: {
+					summary?: string;
+					archetype?: string;
+					strategicFocus?: string;
+					challenges?: string[];
+					recentNews?: string[];
+				};
+				industryContext?: { trends?: string[]; competitors?: string[] };
+				presentationImplications?: {
+					framingAdvice?: string;
+					topicsToAcknowledge?: string[];
+					avoidTopics?: string[];
+				};
+			};
+		} | null;
+		const companyBrief = enrichment?.companyBrief;
+		const companyBriefText = companyBrief
+			? [
+					`Company: ${companyBrief.companySnapshot?.name ?? "Unknown"} (${companyBrief.companySnapshot?.industry ?? "Unknown industry"})`,
+					`Situation: ${companyBrief.currentSituation?.summary ?? "N/A"}`,
+					`Archetype: ${companyBrief.currentSituation?.archetype ?? "N/A"}`,
+					`Strategic Focus: ${companyBrief.currentSituation?.strategicFocus ?? "N/A"}`,
+					companyBrief.currentSituation?.challenges?.length
+						? `Challenges: ${companyBrief.currentSituation.challenges.join("; ")}`
+						: null,
+					companyBrief.presentationImplications?.framingAdvice
+						? `Framing Advice: ${companyBrief.presentationImplications.framingAdvice}`
+						: null,
+					companyBrief.presentationImplications?.avoidTopics?.length
+						? `Avoid: ${companyBrief.presentationImplications.avoidTopics.join("; ")}`
+						: null,
+				]
+					.filter(Boolean)
+					.join("\n")
+			: "";
 		const argumentMapText = formatContextForPrompt(
 			assembleOutput?.argument_map,
 		);
@@ -239,6 +284,7 @@ export const generateStoryboardAction = enhanceAction(
 
 Use upstream context when available:
 - Audience brief (structured/text): adapt communication style, tone, what to lead with, and data density.
+- Company brief (deep research): use company situation, archetype, strategic focus, and framing advice to shape the narrative. Acknowledge what the audience already knows. Avoid sensitive topics flagged in the brief.
 - SCQA context (situation + complication): make the storyline reflect the business context.
 - Argument map (pyramid principle tree): align slide purposes and sequence to argument nodes and supporting points.
 - Presentation type awareness: tailor slide count, depth, and layout choices to match presentation intent.
@@ -306,6 +352,9 @@ ${
 		? `${audienceBriefText || "No freeform audience brief text provided."}\n${audienceBriefStructured ? `Structured audience brief:\n${audienceBriefStructured}` : ""}`
 		: "Not provided. Use generic audience-aware communication best practices."
 }
+
+Company brief (deep research):
+${companyBriefText || "Not provided."}
 
 SCQA context:
 ${scqaContext}

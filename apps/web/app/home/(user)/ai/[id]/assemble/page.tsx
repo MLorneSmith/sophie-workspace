@@ -62,14 +62,51 @@ export default async function AssembleStepPage({
 		argument_map: assembleOutput?.argument_map ?? undefined,
 	};
 
-	// TODO(#550): Pass brief_structured to BlocksMultistepForm for SCQA generation
+	// Extract company brief from enrichment data for SCQA context hints
+	const enrichment = audienceProfile?.enrichment_data as {
+		companyBrief?: {
+			currentSituation?: {
+				summary?: string;
+				archetype?: string;
+				strategicFocus?: string;
+				challenges?: string[];
+			};
+			presentationImplications?: { framingAdvice?: string };
+		};
+	} | null;
+	const companyBrief = enrichment?.companyBrief ?? null;
 
 	return (
-		<BlocksMultistepForm
-			userId={auth.data.id}
-			mode="assemble"
-			presentationId={presentationId}
-			initialFormData={initialFormData as FormData}
-		/>
+		<div className="space-y-0">
+			{companyBrief?.currentSituation?.summary ? (
+				<div className="mx-auto max-w-3xl px-6 pt-4 sm:px-8">
+					<div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-4">
+						<p className="text-app-xs font-medium text-blue-400">
+							🏢 Company Context
+							{companyBrief.currentSituation.archetype ? (
+								<span className="ml-2 rounded bg-blue-500/20 px-1.5 py-0.5 text-[10px] capitalize">
+									{companyBrief.currentSituation.archetype.replace(/-/g, " ")}
+								</span>
+							) : null}
+						</p>
+						<p className="mt-1 text-app-xs text-muted-foreground">
+							{companyBrief.currentSituation.summary}
+						</p>
+						{companyBrief.presentationImplications?.framingAdvice ? (
+							<p className="mt-1 text-app-xs text-muted-foreground">
+								<span className="font-medium">Tip:</span>{" "}
+								{companyBrief.presentationImplications.framingAdvice}
+							</p>
+						) : null}
+					</div>
+				</div>
+			) : null}
+			<BlocksMultistepForm
+				userId={auth.data.id}
+				mode="assemble"
+				presentationId={presentationId}
+				initialFormData={initialFormData as FormData}
+			/>
+		</div>
 	);
 }

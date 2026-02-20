@@ -14,6 +14,12 @@ import {
 	updateAudienceProfile,
 } from "../../../_lib/server/audience-profiles.service";
 
+const AdaptiveAnswerSchema = z.object({
+	questionId: z.string().min(1),
+	question: z.string().min(1),
+	answer: z.string().min(1),
+});
+
 const SaveProfileStepSchema = z.object({
 	presentationId: z.string().min(1),
 	personName: z.string().min(1, "Person name is required"),
@@ -27,6 +33,7 @@ const SaveProfileStepSchema = z.object({
 			"LinkedIn URL must start with http:// or https://",
 		),
 	briefText: z.string().optional(),
+	adaptiveAnswers: z.array(AdaptiveAnswerSchema).optional(),
 });
 
 export const saveProfileStepAction = enhanceAction(
@@ -83,6 +90,9 @@ export const saveProfileStepAction = enhanceAction(
 					title: normalized.title,
 					linkedinUrl: normalized.linkedinUrl,
 					briefText: normalized.briefText,
+					...(data.adaptiveAnswers
+						? { adaptiveAnswers: data.adaptiveAnswers }
+						: {}),
 				})
 			: await createAudienceProfile(client, {
 					userId: user.id,
@@ -93,6 +103,7 @@ export const saveProfileStepAction = enhanceAction(
 					title: normalized.title,
 					linkedinUrl: normalized.linkedinUrl,
 					briefText: normalized.briefText,
+					adaptiveAnswers: data.adaptiveAnswers ?? [],
 				});
 
 		const completedSteps = Array.isArray(presentation.completed_steps)
