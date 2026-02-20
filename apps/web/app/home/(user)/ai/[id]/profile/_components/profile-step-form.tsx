@@ -31,6 +31,33 @@ type AudienceProfileRow = {
 	enrichment_data: Record<string, unknown> | null;
 };
 
+interface CompanyBriefStructured {
+	companySnapshot?: {
+		name?: string;
+		industry?: string;
+		size?: string;
+		marketPosition?: string;
+	};
+	currentSituation?: {
+		summary?: string;
+		recentNews?: string[];
+		strategicFocus?: string;
+		challenges?: string[];
+		archetype?: string;
+	};
+	industryContext?: {
+		trends?: string[];
+		regulatory?: string;
+		competitors?: string[];
+	};
+	presentationImplications?: {
+		framingAdvice?: string;
+		topicsToAcknowledge?: string[];
+		relevantBenchmarks?: string[];
+		avoidTopics?: string[];
+	};
+}
+
 interface BriefStructured {
 	communicationProfile?: {
 		decisionMakingStyle?: string;
@@ -78,6 +105,7 @@ const RESEARCH_STEPS = [
 	"Finding LinkedIn profile…",
 	"Analyzing career background…",
 	"Researching company…",
+	"Analyzing company news & strategy…",
 	"Generating audience brief…",
 ] as const;
 
@@ -125,6 +153,15 @@ export function ProfileStepForm(props: {
 	);
 	const [hasPersonData, setHasPersonData] = useState(false);
 	const [hasCompanyData, setHasCompanyData] = useState(false);
+	const [hasCompanyBrief, setHasCompanyBrief] = useState(false);
+	const [companyBrief, setCompanyBrief] =
+		useState<CompanyBriefStructured | null>(
+			(
+				props.initialProfile?.enrichment_data as {
+					companyBrief?: CompanyBriefStructured;
+				} | null
+			)?.companyBrief ?? null,
+		);
 	const [searchResults, setSearchResults] = useState<PersonSearchResult[]>([]);
 
 	// -----------------------------------------------------------------------
@@ -169,6 +206,15 @@ export function ProfileStepForm(props: {
 				setBriefText(profile.brief_text ?? "");
 				setHasPersonData(!!result.hasPersonData);
 				setHasCompanyData(!!result.hasCompanyData);
+				setHasCompanyBrief(
+					!!(result as { hasCompanyBrief?: boolean }).hasCompanyBrief,
+				);
+
+				// Extract company brief from enrichment data
+				const enrichment = profile.enrichment_data as {
+					companyBrief?: CompanyBriefStructured;
+				} | null;
+				setCompanyBrief(enrichment?.companyBrief ?? null);
 				setFormState("brief");
 			} catch (err) {
 				clearInterval(stepTimer);
@@ -467,6 +513,11 @@ export function ProfileStepForm(props: {
 									No company data
 								</Badge>
 							)}
+							{hasCompanyBrief ? (
+								<Badge variant="secondary" className="text-xs">
+									Deep Research ✓
+								</Badge>
+							) : null}
 						</div>
 					</div>
 					<p className="mt-1 text-app-sm text-muted-foreground">
@@ -620,6 +671,104 @@ export function ProfileStepForm(props: {
 						</CardContent>
 					</Card>
 				</div>
+
+				{/* Company Context Section */}
+				{companyBrief ? (
+					<Card>
+						<CardHeader className="pb-3">
+							<div className="flex items-center gap-2">
+								<CardTitle className="text-app-sm font-semibold">
+									🏢 Company Context
+								</CardTitle>
+								{companyBrief.currentSituation?.archetype ? (
+									<Badge variant="outline" className="text-xs capitalize">
+										{companyBrief.currentSituation.archetype.replace(/-/g, " ")}
+									</Badge>
+								) : null}
+							</div>
+						</CardHeader>
+						<CardContent className="space-y-4">
+							{companyBrief.currentSituation?.summary ? (
+								<p className="text-app-sm text-muted-foreground">
+									{companyBrief.currentSituation.summary}
+								</p>
+							) : null}
+
+							<div className="grid gap-4 md:grid-cols-2">
+								{/* Strategic Focus & Challenges */}
+								<div className="space-y-2 text-app-xs">
+									{companyBrief.currentSituation?.strategicFocus ? (
+										<div>
+											<span className="font-medium text-muted-foreground">
+												Strategic focus:{" "}
+											</span>
+											{companyBrief.currentSituation.strategicFocus}
+										</div>
+									) : null}
+									{companyBrief.currentSituation?.challenges &&
+									companyBrief.currentSituation.challenges.length > 0 ? (
+										<div>
+											<span className="font-medium text-muted-foreground">
+												Challenges:{" "}
+											</span>
+											{companyBrief.currentSituation.challenges.join("; ")}
+										</div>
+									) : null}
+									{companyBrief.industryContext?.competitors &&
+									companyBrief.industryContext.competitors.length > 0 ? (
+										<div>
+											<span className="font-medium text-muted-foreground">
+												Key competitors:{" "}
+											</span>
+											{companyBrief.industryContext.competitors.join(", ")}
+										</div>
+									) : null}
+								</div>
+
+								{/* Presentation Implications */}
+								<div className="space-y-2 text-app-xs">
+									{companyBrief.presentationImplications?.framingAdvice ? (
+										<div>
+											<span className="font-medium text-muted-foreground">
+												Framing advice:{" "}
+											</span>
+											{companyBrief.presentationImplications.framingAdvice}
+										</div>
+									) : null}
+									{companyBrief.presentationImplications?.avoidTopics &&
+									companyBrief.presentationImplications.avoidTopics.length >
+										0 ? (
+										<div>
+											<span className="font-medium text-muted-foreground">
+												Avoid:{" "}
+											</span>
+											{companyBrief.presentationImplications.avoidTopics.join(
+												"; ",
+											)}
+										</div>
+									) : null}
+								</div>
+							</div>
+
+							{/* Recent News */}
+							{companyBrief.currentSituation?.recentNews &&
+							companyBrief.currentSituation.recentNews.length > 0 ? (
+								<div className="space-y-1 text-app-xs">
+									<span className="font-medium text-muted-foreground">
+										Recent developments:
+									</span>
+									<ul className="list-inside list-disc space-y-0.5 text-muted-foreground">
+										{companyBrief.currentSituation.recentNews
+											.slice(0, 3)
+											.map((news) => (
+												<li key={news}>{news}</li>
+											))}
+									</ul>
+								</div>
+							) : null}
+						</CardContent>
+					</Card>
+				) : null}
 
 				{error ? <p className="text-app-sm text-destructive">{error}</p> : null}
 
