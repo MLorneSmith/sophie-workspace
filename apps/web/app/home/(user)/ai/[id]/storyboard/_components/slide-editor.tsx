@@ -291,30 +291,38 @@ export function SlideEditor({ slide, onUpdate, onDelete }: SlideEditorProps) {
 
 				{(slide.layout === "title-two-column" ||
 					slide.layout === "comparison") && (
-					<div className="grid gap-3 md:grid-cols-2">
-						<div>
+					<div className="flex flex-col gap-3 md:flex-row">
+						<div className="flex-1">
 							<p className="text-muted-foreground mb-1 text-xs font-medium">
-								Left Content
+								{slide.layout === "comparison" ? "Option A" : "Left Column"}
 							</p>
 							<Textarea
 								value={slide.content_left ?? ""}
 								onChange={(e) =>
 									onUpdate({ ...slide, content_left: e.target.value })
 								}
-								placeholder="Left column content..."
+								placeholder={
+									slide.layout === "comparison"
+										? "Option A content..."
+										: "Left column content..."
+								}
 								className="min-h-[120px] border-white/10 bg-white/5 text-sm"
 							/>
 						</div>
-						<div>
+						<div className="flex-1">
 							<p className="text-muted-foreground mb-1 text-xs font-medium">
-								Right Content
+								{slide.layout === "comparison" ? "Option B" : "Right Column"}
 							</p>
 							<Textarea
 								value={slide.content_right ?? ""}
 								onChange={(e) =>
 									onUpdate({ ...slide, content_right: e.target.value })
 								}
-								placeholder="Right column content..."
+								placeholder={
+									slide.layout === "comparison"
+										? "Option B content..."
+										: "Right column content..."
+								}
 								className="min-h-[120px] border-white/10 bg-white/5 text-sm"
 							/>
 						</div>

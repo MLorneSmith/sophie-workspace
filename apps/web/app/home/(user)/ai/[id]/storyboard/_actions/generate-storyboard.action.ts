@@ -98,17 +98,48 @@ function formatContextForPrompt(value: unknown): string {
 	}
 }
 
+function splitContentForTwoColumns(content: string): {
+	left: string;
+	right: string;
+} {
+	if (!content.trim()) {
+		return { left: "", right: "" };
+	}
+
+	const lines = content
+		.split("\n")
+		.map((line) => line.trim())
+		.filter(Boolean);
+
+	if (lines.length <= 1) {
+		return { left: content, right: "" };
+	}
+
+	const midpoint = Math.ceil(lines.length / 2);
+	return {
+		left: lines.slice(0, midpoint).join("\n"),
+		right: lines.slice(midpoint).join("\n"),
+	};
+}
+
 function normalizeGeneratedSlide(
 	slide: Partial<StoryboardSlide>,
 	index: number,
 ): StoryboardSlide {
+	const content = slide.content ?? "";
+	const isTwoColumnLayout =
+		slide.layout === "title-two-column" || slide.layout === "comparison";
+	const splitFallback = isTwoColumnLayout
+		? splitContentForTwoColumns(content)
+		: { left: "", right: "" };
+
 	return {
 		id: slide.id ?? `slide-${index + 1}`,
 		title: slide.title ?? "Untitled slide",
 		layout: slide.layout ?? "title-content",
-		content: slide.content ?? "",
-		content_left: slide.content_left ?? "",
-		content_right: slide.content_right ?? "",
+		content,
+		content_left: slide.content_left ?? splitFallback.left,
+		content_right: slide.content_right ?? splitFallback.right,
 		purpose: slide.purpose ?? "",
 		takeaway_headline: slide.takeaway_headline ?? "",
 		evidence_needed: slide.evidence_needed ?? "",
@@ -293,6 +324,7 @@ Guidelines:
 - Purpose must clearly state which argument-map node or narrative step the slide advances
 - Evidence suggestions must be specific and actionable (metrics, sources, benchmarks, case examples)
 - Layout choices must match content type (data → "data-chart", comparisons → "comparison", quotes → "quote", transitions → "section-divider")
+- For "title-two-column" and "comparison" layouts, always populate both "content_left" and "content_right" with meaningful text (do not leave them empty or only use "content")
 - Speaker notes should elaborate key points in a style suited to the audience's communication preferences
 - Visual notes should suggest concrete charts, images, or diagrams tied to the claim`;
 

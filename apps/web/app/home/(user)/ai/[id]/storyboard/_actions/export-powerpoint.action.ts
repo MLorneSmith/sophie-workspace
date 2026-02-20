@@ -77,11 +77,12 @@ export const exportPowerPointAction = enhanceAction(
 				slide.layout === "comparison"
 			) {
 				addStandardTitle();
+				const splitFallback = splitContentForTwoColumns(baseContent);
 				const leftContent = formatSlideContentAsBullets(
-					slide.content_left || baseContent,
+					slide.content_left || splitFallback.left || baseContent,
 				);
 				const rightContent = formatSlideContentAsBullets(
-					slide.content_right || slide.visual_notes || "",
+					slide.content_right || splitFallback.right || baseContent,
 				);
 				pptxSlide.addText(leftContent, {
 					x: "5%",
@@ -196,6 +197,30 @@ function formatSlideContentAsBullets(content: string): string {
 		.filter(Boolean)
 		.map((line) => `• ${line}`)
 		.join("\n");
+}
+
+function splitContentForTwoColumns(content: string): {
+	left: string;
+	right: string;
+} {
+	if (!content.trim()) {
+		return { left: "", right: "" };
+	}
+
+	const lines = content
+		.split("\n")
+		.map((line) => line.trim())
+		.filter(Boolean);
+
+	if (lines.length <= 1) {
+		return { left: content, right: "" };
+	}
+
+	const midpoint = Math.ceil(lines.length / 2);
+	return {
+		left: lines.slice(0, midpoint).join("\n"),
+		right: lines.slice(midpoint).join("\n"),
+	};
 }
 
 function addSlideNumberFooter(
