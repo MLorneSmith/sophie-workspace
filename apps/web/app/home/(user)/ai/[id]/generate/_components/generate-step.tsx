@@ -14,6 +14,7 @@ import {
 import { useMemo, useState, useTransition } from "react";
 
 import { exportPowerPointAction } from "../../storyboard/_actions/export-powerpoint.action";
+import { saveGenerateAction } from "../_actions/save-generate.action";
 
 interface GenerateStepProps {
 	presentationId: string;
@@ -79,6 +80,19 @@ export function GenerateStep({
 				}
 
 				downloadPowerPoint(result.data.base64, result.data.filename);
+
+				// Record export metadata in generate_outputs table
+				try {
+					await saveGenerateAction({
+						presentationId,
+						templateId: "default",
+						exportFormat: "pptx",
+						generatedAt: new Date().toISOString(),
+					});
+				} catch {
+					// Non-blocking — download succeeded even if metadata save fails
+				}
+
 				setStatus("success");
 				setStatusMessage("PowerPoint exported and downloaded.");
 			} catch (error) {
