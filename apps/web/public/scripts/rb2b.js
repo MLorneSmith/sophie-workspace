@@ -1,4 +1,4 @@
-!(function (key) {
+!((key) => {
 	if (window.reb2b) return;
 	window.reb2b = { loaded: true };
 	var s = document.createElement("script");

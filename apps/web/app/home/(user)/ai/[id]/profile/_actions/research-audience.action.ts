@@ -20,6 +20,12 @@ import {
 	updateAudienceProfile,
 } from "../../../_lib/server/audience-profiles.service";
 import {
+	type CompanyBrief,
+	type CompanyResearchInput,
+	synthesizeCompanyBrief,
+} from "../../../_lib/server/company-brief-synthesis.service";
+import { researchCompany } from "../../../_lib/server/company-research.service";
+import {
 	type NetrowsEnrichmentResult,
 	researchPerson,
 	searchPersonFuzzy,
@@ -70,6 +76,7 @@ function buildBriefPrompt(
 	personName: string,
 	company: string,
 	context?: string,
+	companyBrief?: CompanyBrief | null,
 ): ChatMessage[] {
 	const { personProfile, companyDetails } = enrichment;
 
@@ -100,6 +107,21 @@ function buildBriefPrompt(
 - HQ: ${companyDetails.headquarter?.city}, ${companyDetails.headquarter?.country}
 - Website: ${companyDetails.website || "N/A"}`
 		: `## Company: ${company}\nNo company data available.`;
+
+	const companyBriefSection = companyBrief
+		? `
+## Company Brief (Deep Research)
+- Situation: ${companyBrief.currentSituation.summary}
+- Archetype: ${companyBrief.currentSituation.archetype}
+- Strategic Focus: ${companyBrief.currentSituation.strategicFocus}
+- Challenges: ${companyBrief.currentSituation.challenges.join("; ")}
+- Recent News: ${companyBrief.currentSituation.recentNews.slice(0, 3).join("; ")}
+- Industry Trends: ${companyBrief.industryContext.trends.slice(0, 3).join("; ")}
+- Competitors: ${companyBrief.industryContext.competitors.slice(0, 5).join(", ")}
+- Framing Advice: ${companyBrief.presentationImplications.framingAdvice}
+- Topics to Acknowledge: ${companyBrief.presentationImplications.topicsToAcknowledge.join("; ")}
+- Avoid: ${companyBrief.presentationImplications.avoidTopics.join("; ")}`
+		: "";
 
 	const contextSection = context ? `\n## Additional Context\n${context}` : "";
 
@@ -136,6 +158,7 @@ Be specific and actionable. Draw inferences from their background, industry, and
 
 ${personSection}
 ${companySection}
+${companyBriefSection}
 ${contextSection}
 
 Respond with ONLY the JSON object, no markdown fences.`;
@@ -250,7 +273,96 @@ export const researchAudienceAction = enhanceAction(
 			};
 		}
 
-		// Step 2: Generate Audience Brief via AI
+		// Step 2: Company web research + brief synthesis (parallel with step 1)
+		// Uses Brave Search API + LLM to build a structured CompanyBrief
+		let companyBrief: CompanyBrief | null = null;
+
+		try {
+			// Check for a cached (non-expired) company brief first
+			// company_briefs table exists via migration but isn't in generated
+			// Database types yet — use untyped client for this table.
+			// biome-ignore lint/suspicious/noExplicitAny: company_briefs not in generated types
+			const untypedClient = client as any;
+			const { data: cachedBrief } = await untypedClient
+				.from("company_briefs")
+				.select("brief_structured, expires_at")
+				.ilike("company_name", data.company)
+				.gt("expires_at", new Date().toISOString())
+				.order("created_at", { ascending: false })
+				.limit(1)
+				.maybeSingle();
+
+			if (cachedBrief?.brief_structured) {
+				companyBrief = cachedBrief.brief_structured as CompanyBrief;
+				logger.info(ctx, "Using cached company brief for %s", data.company);
+			} else {
+				// Run web research
+				const industry =
+					enrichment.companyDetails?.industries?.[0] ?? undefined;
+				const domain =
+					enrichment.companyDetails?.website
+						?.replace(/^https?:\/\//, "")
+						.replace(/\/.*$/, "") ?? undefined;
+
+				const webResearch = await withTimeout(
+					researchCompany(data.company, industry, domain),
+					15_000,
+					"Company web research",
+				);
+
+				// Synthesize into CompanyBrief via LLM
+				const synthesisInput: CompanyResearchInput = {
+					companyName: data.company,
+					industry,
+					netrowsData: enrichment.companyDetails
+						? {
+								description: enrichment.companyDetails.description ?? undefined,
+								industries: enrichment.companyDetails.industries ?? undefined,
+								specialities:
+									enrichment.companyDetails.specialities ?? undefined,
+								staffCount: enrichment.companyDetails.staffCount ?? undefined,
+								website: enrichment.companyDetails.website ?? undefined,
+								headquarter: enrichment.companyDetails.headquarter ?? undefined,
+								founded: enrichment.companyDetails.founded ?? null,
+							}
+						: undefined,
+					newsResults: webResearch.newsResults,
+					industryResults: webResearch.industryResults,
+					websiteContent: webResearch.websiteContent,
+				};
+
+				companyBrief = await withTimeout(
+					synthesizeCompanyBrief(synthesisInput, user.id),
+					35_000,
+					"Company brief synthesis",
+				);
+
+				// Cache the company brief
+				await untypedClient.from("company_briefs").insert({
+					company_name: data.company,
+					company_domain: domain ?? null,
+					netrows_data: enrichment.companyDetails ?? null,
+					web_research: webResearch as unknown as Record<string, unknown>,
+					brief_structured: companyBrief as unknown as Record<string, unknown>,
+					created_by: user.id,
+				});
+
+				logger.info(
+					ctx,
+					"Company brief synthesized and cached — archetype: %s",
+					companyBrief.currentSituation?.archetype,
+				);
+			}
+		} catch (companyErr) {
+			logger.warn(
+				ctx,
+				"Company brief research failed (non-blocking): %o",
+				companyErr,
+			);
+			// Non-blocking — audience brief will still be generated without company context
+		}
+
+		// Step 3: Generate Audience Brief via AI (now with company brief context)
 		logger.info(ctx, "Generating Audience Brief via AI");
 
 		const messages = buildBriefPrompt(
@@ -258,6 +370,7 @@ export const researchAudienceAction = enhanceAction(
 			data.personName,
 			data.company,
 			data.context,
+			companyBrief,
 		);
 
 		const config = createOpenAIOnlyConfig({
@@ -298,7 +411,7 @@ export const researchAudienceAction = enhanceAction(
 				: "";
 		}
 
-		// Step 3: Save to audience_profiles
+		// Step 4: Save to audience_profiles
 		const enrichmentData = {
 			netrows: {
 				personProfile: enrichment.personProfile,
@@ -306,6 +419,7 @@ export const researchAudienceAction = enhanceAction(
 				personSearchResults: enrichment.personSearchResults,
 				companySearchResults: enrichment.companySearchResults,
 			},
+			companyBrief: companyBrief ?? null,
 			researchedAt: new Date().toISOString(),
 		};
 
@@ -363,6 +477,7 @@ export const researchAudienceAction = enhanceAction(
 			profile,
 			hasPersonData: !!enrichment.personProfile,
 			hasCompanyData: !!enrichment.companyDetails,
+			hasCompanyBrief: !!companyBrief,
 		};
 	},
 	{
