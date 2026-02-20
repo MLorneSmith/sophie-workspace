@@ -43,7 +43,10 @@ export interface FormData {
 	question_type: string;
 	situation: string;
 	complication: string;
+	// NOTE: Current flow uses `answer`. Upcoming Argument Map flow may replace this
+	// with an `argument_map` step.
 	answer: string;
+	argument_map?: unknown;
 }
 
 interface FormContextType {
@@ -63,7 +66,13 @@ interface FormContextType {
 
 const SetupFormContext = createContext<FormContextType | undefined>(undefined);
 
-export function SetupFormProvider({ children }: { children: React.ReactNode }) {
+export function SetupFormProvider({
+	children,
+	initialFormData,
+}: {
+	children: React.ReactNode;
+	initialFormData?: Partial<FormData>;
+}) {
 	const [formData, setFormData] = useState<FormData>({
 		title: "",
 		audience: "",
@@ -72,6 +81,7 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		situation: "",
 		complication: "",
 		answer: "",
+		argument_map: undefined,
 	});
 
 	const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -82,6 +92,16 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 	const [touchedFieldsOnBlur, setTouchedFieldsOnBlur] = useState<
 		Set<keyof FormData>
 	>(new Set());
+
+	useEffect(() => {
+		if (!initialFormData) return;
+
+		logger.info("Initializing form with initial data", {
+			keys: Object.keys(initialFormData),
+		});
+
+		setFormData((prev) => ({ ...prev, ...initialFormData }));
+	}, [initialFormData]);
 
 	// Initialize with default path and update when presentation type changes
 	useEffect(() => {
@@ -108,7 +128,10 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		let isValid = true;
 		const newErrors = { ...errors };
 
-		if (!value || value.trim() === "") {
+		const isEmptyString = typeof value === "string" && value.trim() === "";
+		const isMissing = value === undefined || value === null || isEmptyString;
+
+		if (isMissing) {
 			newErrors[field] = "This field is required";
 			isValid = false;
 			logger.info("Field validation failed", {
@@ -120,7 +143,7 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 			delete newErrors[field];
 			logger.info("Field validation passed", {
 				field,
-				valueLength: value.trim().length,
+				valueType: typeof value,
 			});
 		}
 

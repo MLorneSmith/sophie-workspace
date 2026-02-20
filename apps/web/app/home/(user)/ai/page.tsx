@@ -1,32 +1,28 @@
-import { PageBody } from "@kit/ui/page";
-import { Trans } from "@kit/ui/trans";
+import type { Metadata } from "next";
 
-import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
-import { withI18n } from "~/lib/i18n/with-i18n";
+import { PageBody } from "@kit/ui/page";
 
 import { HomeLayoutPageHeader } from "../_components/home-page-header";
-import AIWorkspaceDashboard from "./_components/AIWorkspaceDashboard";
+import PresentationsList from "./_components/PresentationsList";
+import { loadPresentations } from "./_lib/server/list-presentations.loader";
 
-export const generateMetadata = async () => {
-	const i18n = await createI18nServerInstance();
-	const title = i18n.t("common:routes.ai");
-
-	return {
-		title,
-	};
+export const metadata: Metadata = {
+	title: "AI Workflow",
 };
 
-function AIPage() {
+export default async function AIPage() {
+	const presentations = await loadPresentations();
+
 	return (
 		<>
 			<HomeLayoutPageHeader
-				title={<Trans i18nKey={"common:routes.ai"} />}
-				description={<Trans i18nKey={"common:aiTabDescription"} />}
+				title="AI Workflow"
+				description="Browse, resume, and create AI presentation projects."
 			/>
 
-			<PageBody>{<AIWorkspaceDashboard />}</PageBody>
+			<PageBody>
+				<PresentationsList presentations={presentations} />
+			</PageBody>
 		</>
 	);
 }
-
-export default withI18n(AIPage);

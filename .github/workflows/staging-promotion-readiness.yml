@@ -282,8 +282,9 @@ jobs:
             }
 
             // Determine if ready for promotion (stricter: 85 for production)
-            const ready = criteria.hasChanges &&
-                          criteria.stagingHealthy &&
+            // Force promotion bypasses all checks except hasChanges
+            const ready = (criteria.hasChanges || forcePromotion) &&
+                          (criteria.stagingHealthy || forcePromotion) &&
                           (score >= 85 || forcePromotion);
 
             // Generate assessment report

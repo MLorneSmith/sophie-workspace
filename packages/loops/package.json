@@ -1,0 +1,34 @@
+{
+	"name": "@kit/loops",
+	"private": true,
+	"version": "0.1.0",
+	"scripts": {
+		"clean": "git clean -xdf .turbo node_modules",
+		"format": "biome format src",
+		"lint": "biome lint .",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest watch"
+	},
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"devDependencies": {
+		"@kit/tsconfig": "workspace:*",
+		"@types/node": "catalog:",
+		"vitest": "^4.0.15"
+	},
+	"typesVersions": {
+		"*": {
+			"*": [
+				"src/*"
+			]
+		}
+	},
+	"dependencies": {
+		"@kit/shared": "workspace:*",
+		"loops": "^6.2.0",
+		"server-only": "^0.0.1",
+		"zod": "^4.1.13"
+	}
+}

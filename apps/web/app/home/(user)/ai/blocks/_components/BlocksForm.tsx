@@ -9,7 +9,6 @@ import {
 	CardTitle,
 } from "@kit/ui/card";
 import { Input } from "@kit/ui/input";
-import { Progress } from "@kit/ui/progress";
 import { Spinner } from "@kit/ui/spinner";
 import { Textarea } from "@kit/ui/textarea";
 import { useQueryClient } from "@tanstack/react-query";
@@ -18,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getSuggestions } from "../_actions/ai-suggestions-action";
 import { submitBuildingBlocksAction } from "../_actions/submitBuildingBlocksAction";
+import { saveAssembleStepAction } from "../../[id]/assemble/_actions/save-assemble-step.action";
 import {
 	getQuestion,
 	presentationTypes,
@@ -57,6 +57,8 @@ const logger = {
 
 interface SetupFormProps {
 	userId: string; // For cache namespacing
+	mode?: "blocks" | "assemble";
+	presentationId?: string;
 }
 
 function useSuggestions(_userId: string) {
@@ -68,7 +70,7 @@ function useSuggestions(_userId: string) {
 		() =>
 			debounce(
 				async (
-					field: "title" | "audience" | "situation" | "complication" | "answer",
+					field: "title" | "audience" | "situation" | "complication",
 					presentationType?: string,
 					title?: string,
 					setIsLoadingSuggestions?: (loading: boolean) => void,
@@ -113,7 +115,7 @@ function useSuggestions(_userId: string) {
 	// Use the debounced function inside useCallback
 	const fetchSuggestions = useCallback(
 		(
-			field: "title" | "audience" | "situation" | "complication" | "answer",
+			field: "title" | "audience" | "situation" | "complication",
 			presentationType?: string,
 			title?: string,
 		) => {
@@ -189,16 +191,16 @@ const MultipleChoiceQuestion = ({
 				type="button"
 				onClick={() => onChange(option.id)}
 				onBlur={onBlur}
-				className={`focus:ring-primary w-full rounded-lg p-4 text-left transition-colors duration-200 ease-in-out focus:ring-2 focus:outline-none ${
+				className={`w-full rounded-lg border p-4 text-left transition-all duration-200 ease-in-out focus:ring-2 focus:ring-[#24A9E0] focus:outline-none ${
 					value === option.id
-						? "bg-primary text-white"
-						: "bg-background hover:bg-muted"
+						? "border-[#24A9E0] bg-[#24A9E0]/15 text-foreground"
+						: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
 				}`}
 			>
 				<div className="font-medium">{option.label}</div>
 				<div
 					className={`text-sm ${
-						value === option.id ? "text-white" : "text-muted-foreground"
+						value === option.id ? "text-[#24A9E0]" : "text-muted-foreground"
 					}`}
 				>
 					{option.description}
@@ -227,16 +229,16 @@ const PresentationTypeQuestion = ({
 				type="button"
 				onClick={() => onChange(type.id)}
 				onBlur={onBlur}
-				className={`focus:ring-primary w-full rounded-lg p-4 text-left transition-colors duration-200 ease-in-out focus:ring-2 focus:outline-none ${
+				className={`w-full rounded-lg border p-4 text-left transition-all duration-200 ease-in-out focus:ring-2 focus:ring-[#24A9E0] focus:outline-none ${
 					value === type.id
-						? "bg-primary text-white"
-						: "bg-background hover:bg-muted"
+						? "border-[#24A9E0] bg-[#24A9E0]/15 text-foreground"
+						: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
 				}`}
 			>
 				<div className="font-medium">{type.label}</div>
 				<div
 					className={`text-sm ${
-						value === type.id ? "text-white" : "text-muted-foreground"
+						value === type.id ? "text-[#24A9E0]" : "text-muted-foreground"
 					}`}
 				>
 					{type.description}
@@ -247,7 +249,11 @@ const PresentationTypeQuestion = ({
 	</div>
 );
 
-export function SetupForm({ userId: _userId }: SetupFormProps) {
+export function SetupForm({
+	userId: _userId,
+	mode = "blocks",
+	presentationId,
+}: SetupFormProps) {
 	const {
 		formData,
 		setFormData,
@@ -394,7 +400,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 		setIsSubmitting(true);
 		try {
 			await handleSubmit(e);
-			// First submit to building_blocks_submissions table
+
 			const {
 				title,
 				audience,
@@ -402,8 +408,55 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 				question_type,
 				situation,
 				complication,
-				answer,
+				argument_map,
 			} = formData;
+
+			if (mode === "assemble") {
+				if (!presentationId) {
+					throw new Error("Missing presentationId for assemble submit");
+				}
+
+				const response = await saveAssembleStepAction({
+					presentationId,
+					title,
+					audience,
+					presentationType: presentation_type as
+						| "general"
+						| "sales"
+						| "consulting"
+						| "fundraising",
+					questionType: question_type as
+						| "strategy"
+						| "assessment"
+						| "implementation"
+						| "diagnostic"
+						| "alternatives"
+						| "postmortem",
+					situation,
+					complication,
+					// Prefer argument_map if present (future flow), otherwise default.
+					argumentMap: argument_map ?? {},
+				});
+
+				if (!response.success) {
+					const errorMessage = (response as unknown as { error?: string })
+						.error;
+					logger.error("Assemble save failed:", {
+						error: errorMessage,
+						presentationId,
+					});
+					setErrors({
+						answer:
+							errorMessage || "Failed to save assemble step. Please try again.",
+					});
+					return;
+				}
+
+				router.push(`/home/ai/${presentationId}/outline`);
+				return;
+			}
+
+			// Default behavior (Blocks tab): submit to building_blocks_submissions.
 			const response = await submitBuildingBlocksAction({
 				title,
 				audience,
@@ -411,7 +464,10 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 				question_type: getQuestionTypeLabel(question_type),
 				situation,
 				complication,
-				answer,
+				argument_map:
+					typeof argument_map === "string"
+						? argument_map
+						: JSON.stringify(argument_map ?? {}),
 			});
 
 			if (!response.success) {
@@ -516,7 +572,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 
 		const commonProps = {
 			id: field,
-			value: formData[field],
+			value: typeof formData[field] === "string" ? formData[field] : "",
 			onChange: handleInputChange(field),
 			onBlur: handleBlur(field),
 			className: `${
@@ -561,7 +617,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 			case "multiple_choice":
 				return (
 					<MultipleChoiceQuestion
-						value={formData[field]}
+						value={typeof formData[field] === "string" ? formData[field] : ""}
 						onChange={(value) => {
 							setFormData({ ...formData, [field]: value });
 							setTouchedFields(new Set(touchedFields).add(field));
@@ -584,15 +640,8 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 	const fallbackQuestionData = getQuestion(currentPath[0] as QuestionField);
 
 	return (
-		<div className="container mx-auto p-4">
-			<h2 className="mb-6 text-2xl font-bold">
-				{currentQuestionData?.section || fallbackQuestionData?.section}
-			</h2>
-			<Progress
-				value={((currentQuestion + 1) / currentPath.length) * 100}
-				className="mb-6"
-			/>
-			<Card>
+		<div className="mx-auto w-full max-w-3xl">
+			<Card className="border-white/10 bg-white/5">
 				<CardHeader>
 					<CardTitle>
 						{currentQuestionData?.label || fallbackQuestionData?.label}

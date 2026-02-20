@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="white" stop-opacity="0"/>
+      <stop offset="8%" stop-color="white" stop-opacity="1"/>
+      <stop offset="92%" stop-color="white" stop-opacity="1"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="black"/>
+  <!-- Beam 1: wide primary -->
+  <polygon points="250,0 420,0 -50,900 -220,900" fill="url(#fade)" opacity="1"/>
+  <!-- Beam 2: medium -->
+  <polygon points="550,0 660,0 290,900 180,900" fill="url(#fade)" opacity="0.85"/>
+  <!-- Beam 3: thin bright accent -->
+  <polygon points="750,0 790,0 420,900 380,900" fill="url(#fade)" opacity="1"/>
+  <!-- Beam 4: wide secondary -->
+  <polygon points="950,0 1180,0 810,900 580,900" fill="url(#fade)" opacity="0.75"/>
+  <!-- Beam 5: thin far right -->
+  <polygon points="1300,0 1340,0 970,900 930,900" fill="url(#fade)" opacity="0.9"/>
+</svg>

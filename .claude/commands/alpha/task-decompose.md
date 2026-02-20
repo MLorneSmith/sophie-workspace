@@ -632,6 +632,58 @@ grep -r "import.*from.*database.types\|from '~/lib/database.types" tasks.json
 
 ---
 
+### CRITICAL: E2B Sandbox Environment Validation
+
+**E2B sandboxes do NOT have Docker.** All tasks execute in cloud sandboxes without access to local infrastructure. Before finalizing tasks.json, validate that NO task contains commands requiring local Docker or local database access.
+
+#### Banned Patterns
+
+The following patterns in `action_commands`, `verification_command`, or `context.constraints` MUST be rejected:
+
+| Pattern | Reason | Replacement |
+|---------|--------|-------------|
+| `127.0.0.1` | Local IP — unreachable in E2B | Use `$SUPABASE_SANDBOX_DB_URL` |
+| `localhost` | Local hostname — unreachable in E2B | Use `$SUPABASE_SANDBOX_DB_URL` |
+| `/var/run/docker.sock` | Docker socket — Docker not available | Remove or use remote alternative |
+| `supabase migration up` | Requires local Docker Supabase | Use `supabase db push --linked` |
+| `supabase start` | Requires Docker to start containers | Use remote Supabase via env vars |
+| `psql 'postgresql://postgres:postgres@127.0.0.1` | Local database connection | Use `psql "$SUPABASE_SANDBOX_DB_URL"` |
+
+#### Validation Procedure
+
+For EACH task in the decomposition, scan these fields:
+1. `verification_command`
+2. `context.dependencies` (strings mentioning local infra)
+3. `context.constraints` (instructions referencing local commands)
+
+```
+Banned regex patterns:
+  /127\.0\.0\.1/
+  /localhost(?!\.)/
+  /\/var\/run\/docker\.sock/
+  /supabase migration up/
+  /supabase start/
+```
+
+#### On Validation Failure
+
+If any banned pattern is detected:
+
+1. **DO NOT finalize tasks.json**
+2. **Auto-replace** where possible:
+   - `supabase migration up` → `supabase db push --linked`
+   - `psql 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'` → `psql "$SUPABASE_SANDBOX_DB_URL"`
+3. **Remove impossible tasks** if no remote equivalent exists
+4. **Report** the validation errors with suggestions
+
+**Note**: Migration application and type generation are handled automatically by the orchestrator's `syncFeatureMigrations()` after feature completion. Tasks for these steps are usually unnecessary and should be omitted unless they serve a specific verification purpose using remote infrastructure.
+
+#### Background
+
+This guardrail was added after S2045.I1.F2 deadlocked the Alpha orchestrator (see #2057, #2058). Tasks T5/T6 referenced `supabase migration up` and `psql 127.0.0.1:54322` which are impossible in E2B sandboxes, causing 3 retries (~60 minutes wasted) and blocking 12/14 downstream features.
+
+---
+
 ## Pre-Finalization: Validate Environment Variables in tasks.json
 
 **Verify all `required_env_vars` against feature-decompose research**:
@@ -746,6 +798,12 @@ Before finalizing task decomposition:
 - [ ] All database-referencing tasks have `requires_database: true`
 - [ ] Verification commands include typegen steps
 - [ ] Type-dependent tasks have proper `blockedBy` dependencies
+
+### E2B Sandbox Compatibility
+- [ ] No `verification_command` references `127.0.0.1` or `localhost`
+- [ ] No task uses `supabase migration up` or `supabase start` (require Docker)
+- [ ] No task references `/var/run/docker.sock`
+- [ ] Database verification uses `$SUPABASE_SANDBOX_DB_URL` (not local connection strings)
 
 ### Task Count
 - [ ] No feature has more than 12 tasks

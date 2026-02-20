@@ -1,0 +1,37 @@
+{
+  "initiative_id": "S2072.I4",
+  "initiative_name": "Coaching Integration",
+  "status": "completed",
+  "current_phase": "finalization",
+  "started_at": "2026-02-12T00:00:00Z",
+  "completed_at": "2026-02-12T00:00:00Z",
+  "features": {
+    "S2072.I4.F1": {
+      "name": "Cal.com API Client",
+      "status": "completed",
+      "task_count": 5,
+      "spikes_needed": 0,
+      "hours_sequential": 11
+    },
+    "S2072.I4.F2": {
+      "name": "Fetch Bookings Query",
+      "status": "completed",
+      "task_count": 6,
+      "spikes_needed": 0,
+      "hours_sequential": 10
+    },
+    "S2072.I4.F3": {
+      "name": "Coaching Sessions Widget",
+      "status": "completed",
+      "task_count": 6,
+      "spikes_needed": 0,
+      "hours_sequential": 13,
+      "hours_parallel": 9
+    }
+  },
+  "spikes_pending": [],
+  "total_tasks": 17,
+  "total_spikes": 0,
+  "total_hours_sequential": 34,
+  "total_hours_parallel": 30
+}

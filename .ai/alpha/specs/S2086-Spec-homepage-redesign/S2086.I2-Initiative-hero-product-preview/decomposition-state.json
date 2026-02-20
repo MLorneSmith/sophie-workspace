@@ -1,0 +1,32 @@
+{
+  "initiative_id": "S2086.I2",
+  "initiative_name": "Hero & Product Preview",
+  "status": "completed",
+  "current_phase": "finalization",
+  "started_at": "2026-02-13T00:00:00Z",
+  "completed_at": "2026-02-13T00:00:00Z",
+  "features": {
+    "S2086.I2.F1": {
+      "name": "Hero Section Redesign",
+      "status": "completed",
+      "task_count": 9,
+      "hours_sequential": 21,
+      "hours_parallel": 13,
+      "spikes_needed": 0
+    },
+    "S2086.I2.F2": {
+      "name": "Product Preview Redesign",
+      "status": "completed",
+      "task_count": 4,
+      "hours_sequential": 9,
+      "hours_parallel": 8,
+      "spikes_needed": 0
+    }
+  },
+  "spikes_pending": [],
+  "total_spikes": 0,
+  "total_tasks": 13,
+  "total_hours_sequential": 30,
+  "total_hours_parallel": 21,
+  "time_saved_percent": 30
+}

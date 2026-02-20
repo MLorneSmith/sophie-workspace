@@ -1,5 +1,8 @@
 import type { JWTUserData } from "@kit/supabase/types";
+import Script from "next/script";
 
+import { GridLines } from "~/(marketing)/_components/grid-lines";
+import { MotionProvider } from "~/(marketing)/_components/motion-provider";
 import { SiteFooter } from "~/(marketing)/_components/site-footer";
 import { SiteHeader } from "~/(marketing)/_components/site-header";
 import { withI18n } from "~/lib/i18n/with-i18n";
@@ -10,12 +13,18 @@ function SiteLayout(props: React.PropsWithChildren) {
 	const user: JWTUserData | null = null;
 
 	return (
-		<div data-marketing className={"flex min-h-[100vh] flex-col"}>
+		<div data-marketing className="dark flex min-h-[100vh] flex-col">
+			<a href="#main-content" className="skip-to-content">
+				Skip to content
+			</a>
+			<GridLines />
 			<SiteHeader user={user} />
 
-			{props.children}
+			<MotionProvider>{props.children}</MotionProvider>
 
 			<SiteFooter />
+
+			<Script src="/scripts/rb2b.js" strategy="afterInteractive" />
 		</div>
 	);
 }

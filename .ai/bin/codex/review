@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# codex-review: Review implementation against a GitHub issue spec
+# Usage: .ai/bin/codex/review <issue-number>
+set -euo pipefail
+
+ISSUE_NUMBER="${1:?Usage: codex-review <issue-number>}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+cd "$REPO_ROOT"
+
+# Fetch the issue
+echo "📋 Fetching issue #${ISSUE_NUMBER} for review..."
+ISSUE_DATA=$(gh issue view "$ISSUE_NUMBER" \
+  --repo slideheroes/2025slideheroes \
+  --json body,title,labels,number,url,comments \
+  --jq '{body: .body, title: .title, labels: [.labels[].name], number: .number, url: .url, comments: [.comments[] | {author: .author.login, body: .body, createdAt: .createdAt}]}')
+
+ISSUE_TITLE=$(echo "$ISSUE_DATA" | jq -r '.title')
+echo "🔍 Reviewing: $ISSUE_TITLE"
+
+TODAY=$(date +%Y-%m-%d)
+
+PROMPT=$(cat <<PROMPT_EOF
+You are reviewing implemented work against a specification from GitHub issue #${ISSUE_NUMBER}.
+
+## Issue
+Title: ${ISSUE_TITLE}
+$(echo "$ISSUE_DATA" | jq -r '.body')
+
+## Review Instructions
+
+1. **Understand the spec**: Read the issue body to understand what was supposed to be built.
+
+2. **Find the implementation**: Look at recent commits and changed files:
+   git log --oneline -10
+   git diff --name-only HEAD~5
+
+3. **Verify requirements**: For each requirement in the spec:
+   - Find the implementing code
+   - Verify it matches the spec
+   - Check for edge cases and error handling
+
+4. **Run quality checks**:
+   pnpm typecheck
+   pnpm lint
+
+5. **Check for issues**:
+   - Missing features from the spec
+   - Code that doesn't follow project conventions (see AGENTS.md)
+   - Missing error handling or validation
+   - Missing or incorrect types
+   - Security issues (exposed secrets, missing RLS, etc.)
+   - Performance concerns (N+1 queries, missing parallel fetching)
+
+6. **Create review report**: Save to .ai/reports/feature-reports/${TODAY}/${ISSUE_NUMBER}-review.md
+
+   Include:
+   - ✅ Requirements met (with file references)
+   - ⚠️ Issues found (severity + description + file:line)
+   - 🔧 Suggested fixes
+   - 📊 Overall assessment: APPROVED / CHANGES_REQUESTED
+
+7. **Post to GitHub**:
+   gh issue comment ${ISSUE_NUMBER} --repo slideheroes/2025slideheroes --body-file .ai/reports/feature-reports/${TODAY}/${ISSUE_NUMBER}-review.md
+
+When finished, run:
+openclaw gateway wake --text "Done: Review of issue #${ISSUE_NUMBER} - ${ISSUE_TITLE}" --mode now
+PROMPT_EOF
+)
+
+echo "🚀 Launching review..."
+codex exec --full-auto -C "$REPO_ROOT" "$PROMPT"

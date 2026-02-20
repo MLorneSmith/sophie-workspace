@@ -1,0 +1,696 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I3.F4",
+    "feature_name": "Quick Actions Panel",
+    "feature_slug": "quick-actions-panel",
+    "initiative_id": "S2072.I3",
+    "spec_id": 2072,
+    "created_at": "2026-02-12T14:30:00.000Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2072.I3.F4.T1",
+      "type": "task",
+      "name": "Create QuickActionsPanel props interface",
+      "action": {
+        "verb": "Create",
+        "target": "QuickActionsPanel props interface"
+      },
+      "purpose": "Define TypeScript interface for context props needed by the panel",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Props must include: courseInProgress (boolean), assessmentCompleted (boolean), hasPresentationDrafts (boolean)",
+          "All props are optional with default false values"
+        ]
+      },
+      "input_state": "No quick actions component exists",
+      "output_state": "Props interface defined with context flags",
+      "acceptance_criterion": "QuickActionsPanelProps interface exists with three boolean context flags",
+      "verification_command": "grep -A5 'interface QuickActionsPanelProps' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx | grep -E 'courseInProgress|assessmentCompleted|hasPresentationDrafts'",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2072.I3.F4.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F4.T2",
+      "type": "task",
+      "name": "Create ActionButton component",
+      "action": {
+        "verb": "Create",
+        "target": "ActionButton component"
+      },
+      "purpose": "Create reusable action button with icon, label, href, and variant support",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": false
+      },
+      "skill_hints": ["frontend-design"],
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/button.tsx"
+        ],
+        "dependencies": [
+          "Button component from @kit/ui/button",
+          "buttonVariants utility",
+          "Link from next/link"
+        ],
+        "constraints": [
+          "Use Button with asChild pattern for navigation",
+          "Accept icon, label, href, and variant props",
+          "Variant should default to 'outline'"
+        ]
+      },
+      "input_state": "Props interface defined",
+      "output_state": "ActionButton component created with icon and navigation support",
+      "acceptance_criterion": "ActionButton component exists with icon, label, href, variant props and uses Button asChild + Link pattern",
+      "verification_command": "grep -A10 'function ActionButton' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx | grep -E 'icon|label|href|variant|asChild'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F4.T1"],
+        "blocks": ["S2072.I3.F4.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F4.T3",
+      "type": "task",
+      "name": "Create QuickActionsPanel component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "QuickActionsPanel component skeleton"
+      },
+      "purpose": "Create panel structure with Card wrapper and header",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Quick Actions"
+          },
+          {
+            "command": "find role",
+            "target": "heading"
+          }
+        ],
+        "screenshot": false
+      },
+      "skill_hints": ["frontend-design"],
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle from @kit/ui/card",
+          "QuickActionsPanelProps interface"
+        ],
+        "constraints": [
+          "Use Card wrapper with header 'Quick Actions'",
+          "Accept props matching QuickActionsPanelProps",
+          "Export as default async server component"
+        ]
+      },
+      "input_state": "ActionButton component exists",
+      "output_state": "QuickActionsPanel component skeleton with Card structure created",
+      "acceptance_criterion": "QuickActionsPanel component exists with Card, CardHeader, CardTitle showing 'Quick Actions'",
+      "verification_command": "grep -A15 'export default function QuickActionsPanel' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx | grep -E 'Card|CardHeader|CardTitle|Quick Actions'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F4.T2"],
+        "blocks": ["S2072.I3.F4.T4", "S2072.I3.F4.T5", "S2072.I3.F4.T6", "S2072.I3.F4.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F4.T4",
+      "type": "task",
+      "name": "Add Continue Course button to panel",
+      "action": {
+        "verb": "Add",
+        "target": "Continue Course button to panel"
+      },
+      "purpose": "Add conditional Continue Course button with PlayCircle icon and primary variant",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Continue Course"
+          }
+        ],
+        "screenshot": false
+      },
+      "skill_hints": ["frontend-design"],
+      "context": {
+        "files": [],
+        "dependencies": [
+          "ActionButton component",
+          "PlayCircle icon from lucide-react"
+        ],
+        "constraints": [
+          "Render conditionally when courseInProgress is true",
+          "Use variant='default' for primary styling",
+          "Link to /home/course"
+        ]
+      },
+      "input_state": "Panel skeleton exists",
+      "output_state": "Continue Course button added with conditional rendering",
+      "acceptance_criterion": "Continue Course button with PlayCircle icon, variant='default', and conditional rendering exists",
+      "verification_command": "grep -A5 'courseInProgress' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx | grep -E 'PlayCircle|Continue Course|variant.*default'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F4.T3"],
+        "blocks": ["S2072.I3.F4.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F4.T5",
+      "type": "task",
+      "name": "Add Take Assessment button to panel",
+      "action": {
+        "verb": "Add",
+        "target": "Take Assessment button to panel"
+      },
+      "purpose": "Add conditional Take Assessment button with ClipboardList icon",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Take Assessment"
+          }
+        ],
+        "screenshot": false
+      },
+      "skill_hints": ["frontend-design"],
+      "context": {
+        "files": [],
+        "dependencies": [
+          "ActionButton component",
+          "ClipboardList icon from lucide-react"
+        ],
+        "constraints": [
+          "Render conditionally when assessmentCompleted is false",
+          "Use variant='outline' (default)",
+          "Link to /home/assessment"
+        ]
+      },
+      "input_state": "Panel skeleton exists",
+      "output_state": "Take Assessment button added with conditional rendering",
+      "acceptance_criterion": "Take Assessment button with ClipboardList icon, variant='outline', and conditional rendering exists",
+      "verification_command": "grep -A5 '!assessmentCompleted' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx | grep -E 'ClipboardList|Take Assessment|variant.*outline'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F4.T3"],
+        "blocks": ["S2072.I3.F4.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F4.T6",
+      "type": "task",
+      "name": "Add New Presentation button to panel",
+      "action": {
+        "verb": "Add",
+        "target": "New Presentation button to panel"
+      },
+      "purpose": "Add always-visible New Presentation button with Plus icon",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "New Presentation"
+          }
+        ],
+        "screenshot": false
+      },
+      "skill_hints": ["frontend-design"],
+      "context": {
+        "files": [],
+        "dependencies": [
+          "ActionButton component",
+          "Plus icon from lucide-react"
+        ],
+        "constraints": [
+          "Always render (no conditional)",
+          "Use variant='outline' (default)",
+          "Link to /home/ai/blocks"
+        ]
+      },
+      "input_state": "Panel skeleton exists",
+      "output_state": "New Presentation button added (always visible)",
+      "acceptance_criterion": "New Presentation button with Plus icon, variant='outline', always rendered",
+      "verification_command": "grep -B2 -A5 'New Presentation' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx | grep -E 'Plus|/home/ai/blocks|variant.*outline'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F4.T3"],
+        "blocks": ["S2072.I3.F4.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F4.T7",
+      "type": "task",
+      "name": "Add Review Storyboard button to panel",
+      "action": {
+        "verb": "Add",
+        "target": "Review Storyboard button to panel"
+      },
+      "purpose": "Add conditional Review Storyboard button for draft presentations",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Review Storyboard"
+          }
+        ],
+        "screenshot": false
+      },
+      "skill_hints": ["frontend-design"],
+      "context": {
+        "files": [],
+        "dependencies": [
+          "ActionButton component",
+          "FileText icon from lucide-react"
+        ],
+        "constraints": [
+          "Render conditionally when hasPresentationDrafts is true",
+          "Use variant='outline' (default)",
+          "Link to /home/ai/storyboard"
+        ]
+      },
+      "input_state": "Panel skeleton exists",
+      "output_state": "Review Storyboard button added with conditional rendering",
+      "acceptance_criterion": "Review Storyboard button with FileText icon, variant='outline', and conditional rendering exists",
+      "verification_command": "grep -A5 'hasPresentationDrafts' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx | grep -E 'FileText|Review Storyboard|/home/ai/storyboard'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F4.T3"],
+        "blocks": ["S2072.I3.F4.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F4.T8",
+      "type": "task",
+      "name": "Implement action ordering logic",
+      "action": {
+        "verb": "Implement",
+        "target": "action ordering logic"
+      },
+      "purpose": "Order actions by priority: Continue Course > Take Assessment > New Presentation > Review Storyboard",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Continue Course appears first if course in progress",
+          "Take Assessment appears second if not completed",
+          "New Presentation always appears third",
+          "Review Storyboard appears fourth if drafts exist"
+        ]
+      },
+      "input_state": "All buttons created with conditional rendering",
+      "output_state": "Buttons ordered by priority in the panel",
+      "acceptance_criterion": "Actions are ordered correctly: Continue Course (1st), Take Assessment (2nd), New Presentation (3rd), Review Storyboard (4th)",
+      "verification_command": "pnpm typecheck && grep -A30 'CardContent' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx | grep -E 'Continue Course|Take Assessment|New Presentation|Review Storyboard'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F4.T4", "S2072.I3.F4.T5", "S2072.I3.F4.T6", "S2072.I3.F4.T7"],
+        "blocks": ["S2072.I3.F4.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F4.T9",
+      "type": "task",
+      "name": "Add QuickActionsPanel to dashboard page",
+      "action": {
+        "verb": "Add",
+        "target": "QuickActionsPanel to dashboard page"
+      },
+      "purpose": "Integrate QuickActionsPanel into dashboard grid with context props",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Quick Actions"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "skill_hints": ["frontend-design"],
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "QuickActionsPanel component",
+          "Dashboard grid layout from S2072.I1.F3"
+        ],
+        "constraints": [
+          "Add QuickActionsPanel to appropriate grid slot",
+          "Pass context props from dashboard data (stub with false values for now)",
+          "Import from ./_components/quick-actions-panel"
+        ]
+      },
+      "input_state": "Panel component complete with all buttons and ordering",
+      "output_state": "QuickActionsPanel integrated into dashboard page",
+      "acceptance_criterion": "QuickActionsPanel rendered on dashboard with context props passed",
+      "verification_command": "pnpm typecheck && grep 'QuickActionsPanel' apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F4.T8"],
+        "blocks": ["S2072.I3.F4.T10"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F4.T10",
+      "type": "task",
+      "name": "Add context flags to dashboard loader",
+      "action": {
+        "verb": "Add",
+        "target": "context flags to dashboard loader"
+      },
+      "purpose": "Ensure dashboard loader provides courseInProgress, assessmentCompleted, and hasPresentationDrafts flags",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 10,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        ],
+        "dependencies": [
+          "course_progress table",
+          "survey_responses table",
+          "building_blocks_submissions table"
+        ],
+        "constraints": [
+          "Add courseInProgress flag (check if completion_percentage < 100)",
+          "Add assessmentCompleted flag (check if survey_responses exists with scores)",
+          "Add hasPresentationDrafts flag (check if building_blocks_submissions has draft status)",
+          "Return these flags in loader response"
+        ]
+      },
+      "input_state": "Panel integrated with stub props",
+      "output_state": "Loader provides real context flags from database",
+      "acceptance_criterion": "Dashboard loader returns courseInProgress, assessmentCompleted, and hasPresentationDrafts flags computed from database",
+      "verification_command": "pnpm typecheck && grep -A5 'courseInProgress\\|assessmentCompleted\\|hasPresentationDrafts' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F4.T9"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Foundation",
+        "task_ids": ["S2072.I3.F4.T1", "S2072.I3.F4.T2", "S2072.I3.F4.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 5
+      },
+      {
+        "id": 2,
+        "name": "Action Buttons",
+        "task_ids": ["S2072.I3.F4.T4", "S2072.I3.F4.T5", "S2072.I3.F4.T6", "S2072.I3.F4.T7"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 1
+      },
+      {
+        "id": 3,
+        "name": "Panel Logic",
+        "task_ids": ["S2072.I3.F4.T8"],
+        "depends_on_groups": [2],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 4,
+        "name": "Integration",
+        "task_ids": ["S2072.I3.F4.T9"],
+        "depends_on_groups": [3],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 5,
+        "name": "Data Layer",
+        "task_ids": ["S2072.I3.F4.T10"],
+        "depends_on_groups": [4],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2072.I3.F4.T1", "S2072.I3.F4.T2", "S2072.I3.F4.T3", "S2072.I3.F4.T4", "S2072.I3.F4.T8", "S2072.I3.F4.T9", "S2072.I3.F4.T10"],
+      "total_hours": 11
+    },
+    "duration": {
+      "sequential": 15,
+      "parallel": 12,
+      "time_saved_percent": 20
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

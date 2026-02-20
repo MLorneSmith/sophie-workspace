@@ -1,0 +1,440 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I6.F3",
+    "feature_name": "Dashboard Integration Verification",
+    "feature_slug": "dashboard-integration-verification",
+    "initiative_id": "S2072.I6",
+    "spec_id": "2072",
+    "created_at": "2026-02-12T12:30:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2072.I6.F3.T1",
+      "type": "task",
+      "name": "Create verification checklist document",
+      "action": { "verb": "Create", "target": "verification checklist document" },
+      "purpose": "Document all items to verify with pass/fail criteria before executing tests",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          ".ai/alpha/specs/S2072-Spec-user-dashboard/spec.md"
+        ],
+        "dependencies": [
+          "E2E testing patterns from apps/e2e/tests/",
+          "Feature acceptance criteria from feature.md"
+        ],
+        "constraints": [
+          "Verification checklist must cover all 9 Must Have acceptance criteria",
+          "Must include responsive breakpoints (375px, 768px, 1440px)",
+          "Must include loading, empty, and populated states"
+        ]
+      },
+      "input_state": "Feature document and spec exist, no verification checklist",
+      "output_state": "VERIFICATION.md document with comprehensive checklist",
+      "acceptance_criterion": "VERIFICATION.md exists with checklist covering all widgets, states, and breakpoints",
+      "verification_command": "test -f /home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/VERIFICATION.md && grep -c '##\\|###\\|- \\[' /home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/VERIFICATION.md",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/VERIFICATION.md"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2072.I6.F3.T2", "S2072.I6.F3.T3", "S2072.I6.F3.T4", "S2072.I6.F3.T5", "S2072.I6.F3.T6", "S2072.I6.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F3.T2",
+      "type": "task",
+      "name": "Create dashboard Page Object",
+      "action": { "verb": "Create", "target": "dashboard Page Object" },
+      "purpose": "Encapsulate dashboard interactions for reusable E2E tests",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/authentication/auth.po.ts",
+          "apps/e2e/tests/account/account.po.ts",
+          "apps/e2e/tests/utils/base-test.ts"
+        ],
+        "dependencies": [
+          "Playwright Page class",
+          "Existing Page Object patterns (auth.po.ts, account.po.ts)",
+          "navigateAndWaitForHydration utility",
+          "waitForContentReady utility"
+        ],
+        "constraints": [
+          "Must follow existing Page Object patterns",
+          "Must use data-testid selectors",
+          "Must handle loading states with toPass() pattern",
+          "Must provide methods for all 7 widgets"
+        ]
+      },
+      "input_state": "Dashboard widgets exist from I2-I5, no Page Object for testing",
+      "output_state": "dashboard.po.ts with methods for widget interactions",
+      "acceptance_criterion": "dashboard.po.ts exists with methods for navigating to dashboard and checking each widget",
+      "verification_command": "test -f /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.po.ts && grep -c 'async.*{' /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.po.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.po.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I6.F3.T1"],
+        "blocks": ["S2072.I6.F3.T3", "S2072.I6.F3.T4", "S2072.I6.F3.T5", "S2072.I6.F3.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F3.T3",
+      "type": "task",
+      "name": "Write E2E test for widget rendering",
+      "action": { "verb": "Write", "target": "E2E test for widget rendering" },
+      "purpose": "Verify all 7 widgets render without errors on dashboard",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 3,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/smoke/smoke.spec.ts",
+          "apps/e2e/tests/account/account-simple.spec.ts"
+        ],
+        "dependencies": [
+          "Dashboard Page Object (S2072.I6.F3.T2)",
+          "TEST_USERS helper",
+          "AuthPageObject.setupSession()",
+          "waitForContentReady utility"
+        ],
+        "constraints": [
+          "Must test all 7 widgets: Course Progress, Skills Spider, Kanban Summary, Activity Feed, Quick Actions, Coaching Sessions, Presentations Table",
+          "Must use authenticated test user",
+          "Must verify widgets are visible using data-testid selectors",
+          "Must use toPass() pattern for reliability"
+        ]
+      },
+      "input_state": "Dashboard widgets exist, Page Object created, no rendering tests",
+      "output_state": "E2E test verifying all widgets render successfully",
+      "acceptance_criterion": "dashboard-integration.spec.ts contains test that verifies all 7 widgets are visible",
+      "verification_command": "grep -c 'test.*render\\|test.*visible\\|test.*widget' /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard-integration.spec.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard-integration.spec.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I6.F3.T2"],
+        "blocks": ["S2072.I6.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F3.T4",
+      "type": "task",
+      "name": "Write E2E test for loading and empty states",
+      "action": { "verb": "Write", "target": "E2E test for loading and empty states" },
+      "purpose": "Verify loading skeletons appear and empty states display correctly",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard-integration.spec.ts",
+          "apps/e2e/tests/utils/wait-for-hydration.ts"
+        ],
+        "dependencies": [
+          "Dashboard Page Object (S2072.I6.F3.T2)",
+          "Network throttling patterns from Playwright"
+        ],
+        "constraints": [
+          "Must test loading skeleton appears during slow network",
+          "Must test empty states for each widget type",
+          "Must use network throttle to simulate slow loading",
+          "Must verify empty state messaging is engaging (not depressing)"
+        ]
+      },
+      "input_state": "Loading skeletons and empty states implemented in I6.F1-F2, no tests",
+      "output_state": "E2E tests verifying loading and empty state behavior",
+      "acceptance_criterion": "dashboard-integration.spec.ts contains tests for loading skeletons and empty states",
+      "verification_command": "grep -c 'loading\\|skeleton\\|empty' /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard-integration.spec.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard-integration.spec.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I6.F3.T2"],
+        "blocks": ["S2072.I6.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F3.T5",
+      "type": "task",
+      "name": "Write E2E test for responsive layout",
+      "action": { "verb": "Write", "target": "E2E test for responsive layout" },
+      "purpose": "Verify dashboard layout adapts to mobile, tablet, and desktop breakpoints",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard-integration.spec.ts"
+        ],
+        "dependencies": [
+          "Playwright viewport emulation",
+          "Dashboard Page Object (S2072.I6.F3.T2)"
+        ],
+        "constraints": [
+          "Must test at 375px (mobile), 768px (tablet), 1440px (desktop)",
+          "Must verify 3-3-1 grid layout adapts correctly",
+          "Must verify all widgets remain accessible at each breakpoint"
+        ]
+      },
+      "input_state": "Responsive grid layout implemented, no responsive tests",
+      "output_state": "E2E tests verifying responsive behavior at all breakpoints",
+      "acceptance_criterion": "dashboard-integration.spec.ts contains responsive tests for all 3 breakpoints",
+      "verification_command": "grep -c 'viewport\\|375\\|768\\|1440' /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard-integration.spec.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard-integration.spec.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I6.F3.T2"],
+        "blocks": ["S2072.I6.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F3.T6",
+      "type": "task",
+      "name": "Write E2E test for navigation links",
+      "action": { "verb": "Write", "target": "E2E test for navigation links" },
+      "purpose": "Verify all quick action links and widget links navigate correctly",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard-integration.spec.ts"
+        ],
+        "dependencies": [
+          "Dashboard Page Object (S2072.I6.F3.T2)",
+          "Playwright click and navigation assertions"
+        ],
+        "constraints": [
+          "Must test quick action panel links (courses, tasks, assessments, coaching)",
+          "Must test widget internal links (view all courses, view all tasks, etc.)",
+          "Must verify correct destination URLs"
+        ]
+      },
+      "input_state": "Quick actions and widget links implemented, no navigation tests",
+      "output_state": "E2E tests verifying all dashboard links navigate correctly",
+      "acceptance_criterion": "dashboard-integration.spec.ts contains tests for quick actions and widget links",
+      "verification_command": "grep -c 'navigation\\|link\\|click\\|href' /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard-integration.spec.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard-integration.spec.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I6.F3.T2"],
+        "blocks": ["S2072.I6.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F3.T7",
+      "type": "task",
+      "name": "Execute tests and document results",
+      "action": { "verb": "Execute", "target": "tests and document results" },
+      "purpose": "Run all E2E tests, verify TypeScript compliance, and update verification checklist with results",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard-integration.spec.ts",
+          ".ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/VERIFICATION.md"
+        ],
+        "dependencies": [
+          "All E2E tests (S2072.I6.F3.T3-T6)",
+          "pnpm test:e2e command",
+          "pnpm typecheck command"
+        ],
+        "constraints": [
+          "Must run pnpm typecheck and verify zero errors",
+          "Must run E2E tests with pnpm --filter web-e2e test -- --grep dashboard",
+          "Must capture screenshots for visual evidence",
+          "Must document any issues found with severity and suggested fixes",
+          "Must update VERIFICATION.md with pass/fail for each checklist item"
+        ]
+      },
+      "input_state": "All E2E tests written, verification checklist created, no results documented",
+      "output_state": "E2E tests executed, typecheck passed, VERIFICATION.md completed with results",
+      "acceptance_criterion": "VERIFICATION.md updated with pass/fail status for all checklist items, typecheck passes, E2E tests pass",
+      "verification_command": "pnpm typecheck && pnpm --filter web-e2e test -- --grep dashboard && grep -c '\\[x\\]\\|\\[ \\]' /home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/VERIFICATION.md",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/VERIFICATION.md"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I6.F3.T3", "S2072.I6.F3.T4", "S2072.I6.F3.T5", "S2072.I6.F3.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Planning",
+        "task_ids": ["S2072.I6.F3.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Infrastructure",
+        "task_ids": ["S2072.I6.F3.T2"],
+        "depends_on_groups": [1],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Test Writing",
+        "task_ids": ["S2072.I6.F3.T3", "S2072.I6.F3.T4", "S2072.I6.F3.T5", "S2072.I6.F3.T6"],
+        "depends_on_groups": [2],
+        "estimated_hours": 14,
+        "parallel_hours": 4
+      },
+      {
+        "id": 4,
+        "name": "Execution & Documentation",
+        "task_ids": ["S2072.I6.F3.T7"],
+        "depends_on_groups": [3],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2072.I6.F3.T1", "S2072.I6.F3.T2", "S2072.I6.F3.T3", "S2072.I6.F3.T7"],
+      "total_hours": 12
+    },
+    "duration": {
+      "sequential": 22,
+      "parallel": 12,
+      "time_saved_percent": 45
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

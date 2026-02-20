@@ -1,0 +1,518 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I6.F3",
+    "feature_name": "Performance Optimization & Audit",
+    "feature_slug": "performance-optimization-audit",
+    "initiative_id": "S2086.I6",
+    "spec_id": "2086",
+    "created_at": "2026-02-13T12:45:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "type": "task",
+      "name": "Add responsive sizes to Product Preview images",
+      "action": { "verb": "Add", "target": "responsive sizes to Product Preview images" },
+      "purpose": "Ensure Product Preview section images have responsive sizes attribute matching layout breakpoints for optimal LCP and CLS",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-optimized-image.tsx"
+        ],
+        "dependencies": [
+          "OptimizedImage component wrapper",
+          "Next.js Image component"
+        ],
+        "constraints": [
+          "sizes must match actual rendered width at each breakpoint",
+          "Hero image already has priority flag (line 110)"
+        ]
+      },
+      "input_state": "Product Preview section in page.tsx uses OptimizedImage but lacks responsive sizes attribute",
+      "output_state": "Product Preview images have sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 1200px'",
+      "acceptance_criterion": "Product Preview OptimizedImage has sizes attribute matching hero pattern",
+      "verification_command": "grep -A5 'ContainerScroll' apps/web/app/\\(marketing\\)/page.tsx | grep 'sizes='",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["T6", "T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T2",
+      "type": "task",
+      "name": "Add blur placeholders to all marketing images",
+      "action": { "verb": "Add", "target": "blur placeholders to all marketing images" },
+      "purpose": "Add blur placeholders to all Next.js Images to prevent CLS during image loading and improve perceived performance",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-optimized-image.tsx"
+        ],
+        "dependencies": [
+          "Next.js Image blur placeholder API",
+          "OptimizedImage wrapper component"
+        ],
+        "constraints": [
+          "Use placeholder='blur' for local images",
+          "Use blurDataURL for remote images",
+          "Hero image has priority, may not need blur"
+        ]
+      },
+      "input_state": "Marketing images load without blur placeholders, causing layout shifts",
+      "output_state": "All marketing images have blur placeholders preventing CLS during load",
+      "acceptance_criterion": "All OptimizedImage instances in page.tsx have placeholder='blur' or blurDataURL",
+      "verification_command": "grep -c 'placeholder' apps/web/app/\\(marketing\\)/page.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" },
+        { "type": "modified", "path": "apps/web/app/(marketing)/_components/home-optimized-image.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["T6", "T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T3",
+      "type": "task",
+      "name": "Create section skeleton components",
+      "action": { "verb": "Create", "target": "section skeleton components" },
+      "purpose": "Create reusable skeleton loading states for each section type to use as Suspense fallbacks",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/section-skeleton.tsx"
+        ],
+        "dependencies": [
+          "Existing SectionLoader component pattern (lines 47-57)",
+          "Tailwind animate-pulse utility"
+        ],
+        "constraints": [
+          "Skeletons should match approximate dimensions of actual sections",
+          "Use generic placeholders, not exact content"
+        ]
+      },
+      "input_state": "Generic SectionLoader exists but lacks section-specific loading states",
+      "output_state": "Section-specific skeleton components for Hero, Features, Testimonials, Pricing, Blog sections",
+      "acceptance_criterion": "section-skeleton.tsx exists with exported skeleton components for each section type",
+      "verification_command": "grep -c 'Skeleton' apps/web/app/\\(marketing\\)/_components/section-skeleton.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/section-skeleton.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T4",
+      "type": "task",
+      "name": "Add Suspense boundaries with dynamic imports for below-fold sections",
+      "action": { "verb": "Add", "target": "Suspense boundaries with dynamic imports for below-fold sections" },
+      "purpose": "Wrap sections 3-12 (Logo Cloud through Blog) in Suspense with dynamic imports to defer JavaScript loading until needed",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 4,
+      "group": 2,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 5000,
+        "checks": [
+          { "command": "is visible", "target": "Hero" },
+          { "command": "is visible", "target": "Product Preview" },
+          { "command": "find role", "target": "main" }
+        ],
+        "screenshot": true
+      },
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [
+          "Next.js dynamic() import",
+          "React Suspense",
+          "Section skeleton components from T3"
+        ],
+        "constraints": [
+          "Hero and Product Preview sections remain eager (above-fold)",
+          "Sections 3-12 wrapped in Suspense with ssr: false where appropriate",
+          "Use existing Suspense pattern from logo cloud (line 121)"
+        ]
+      },
+      "input_state": "All sections load eagerly, increasing initial bundle size",
+      "output_state": "Below-fold sections wrapped in Suspense with dynamic imports, skeletons as fallbacks",
+      "acceptance_criterion": "Logo Cloud, Sticky Scroll, Features, Testimonials, Pricing, Blog sections wrapped in Suspense with dynamic imports",
+      "verification_command": "grep -c 'dynamic(' apps/web/app/\\(marketing\\)/page.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["T3"],
+        "blocks": ["T6", "T7", "T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": false,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T5",
+      "type": "task",
+      "name": "Add Safari fallback for backdrop-filter",
+      "action": { "verb": "Add", "target": "Safari fallback for backdrop-filter" },
+      "purpose": "Add CSS @supports fallback for backdrop-filter: blur() to ensure glass cards work in Safari with solid background fallback",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/styles/globals.css"
+        ],
+        "dependencies": [
+          "CSS @supports feature query",
+          "Glass card component styling"
+        ],
+        "constraints": [
+          "Fallback should use solid background color matching dark theme",
+          "Apply to all glass card classes"
+        ]
+      },
+      "input_state": "Glass cards rely on backdrop-filter without fallback, may break in Safari",
+      "output_state": "@supports rule provides solid background fallback when backdrop-filter unsupported",
+      "acceptance_criterion": "globals.css contains @supports (backdrop-filter: blur()) with solid background fallback",
+      "verification_command": "grep -A5 '@supports.*backdrop-filter' apps/web/styles/globals.css",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/styles/globals.css" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T6",
+      "type": "task",
+      "name": "Verify LazyMotion code-splitting in bundle",
+      "action": { "verb": "Verify", "target": "LazyMotion code-splitting in bundle" },
+      "purpose": "Analyze production bundle to confirm MotionProvider successfully code-splits domAnimation to separate ~15KB chunk",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/layout.tsx"
+        ],
+        "dependencies": [
+          "pnpm --filter web build",
+          "Chrome DevTools or bundle analyzer",
+          "MotionProvider from I1"
+        ],
+        "constraints": [
+          "Verify domAnimation or domMax loads as separate chunk",
+          "Chunk size should be ~15KB, not ~34KB full bundle"
+        ]
+      },
+      "input_state": "MotionProvider should be implemented in I1, bundle splitting unverified",
+      "output_state": "Production bundle analyzed, domAnimation confirmed as code-split chunk",
+      "acceptance_criterion": "Build analysis shows Motion code-split with chunk size <20KB gzipped",
+      "verification_command": "pnpm --filter web build 2>&1 | grep -i 'motion\\|animation'",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["T1", "T2"],
+        "blocks": ["T7", "T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T7",
+      "type": "task",
+      "name": "Iterate Lighthouse performance fixes to reach >= 90 score",
+      "action": { "verb": "Iterate", "target": "Lighthouse performance fixes to reach >= 90 score" },
+      "purpose": "Run Lighthouse performance audit on homepage and iteratively apply fixes until score reaches >= 90",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/styles/globals.css"
+        ],
+        "dependencies": [
+          "pnpm dev server running",
+          "Lighthouse CLI or Chrome DevTools",
+          "Completed T1, T2, T4, T6 optimizations"
+        ],
+        "constraints": [
+          "Target score >= 90",
+          "LCP < 2.5s",
+          "CLS < 0.1",
+          "INP < 200ms",
+          "Apply fixes iteratively based on audit results"
+        ]
+      },
+      "input_state": "Homepage with image optimization, Suspense boundaries, code-splitting implemented",
+      "output_state": "Lighthouse performance score >= 90 with documented fixes applied",
+      "acceptance_criterion": "Lighthouse performance score >= 90, LCP < 2.5s, CLS < 0.1, INP < 200ms",
+      "verification_command": "npx lighthouse http://localhost:3000 --only-categories=performance --output=json | jq '.categories.performance.score'",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["T1", "T2", "T4", "T6"],
+        "blocks": ["T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T8",
+      "type": "task",
+      "name": "Iterate Lighthouse accessibility fixes to reach >= 95 score",
+      "action": { "verb": "Iterate", "target": "Lighthouse accessibility fixes to reach >= 95 score" },
+      "purpose": "Run Lighthouse accessibility audit on homepage and iteratively apply fixes until score reaches >= 95",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/*.tsx"
+        ],
+        "dependencies": [
+          "pnpm dev server running",
+          "Lighthouse CLI or Chrome DevTools",
+          "Completed T4, T5"
+        ],
+        "constraints": [
+          "Target score >= 95",
+          "Fix contrast issues, ARIA labels, keyboard navigation",
+          "Ensure prefers-reduced-motion support",
+          "Apply fixes iteratively based on audit results"
+        ]
+      },
+      "input_state": "Homepage with Safari fallback and Suspense boundaries implemented",
+      "output_state": "Lighthouse accessibility score >= 95 with documented fixes applied",
+      "acceptance_criterion": "Lighthouse accessibility score >= 95, WCAG AA compliance verified",
+      "verification_command": "npx lighthouse http://localhost:3000 --only-categories=accessibility --output=json | jq '.categories.accessibility.score'",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["T4", "T5", "T6", "T7"],
+        "blocks": ["T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T9",
+      "type": "task",
+      "name": "Test cross-browser rendering in Chrome, Firefox, Safari, Edge",
+      "action": { "verb": "Test", "target": "cross-browser rendering in Chrome, Firefox, Safari, Edge" },
+      "purpose": "Verify all homepage sections render correctly across Chrome, Firefox, Safari, and Edge browsers, fix browser-specific issues",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 9,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/*.tsx"
+        ],
+        "dependencies": [
+          "BrowserStack or local browser testing",
+          "Completed T4, T5, T7, T8"
+        ],
+        "constraints": [
+          "No console errors in any browser",
+          "backdrop-filter works in Safari (or has fallback from T5)",
+          "Animations work in all browsers",
+          "Layout is consistent across browsers"
+        ]
+      },
+      "input_state": "Homepage with all optimizations implemented",
+      "output_state": "Homepage verified to work correctly in Chrome, Firefox, Safari, Edge with no console errors",
+      "acceptance_criterion": "All sections render correctly in 4 major browsers with no console errors",
+      "verification_command": "echo 'Manual browser testing required - Chrome, Firefox, Safari, Edge'",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["T4", "T5", "T7", "T8"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": false,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Foundation",
+        "task_ids": ["T1", "T2", "T3", "T5"],
+        "depends_on_groups": [],
+        "estimated_hours": 10,
+        "parallel_hours": 3
+      },
+      {
+        "id": 1,
+        "name": "Suspense & Bundle Verification",
+        "task_ids": ["T4", "T6"],
+        "depends_on_groups": [0],
+        "estimated_hours": 7,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Performance Audit",
+        "task_ids": ["T7"],
+        "depends_on_groups": [0, 1],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Accessibility Audit",
+        "task_ids": ["T8"],
+        "depends_on_groups": [0, 1, 2],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 4,
+        "name": "Cross-Browser Testing",
+        "task_ids": ["T9"],
+        "depends_on_groups": [0, 1, 2, 3],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["T3", "T4", "T7", "T8", "T9"],
+      "total_hours": 18
+    },
+    "duration": {
+      "sequential": 28,
+      "parallel": 18,
+      "time_saved_percent": 36
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 95,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

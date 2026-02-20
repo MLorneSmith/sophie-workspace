@@ -9,13 +9,17 @@ import {
 	Minimize2,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
+import { createPresentationAction } from "../_lib/server/create-presentation.action";
 import { Combobox } from "./combobox";
 import { EditPresentationCombobox } from "./edit-presentation-combobox";
 
 export default function AIWorkspaceDashboard() {
+	const router = useRouter();
 	const [isFullscreen, setIsFullscreen] = useState(false);
+	const [isCreating, startCreating] = useTransition();
 
 	const toggleFullscreen = () => {
 		if (!document.fullscreenElement) {
@@ -58,15 +62,33 @@ export default function AIWorkspaceDashboard() {
 						<p className="mb-4 text-gray-600">
 							Start by creating a new presentation outline and storyboard.
 						</p>
-						<Link
-							href="/home/ai/blocks"
-							className={buttonVariants({
-								variant: "outline",
-								className: "w-full",
-							})}
+						<Button
+							disabled={isCreating}
+							variant="outline"
+							className="w-full"
+							onClick={() => {
+								startCreating(async () => {
+									try {
+										const result = await createPresentationAction({});
+
+										if (result.success) {
+											router.push(`/home/ai/${result.id}/profile`);
+											return;
+										}
+
+										throw new Error(
+											"error" in result
+												? String(result.error)
+												: "Failed to create presentation",
+										);
+									} catch {
+										// optional: surface toast later
+									}
+								});
+							}}
 						>
-							Get Started
-						</Link>
+							{isCreating ? "Creating…" : "Get Started"}
+						</Button>
 					</div>
 
 					<div className="rounded-lg bg-gray-50 p-6 shadow-md transition-shadow hover:shadow-lg">

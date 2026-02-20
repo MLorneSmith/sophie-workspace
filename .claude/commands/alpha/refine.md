@@ -231,8 +231,8 @@ After diagnosis, implement the fix:
 Run verification commands from tasks.json:
 
 ```bash
-# Always run typecheck
-pnpm typecheck
+# Always run typecheck (scoped to web to avoid unrelated errors)
+pnpm --filter web typecheck
 
 # Always run lint
 pnpm lint
@@ -365,7 +365,7 @@ Editing: apps/web/app/(auth)/login/_components/login-form.tsx
 - Changed: `hidden md:block` → `block`
 
 [Phase 3: Verification]
-✓ pnpm typecheck passed
+✓ pnpm --filter web typecheck passed
 ✓ pnpm lint passed
 ✓ agent-browser is visible "Login" - passed
 

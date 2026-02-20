@@ -643,7 +643,7 @@ After parallel batch completes (including retries):
 ```
 # Run typecheck to ensure all parallel changes integrate correctly
 Log: "🔍 Running post-batch verification..."
-pnpm typecheck
+pnpm --filter web typecheck
 
 If typecheck fails:
     Log: "❌ Type errors after parallel batch - fixing..."
@@ -1189,10 +1189,11 @@ Before committing any task group completion, run comprehensive validation:
 ```
 Log: "🔍 Running group-level validation before commit..."
 
-1. **Global Typecheck** (MANDATORY):
-   pnpm typecheck
+1. **Web Package Typecheck** (MANDATORY):
+   pnpm --filter web typecheck
 
-   This validates ALL packages, catching cross-package type errors.
+   This validates the web package, catching type errors in feature code.
+   Do NOT run unscoped `pnpm typecheck` — it includes unrelated packages.
 
    IF typecheck fails:
        Log: "❌ Global typecheck failed - fixing before commit"
@@ -1221,7 +1222,7 @@ Log: "🔍 Running group-level validation before commit..."
 4. **Commit Gate**:
    Only proceed to git commit when ALL pass:
    - [ ] All verification_commands passed
-   - [ ] pnpm typecheck succeeded (zero errors)
+   - [ ] pnpm --filter web typecheck succeeded (zero errors)
    - [ ] pnpm lint passed (errors fixed, warnings OK)
    - [ ] Database types verified (if applicable)
 
@@ -1236,7 +1237,7 @@ Log: "🔍 Running group-level validation before commit..."
 1. **Run group validations**:
    ```bash
    # Type check (MANDATORY - must pass)
-   pnpm typecheck
+   pnpm --filter web typecheck
 
    # Lint (errors must be fixed)
    pnpm lint
@@ -1339,10 +1340,10 @@ Before reporting a feature as complete, run comprehensive validation:
 ```
 Log: "🔍 Running feature-level validation before completion..."
 
-1. **Full Typecheck** (MANDATORY):
-   pnpm typecheck
+1. **Web Package Typecheck** (MANDATORY):
+   pnpm --filter web typecheck
 
-   Verify: Zero TypeScript errors across ALL packages
+   Verify: Zero TypeScript errors in the web package
 
    IF typecheck fails:
        Log: "❌ Feature-level typecheck failed"
@@ -1472,7 +1473,7 @@ Return specific file paths and code snippets."
 
 **Type errors**:
 ```bash
-pnpm typecheck 2>&1 | head -50
+pnpm --filter web typecheck 2>&1 | head -50
 ```
 Fix errors iteratively until typecheck passes.
 
@@ -1567,7 +1568,7 @@ Mode: PARALLEL EXECUTION ENABLED
    ✅ T2: Success - Created button component
    ✅ T3: Success - Created panel component
 
-🔍 Post-batch verification: pnpm typecheck ✅
+🔍 Post-batch verification: pnpm --filter web typecheck ✅
 ✓ Group 1 complete (58s vs ~8min sequential) - Committing...
 ✓ Pushed: abc1234
 
@@ -1584,7 +1585,7 @@ Mode: PARALLEL EXECUTION ENABLED
    ✅ T4: Success
    ✅ T5: Success
 
-🔍 Post-batch verification: pnpm typecheck ✅
+🔍 Post-batch verification: pnpm --filter web typecheck ✅
 ✓ Group 2 complete - Committing...
 ✓ Pushed: def5678
 
@@ -1654,8 +1655,8 @@ If group.parallelization_analysis.speedup_potential > 1 → Worth parallelizing
 | Situation | Command | Blocking |
 |-----------|---------|----------|
 | Task modifies .ts/.tsx files | `pnpm typecheck --filter [package]` | YES - must pass |
-| After each task group | `pnpm typecheck` | YES - must pass |
-| Before feature completion | `pnpm typecheck` | YES - must pass |
+| After each task group | `pnpm --filter web typecheck` | YES - must pass |
+| Before feature completion | `pnpm --filter web typecheck` | YES - must pass |
 | Task modifies only docs/config | Not required | NO |
 
 ### Package Detection

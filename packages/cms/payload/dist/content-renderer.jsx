@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { containsTemplateTags, TemplateTagProcessor, } from "./template-tag-processor";
 // Enable detailed logging in development environment
 const DEBUG = process.env.NODE_ENV === "development";
@@ -84,7 +85,7 @@ export function PayloadContentRenderer({ content }) {
             if (Array.isArray(lexicalContent.root.children)) {
                 return (<div className="payload-content">
 						{lexicalContent.root.children.map((node, i) => {
-                        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z;
+                        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10;
                         // Handle custom blocks
                         // Check for Call To Action block
                         if (node.type === "custom-call-to-action" ||
@@ -597,6 +598,39 @@ export function PayloadContentRenderer({ content }) {
 												</div>
 											</div>);
                             }
+                        }
+                        // Handle upload (image) nodes
+                        if (node.type === "upload") {
+                            const uploadNode = node;
+                            // Payload stores data in two places:
+                            // - node.value = Media document (url, filename, alt, width, height)
+                            // - node.fields = custom UploadFeature fields (caption, altText)
+                            const mediaDoc = (_0 = uploadNode.value) !== null && _0 !== void 0 ? _0 : {};
+                            const customFields = (_1 = uploadNode.fields) !== null && _1 !== void 0 ? _1 : {};
+                            // Get the image URL from the media document
+                            // Payload provides the full URL directly - no need to construct it
+                            const imageUrl = (_3 = (_2 = mediaDoc.url) !== null && _2 !== void 0 ? _2 : customFields.url) !== null && _3 !== void 0 ? _3 : null;
+                            // Alt text: prefer custom field, fallback to media doc, then filename
+                            // Empty string marks image as decorative per WCAG guidelines
+                            const altText = (_6 = (_5 = (_4 = customFields.altText) !== null && _4 !== void 0 ? _4 : mediaDoc.alt) !== null && _5 !== void 0 ? _5 : mediaDoc.filename) !== null && _6 !== void 0 ? _6 : "";
+                            // Caption comes from custom fields only
+                            const caption = (_7 = customFields.caption) !== null && _7 !== void 0 ? _7 : null;
+                            // Image dimensions for proper layout (prevents CLS)
+                            // next/image requires dimensions - use defaults if not provided
+                            const width = (_8 = mediaDoc.width) !== null && _8 !== void 0 ? _8 : 1200;
+                            const height = (_9 = mediaDoc.height) !== null && _9 !== void 0 ? _9 : 800;
+                            if (!imageUrl) {
+                                // Debug: log the node structure if URL not found
+                                if (DEBUG)
+                                    debugLog("Upload node missing URL:", node);
+                                return null;
+                            }
+                            return (<figure key={`upload-${i}-${(_10 = mediaDoc.id) !== null && _10 !== void 0 ? _10 : "img"}`} className="my-6">
+											<Image src={imageUrl} alt={altText} width={width} height={height} className="w-full rounded-lg" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"/>
+											{caption && (<figcaption className="mt-2 text-center text-sm text-muted-foreground">
+													{caption}
+												</figcaption>)}
+										</figure>);
                         }
                         // For any unhandled node types, log them for debugging
                         // TODO: Async logger needed

@@ -366,12 +366,13 @@ If issues persist:
 
 ```
 Main Supabase:   API=54521, DB=54522, Studio=54523, Analytics=39006
-Test Containers: slideheroes-app-test (3001), slideheroes-payload-test (3021), slideheroes-stripe-webhook
-Infrastructure:  All 17 containers healthy
+Test Containers: slideheroes-app-test (3001), slideheroes-payload-test (3021)
+Infrastructure:  All 15 containers healthy
   - Supabase Managed: 8 containers
   - Supabase External: 2 containers (PostgREST, Edge Runtime)
   - Supabase Additional: 2 containers (Vector, Analytics)
-  - Custom: 5 containers (app-test, payload-test, stripe-webhook, docs-mcp-server, ccmp-dashboard)
+  - Custom: 3 containers (app-test, payload-test, docs-mcp-server)
+  - Optional: stripe-webhook (only with --profile billing)
 ```
 
 **Note**: The `/docker-fix` command automatically cleans up orphaned backup containers created by `supabase db dump`. These temporary containers are identified by their postgres image and random Docker-generated names (not matching `supabase_*` pattern).

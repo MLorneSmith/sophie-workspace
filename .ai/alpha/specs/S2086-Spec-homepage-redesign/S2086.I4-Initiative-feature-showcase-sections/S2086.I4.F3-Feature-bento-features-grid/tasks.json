@@ -1,0 +1,409 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I4.F3",
+    "feature_name": "Features Grid (Bento Layout)",
+    "feature_slug": "bento-features-grid",
+    "initiative_id": "S2086.I4",
+    "spec_id": "2086",
+    "created_at": "2026-02-13T14:30:00Z",
+    "complexity": {
+      "score": 56.25,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2086.I4.F3.T1",
+      "type": "task",
+      "name": "Update features content config with size field",
+      "action": {
+        "verb": "Update",
+        "target": "features section in homepage-content.config.ts"
+      },
+      "purpose": "Add size field (\"large\"/\"standard\") to each feature card in the features section to support bento grid layout",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 0,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "FeatureCard interface",
+          "IconName type"
+        ],
+        "constraints": [
+          "Must maintain backward compatibility with existing IconName values",
+          "Size field must be \"large\" or \"standard\" string literal",
+          "Update all 6 feature cards with appropriate size values (2 large, 4 standard)"
+        ]
+      },
+      "input_state": "homepage-content.config.ts exists with FeatureCard interface lacking size field",
+      "output_state": "FeatureCard interface updated with size: \"large\" | \"standard\", all 6 cards have size field populated",
+      "acceptance_criterion": "FeatureCard interface includes size field, all 6 cards in featureCards array have size property (2 large, 4 standard)",
+      "verification_command": "grep -E 'size.*large|size.*standard' apps/web/config/homepage-content.config.ts | wc -l | grep -q '^6$' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/config/homepage-content.config.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I4.F3.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I4.F3.T2",
+      "type": "task",
+      "name": "Create BentoFeatureCard component",
+      "action": {
+        "verb": "Create",
+        "target": "bento feature card component with glass styling and cursor-following glow"
+      },
+      "purpose": "Build reusable bento card that combines glass morphism styling with cursor-following radial gradient spotlight effect, supporting large/standard size variants",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 2,
+      "group": 0,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Fine-tuned AI"
+          },
+          {
+            "command": "find role",
+            "target": "img"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/aceternity/card-spotlight.tsx"
+        ],
+        "dependencies": [
+          "motion (framer-motion)",
+          "useMotionValue",
+          "useMotionTemplate",
+          "Lucide React icons",
+          "cn utility from @kit/ui"
+        ],
+        "constraints": [
+          "Must be client component (\"use client\")",
+          "Accept size prop (\"large\" | \"standard\") for grid-column span",
+          "Accept iconName, title, description props",
+          "Use backdrop-filter: blur() for glass effect",
+          "Cursor glow uses radial gradient mask with useMotionValue/useMotionTemplate",
+          "Support className prop for composition",
+          "Respect prefers-reduced-motion (disable glow animation if set)"
+        ]
+      },
+      "input_state": "CardSpotlight pattern exists showing cursor-following radial gradient implementation",
+      "output_state": "BentoFeatureCard component exists in apps/web/app/(marketing)/_components/ with glass styling, cursor glow, and size support",
+      "acceptance_criterion": "BentoFeatureCard component renders with glass card styling, cursor-following spotlight on hover, and applies col-span-2 for large size",
+      "verification_command": "ls apps/web/app/\\(marketing\\)/_components/bento-feature-card.tsx && grep 'useMotionValue\\|useMotionTemplate\\|col-span-2' apps/web/app/\\(marketing\\)/_components/bento-feature-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/bento-feature-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I4.F3.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I4.F3.T3",
+      "type": "task",
+      "name": "Create bento grid component with stagger animation",
+      "action": {
+        "verb": "Create",
+        "target": "home-features-grid-client.tsx with CSS Grid bento layout"
+      },
+      "purpose": "Build bento grid component with 3-column CSS Grid layout, staggered card reveal animation using whileInView, and section heading",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "How we are different"
+          },
+          {
+            "command": "find role",
+            "target": "grid"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/bento-feature-card.tsx",
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "BentoFeatureCard component",
+          "homepageContentConfig.features",
+          "motion from framer-motion",
+          "stagger animation variants"
+        ],
+        "constraints": [
+          "Must be client component (\"use client\")",
+          "Use grid-template-columns: repeat(3, 1fr) for bento layout",
+          "Implement container variants with staggerChildren: 0.15",
+          "Use whileInView for scroll-triggered animation",
+          "Set viewport: { once: true } for performance",
+          "Render section heading and subtitle from homepageContentConfig.features",
+          "Map feature cards to BentoFeatureCard with size prop"
+        ]
+      },
+      "input_state": "BentoFeatureCard component exists, features config has size field for each card",
+      "output_state": "home-features-grid-client.tsx exists with bento grid layout, stagger animation, and all 6 feature cards rendered",
+      "acceptance_criterion": "Bento grid component renders 3-column layout with 2 large cards (col-span-2) and 4 standard cards, stagger animation triggers on scroll",
+      "verification_command": "ls apps/web/app/\\(marketing\\)/_components/home-features-grid-client.tsx && grep -E 'grid-cols-3|staggerChildren|whileInView' apps/web/app/\\(marketing\\)/_components/home-features-grid-client.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/home-features-grid-client.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I4.F3.T1", "S2086.I4.F3.T2"],
+        "blocks": ["S2086.I4.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I4.F3.T4",
+      "type": "task",
+      "name": "Integrate bento grid on homepage",
+      "action": {
+        "verb": "Integrate",
+        "target": "bento grid component into homepage features section"
+      },
+      "purpose": "Replace existing CardSpotlight grid with new BentoFeatureCard grid component in the features section",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "How we are different"
+          },
+          {
+            "command": "find role",
+            "target": "grid"
+          },
+          {
+            "command": "is visible",
+            "target": "Fine-tuned AI"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-features-grid-client.tsx"
+        ],
+        "dependencies": [
+          "HomeFeaturesGrid component",
+          "Suspense from React"
+        ],
+        "constraints": [
+          "Replace existing CardSpotlight grid (lines ~179-194)",
+          "Keep existing section heading and subtitle rendering",
+          "Wrap new component in Suspense with loading fallback",
+          "Maintain existing spacing classes (spacing.section, widths.content)"
+        ]
+      },
+      "input_state": "page.tsx has existing CardSpotlight grid in features section",
+      "output_state": "page.tsx uses HomeFeaturesGrid component instead of CardSpotlight grid",
+      "acceptance_criterion": "Homepage features section renders bento grid with stagger animation, CardSpotlight imports removed",
+      "verification_command": "grep 'HomeFeaturesGrid' apps/web/app/\\(marketing\\)/page.tsx && ! grep -q 'CardSpotlight' apps/web/app/\\(marketing\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I4.F3.T3"],
+        "blocks": ["S2086.I4.F3.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I4.F3.T5",
+      "type": "task",
+      "name": "Run typecheck, lint, and format",
+      "action": {
+        "verb": "Validate",
+        "target": "code quality with typecheck, lint, and format"
+      },
+      "purpose": "Ensure all code passes TypeScript type checking, linting rules, and formatting standards",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts",
+          "apps/web/app/(marketing)/_components/bento-feature-card.tsx",
+          "apps/web/app/(marketing)/_components/home-features-grid-client.tsx",
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "pnpm typecheck must pass with 0 errors",
+          "pnpm lint must pass with 0 errors",
+          "pnpm format must pass"
+        ]
+      },
+      "input_state": "All feature files created/modified, no validation run yet",
+      "output_state": "typecheck, lint, and format all pass successfully",
+      "acceptance_criterion": "All three commands (typecheck, lint, format) exit with code 0",
+      "verification_command": "pnpm typecheck && pnpm lint && pnpm format",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S2086.I4.F3.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Foundation",
+        "task_ids": ["S2086.I4.F3.T1", "S2086.I4.F3.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 6,
+        "parallel_hours": 4
+      },
+      {
+        "id": 1,
+        "name": "Grid Assembly",
+        "task_ids": ["S2086.I4.F3.T3"],
+        "depends_on_groups": [0],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Integration",
+        "task_ids": ["S2086.I4.F3.T4"],
+        "depends_on_groups": [0, 1],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Validation",
+        "task_ids": ["S2086.I4.F3.T5"],
+        "depends_on_groups": [0, 1, 2],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2086.I4.F3.T2", "S2086.I4.F3.T3", "S2086.I4.F3.T4", "S2086.I4.F3.T5"],
+      "total_hours": 11
+    },
+    "duration": {
+      "sequential": 13,
+      "parallel": 11,
+      "time_saved_percent": 15.4
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

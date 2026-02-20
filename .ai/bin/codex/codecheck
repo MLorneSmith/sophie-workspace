@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# codex-codecheck: Run comprehensive code quality validation with auto-fix
+# Usage: .ai/bin/codex/codecheck [--fix] [--quick]
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+FLAGS="${*:-}"
+
+cd "$REPO_ROOT"
+
+PROMPT=$(cat <<'PROMPT_EOF'
+Run a comprehensive code quality check on this project. Execute these steps:
+
+## 1. TypeScript Validation (MUST PASS)
+```bash
+pnpm typecheck 2>&1
+```
+- Zero tolerance for type errors
+- If errors found, analyze and fix them
+- Re-run until clean
+
+## 2. Linting
+```bash
+pnpm lint:fix 2>&1
+```
+- Auto-fix what can be fixed
+- Report any remaining issues
+
+## 3. Formatting
+```bash
+pnpm format:fix 2>&1
+```
+- Auto-fix formatting issues
+
+## 4. Summary Report
+After all checks, provide a summary:
+- ✅/❌ TypeScript: X errors found (X fixed)
+- ✅/❌ Lint: X issues (X auto-fixed)
+- ✅/❌ Format: X issues (X auto-fixed)
+- Overall: PASS/FAIL
+
+If --fix was passed, automatically fix all fixable issues.
+If --quick was passed, only run typecheck.
+
+Flags passed: CODECHECK_FLAGS
+PROMPT_EOF
+)
+
+# Replace placeholder with actual flags
+PROMPT="${PROMPT//CODECHECK_FLAGS/$FLAGS}"
+
+echo "🔍 Running codecheck..."
+codex exec --full-auto -C "$REPO_ROOT" "$PROMPT"

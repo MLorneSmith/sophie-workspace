@@ -1,0 +1,275 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I1.F2",
+    "feature_name": "Dashboard Page Shell",
+    "feature_slug": "dashboard-page-shell",
+    "initiative_id": "S2072.I1",
+    "spec_id": "S2072",
+    "created_at": "2026-02-12T13:00:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2072.I1.F2.T1",
+      "type": "task",
+      "name": "Update page metadata to use dashboard title",
+      "action": { "verb": "Update", "target": "page metadata" },
+      "purpose": "Change generateMetadata to return dashboard-specific title using common:routes.dashboard i18n key",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/public/locales/en/common.json"
+        ],
+        "dependencies": [
+          "createI18nServerInstance from ~/lib/i18n/i18n.server"
+        ],
+        "constraints": [
+          "Metadata title must use i18n key common:routes.dashboard",
+          "Follow existing generateMetadata pattern from course/page.tsx",
+          "No changes to page component structure in this task"
+        ]
+      },
+      "input_state": "Page uses account:homePage title in metadata",
+      "output_state": "Page uses common:routes.dashboard title in metadata",
+      "acceptance_criterion": "generateMetadata returns dashboard title from i18n, typecheck passes",
+      "verification_command": "grep -q 'i18n.t(\"common:routes.dashboard\")' apps/web/app/home/(user)/page.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2072.I1.F2.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I1.F2.T2",
+      "type": "task",
+      "name": "Update page header to use dashboard title and description",
+      "action": { "verb": "Update", "target": "page header" },
+      "purpose": "Change HomeLayoutPageHeader props to use dashboard-specific i18n keys for title and description",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Dashboard" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/home-page-header.tsx"
+        ],
+        "dependencies": [
+          "HomeLayoutPageHeader component",
+          "Trans component from @kit/ui/trans",
+          "common:routes.dashboard i18n key",
+          "common:dashboardTabDescription i18n key"
+        ],
+        "constraints": [
+          "Title must use Trans component with i18nKey common:routes.dashboard",
+          "Description must use Trans component with i18nKey common:dashboardTabDescription",
+          "Follow existing HomeLayoutPageHeader usage pattern"
+        ]
+      },
+      "input_state": "Page header displays Home title and generic description",
+      "output_state": "Page header displays Dashboard title and dashboard-specific description",
+      "acceptance_criterion": "HomeLayoutPageHeader uses dashboard i18n keys, visual verification shows Dashboard heading",
+      "verification_command": "grep -q 'common:routes.dashboard' apps/web/app/home/(user)/page.tsx && grep -q 'common:dashboardTabDescription' apps/web/app/home/(user)/page.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I1.F2.T1"],
+        "blocks": ["S2072.I1.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I1.F2.T3",
+      "type": "task",
+      "name": "Add placeholder content to PageBody",
+      "action": { "verb": "Add", "target": "placeholder content" },
+      "purpose": "Add temporary placeholder text inside PageBody to indicate where grid layout will be added in F3",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Dashboard" },
+          { "command": "is visible", "target": "grid" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "PageBody component from @kit/ui/page"
+        ],
+        "constraints": [
+          "Content must be wrapped in PageBody",
+          "Use simple placeholder text like 'Dashboard content will appear here'",
+          "Add className='container mx-auto px-4 py-8' for proper spacing",
+          "This is temporary until F3 (Responsive Grid Layout) is implemented"
+        ]
+      },
+      "input_state": "PageBody component is empty with no children",
+      "output_state": "PageBody contains placeholder text in a container div",
+      "acceptance_criterion": "PageBody has children content, page renders with placeholder, typecheck passes",
+      "verification_command": "grep -q 'container mx-auto' apps/web/app/home/(user)/page.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I1.F2.T2"],
+        "blocks": ["S2072.I1.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I1.F2.T4",
+      "type": "task",
+      "name": "Create loading.tsx with GlobalLoader",
+      "action": { "verb": "Create", "target": "loading.tsx file" },
+      "purpose": "Create loading state file at apps/web/app/home/(user)/loading.tsx using GlobalLoader component for perceived performance",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "GlobalLoader component from @kit/ui/global-loader"
+        ],
+        "constraints": [
+          "File must be at apps/web/app/home/(user)/loading.tsx",
+          "Export default GlobalLoader component",
+          "Follow pattern from coaching/loading.tsx and assessment/loading.tsx",
+          "No additional logic needed - GlobalLoader handles everything"
+        ]
+      },
+      "input_state": "No loading.tsx file exists at apps/web/app/home/(user)/loading.tsx",
+      "output_state": "loading.tsx file exists with GlobalLoader default export",
+      "acceptance_criterion": "File exists with correct imports and default export, typecheck passes",
+      "verification_command": "test -f apps/web/app/home/(user)/loading.tsx && grep -q 'GlobalLoader' apps/web/app/home/(user)/loading.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/loading.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Page Structure",
+        "task_ids": ["S2072.I1.F2.T1", "S2072.I1.F2.T2", "S2072.I1.F2.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Loading State",
+        "task_ids": ["S2072.I1.F2.T4"],
+        "depends_on_groups": [],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2072.I1.F2.T1", "S2072.I1.F2.T2", "S2072.I1.F2.T3"],
+      "total_hours": 3
+    },
+    "duration": {
+      "sequential": 4,
+      "parallel": 3,
+      "time_saved_percent": 25
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

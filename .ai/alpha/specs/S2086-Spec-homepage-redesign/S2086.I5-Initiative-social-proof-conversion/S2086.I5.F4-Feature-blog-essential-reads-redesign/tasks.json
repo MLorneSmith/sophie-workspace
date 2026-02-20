@@ -1,0 +1,628 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I5.F4",
+    "feature_name": "Blog/Essential Reads Redesign",
+    "feature_slug": "blog-essential-reads-redesign",
+    "initiative_id": "S2086.I5",
+    "spec_id": 2086,
+    "created_at": "2026-02-13T14:30:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2086.I5.F4.T1",
+      "type": "task",
+      "name": "Add category and thumbnail fields to homepage content config",
+      "action": {
+        "verb": "Add",
+        "target": "category and thumbnail fields to homepage content config"
+      },
+      "purpose": "Extend blog post configuration with categoryBadge and thumbnailSrc fields for the redesigned blog cards",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "TypeScript interface BlogPost"
+        ],
+        "constraints": [
+          "Must extend existing BlogPost interface",
+          "Fields should be optional for backward compatibility",
+          "Use appropriate types (string for both fields)"
+        ]
+      },
+      "input_state": "BlogPost interface has title, description, iconType, blogType, readTimeMinutes",
+      "output_state": "BlogPost interface includes categoryBadge and thumbnailSrc fields",
+      "acceptance_criterion": "BlogPost interface has categoryBadge?: string and thumbnailSrc?: string fields defined",
+      "verification_command": "grep -A 10 'interface BlogPost' apps/web/config/homepage-content.config.ts | grep -E '(categoryBadge|thumbnailSrc)'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/config/homepage-content.config.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I5.F4.T2", "S2086.I5.F4.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F4.T2",
+      "type": "task",
+      "name": "Populate thumbnail images and category badges for essential reads",
+      "action": {
+        "verb": "Update",
+        "target": "essential reads with thumbnail images and category badges"
+      },
+      "purpose": "Add categoryBadge and thumbnailSrc values to the 3 blog posts in essentialReads config",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "BlogPost interface with categoryBadge and thumbnailSrc fields"
+        ],
+        "constraints": [
+          "Use appropriate category badges (e.g., 'Technology', 'Product Launch', 'Strategy')",
+          "Use existing image assets or placeholder paths",
+          "3 blog posts need updates"
+        ]
+      },
+      "input_state": "BlogPost interface has categoryBadge and thumbnailSrc fields, posts array exists",
+      "output_state": "All 3 blog posts in essentialReads.posts have categoryBadge and thumbnailSrc values",
+      "acceptance_criterion": "Each post in essentialReads.posts has categoryBadge and thumbnailSrc properties with values",
+      "verification_command": "grep -A 20 'essentialReads' apps/web/config/homepage-content.config.ts | grep -E '(categoryBadge|thumbnailSrc)' | wc -l | grep -q '6'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/config/homepage-content.config.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F4.T1"],
+        "blocks": ["S2086.I5.F4.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F4.T3",
+      "type": "task",
+      "name": "Create homepage blog section component structure",
+      "action": {
+        "verb": "Create",
+        "target": "homepage blog section component structure"
+      },
+      "purpose": "Create the HomeBlogSection component with section header using SecondaryHero",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-blog-section.tsx"
+        ],
+        "dependencies": [
+          "SecondaryHero from @kit/ui/marketing",
+          "homepageContentConfig from config",
+          "Section spacing constants from page.tsx"
+        ],
+        "constraints": [
+          "Use SecondaryHero component for section header",
+          "Follow existing component patterns in _components directory",
+          "Use 'use client' directive for animation support",
+          "Import essentialReads from homepageContentConfig"
+        ]
+      },
+      "input_state": "No home-blog-section.tsx exists",
+      "output_state": "HomeBlogSection component created with SecondaryHero header displaying title and subtitle",
+      "acceptance_criterion": "home-blog-section.tsx exists with HomeBlogSection component rendering SecondaryHero with essentialReads title and subtitle",
+      "verification_command": "grep -q 'export.*HomeBlogSection' apps/web/app/\\(marketing\\)/_components/home-blog-section.tsx && grep -q 'SecondaryHero' apps/web/app/\\(marketing\\)/_components/home-blog-section.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/(marketing)/_components/home-blog-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F4.T1", "S2086.I5.F4.T2"],
+        "blocks": ["S2086.I5.F4.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F4.T4",
+      "type": "task",
+      "name": "Create blog card grid layout with 3-column responsive grid",
+      "action": {
+        "verb": "Create",
+        "target": "blog card grid layout with 3-column responsive grid"
+      },
+      "purpose": "Add responsive 3-column grid layout to HomeBlogSection component using Tailwind classes",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-blog-section.tsx"
+        ],
+        "dependencies": [
+          "HomeBlogSection component structure from T3",
+          "Tailwind CSS grid utilities"
+        ],
+        "constraints": [
+          "Use grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pattern",
+          "Match spacing from existing sections (gap-4 sm:gap-6 lg:gap-8)",
+          "Map over essentialReads.posts array",
+          "Use Suspense for loading states"
+        ]
+      },
+      "input_state": "HomeBlogSection component has SecondaryHero header",
+      "output_state": "HomeBlogSection has 3-column responsive grid layout mapping over blog posts",
+      "acceptance_criterion": "Component renders grid with responsive classes and maps over essentialReads.posts",
+      "verification_command": "grep -q 'grid-cols-1.*sm:grid-cols-2.*lg:grid-cols-3' apps/web/app/\\(marketing\\)/_components/home-blog-section.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-blog-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F4.T3"],
+        "blocks": ["S2086.I5.F4.T5", "S2086.I5.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F4.T5",
+      "type": "task",
+      "name": "Create glass card component with image thumbnail",
+      "action": {
+        "verb": "Create",
+        "target": "glass card component with image thumbnail"
+      },
+      "purpose": "Create HomeBlogCard sub-component with glass styling and separate image thumbnail element",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Essential Reads"
+          },
+          {
+            "command": "find role",
+            "target": "link"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-blog-section.tsx"
+        ],
+        "dependencies": [
+          "Next.js Image component",
+          "Badge component from @kit/ui/badge",
+          "Glass card styling from I1 design system",
+          "BlogPost type from config"
+        ],
+        "constraints": [
+          "Use glass card styling (backdrop-blur, dark background, subtle border)",
+          "Image thumbnail as separate element (not background-image)",
+          "Proper aspect ratio for image (e.g., aspect-video or aspect-[4/3])",
+          "Display title, description, read time",
+          "Use Next.js Image with optimization",
+          "Component should be defined in same file or as separate file"
+        ]
+      },
+      "input_state": "Grid layout exists mapping over blog posts",
+      "output_state": "HomeBlogCard component renders glass card with image, badge, title, description, read time",
+      "acceptance_criterion": "Blog card displays image thumbnail, category badge, title, description, and read time in glass card styling",
+      "verification_command": "grep -q 'aspect-' apps/web/app/\\(marketing\\)/_components/home-blog-section.tsx && grep -q 'Badge' apps/web/app/\\(marketing\\)/_components/home-blog-section.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-blog-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F4.T4"],
+        "blocks": ["S2086.I5.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F4.T6",
+      "type": "task",
+      "name": "Add hover zoom effect to image thumbnail",
+      "action": {
+        "verb": "Add",
+        "target": "hover zoom effect to image thumbnail"
+      },
+      "purpose": "Implement CSS scale transform on image hover with smooth transition",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Essential Reads"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-blog-section.tsx"
+        ],
+        "dependencies": [
+          "HomeBlogCard component from T5",
+          "Tailwind CSS transform utilities"
+        ],
+        "constraints": [
+          "Use CSS transform: scale(1.05) on hover",
+          "Add overflow-hidden to image container",
+          "Use group-hover pattern for triggering on card hover",
+          "Add transition-transform for smooth animation",
+          "Scale should be subtle (1.05 to 1.1 max)"
+        ]
+      },
+      "input_state": "HomeBlogCard displays image without hover effect",
+      "output_state": "Image scales up smoothly on card hover",
+      "acceptance_criterion": "Image thumbnail scales up when hovering over the blog card",
+      "verification_command": "grep -q 'group-hover.*scale' apps/web/app/\\(marketing\\)/_components/home-blog-section.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-blog-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F4.T5"],
+        "blocks": ["S2086.I5.F4.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F4.T7",
+      "type": "task",
+      "name": "Add staggered fade-in animation to blog section",
+      "action": {
+        "verb": "Add",
+        "target": "staggered fade-in animation to blog section"
+      },
+      "purpose": "Wrap blog cards with AnimateOnScroll component for staggered fade-in when section enters viewport",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Essential Reads"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-blog-section.tsx"
+        ],
+        "dependencies": [
+          "AnimateOnScroll from I1 design system",
+          "Framer Motion animation variants"
+        ],
+        "constraints": [
+          "Use AnimateOnScroll wrapper component from I1",
+          "Apply stagger delay to each card (e.g., 0.1s increments)",
+          "Use whileInView pattern with viewport: { once: true }",
+          "Animation should be subtle fade-in + slide-up"
+        ]
+      },
+      "input_state": "Blog cards render without animation",
+      "output_state": "Blog cards fade in with stagger effect when section scrolls into view",
+      "acceptance_criterion": "Blog cards animate with staggered fade-in when scrolling into viewport",
+      "verification_command": "grep -q 'AnimateOnScroll' apps/web/app/\\(marketing\\)/_components/home-blog-section.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-blog-section.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F4.T6"],
+        "blocks": ["S2086.I5.F4.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F4.T8",
+      "type": "task",
+      "name": "Replace existing blog section in homepage",
+      "action": {
+        "verb": "Replace",
+        "target": "existing blog section in homepage"
+      },
+      "purpose": "Update page.tsx to use new HomeBlogSection component instead of old BlogPostCard implementation",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Essential Reads"
+          },
+          {
+            "command": "find role",
+            "target": "link"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [
+          "HomeBlogSection component",
+          "Existing blog section code (lines 252-283)"
+        ],
+        "constraints": [
+          "Replace the entire Blog Posts Section (lines 252-283)",
+          "Keep the same section spacing classes",
+          "Remove old BlogPostCard import if no longer used",
+          "Import HomeBlogSection from _components"
+        ]
+      },
+      "input_state": "page.tsx uses old BlogPostCard implementation in blog section",
+      "output_state": "page.tsx uses HomeBlogSection component for blog posts",
+      "acceptance_criterion": "Homepage renders HomeBlogSection component in place of old blog section",
+      "verification_command": "grep -q 'HomeBlogSection' apps/web/app/\\(marketing\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F4.T7"],
+        "blocks": ["S2086.I5.F4.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I5.F4.T9",
+      "type": "task",
+      "name": "Run typecheck and lint validation",
+      "action": {
+        "verb": "Run",
+        "target": "typecheck and lint validation"
+      },
+      "purpose": "Verify all TypeScript types are correct and code follows linting standards",
+      "status": "draft",
+      "estimated_hours": 0.5,
+      "priority": 9,
+      "group": 6,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-blog-section.tsx",
+          "apps/web/config/homepage-content.config.ts",
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [
+          "All implementation tasks (T1-T8)"
+        ],
+        "constraints": [
+          "Must pass pnpm typecheck without errors",
+          "Must pass pnpm lint without errors",
+          "Fix any type errors or linting issues found"
+        ]
+      },
+      "input_state": "All implementation complete",
+      "output_state": "Typecheck and lint pass with zero errors",
+      "acceptance_criterion": "Both pnpm typecheck and pnpm lint pass successfully",
+      "verification_command": "pnpm typecheck && pnpm lint",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S2086.I5.F4.T8"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Content Configuration",
+        "task_ids": ["S2086.I5.F4.T1", "S2086.I5.F4.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Component Structure",
+        "task_ids": ["S2086.I5.F4.T3", "S2086.I5.F4.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "UI Implementation",
+        "task_ids": ["S2086.I5.F4.T5", "S2086.I5.F4.T6"],
+        "depends_on_groups": [2],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 4,
+        "name": "Animation",
+        "task_ids": ["S2086.I5.F4.T7"],
+        "depends_on_groups": [3],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 5,
+        "name": "Integration",
+        "task_ids": ["S2086.I5.F4.T8"],
+        "depends_on_groups": [4],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 6,
+        "name": "Validation",
+        "task_ids": ["S2086.I5.F4.T9"],
+        "depends_on_groups": [5],
+        "estimated_hours": 0.5,
+        "parallel_hours": 0.5
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2086.I5.F4.T1", "S2086.I5.F4.T2", "S2086.I5.F4.T3", "S2086.I5.F4.T4", "S2086.I5.F4.T5", "S2086.I5.F4.T6", "S2086.I5.F4.T7", "S2086.I5.F4.T8", "S2086.I5.F4.T9"],
+      "total_hours": 11.5
+    },
+    "duration": {
+      "sequential": 11.5,
+      "parallel": 11.5,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

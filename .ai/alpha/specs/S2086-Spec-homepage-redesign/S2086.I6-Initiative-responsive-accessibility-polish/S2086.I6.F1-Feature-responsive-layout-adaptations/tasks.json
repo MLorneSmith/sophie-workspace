@@ -1,0 +1,556 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I6.F1",
+    "feature_name": "Responsive Layout Adaptations",
+    "feature_slug": "responsive-layout-adaptations",
+    "initiative_id": "S2086.I6",
+    "spec_id": 2086,
+    "created_at": "2026-02-13T13:00:00Z",
+    "complexity": {
+      "score": 56,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2086.I6.F1.T1",
+      "type": "task",
+      "name": "Add mobile hero and product preview responsive layouts",
+      "action": { "verb": "Add", "target": "mobile hero and product preview responsive layouts" },
+      "purpose": "Ensure hero section stacks CTA vertically and uses fluid typography at 375px, product preview displays smaller frame on mobile",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Start Writing Free" },
+          { "command": "find role", "target": "button" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-container-scroll-client.tsx",
+          "apps/web/config/homepage-content.config.ts"
+        ],
+        "dependencies": [
+          "Tailwind responsive utilities (sm:, md:, lg:)",
+          "BackgroundBoxes component",
+          "ContainerScroll component"
+        ],
+        "constraints": [
+          "Mobile-first approach - default styles for 375px",
+          "Fluid typography with clamp() for smooth scaling",
+          "Product preview frame should be smaller on mobile (max-w-5xl → max-w-full)",
+          "Hero height should adapt: h-[90vh] → min-h-[600px] already set"
+        ]
+      },
+      "input_state": "Hero section displays with fixed 90vh height and centered CTA. Product preview uses ContainerScroll with large frame.",
+      "output_state": "Hero section stacks CTA vertically at 375px with fluid text sizing. Product preview displays in smaller frame on mobile viewport.",
+      "acceptance_criterion": "At 375px viewport, hero CTA buttons stack vertically with 44px touch targets, product preview frame uses full width with padding.",
+      "verification_command": "grep -n 'flex-col\\|min-h-\\[44px\\]' apps/web/app/\\(marketing\\)/page.tsx | head -5 && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" },
+        { "type": "modified", "path": "apps/web/app/(marketing)/_components/home-container-scroll-client.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I6.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": false,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I6.F1.T2",
+      "type": "task",
+      "name": "Convert statistics grid to 2x2 layout on mobile",
+      "action": { "verb": "Convert", "target": "statistics grid to 2x2 layout on mobile" },
+      "purpose": "Display statistics in 2x2 grid instead of 4-across on mobile viewports",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 2000,
+        "checks": [
+          { "command": "is visible", "target": "2,000+" },
+          { "command": "find role", "target": "grid" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [
+          "Tailwind grid utilities",
+          "Existing statistics section (currently 4-across on desktop)"
+        ],
+        "constraints": [
+          "Grid should be grid-cols-2 on mobile (<768px)",
+          "Grid should be grid-cols-4 on tablet and desktop (>=768px)",
+          "Each stat card should maintain glass card styling"
+        ]
+      },
+      "input_state": "Statistics section displays 4 cards in a row at all breakpoints",
+      "output_state": "Statistics section displays 2x2 grid at 375px, 4-across at 768px+",
+      "acceptance_criterion": "At 375px, statistics grid uses grid-cols-2. At 768px+, grid uses grid-cols-4.",
+      "verification_command": "grep -n 'grid-cols-2' apps/web/app/\\(marketing\\)/page.tsx && grep -n 'md:grid-cols-4' apps/web/app/\\(marketing\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I6.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I6.F1.T3",
+      "type": "task",
+      "name": "Convert sticky scroll section to stacked layout on mobile",
+      "action": { "verb": "Convert", "target": "sticky scroll section to stacked layout on mobile" },
+      "purpose": "Transform 40/60 sticky scroll layout to vertically stacked cards on mobile viewports using useIsMobile hook",
+      "status": "draft",
+      "estimated_hours": 6,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "AI Canvas" },
+          { "command": "find role", "target": "article" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx",
+          "packages/ui/src/aceternity/sticky-scroll-reveal.tsx"
+        ],
+        "dependencies": [
+          "useIsMobile hook from @kit/ui/hooks/use-mobile",
+          "StickyScrollReveal component",
+          "Framer Motion for animations"
+        ],
+        "constraints": [
+          "Use useIsMobile hook to detect mobile viewport",
+          "Render stacked cards on mobile (each card takes full width)",
+          "Disable sticky behavior and scroll tracking on mobile",
+          "Preserve desktop sticky scroll behavior",
+          "Maintain glass card styling"
+        ]
+      },
+      "input_state": "StickyScrollReveal uses 40/60 two-column layout with sticky image at all breakpoints",
+      "output_state": "StickyScrollReveal displays vertically stacked full-width cards on mobile, sticky two-column layout on desktop",
+      "acceptance_criterion": "At viewport <1024px, sticky scroll displays as stacked cards. At >=1024px, sticky scroll displays 40/60 layout.",
+      "verification_command": "grep -n 'useIsMobile' apps/web/app/\\(marketing\\)/_components/home-sticky-scroll-client.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/_components/home-sticky-scroll-client.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I6.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I6.F1.T4",
+      "type": "task",
+      "name": "Convert features grid to single-column layout on mobile",
+      "action": { "verb": "Convert", "target": "features grid to single-column layout on mobile" },
+      "purpose": "Display features in uniform single-column grid on mobile, 2-column grid on tablet",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "AI-Powered" },
+          { "command": "find role", "target": "grid" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [
+          "Tailwind grid utilities",
+          "CardSpotlight component",
+          "Existing features grid (3-column on desktop)"
+        ],
+        "constraints": [
+          "Grid should be grid-cols-1 on mobile (<640px)",
+          "Grid should be grid-cols-2 on tablet (640px-1024px)",
+          "Grid should be grid-cols-3 on desktop (>=1024px)",
+          "Use existing responsive classes: grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+        ]
+      },
+      "input_state": "Features grid uses 3-column layout at all breakpoints with responsive classes already in place",
+      "output_state": "Features grid verified to display single-column on mobile, 2-column on tablet, 3-column on desktop",
+      "acceptance_criterion": "Grid uses grid-cols-1 at <640px, sm:grid-cols-2 at 640px-1024px, lg:grid-cols-3 at >=1024px.",
+      "verification_command": "grep -n 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' apps/web/app/\\(marketing\\)/page.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I6.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I6.F1.T5",
+      "type": "task",
+      "name": "Add mobile stacked layouts for testimonials, pricing, and blog sections",
+      "action": { "verb": "Add", "target": "mobile stacked layouts for testimonials, pricing, and blog sections" },
+      "purpose": "Display testimonials as single-column, pricing cards stacked vertically, blog cards as single-column on mobile",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 4000,
+        "checks": [
+          { "command": "is visible", "target": "Pricing" },
+          { "command": "find role", "target": "grid" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-testimonials-grid-server.tsx"
+        ],
+        "dependencies": [
+          "Tailwind grid utilities",
+          "PricingTable component",
+          "BlogPostCard component",
+          "TestimonialsMasonaryGridServer component"
+        ],
+        "constraints": [
+          "Testimonials: grid-cols-1 on mobile, sm:grid-cols-2 on tablet",
+          "Pricing: stacked vertically on mobile (overflow-x-auto currently in place)",
+          "Blog: grid-cols-1 on mobile, sm:grid-cols-2 on tablet, lg:grid-cols-3 on desktop",
+          "Pricing 'Most Popular' card should be first/visible on mobile"
+        ]
+      },
+      "input_state": "Testimonials, pricing, and blog sections use multi-column layouts at all breakpoints",
+      "output_state": "Testimonials display single-column on mobile, 2-column on tablet. Pricing stacks vertically on mobile. Blog displays single-column on mobile.",
+      "acceptance_criterion": "At 375px, testimonials, pricing cards, and blog cards stack vertically. At 768px+, testimonials and blog use 2-column grid.",
+      "verification_command": "grep -n 'grid-cols-1 sm:grid-cols-2' apps/web/app/\\(marketing\\)/page.tsx | wc -l && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I6.F1.T1", "S2086.I6.F1.T2", "S2086.I6.F1.T3", "S2086.I6.F1.T4"],
+        "blocks": ["S2086.I6.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": false,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I6.F1.T6",
+      "type": "task",
+      "name": "Add touch-friendly adjustments to logo cloud marquee",
+      "action": { "verb": "Add", "target": "touch-friendly adjustments to logo cloud marquee" },
+      "purpose": "Ensure logo cloud marquee works well on touch devices with reduced motion support",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 2000,
+        "checks": [
+          { "command": "is visible", "target": "Trusted by" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-logo-cloud-client.tsx",
+          "packages/ui/src aceternity/logo-marquee.tsx"
+        ],
+        "dependencies": [
+          "LogoCloudMarquee component",
+          "CSS prefers-reduced-motion media query"
+        ],
+        "constraints": [
+          "Marquee should pause on hover (already implemented)",
+          "Touch devices should not trigger hover pause unintentionally",
+          "Respect prefers-reduced-motion by pausing animation",
+          "Ensure 44px touch targets for any interactive logos"
+        ]
+      },
+      "input_state": "Logo cloud marquee runs continuously with hover pause",
+      "output_state": "Logo cloud marquee respects reduced motion preferences and works smoothly on touch devices",
+      "acceptance_criterion": "prefers-reduced-motion pauses marquee animation. Touch interactions don't conflict with scroll.",
+      "verification_command": "grep -n 'prefers-reduced-motion\\|motion-reduce' packages/ui/src/aceternity/logo-marquee.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/_components/home-logo-cloud-client.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I6.F1.T5"],
+        "blocks": ["S2086.I6.F1.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I6.F1.T7",
+      "type": "task",
+      "name": "Audit all interactive elements for 44px minimum touch targets",
+      "action": { "verb": "Audit", "target": "all interactive elements for 44px minimum touch targets" },
+      "purpose": "Verify all CTAs, buttons, and interactive elements have minimum 44px touch targets for accessibility",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Start Writing Free" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/*.tsx"
+        ],
+        "dependencies": [
+          "All Button components",
+          "All Link components",
+          "Interactive elements across 12 sections"
+        ],
+        "constraints": [
+          "All buttons must have min-h-[44px] or min-w-[44px] depending on orientation",
+          "All links must have minimum 44px touch target (including padding)",
+          "Icon-only buttons must have min-w-[44px] min-h-[44px]",
+          "Use Tailwind utility classes for touch targets"
+        ]
+      },
+      "input_state": "Interactive elements may have inconsistent touch target sizes",
+      "output_state": "All interactive elements verified to have minimum 44px touch targets with documented violations fixed",
+      "acceptance_criterion": "All buttons and links on homepage have minimum 44px touch targets. No touch targets below 44px found.",
+      "verification_command": "grep -rn 'min-h-\\[44px\\]\\|min-w-\\[44px\\]\\|h-11\\|w-11' apps/web/app/\\(marketing\\)/ | wc -l && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I6.F1.T6"],
+        "blocks": ["S2086.I6.F1.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S2086.I6.F1.T8",
+      "type": "task",
+      "name": "Test all three breakpoints and verify no horizontal scrolling",
+      "action": { "verb": "Test", "target": "all three breakpoints and verify no horizontal scrolling" },
+      "purpose": "Perform end-to-end testing at 375px (mobile), 768px (tablet), and 1280px (desktop) viewports to verify responsive layouts and no horizontal scrolling",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 5000,
+        "checks": [
+          { "command": "snapshot", "target": "" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx"
+        ],
+        "dependencies": [
+          "All responsive layout changes from T1-T7",
+          "Playwright or manual browser testing",
+          "Chrome DevTools responsive mode"
+        ],
+        "constraints": [
+          "Test at exactly 375px, 768px, and 1280px widths",
+          "Verify no horizontal scrollbar at any breakpoint",
+          "Verify all 12 sections render correctly at each breakpoint",
+          "Document any layout issues found",
+          "Verify text remains readable without zooming"
+        ]
+      },
+      "input_state": "All responsive layout changes implemented but not tested end-to-end",
+      "output_state": "All breakpoints tested and verified. No horizontal scrolling. All sections render correctly.",
+      "acceptance_criterion": "Homepage renders correctly at 375px, 768px, and 1280px with no horizontal scrolling and readable text.",
+      "verification_command": "pnpm --filter web build && echo 'Manual testing required: Test at 375px, 768px, 1280px viewports' && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I6.F1.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": false,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Foundation",
+        "task_ids": ["S2086.I6.F1.T1", "S2086.I6.F1.T2", "S2086.I6.F1.T3", "S2086.I6.F1.T4"],
+        "depends_on_groups": [],
+        "estimated_hours": 14,
+        "parallel_hours": 6
+      },
+      {
+        "id": 1,
+        "name": "Lower Sections",
+        "task_ids": ["S2086.I6.F1.T5"],
+        "depends_on_groups": [0],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Touch Optimization",
+        "task_ids": ["S2086.I6.F1.T6"],
+        "depends_on_groups": [0, 1],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Touch Target Audit",
+        "task_ids": ["S2086.I6.F1.T7"],
+        "depends_on_groups": [0, 1, 2],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 4,
+        "name": "Cross-Breakpoint Testing",
+        "task_ids": ["S2086.I6.F1.T8"],
+        "depends_on_groups": [0, 1, 2, 3],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2086.I6.F1.T3", "S2086.I6.F1.T5", "S2086.I6.F1.T6", "S2086.I6.F1.T7", "S2086.I6.F1.T8"],
+      "total_hours": 19
+    },
+    "duration": {
+      "sequential": 27,
+      "parallel": 19,
+      "time_saved_percent": 30
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 88,
+      "dependencies": 100,
+      "state_flow": 90,
+      "testability": 85
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 88
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

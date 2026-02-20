@@ -1,0 +1,338 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I1.F2",
+    "feature_name": "Animation Infrastructure",
+    "feature_slug": "animation-infrastructure",
+    "initiative_id": "S2086.I1",
+    "spec_id": 2086,
+    "created_at": "2026-02-13T12:45:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2086.I1.F2.T1",
+      "type": "task",
+      "name": "Create motion-features.ts file",
+      "action": { "verb": "Create", "target": "motion-features.ts" },
+      "purpose": "Export domMax features for LazyMotion to lazy-load, reducing initial bundle size by ~34KB",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Use 'motion/react' import path (NOT 'framer-motion')",
+          "Export domMax (not domAnimation) to support layout animations in I2-I5"
+        ]
+      },
+      "input_state": "Marketing _components/ directory exists, motion package needs to be installed",
+      "output_state": "motion-features.ts file exists with domMax export for dynamic import",
+      "acceptance_criterion": "File exports domMax from motion/react and can be dynamically imported",
+      "verification_command": "grep -q 'export.*domMax' apps/web/app/\\(marketing\\)/_components/motion-features.ts && grep -q 'motion/react' apps/web/app/\\(marketing\\)/_components/motion-features.ts",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/motion-features.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2086.I1.F2.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F2.T2",
+      "type": "task",
+      "name": "Create MotionProvider component",
+      "action": { "verb": "Create", "target": "MotionProvider component" },
+      "purpose": "Wrap LazyMotion (lazy-loads features) + MotionConfig (global reducedMotion: 'user') to provide animation context for all marketing pages",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/(marketing)/_components/motion-features.ts"],
+        "dependencies": ["LazyMotion", "MotionConfig from motion/react"],
+        "constraints": [
+          "Must use 'use client' directive",
+          "Must use 'motion/react' import path",
+          "Must set reducedMotion='user' in MotionConfig",
+          "Must lazy-load motion-features.ts dynamically"
+        ]
+      },
+      "input_state": "motion-features.ts exists with domMax export",
+      "output_state": "MotionProvider component wraps LazyMotion + MotionConfig, ready for use in layout",
+      "acceptance_criterion": "MotionProvider component exists with LazyMotion + MotionConfig and lazy-loads motion-features",
+      "verification_command": "grep -q 'MotionProvider' apps/web/app/\\(marketing\\)/_components/motion-provider.tsx && grep -q 'LazyMotion' apps/web/app/\\(marketing\\)/_components/motion-provider.tsx && grep -q 'reducedMotion.*user' apps/web/app/\\(marketing\\)/_components/motion-provider.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/motion-provider.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I1.F2.T1"],
+        "blocks": ["S2086.I1.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F2.T3",
+      "type": "task",
+      "name": "Update marketing layout with MotionProvider",
+      "action": { "verb": "Update", "target": "marketing layout.tsx" },
+      "purpose": "Wrap children with MotionProvider to enable animation context for all marketing pages",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/(marketing)/layout.tsx", "apps/web/app/(marketing)/_components/motion-provider.tsx"],
+        "dependencies": ["MotionProvider"],
+        "constraints": [
+          "Keep existing data-marketing attribute",
+          "Keep existing SiteHeader and SiteFooter structure",
+          "MotionProvider wraps children only (not header/footer)"
+        ]
+      },
+      "input_state": "MotionProvider component exists",
+      "output_state": "Marketing layout wraps children with MotionProvider",
+      "acceptance_criterion": "MotionProvider imported and wraps children in marketing layout",
+      "verification_command": "grep -q 'MotionProvider' apps/web/app/\\(marketing\\)/layout.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/(marketing)/layout.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I1.F2.T2"],
+        "blocks": ["S2086.I1.F2.T4", "S2086.I1.F2.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F2.T4",
+      "type": "task",
+      "name": "Create AnimateOnScroll component",
+      "action": { "verb": "Create", "target": "AnimateOnScroll component" },
+      "purpose": "Reusable wrapper component with whileInView + viewport for scroll-triggered animations across all homepage sections",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Hero" }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [],
+        "dependencies": ["motion from motion/react", "Variants type"],
+        "constraints": [
+          "Must use 'use client' directive",
+          "Must use 'motion/react' import path",
+          "Default variants: fade-up (opacity: 0→1, y: 24→0)",
+          "Default viewport: { once: true, amount: 0.2 }",
+          "Support configurable variants, delay, and className props",
+          "Nice-to-have: support 'as' prop for different HTML elements"
+        ]
+      },
+      "input_state": "MotionProvider is active in layout, motion features loaded",
+      "output_state": "AnimateOnScroll component ready for use in all I2-I5 section implementations",
+      "acceptance_criterion": "AnimateOnScroll component exists with whileInView, viewport options, and configurable variants",
+      "verification_command": "grep -q 'whileInView' apps/web/app/\\(marketing\\)/_components/animate-on-scroll.tsx && grep -q 'viewport.*once.*true' apps/web/app/\\(marketing\\)/_components/animate-on-scroll.tsx && grep -q 'motion/react' apps/web/app/\\(marketing\\)/_components/animate-on-scroll.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_components/animate-on-scroll.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I1.F2.T3"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F2.T5",
+      "type": "task",
+      "name": "Create useCountUp hook",
+      "action": { "verb": "Create", "target": "useCountUp hook" },
+      "purpose": "Custom hook that animates numbers from 0 to target on viewport entry using animate() from motion (imperative) + useInView from motion/react for zero-rerender counting",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": ["animate from motion", "useInView from motion/react", "useRef, useEffect from react"],
+        "constraints": [
+          "Must use 'motion' import for animate() (NOT motion/react)",
+          "Must use 'motion/react' import for useInView",
+          "Must use 'use client' directive",
+          "Accept target number, duration (default 2s), optional formatter",
+          "Update textContent directly via ref (no React re-renders)",
+          "Return ref to attach to span element"
+        ]
+      },
+      "input_state": "MotionProvider is active in layout, _hooks directory needs creation",
+      "output_state": "useCountUp hook ready for stat card animations in F3",
+      "acceptance_criterion": "useCountUp hook exists, animates 0→target on viewport entry, updates ref.textContent without re-renders",
+      "verification_command": "test -f apps/web/app/\\(marketing\\)/_hooks/use-count-up.ts && grep -q \"from ['\\\"]motion['\\\"]\" apps/web/app/\\(marketing\\)/_hooks/use-count-up.ts && grep -q 'useInView' apps/web/app/\\(marketing\\)/_hooks/use-count-up.ts",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/(marketing)/_hooks/use-count-up.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2086.I1.F2.T3"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I1.F2.T6",
+      "type": "task",
+      "name": "Test animation bundle code-splitting",
+      "action": { "verb": "Test", "target": "animation bundle optimization" },
+      "purpose": "Confirm LazyMotion correctly code-splits motion features (~34KB savings) and animations work with reducedMotion support",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/motion-provider.tsx",
+          "apps/web/app/(marketing)/_components/animate-on-scroll.tsx",
+          "apps/web/app/(marketing)/_hooks/use-count-up.ts"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Run pnpm typecheck to verify no type errors",
+          "Run pnpm lint to verify code quality",
+          "Visual inspection of Network tab shows motion features loaded lazily (not in initial bundle)",
+          "Test prefers-reduced-motion disables animations"
+        ]
+      },
+      "input_state": "All animation infrastructure components created",
+      "output_state": "Animation infrastructure validated, typecheck passes, lint passes, bundle optimized",
+      "acceptance_criterion": "pnpm typecheck passes, pnpm lint passes, motion features lazy-loaded, reducedMotion works",
+      "verification_command": "pnpm typecheck && pnpm lint",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S2086.I1.F2.T4", "S2086.I1.F2.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Motion Provider Foundation",
+        "task_ids": ["S2086.I1.F2.T1", "S2086.I1.F2.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Layout Integration + Animation Primitives",
+        "task_ids": ["S2086.I1.F2.T3", "S2086.I1.F2.T4", "S2086.I1.F2.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 7,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Validation & Quality",
+        "task_ids": ["S2086.I1.F2.T6"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2086.I1.F2.T1", "S2086.I1.F2.T2", "S2086.I1.F2.T3", "S2086.I1.F2.T4", "S2086.I1.F2.T6"],
+      "total_hours": 9
+    },
+    "duration": {
+      "sequential": 12,
+      "parallel": 9,
+      "time_saved_percent": 25
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

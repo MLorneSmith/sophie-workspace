@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# codex-implement: Execute an implementation plan from a GitHub issue using Codex
+# Usage: .ai/bin/codex/implement <issue-number>
+set -euo pipefail
+
+ISSUE_NUMBER="${1:?Usage: codex-implement <issue-number>}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+cd "$REPO_ROOT"
+
+# Fetch the issue data
+echo "📋 Fetching issue #${ISSUE_NUMBER}..."
+ISSUE_DATA=$(gh issue view "$ISSUE_NUMBER" \
+  --repo slideheroes/2025slideheroes \
+  --json body,title,labels,url,comments \
+  --jq '{body: .body, title: .title, labels: [.labels[].name], url: .url, comments: [.comments[] | {author: .author.login, body: .body, createdAt: .createdAt}]}')
+
+ISSUE_TITLE=$(echo "$ISSUE_DATA" | jq -r '.title')
+echo "🔧 Implementing: $ISSUE_TITLE"
+
+# Determine plan type from labels or title
+PLAN_TYPE="feature"
+if echo "$ISSUE_DATA" | jq -r '.labels[]' 2>/dev/null | grep -qi "bug"; then
+  PLAN_TYPE="bug-fix"
+elif echo "$ISSUE_DATA" | jq -r '.labels[]' 2>/dev/null | grep -qi "chore"; then
+  PLAN_TYPE="chore"
+fi
+
+TODAY=$(date +%Y-%m-%d)
+
+# Build the prompt
+PROMPT=$(cat <<PROMPT_EOF
+You are implementing a plan from GitHub issue #${ISSUE_NUMBER}.
+
+## Issue Data
+Title: ${ISSUE_TITLE}
+Type: ${PLAN_TYPE}
+$(echo "$ISSUE_DATA" | jq -r '.body')
+
+## Instructions
+
+1. Read relevant context documentation from .ai/ai_docs/context-docs/ based on the task.
+2. Mark the issue as in-progress:
+   gh issue edit ${ISSUE_NUMBER} --repo slideheroes/2025slideheroes --add-label "status:in-progress" --remove-label "status:ready"
+3. Follow the plan's "Step by Step Tasks" section exactly, in order.
+4. After implementation, run ALL validation commands from the plan. Every command MUST pass.
+5. Run quality checks: pnpm typecheck && pnpm lint:fix && pnpm format:fix
+6. Commit changes using this format: type(scope): description [agent: codex]
+   - Use present tense, lowercase after colon, 50-72 chars
+   - Reference issue: "Closes #${ISSUE_NUMBER}" in commit body
+7. Post a completion report as a comment on the issue:
+   gh issue comment ${ISSUE_NUMBER} --repo slideheroes/2025slideheroes --body "## ✅ Implementation Complete\n\n[summary of changes]\n\nFiles changed:\n\$(git diff --stat)\n\nValidation: All checks passed."
+8. Update issue labels:
+   gh issue edit ${ISSUE_NUMBER} --repo slideheroes/2025slideheroes --add-label "status:review" --remove-label "status:in-progress"
+9. Save report to: .ai/reports/${PLAN_TYPE}-reports/${TODAY}/${ISSUE_NUMBER}-implementation.md
+
+When completely finished, run this command to notify:
+openclaw gateway wake --text "Done: Implemented issue #${ISSUE_NUMBER} - ${ISSUE_TITLE}" --mode now
+PROMPT_EOF
+)
+
+echo "🚀 Launching Codex..."
+codex exec --full-auto -C "$REPO_ROOT" "$PROMPT"

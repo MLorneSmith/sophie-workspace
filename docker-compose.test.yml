@@ -59,7 +59,7 @@ services:
       - STRIPE_WEBHOOK_SECRET=whsec_eb57bde9bf2e50cc5ae4d020a6b987651005153b8f21317bee3d65f0586bf81d
       # Performance
       - FORCE_COLOR=1
-      - CI=false
+      - CI=true
     command: >
       sh -c "
         echo '🔧 Installing dependencies with pnpm...' &&
@@ -125,7 +125,7 @@ services:
       - MAILER_PROVIDER=nodemailer
       # Performance
       - FORCE_COLOR=1
-      - CI=false
+      - CI=true
       - NODE_OPTIONS=--no-deprecation
     command: >
       sh -c "

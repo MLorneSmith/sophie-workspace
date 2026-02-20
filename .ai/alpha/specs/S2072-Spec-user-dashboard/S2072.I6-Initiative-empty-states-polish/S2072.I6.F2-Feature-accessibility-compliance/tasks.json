@@ -1,0 +1,706 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I6.F2",
+    "feature_name": "Accessibility Compliance",
+    "feature_slug": "accessibility-compliance",
+    "initiative_id": "S2072.I6",
+    "spec_id": 2072,
+    "created_at": "2026-02-12T12:30:00Z",
+    "complexity": {
+      "score": 62.5,
+      "level": "HIGH",
+      "target_steps": { "min": 10, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2072.I6.F2.T1",
+      "type": "spike",
+      "name": "Run axe-core accessibility audit on dashboard",
+      "action": { "verb": "Run", "target": "axe-core accessibility audit" },
+      "purpose": "Identify all WCAG 2.1 AA violations on dashboard to prioritize fixes",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 0,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/accessibility/accessibility-hybrid.spec.ts"
+        ],
+        "dependencies": [
+          "HybridAccessibilityTester",
+          "axe-core",
+          "Playwright"
+        ],
+        "constraints": [
+          "Must test /home route with authenticated user",
+          "Document all violations by severity (critical/serious/moderate/minor)",
+          "Identify which widgets have violations"
+        ]
+      },
+      "input_state": "Dashboard widgets implemented but no accessibility audit performed",
+      "output_state": "Documented list of WCAG violations with severity levels and affected components",
+      "acceptance_criterion": "Report documents all violations with element paths and WCAG criteria",
+      "verification_command": "test -f /home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/S2072.I6.F2-Feature-accessibility-compliance/a11y-audit-report.md",
+      "outputs": [
+        { "type": "new", "path": ".ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/S2072.I6.F2-Feature-accessibility-compliance/a11y-audit-report.md" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2072.I6.F2.T12"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F2.T2",
+      "type": "task",
+      "name": "Create skip-to-content link component",
+      "action": { "verb": "Create", "target": "skip-to-content component" },
+      "purpose": "Enable keyboard users to bypass navigation and jump directly to main content",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/button.tsx"
+        ],
+        "dependencies": [
+          "React",
+          "Tailwind CSS"
+        ],
+        "constraints": [
+          "Must be visually hidden until focused",
+          "Must appear on Tab key press",
+          "Must navigate to #main-content on click",
+          "Must be keyboard accessible"
+        ]
+      },
+      "input_state": "No skip-to-content component exists",
+      "output_state": "SkipToContent component created at apps/web/app/home/(user)/_components/dashboard/skip-to-content.tsx",
+      "acceptance_criterion": "Component renders, is hidden by default, becomes visible on focus, and navigates to main content on activation",
+      "verification_command": "grep -q 'SkipToContent' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/dashboard/skip-to-content.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_components/dashboard/skip-to-content.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2072.I6.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F2.T3",
+      "type": "task",
+      "name": "Create useFocusManagement hook",
+      "action": { "verb": "Create", "target": "useFocusManagement hook" },
+      "purpose": "Provide reusable focus management utilities for dashboard widgets",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "React hooks",
+          "Focus trap utilities"
+        ],
+        "constraints": [
+          "Must export useFocusTrap for modal/focus management",
+          "Must export useFocusRestore for returning focus after actions",
+          "Must handle edge cases (unmount, multiple traps)",
+          "Type-safe with proper TypeScript types"
+        ]
+      },
+      "input_state": "No focus management utilities exist",
+      "output_state": "useFocusManagement hook created at apps/web/app/home/(user)/_lib/hooks/use-focus-management.ts",
+      "acceptance_criterion": "Hook exports useFocusTrap and useFocusRestore with proper types, passes typecheck",
+      "verification_command": "grep -q 'useFocusTrap\\|useFocusRestore' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_lib/hooks/use-focus-management.ts && pnpm typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_lib/hooks/use-focus-management.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F2.T4",
+      "type": "task",
+      "name": "Wire skip-to-content link to layout",
+      "action": { "verb": "Wire", "target": "skip-to-content link to layout" },
+      "purpose": "Integrate skip-to-content component into dashboard layout for keyboard navigation",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Skip to main content" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/layout.tsx",
+          "apps/web/app/home/(user)/_components/dashboard/skip-to-content.tsx"
+        ],
+        "dependencies": [
+          "SkipToContent component"
+        ],
+        "constraints": [
+          "Must be first focusable element in layout",
+          "Must target #main-content element",
+          "Must not interfere with existing layout structure"
+        ]
+      },
+      "input_state": "SkipToContent component exists but not integrated",
+      "output_state": "SkipToContent component rendered in layout, navigates to main content",
+      "acceptance_criterion": "Skip link appears first in tab order and navigates to main content area",
+      "verification_command": "grep -q 'SkipToContent' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/layout.tsx && grep -q 'id=\"main-content\"\\|id=\"main\"' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/layout.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/layout.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I6.F2.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F2.T5",
+      "type": "task",
+      "name": "Add ARIA labels to Course Progress Radial widget",
+      "action": { "verb": "Add", "target": "ARIA labels to Course Progress Radial" },
+      "purpose": "Make radial progress chart accessible to screen readers with descriptive labels",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Course Progress" }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/course-progress-radial.tsx"
+        ],
+        "dependencies": [
+          "Recharts",
+          "ChartContainer"
+        ],
+        "constraints": [
+          "Must add aria-label to chart container with summary (e.g., 'Course progress: 67% complete, 12 of 18 lessons')",
+          "Must add role='img' to chart",
+          "Must add aria-describedby for detailed description",
+          "Must preserve existing chart functionality"
+        ]
+      },
+      "input_state": "Course Progress Radial widget exists without ARIA labels",
+      "output_state": "Widget has aria-label, role, and aria-describedby attributes",
+      "acceptance_criterion": "Chart container has descriptive aria-label, role='img', and passes typecheck",
+      "verification_command": "grep -q 'aria-label\\|role=\"img\"' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/dashboard/course-progress-radial.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-radial.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F2.T6",
+      "type": "task",
+      "name": "Add chart accessibility to Skills Spider Diagram",
+      "action": { "verb": "Add", "target": "chart accessibility to Skills Spider Diagram" },
+      "purpose": "Provide text alternatives and data descriptions for spider diagram chart",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Skills" }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/skills-spider-diagram.tsx"
+        ],
+        "dependencies": [
+          "Recharts RadarChart",
+          "ChartContainer"
+        ],
+        "constraints": [
+          "Must add aria-label with chart summary (e.g., 'Skills assessment results across 5 categories')",
+          "Must add role='img' to chart container",
+          "Must provide text alternative with data table or aria-describedby",
+          "Must include all 5 category scores in description",
+          "Must handle empty state (no assessment) gracefully"
+        ]
+      },
+      "input_state": "Skills Spider Diagram exists without accessibility features",
+      "output_state": "Chart has aria-label, role, and text alternative with data",
+      "acceptance_criterion": "Chart has descriptive aria-label, role='img', text alternative, passes typecheck",
+      "verification_command": "grep -q 'aria-label\\|role=\"img\"' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/dashboard/skills-spider-diagram.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/skills-spider-diagram.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F2.T7",
+      "type": "task",
+      "name": "Add ARIA labels to Kanban Summary card",
+      "action": { "verb": "Add", "target": "ARIA labels to Kanban Summary" },
+      "purpose": "Ensure kanban summary card and its interactive elements are accessible",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Tasks" }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/kanban-summary.tsx"
+        ],
+        "dependencies": [
+          "Link component"
+        ],
+        "constraints": [
+          "Must add aria-label to 'View Kanban' link with context (e.g., 'View all 3 doing tasks in Kanban board')",
+          "Must ensure task count is accessible to screen readers",
+          "Must preserve existing card functionality"
+        ]
+      },
+      "input_state": "Kanban Summary card exists without ARIA labels",
+      "output_state": "Card has aria-labels on links and task count is accessible",
+      "acceptance_criterion": "Link has descriptive aria-label, task count is screen reader friendly, passes typecheck",
+      "verification_command": "grep -q 'aria-label' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/dashboard/kanban-summary.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/kanban-summary.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F2.T8",
+      "type": "task",
+      "name": "Add aria-live to Activity Feed widget",
+      "action": { "verb": "Add", "target": "aria-live to Activity Feed" },
+      "purpose": "Announce activity feed updates to screen readers dynamically",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Activity" }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/activity-feed.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Must add aria-live='polite' to feed container for dynamic updates",
+          "Must add aria-label describing the feed (e.g., 'Recent activity timeline')",
+          "Must ensure loading state uses aria-busy attribute",
+          "Must handle empty state accessibly"
+        ]
+      },
+      "input_state": "Activity Feed exists without live region attributes",
+      "output_state": "Feed has aria-live, aria-label, and aria-busy for loading states",
+      "acceptance_criterion": "Feed container has aria-live='polite', aria-label, aria-busy for loading, passes typecheck",
+      "verification_command": "grep -q 'aria-live\\|aria-busy' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/dashboard/activity-feed.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/activity-feed.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F2.T9",
+      "type": "task",
+      "name": "Add button accessibility to Quick Actions Panel",
+      "action": { "verb": "Add", "target": "button accessibility to Quick Actions Panel" },
+      "purpose": "Ensure all quick action buttons have descriptive accessible names",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Quick Actions" }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/quick-actions-panel.tsx"
+        ],
+        "dependencies": [
+          "Button component"
+        ],
+        "constraints": [
+          "Must ensure all buttons have accessible names (text or aria-label)",
+          "Icon-only buttons must have aria-label (e.g., 'Continue course: Presentation Basics')",
+          "Must preserve existing button functionality"
+        ]
+      },
+      "input_state": "Quick Actions Panel exists with buttons lacking full accessibility",
+      "output_state": "All buttons have accessible names via text or aria-label",
+      "acceptance_criterion": "All buttons pass screen reader test, icon buttons have aria-labels, passes typecheck",
+      "verification_command": "grep -q 'aria-label' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/dashboard/quick-actions-panel.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/quick-actions-panel.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F2.T10",
+      "type": "task",
+      "name": "Add button accessibility to Coaching Sessions Card",
+      "action": { "verb": "Add", "target": "button accessibility to Coaching Sessions Card" },
+      "purpose": "Ensure coaching session buttons are accessible with clear labels",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Coaching" }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/coaching-sessions-card.tsx"
+        ],
+        "dependencies": [
+          "Button component"
+        ],
+        "constraints": [
+          "Must ensure 'Join Session' button has aria-label with session context",
+          "Must ensure 'Book Session' button has clear accessible name",
+          "Must ensure 'Reschedule' button (if exists) has accessible name",
+          "Must announce session date/time to screen readers"
+        ]
+      },
+      "input_state": "Coaching Sessions Card exists with buttons needing accessibility",
+      "output_state": "All buttons have accessible names, session info is screen reader friendly",
+      "acceptance_criterion": "All buttons pass screen reader test, session dates accessible, passes typecheck",
+      "verification_command": "grep -q 'aria-label' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/dashboard/coaching-sessions-card.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/coaching-sessions-card.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F2.T11",
+      "type": "task",
+      "name": "Add table accessibility to Presentations Table",
+      "action": { "verb": "Add", "target": "table accessibility to Presentations Table" },
+      "purpose": "Make presentations table fully accessible with proper table semantics",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Presentations" },
+          { "command": "find role", "target": "table" }
+        ],
+        "screenshot": false
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/presentations-table.tsx"
+        ],
+        "dependencies": [
+          "Table component"
+        ],
+        "constraints": [
+          "Must use semantic table elements (table, thead, tbody, th, td)",
+          "Must add scope='col' to column headers",
+          "Must add aria-label to table (e.g., 'Presentations list with 3 items')",
+          "Must ensure 'Edit' links have accessible names with presentation title context",
+          "Must handle empty state with accessible message"
+        ]
+      },
+      "input_state": "Presentations Table exists but may lack full table accessibility",
+      "output_state": "Table has semantic markup, aria-label, scope attributes, accessible links",
+      "acceptance_criterion": "Table uses semantic elements, headers have scope, links are accessible, passes typecheck",
+      "verification_command": "grep -q '<table\\|scope=\"col\"\\|aria-label' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/dashboard/presentations-table.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/presentations-table.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F2.T12",
+      "type": "task",
+      "name": "Re-run axe-core audit and verify all violations fixed",
+      "action": { "verb": "Re-run", "target": "axe-core audit and verify fixes" },
+      "purpose": "Validate that all WCAG violations identified in T1 have been resolved",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/accessibility/accessibility-hybrid.spec.ts",
+          ".ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/S2072.I6.F2-Feature-accessibility-compliance/a11y-audit-report.md"
+        ],
+        "dependencies": [
+          "HybridAccessibilityTester",
+          "Playwright"
+        ],
+        "constraints": [
+          "Must re-run same audit as T1 on /home route",
+          "Must verify zero critical and serious violations",
+          "Must document any remaining minor violations with justification",
+          "Must update audit report with before/after comparison"
+        ]
+      },
+      "input_state": "All accessibility fixes implemented, initial audit report exists",
+      "output_state": "Updated audit report showing zero critical/serious violations",
+      "acceptance_criterion": "Dashboard passes axe-core audit with zero critical and serious violations",
+      "verification_command": "test -f /home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/S2072.I6.F2-Feature-accessibility-compliance/a11y-audit-report-final.md && grep -q 'Critical: 0\\|Serious: 0' /home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/S2072.I6.F2-Feature-accessibility-compliance/a11y-audit-report-final.md",
+      "outputs": [
+        { "type": "new", "path": ".ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/S2072.I6.F2-Feature-accessibility-compliance/a11y-audit-report-final.md" }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2072.I6.F2.T1",
+          "S2072.I6.F2.T4",
+          "S2072.I6.F2.T5",
+          "S2072.I6.F2.T6",
+          "S2072.I6.F2.T7",
+          "S2072.I6.F2.T8",
+          "S2072.I6.F2.T9",
+          "S2072.I6.F2.T10",
+          "S2072.I6.F2.T11"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Spikes",
+        "task_ids": ["S2072.I6.F2.T1", "S2072.I6.F2.T2", "S2072.I6.F2.T3", "S2072.I6.F2.T5", "S2072.I6.F2.T6", "S2072.I6.F2.T7", "S2072.I6.F2.T8", "S2072.I6.F2.T9", "S2072.I6.F2.T10", "S2072.I6.F2.T11"],
+        "depends_on_groups": [],
+        "estimated_hours": 23,
+        "parallel_hours": 3
+      },
+      {
+        "id": 1,
+        "name": "Infrastructure Integration",
+        "task_ids": ["S2072.I6.F2.T4"],
+        "depends_on_groups": [0],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 2,
+        "name": "Validation & Verification",
+        "task_ids": ["S2072.I6.F2.T12"],
+        "depends_on_groups": [0, 1],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2072.I6.F2.T2", "S2072.I6.F2.T4", "S2072.I6.F2.T12"],
+      "total_hours": 5
+    },
+    "duration": {
+      "sequential": 26,
+      "parallel": 6,
+      "time_saved_percent": 76.9
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

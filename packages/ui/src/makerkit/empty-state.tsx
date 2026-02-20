@@ -8,7 +8,7 @@ const EmptyStateHeading: React.FC<React.HTMLAttributes<HTMLHeadingElement>> = ({
 	...props
 }) => (
 	<h3
-		className={cn("text-2xl font-bold tracking-tight", className)}
+		className={cn("text-2xl font-medium tracking-tight", className)}
 		{...props}
 	/>
 );

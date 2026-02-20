@@ -1,0 +1,331 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I6.F1",
+    "feature_name": "Dashboard Loading Orchestrator",
+    "feature_slug": "dashboard-loading-orchestrator",
+    "initiative_id": "S2072.I6",
+    "spec_id": 2072,
+    "created_at": "2026-02-12T13:45:00Z",
+    "complexity": {
+      "score": 31,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2072.I6.F1.T1",
+      "type": "task",
+      "name": "Create WidgetSkeletonCard component",
+      "action": {
+        "verb": "Create",
+        "target": "WidgetSkeletonCard component"
+      },
+      "purpose": "Create a reusable skeleton card component that matches widget card dimensions and supports reduced motion preference",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "skeleton"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card from @kit/ui/card"
+        ],
+        "constraints": [
+          "Must support configurable height",
+          "Must respect prefers-reduced-motion media query",
+          "Must use existing Skeleton component",
+          "Must be a client component for motion detection"
+        ]
+      },
+      "input_state": "No skeleton card component exists",
+      "output_state": "Reusable WidgetSkeletonCard component available at apps/web/app/home/(user)/_components/dashboard/widget-skeleton-card.tsx",
+      "acceptance_criterion": "WidgetSkeletonCard component exists, accepts height prop, conditionally disables animate-pulse based on prefers-reduced-motion, and renders skeleton with card styling",
+      "verification_command": "test -f apps/web/app/home/(user)/_components/dashboard/widget-skeleton-card.tsx && grep -q 'prefers-reduced-motion' apps/web/app/home/(user)/_components/dashboard/widget-skeleton-card.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/dashboard/widget-skeleton-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2072.I6.F1.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F1.T2",
+      "type": "task",
+      "name": "Create DashboardLoadingSkeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "DashboardLoadingSkeleton component"
+      },
+      "purpose": "Create the full dashboard loading skeleton with 3-3-1 grid layout using WidgetSkeletonCard components",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Course Progress"
+          },
+          {
+            "command": "is visible",
+            "target": "Skills"
+          },
+          {
+            "command": "is visible",
+            "target": "Presentations"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/widget-skeleton-card.tsx"
+        ],
+        "dependencies": [
+          "WidgetSkeletonCard component"
+        ],
+        "constraints": [
+          "Must implement 3-3-1 grid layout matching actual dashboard",
+          "Row 1: Course Progress, Skills Spider, Kanban Summary",
+          "Row 2: Activity Feed, Quick Actions, Coaching Sessions",
+          "Row 3: Presentations Table (full-width)",
+          "Grid must be responsive (mobile: 1 col, tablet: 2 cols, desktop: 3 cols)",
+          "Skeleton heights must match actual widget heights to prevent CLS"
+        ]
+      },
+      "input_state": "WidgetSkeletonCard component exists, no dashboard grid skeleton",
+      "output_state": "DashboardLoadingSkeleton component at apps/web/app/home/(user)/_components/dashboard/dashboard-loading-skeleton.tsx renders 7 skeleton cards in 3-3-1 grid",
+      "acceptance_criterion": "DashboardLoadingSkeleton component exists, renders 3-3-1 responsive grid with 7 WidgetSkeletonCard components, grid structure matches feature specification",
+      "verification_command": "test -f apps/web/app/home/(user)/_components/dashboard/dashboard-loading-skeleton.tsx && grep -q 'WidgetSkeletonCard' apps/web/app/home/(user)/_components/dashboard/dashboard-loading-skeleton.tsx && grep -q 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' apps/web/app/home/(user)/_components/dashboard/dashboard-loading-skeleton.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/dashboard/dashboard-loading-skeleton.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I6.F1.T1"],
+        "blocks": ["S2072.I6.F1.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F1.T3",
+      "type": "task",
+      "name": "Update loading.tsx to use DashboardLoadingSkeleton",
+      "action": {
+        "verb": "Update",
+        "target": "loading.tsx"
+      },
+      "purpose": "Replace GlobalLoader with DashboardLoadingSkeleton in the dashboard loading state for better perceived performance and layout stability",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "status"
+          }
+        ],
+        "screenshot": true
+      },
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "env_var_graceful",
+            "target": "DashboardLoadingSkeleton",
+            "expected_action": "renders skeleton grid without errors",
+            "file_path": "apps/web/app/home/(user)/loading.tsx"
+          }
+        ]
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/loading.tsx",
+          "apps/web/app/home/(user)/_components/dashboard/dashboard-loading-skeleton.tsx"
+        ],
+        "dependencies": [
+          "DashboardLoadingSkeleton component"
+        ],
+        "constraints": [
+          "Must export default component",
+          "Must replace GlobalLoader with DashboardLoadingSkeleton",
+          "Skeleton must render immediately without data fetching"
+        ]
+      },
+      "input_state": "loading.tsx uses GlobalLoader",
+      "output_state": "loading.tsx renders DashboardLoadingSkeleton matching dashboard grid layout",
+      "acceptance_criterion": "loading.tsx imports and renders DashboardLoadingSkeleton, no longer uses GlobalLoader, typecheck passes",
+      "verification_command": "grep -q 'DashboardLoadingSkeleton' apps/web/app/home/(user)/loading.tsx && ! grep -q 'GlobalLoader' apps/web/app/home/(user)/loading.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/loading.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I6.F1.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I6.F1.T4",
+      "type": "task",
+      "name": "Test reduced motion preference support",
+      "action": {
+        "verb": "Test",
+        "target": "reduced motion preference support"
+      },
+      "purpose": "Verify that skeleton animations are disabled when user prefers reduced motion",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard/widget-skeleton-card.tsx"
+        ],
+        "dependencies": [
+          "widget-skeleton-card.tsx with prefers-reduced-motion logic"
+        ],
+        "constraints": [
+          "Manual testing with browser dev tools",
+          "Verify animate-pulse is disabled when prefers-reduced-motion is enabled",
+          "Verify skeleton is still visible (no animation, just static)"
+        ]
+      },
+      "input_state": "WidgetSkeletonCard component with prefers-reduced-motion logic exists",
+      "output_state": "Verified that skeleton respects user motion preferences",
+      "acceptance_criterion": "Manual test confirms skeleton has no animation when prefers-reduced-motion: reduce is enabled in browser/OS settings",
+      "verification_command": "echo 'Manual verification required: Enable prefers-reduced-motion in browser, navigate to /home, verify no skeleton animation'",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S2072.I6.F1.T1", "S2072.I6.F1.T3"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Creation",
+        "task_ids": ["S2072.I6.F1.T1", "S2072.I6.F1.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Integration & Testing",
+        "task_ids": ["S2072.I6.F1.T3", "S2072.I6.F1.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 2,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2072.I6.F1.T1", "S2072.I6.F1.T2", "S2072.I6.F1.T3"],
+      "total_hours": 6
+    },
+    "duration": {
+      "sequential": 7,
+      "parallel": 6,
+      "time_saved_percent": 14
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

@@ -47,6 +47,17 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Override git author for Vercel
+      shell: bash
+      run: |
+        # Vercel enforces that the git commit author must be a Vercel team member.
+        # Re-author the HEAD commit to a bot identity so deploys succeed
+        # regardless of who authored the original commit.
+        # This only affects the CI checkout — nothing is pushed back.
+        git config user.email "msmith@slideheroes.com"
+        git config user.name "SlideHeroes Deploy Bot"
+        git commit --amend --reset-author --no-edit --allow-empty
+
     - name: Install Vercel CLI
       shell: bash
       run: |

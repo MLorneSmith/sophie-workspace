@@ -1,0 +1,554 @@
+{
+	"metadata": {
+		"spec_id": "S2072",
+		"spec_name": "user dashboard",
+		"generated_at": "2026-02-12T20:02:34.809Z",
+		"spec_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard",
+		"research_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/research-library",
+		"required_env_vars": [
+			{
+				"name": "CALCOM_API_KEY",
+				"description": "Cal.com V2 API key with cal_ prefix for Bearer token authentication",
+				"source": "Cal.com dashboard → Settings → API",
+				"required": true,
+				"scope": "server",
+				"features": [
+					"S2072.I4.F1"
+				]
+			},
+			{
+				"name": "NEXT_PUBLIC_CALCOM_COACH_USERNAME",
+				"description": "Coach username for building booking URLs",
+				"source": "Cal.com profile settings",
+				"required": true,
+				"scope": "client",
+				"features": [
+					"S2072.I4.F1",
+					"S2072.I4.F3"
+				]
+			},
+			{
+				"name": "NEXT_PUBLIC_CALCOM_EVENT_SLUG",
+				"description": "Event type slug (e.g., 60min) for booking widget",
+				"source": "Cal.com event type configuration",
+				"required": true,
+				"scope": "client",
+				"features": [
+					"S2072.I4.F1",
+					"S2072.I4.F3"
+				]
+			}
+		]
+	},
+	"initiatives": [
+		{
+			"id": "S2072.I1",
+			"name": "foundation data layer",
+			"slug": "foundation-data-layer",
+			"priority": 1,
+			"status": "pending",
+			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I1-Initiative-foundation-data-layer",
+			"feature_count": 4,
+			"features_completed": 0,
+			"dependencies": []
+		},
+		{
+			"id": "S2072.I2",
+			"name": "progress visualization",
+			"slug": "progress-visualization",
+			"priority": 2,
+			"status": "pending",
+			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I2-Initiative-progress-visualization",
+			"feature_count": 2,
+			"features_completed": 0,
+			"dependencies": [
+				"S2072.I1"
+			]
+		},
+		{
+			"id": "S2072.I3",
+			"name": "activity task widgets",
+			"slug": "activity-task-widgets",
+			"priority": 3,
+			"status": "pending",
+			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I3-Initiative-activity-task-widgets",
+			"feature_count": 4,
+			"features_completed": 0,
+			"dependencies": [
+				"S2072.I1"
+			]
+		},
+		{
+			"id": "S2072.I4",
+			"name": "coaching integration",
+			"slug": "coaching-integration",
+			"priority": 4,
+			"status": "pending",
+			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I4-Initiative-coaching-integration",
+			"feature_count": 3,
+			"features_completed": 0,
+			"dependencies": [
+				"S2072.I1"
+			]
+		},
+		{
+			"id": "S2072.I5",
+			"name": "presentations table",
+			"slug": "presentations-table",
+			"priority": 5,
+			"status": "pending",
+			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I5-Initiative-presentations-table",
+			"feature_count": 1,
+			"features_completed": 0,
+			"dependencies": [
+				"S2072.I1"
+			]
+		},
+		{
+			"id": "S2072.I6",
+			"name": "empty states polish",
+			"slug": "empty-states-polish",
+			"priority": 6,
+			"status": "pending",
+			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish",
+			"feature_count": 3,
+			"features_completed": 0,
+			"dependencies": [
+				"S2072.I2",
+				"S2072.I3",
+				"S2072.I4",
+				"S2072.I5"
+			]
+		}
+	],
+	"feature_queue": [
+		{
+			"id": "S2072.I1.F1",
+			"initiative_id": "S2072.I1",
+			"title": "Dashboard Types",
+			"slug": "dashboard-types",
+			"priority": 1,
+			"global_priority": 1,
+			"status": "pending",
+			"tasks_file": "S2072.I1-Initiative-foundation-data-layer/S2072.I1.F1-Feature-dashboard-types/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I1-Initiative-foundation-data-layer/S2072.I1.F1-Feature-dashboard-types",
+			"task_count": 3,
+			"tasks_completed": 0,
+			"sequential_hours": 5,
+			"parallel_hours": 5,
+			"dependencies": [],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I1.F2",
+			"initiative_id": "S2072.I1",
+			"title": "Dashboard Page Shell",
+			"slug": "dashboard-page-shell",
+			"priority": 2,
+			"global_priority": 2,
+			"status": "pending",
+			"tasks_file": "S2072.I1-Initiative-foundation-data-layer/S2072.I1.F2-Feature-dashboard-page-shell/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I1-Initiative-foundation-data-layer/S2072.I1.F2-Feature-dashboard-page-shell",
+			"task_count": 4,
+			"tasks_completed": 0,
+			"sequential_hours": 4,
+			"parallel_hours": 3,
+			"dependencies": [
+				"S2072.I1.F1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I1.F3",
+			"initiative_id": "S2072.I1",
+			"title": "Responsive Grid Layout",
+			"slug": "responsive-grid-layout",
+			"priority": 3,
+			"global_priority": 3,
+			"status": "pending",
+			"tasks_file": "S2072.I1-Initiative-foundation-data-layer/S2072.I1.F3-Feature-responsive-grid-layout/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I1-Initiative-foundation-data-layer/S2072.I1.F3-Feature-responsive-grid-layout",
+			"task_count": 6,
+			"tasks_completed": 0,
+			"sequential_hours": 11,
+			"parallel_hours": 7,
+			"dependencies": [
+				"S2072.I1.F2"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I1.F4",
+			"initiative_id": "S2072.I1",
+			"title": "Dashboard Data Loader",
+			"slug": "dashboard-data-loader",
+			"priority": 4,
+			"global_priority": 4,
+			"status": "pending",
+			"tasks_file": "S2072.I1-Initiative-foundation-data-layer/S2072.I1.F4-Feature-dashboard-data-loader/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I1-Initiative-foundation-data-layer/S2072.I1.F4-Feature-dashboard-data-loader",
+			"task_count": 8,
+			"tasks_completed": 0,
+			"sequential_hours": 11,
+			"parallel_hours": 7,
+			"dependencies": [
+				"S2072.I1.F1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I2.F1",
+			"initiative_id": "S2072.I2",
+			"title": "Course Progress Radial Widget",
+			"slug": "course-progress-radial",
+			"priority": 1,
+			"global_priority": 5,
+			"status": "pending",
+			"tasks_file": "S2072.I2-Initiative-progress-visualization/S2072.I2.F1-Feature-course-progress-radial/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I2-Initiative-progress-visualization/S2072.I2.F1-Feature-course-progress-radial",
+			"task_count": 5,
+			"tasks_completed": 0,
+			"sequential_hours": 11,
+			"parallel_hours": 8,
+			"dependencies": [
+				"S2072.I1.F3"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I2.F2",
+			"initiative_id": "S2072.I2",
+			"title": "Skills Spider Diagram Widget",
+			"slug": "skills-spider-diagram",
+			"priority": 2,
+			"global_priority": 6,
+			"status": "pending",
+			"tasks_file": "S2072.I2-Initiative-progress-visualization/S2072.I2.F2-Feature-skills-spider-diagram/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I2-Initiative-progress-visualization/S2072.I2.F2-Feature-skills-spider-diagram",
+			"task_count": 6,
+			"tasks_completed": 0,
+			"sequential_hours": 13,
+			"parallel_hours": 10,
+			"dependencies": [
+				"S2072.I1.F3"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I3.F1",
+			"initiative_id": "S2072.I3",
+			"title": "Activity Aggregation Query",
+			"slug": "activity-aggregation-query",
+			"priority": 1,
+			"global_priority": 7,
+			"status": "pending",
+			"tasks_file": "S2072.I3-Initiative-activity-task-widgets/S2072.I3.F1-Feature-activity-aggregation-query/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I3-Initiative-activity-task-widgets/S2072.I3.F1-Feature-activity-aggregation-query",
+			"task_count": 4,
+			"tasks_completed": 0,
+			"sequential_hours": 11,
+			"parallel_hours": 9,
+			"dependencies": [
+				"S2072.I1.F2",
+				"S2072.I1.F3"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I3.F2",
+			"initiative_id": "S2072.I3",
+			"title": "Activity Feed Widget",
+			"slug": "activity-feed-widget",
+			"priority": 999,
+			"global_priority": 8,
+			"status": "pending",
+			"tasks_file": "S2072.I3-Initiative-activity-task-widgets/S2072.I3.F2-Feature-activity-feed-widget/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I3-Initiative-activity-task-widgets/S2072.I3.F2-Feature-activity-feed-widget",
+			"task_count": 6,
+			"tasks_completed": 0,
+			"sequential_hours": 13,
+			"parallel_hours": 11,
+			"dependencies": [
+				"S2072.I3.F1",
+				"S2072.I1.F3",
+				"S2072.I1.F2"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I3.F3",
+			"initiative_id": "S2072.I3",
+			"title": "Kanban Summary Widget",
+			"slug": "kanban-summary-widget",
+			"priority": 999,
+			"global_priority": 9,
+			"status": "pending",
+			"tasks_file": "S2072.I3-Initiative-activity-task-widgets/S2072.I3.F3-Feature-kanban-summary-widget/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I3-Initiative-activity-task-widgets/S2072.I3.F3-Feature-kanban-summary-widget",
+			"task_count": 8,
+			"tasks_completed": 0,
+			"sequential_hours": 10,
+			"parallel_hours": 8,
+			"dependencies": [
+				"S2072.I1.F3",
+				"S2072.I1.F2"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I3.F4",
+			"initiative_id": "S2072.I3",
+			"title": "Quick Actions Panel",
+			"slug": "quick-actions-panel",
+			"priority": 999,
+			"global_priority": 10,
+			"status": "pending",
+			"tasks_file": "S2072.I3-Initiative-activity-task-widgets/S2072.I3.F4-Feature-quick-actions-panel/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I3-Initiative-activity-task-widgets/S2072.I3.F4-Feature-quick-actions-panel",
+			"task_count": 10,
+			"tasks_completed": 0,
+			"sequential_hours": 15,
+			"parallel_hours": 12,
+			"dependencies": [
+				"S2072.I1.F3",
+				"S2072.I1.F2"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I4.F1",
+			"initiative_id": "S2072.I4",
+			"title": "Cal.com API Client",
+			"slug": "calcom-api-client",
+			"priority": 1,
+			"global_priority": 11,
+			"status": "pending",
+			"tasks_file": "S2072.I4-Initiative-coaching-integration/S2072.I4.F1-Feature-calcom-api-client/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I4-Initiative-coaching-integration/S2072.I4.F1-Feature-calcom-api-client",
+			"task_count": 5,
+			"tasks_completed": 0,
+			"sequential_hours": 11,
+			"parallel_hours": 11,
+			"dependencies": [
+				"S2072.I1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I4.F2",
+			"initiative_id": "S2072.I4",
+			"title": "Fetch Bookings Query",
+			"slug": "fetch-bookings-query",
+			"priority": 2,
+			"global_priority": 12,
+			"status": "pending",
+			"tasks_file": "S2072.I4-Initiative-coaching-integration/S2072.I4.F2-Feature-fetch-bookings-query/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I4-Initiative-coaching-integration/S2072.I4.F2-Feature-fetch-bookings-query",
+			"task_count": 6,
+			"tasks_completed": 0,
+			"sequential_hours": 10,
+			"parallel_hours": 10,
+			"dependencies": [
+				"S2072.I1",
+				"S2072.I4.F1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I4.F3",
+			"initiative_id": "S2072.I4",
+			"title": "Coaching Sessions Widget",
+			"slug": "coaching-sessions-widget",
+			"priority": 3,
+			"global_priority": 13,
+			"status": "pending",
+			"tasks_file": "S2072.I4-Initiative-coaching-integration/S2072.I4.F3-Feature-coaching-sessions-widget/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I4-Initiative-coaching-integration/S2072.I4.F3-Feature-coaching-sessions-widget",
+			"task_count": 6,
+			"tasks_completed": 0,
+			"sequential_hours": 13,
+			"parallel_hours": 9,
+			"dependencies": [
+				"S2072.I4.F1",
+				"S2072.I4.F2",
+				"S2072.I1.F1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I5.F1",
+			"initiative_id": "S2072.I5",
+			"title": "Presentations Table Widget",
+			"slug": "presentations-table-widget",
+			"priority": 1,
+			"global_priority": 14,
+			"status": "pending",
+			"tasks_file": "S2072.I5-Initiative-presentations-table/S2072.I5.F1-Feature-presentations-table-widget/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I5-Initiative-presentations-table/S2072.I5.F1-Feature-presentations-table-widget",
+			"task_count": 8,
+			"tasks_completed": 0,
+			"sequential_hours": 15,
+			"parallel_hours": 10,
+			"dependencies": [
+				"S2072.I1.F1",
+				"S2072.I1.F2",
+				"S2072.I1.F3"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I6.F1",
+			"initiative_id": "S2072.I6",
+			"title": "Dashboard Loading Orchestrator",
+			"slug": "dashboard-loading-orchestrator",
+			"priority": 1,
+			"global_priority": 15,
+			"status": "pending",
+			"tasks_file": "S2072.I6-Initiative-empty-states-polish/S2072.I6.F1-Feature-dashboard-loading-orchestrator/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/S2072.I6.F1-Feature-dashboard-loading-orchestrator",
+			"task_count": 4,
+			"tasks_completed": 0,
+			"sequential_hours": 7,
+			"parallel_hours": 6,
+			"dependencies": [
+				"S2072.I2",
+				"S2072.I3",
+				"S2072.I4",
+				"S2072.I5",
+				"S2072.I1.F2",
+				"S2072.I1.F3"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I6.F2",
+			"initiative_id": "S2072.I6",
+			"title": "Accessibility Compliance",
+			"slug": "accessibility-compliance",
+			"priority": 2,
+			"global_priority": 16,
+			"status": "pending",
+			"tasks_file": "S2072.I6-Initiative-empty-states-polish/S2072.I6.F2-Feature-accessibility-compliance/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/S2072.I6.F2-Feature-accessibility-compliance",
+			"task_count": 12,
+			"tasks_completed": 0,
+			"sequential_hours": 26,
+			"parallel_hours": 6,
+			"dependencies": [
+				"S2072.I2.F1",
+				"S2072.I2.F2",
+				"S2072.I3.F1",
+				"S2072.I4.F1",
+				"S2072.I5.F1",
+				"S2072.I6.F1"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		},
+		{
+			"id": "S2072.I6.F3",
+			"initiative_id": "S2072.I6",
+			"title": "Dashboard Integration Verification",
+			"slug": "dashboard-integration-verification",
+			"priority": 3,
+			"global_priority": 17,
+			"status": "pending",
+			"tasks_file": "S2072.I6-Initiative-empty-states-polish/S2072.I6.F3-Feature-dashboard-integration-verification/tasks.json",
+			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S2072-Spec-user-dashboard/S2072.I6-Initiative-empty-states-polish/S2072.I6.F3-Feature-dashboard-integration-verification",
+			"task_count": 7,
+			"tasks_completed": 0,
+			"sequential_hours": 22,
+			"parallel_hours": 12,
+			"dependencies": [
+				"S2072.I2.F1",
+				"S2072.I2.F2",
+				"S2072.I3.F1",
+				"S2072.I3.F2",
+				"S2072.I3.F3",
+				"S2072.I3.F4",
+				"S2072.I4.F1",
+				"S2072.I4.F2",
+				"S2072.I5.F1",
+				"S2072.I6.F1",
+				"S2072.I6.F2"
+			],
+			"github_issue": null,
+			"requires_database": false,
+			"database_task_count": 0
+		}
+	],
+	"progress": {
+		"status": "pending",
+		"initiatives_completed": 0,
+		"initiatives_total": 6,
+		"features_completed": 0,
+		"features_total": 17,
+		"tasks_completed": 0,
+		"tasks_total": 108,
+		"next_feature_id": "S2072.I1.F1",
+		"last_completed_feature_id": null,
+		"started_at": null,
+		"completed_at": null,
+		"last_checkpoint": "2026-02-12T20:02:35.434Z"
+	},
+	"sandbox": {
+		"sandbox_ids": [],
+		"branch_name": null,
+		"created_at": null
+	},
+	"phases": [
+		{
+			"id": "P1",
+			"name": "Phase 1",
+			"initiative_ids": [
+				"S2072.I1",
+				"S2072.I2",
+				"S2072.I3"
+			],
+			"feature_count": 10,
+			"task_count": 60
+		},
+		{
+			"id": "P2",
+			"name": "Phase 2",
+			"initiative_ids": [
+				"S2072.I4",
+				"S2072.I5",
+				"S2072.I6"
+			],
+			"feature_count": 7,
+			"task_count": 48
+		}
+	]
+}

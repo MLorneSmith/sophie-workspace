@@ -12,7 +12,7 @@ import { runWorkLoop, WorkLoop, type WorkLoopOptions } from "../work-loop.js";
 
 // Mock dependencies
 vi.mock("../deadlock-handler.js", () => ({
-	detectAndHandleDeadlock: vi.fn().mockReturnValue({
+	detectAndHandleDeadlock: vi.fn().mockResolvedValue({
 		shouldExit: false,
 		retriedCount: 0,
 		failedInitiatives: [],
@@ -30,6 +30,7 @@ vi.mock("../health.js", () => ({
 
 vi.mock("../manifest.js", () => ({
 	saveManifest: vi.fn(),
+	writeOverallProgress: vi.fn(),
 }));
 
 vi.mock("../progress.js", () => ({
@@ -56,6 +57,8 @@ vi.mock("../work-queue.js", () => ({
 	assignFeatureToSandbox: vi.fn().mockReturnValue(true),
 	getBlockedFeatures: vi.fn().mockReturnValue([]),
 	getNextAvailableFeature: vi.fn().mockReturnValue(null),
+	shouldRetryFailedFeature: vi.fn().mockReturnValue(false),
+	DEFAULT_MAX_RETRIES: 3,
 }));
 
 import type { FeatureEntry } from "../../types/index.js";
@@ -304,7 +307,7 @@ describe("WorkLoop", () => {
 			const { detectAndHandleDeadlock } = await import(
 				"../deadlock-handler.js"
 			);
-			vi.mocked(detectAndHandleDeadlock).mockReturnValue({
+			vi.mocked(detectAndHandleDeadlock).mockResolvedValue({
 				shouldExit: true,
 				retriedCount: 0,
 				failedInitiatives: ["I1"],
@@ -333,7 +336,7 @@ describe("WorkLoop", () => {
 			const { detectAndHandleDeadlock } = await import(
 				"../deadlock-handler.js"
 			);
-			vi.mocked(detectAndHandleDeadlock).mockReturnValue({
+			vi.mocked(detectAndHandleDeadlock).mockResolvedValue({
 				shouldExit: true, // Force exit to avoid infinite loop
 				retriedCount: 0,
 				failedInitiatives: [],

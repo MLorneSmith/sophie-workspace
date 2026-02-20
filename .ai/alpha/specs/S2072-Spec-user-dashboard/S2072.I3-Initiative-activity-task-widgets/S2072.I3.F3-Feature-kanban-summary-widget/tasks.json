@@ -1,0 +1,548 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2072.I3.F3",
+    "feature_name": "Kanban Summary Widget",
+    "feature_slug": "kanban-summary-widget",
+    "initiative_id": "S2072.I3",
+    "spec_id": "2072",
+    "created_at": "2026-02-12T13:45:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": "dashboard-card"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2072.I3.F3.T1",
+      "type": "task",
+      "name": "Import Task types from kanban schema",
+      "action": {
+        "verb": "Import",
+        "target": "Task types from kanban schema"
+      },
+      "purpose": "Reuse existing Task type for type safety",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/kanban/_lib/schema/task.schema.ts"
+        ],
+        "dependencies": [
+          "Task type",
+          "TaskStatus type"
+        ],
+        "constraints": [
+          "Reuse existing types, no new type definitions needed",
+          "Filter tasks by status='doing' client-side"
+        ]
+      },
+      "input_state": "Feature requirements defined, Task types exist in kanban schema",
+      "output_state": "Task type imported and available for use in widget",
+      "acceptance_criterion": "Task type can be imported from kanban schema without errors",
+      "verification_command": "pnpm typecheck",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S2072.I3.F3.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F3.T2",
+      "type": "task",
+      "name": "Create KanbanSummaryCard component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "KanbanSummaryCard component skeleton"
+      },
+      "purpose": "Create the main card wrapper structure with header",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Current Tasks"
+          },
+          {
+            "command": "find role",
+            "target": "region"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        ],
+        "dependencies": [
+          "Card component from @kit/ui/card",
+          "Task type from kanban schema"
+        ],
+        "constraints": [
+          "Client component with 'use client' directive",
+          "Card wrapper with header 'Current Tasks'",
+          "Accept tasks array as prop"
+        ]
+      },
+      "input_state": "Task types imported",
+      "output_state": "Card component exists with basic structure and header",
+      "acceptance_criterion": "Component renders Card with 'Current Tasks' header",
+      "verification_command": "pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F3.T1"],
+        "blocks": ["S2072.I3.F3.T3", "S2072.I3.F3.T4", "S2072.I3.F3.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F3.T3",
+      "type": "task",
+      "name": "Add empty state UI for zero doing tasks",
+      "action": {
+        "verb": "Add",
+        "target": "empty state UI for zero doing tasks"
+      },
+      "purpose": "Show friendly message when no tasks are in progress",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        ],
+        "dependencies": [
+          "Card component",
+          "Trans component for i18n"
+        ],
+        "constraints": [
+          "Display when tasks array is empty or has no 'doing' tasks",
+          "Show message: 'No tasks in progress'",
+          "Include friendly illustration or icon",
+          "Follow empty state UX patterns from research"
+        ]
+      },
+      "input_state": "Card skeleton exists",
+      "output_state": "Card shows empty state with friendly message when no doing tasks",
+      "acceptance_criterion": "Empty state renders with message when doingTasks.length === 0",
+      "verification_command": "pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F3.T2"],
+        "blocks": ["S2072.I3.F3.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F3.T4",
+      "type": "task",
+      "name": "Add loading skeleton state",
+      "action": {
+        "verb": "Add",
+        "target": "loading skeleton state"
+      },
+      "purpose": "Show skeleton UI while data is loading",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        ],
+        "dependencies": [
+          "Skeleton component from @kit/ui/skeleton"
+        ],
+        "constraints": [
+          "Show when tasks prop is undefined",
+          "Skeleton should match card layout structure",
+          "Use subtle shimmer animation"
+        ]
+      },
+      "input_state": "Card skeleton exists",
+      "output_state": "Card shows skeleton loader when tasks data is loading",
+      "acceptance_criterion": "Skeleton renders when tasks === undefined",
+      "verification_command": "pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F3.T2"],
+        "blocks": ["S2072.I3.F3.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F3.T5",
+      "type": "task",
+      "name": "Add populated state with task count and preview",
+      "action": {
+        "verb": "Add",
+        "target": "populated state with task count and preview"
+      },
+      "purpose": "Display doing tasks count badge and next task preview",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        ],
+        "dependencies": [
+          "Badge component from @kit/ui/badge",
+          "Task type"
+        ],
+        "constraints": [
+          "Filter tasks by status='doing'",
+          "Display count badge showing number of doing tasks",
+          "Show preview of next doing task (title, priority indicator)",
+          "Use priority color coding (high=red, medium=yellow, low=green)",
+          "Client-side filtering from tasks prop"
+        ]
+      },
+      "input_state": "Card skeleton exists",
+      "output_state": "Card displays task count badge and next task preview when doing tasks exist",
+      "acceptance_criterion": "Card shows count badge and task preview when doingTasks.length > 0",
+      "verification_command": "pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F3.T2"],
+        "blocks": ["S2072.I3.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F3.T6",
+      "type": "task",
+      "name": "Wire View Kanban link to kanban page",
+      "action": {
+        "verb": "Wire",
+        "target": "View Kanban link to kanban page"
+      },
+      "purpose": "Add navigation link to full kanban board",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "link_navigation",
+            "target": "View Kanban",
+            "expected_action": "navigate to /home/kanban",
+            "file_path": "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+          }
+        ]
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        ],
+        "dependencies": [
+          "Link from Next.js",
+          "paths config for kanban route"
+        ],
+        "constraints": [
+          "Add 'View Kanban' link in card footer",
+          "Link to /home/kanban route",
+          "Show in both empty and populated states",
+          "Use Next.js Link component for client-side navigation"
+        ]
+      },
+      "input_state": "Card has empty and populated states implemented",
+      "output_state": "View Kanban link navigates to /home/kanban",
+      "acceptance_criterion": "Link exists with href='/home/kanban' and is clickable",
+      "verification_command": "pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F3.T3", "S2072.I3.F3.T4", "S2072.I3.F3.T5"],
+        "blocks": ["S2072.I3.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2072.I3.F3.T7",
+      "type": "task",
+      "name": "Integrate KanbanSummaryCard with dashboard page",
+      "action": {
+        "verb": "Integrate",
+        "target": "KanbanSummaryCard with dashboard page"
+      },
+      "purpose": "Add the card to the dashboard grid layout",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        ],
+        "dependencies": [
+          "KanbanSummaryCard component",
+          "Dashboard data loader (S2072.I1.F4)",
+          "DashboardGrid component (S2072.I1.F3)"
+        ],
+        "constraints": [
+          "Pass tasks data from dashboard loader to card",
+          "Place card in correct grid slot (Row 1, column 3)",
+          "Wrap in Suspense boundary for loading state",
+          "Handle case where tasks data is undefined"
+        ]
+      },
+      "input_state": "KanbanSummaryCard component complete with all states",
+      "output_state": "Card appears in dashboard grid and displays tasks data",
+      "acceptance_criterion": "Card renders in dashboard with tasks data from loader",
+      "verification_command": "pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F3.T6"],
+        "blocks": ["S2072.I3.F3.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S2072.I3.F3.T8",
+      "type": "task",
+      "name": "Add component unit tests",
+      "action": {
+        "verb": "Add",
+        "target": "component unit tests"
+      },
+      "purpose": "Test all card states (empty, loading, populated) with filtering logic",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-card.test.tsx"
+        ],
+        "dependencies": [
+          "Vitest testing framework",
+          "React Testing Library",
+          "Task test fixtures from kanban"
+        ],
+        "constraints": [
+          "Test empty state renders correctly",
+          "Test loading skeleton renders",
+          "Test populated state shows count and preview",
+          "Test task filtering by status='doing'",
+          "Test View Kanban link navigation",
+          "Use real Task type and test fixtures"
+        ]
+      },
+      "input_state": "KanbanSummaryCard integrated and functional",
+      "output_state": "Unit tests cover all card states and interactions",
+      "acceptance_criterion": "All tests pass with >80% coverage of component",
+      "verification_command": "pnpm --filter web test -- --grep kanban-summary --run",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-card.test.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S2072.I3.F3.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Types & Skeleton",
+        "task_ids": ["S2072.I3.F3.T1", "S2072.I3.F3.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "UI States",
+        "task_ids": ["S2072.I3.F3.T3", "S2072.I3.F3.T4", "S2072.I3.F3.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Interaction",
+        "task_ids": ["S2072.I3.F3.T6"],
+        "depends_on_groups": [2],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 4,
+        "name": "Integration",
+        "task_ids": ["S2072.I3.F3.T7"],
+        "depends_on_groups": [3],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 5,
+        "name": "Testing",
+        "task_ids": ["S2072.I3.F3.T8"],
+        "depends_on_groups": [4],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S2072.I3.F3.T1", "S2072.I3.F3.T2", "S2072.I3.F3.T5", "S2072.I3.F3.T6", "S2072.I3.F3.T7", "S2072.I3.F3.T8"],
+      "total_hours": 8
+    },
+    "duration": {
+      "sequential": 10,
+      "parallel": 8,
+      "time_saved_percent": 20
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

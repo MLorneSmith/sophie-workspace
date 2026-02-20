@@ -1,0 +1,892 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S2086.I6.F2",
+    "feature_name": "Accessibility Compliance",
+    "feature_slug": "accessibility-compliance",
+    "initiative_id": "S2086.I6",
+    "spec_id": 2086,
+    "created_at": "2026-02-13T13:00:00Z",
+    "complexity": {
+      "score": 68.75,
+      "level": "HIGH",
+      "target_steps": {
+        "min": 10,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S2086.I6.F2.T1",
+      "type": "task",
+      "name": "Add global accessibility CSS styles",
+      "action": {
+        "verb": "Add",
+        "target": "global accessibility CSS styles"
+      },
+      "purpose": "Create foundation CSS for :focus-visible indicators and @media (prefers-reduced-motion: reduce) overrides that apply across all sections",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "SlideHeroes"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/styles/globals.css"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Focus indicators must have 3:1+ contrast against dark backgrounds",
+          "Reduced motion must disable all CSS animations and transitions",
+          "Use :focus-visible (not :focus) to show indicators only on keyboard navigation"
+        ]
+      },
+      "input_state": "globals.css has basic styles but no :focus-visible or prefers-reduced-motion support",
+      "output_state": "globals.css has :focus-visible styles and @media (prefers-reduced-motion: reduce) overrides",
+      "acceptance_criterion": ":focus-visible styles visible on keyboard navigation, all CSS animations disabled when prefers-reduced-motion is active",
+      "verification_command": "grep -E 'focus-visible|prefers-reduced-motion' apps/web/styles/globals.css && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/globals.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S2086.I6.F2.T2",
+          "S2086.I6.F2.T3",
+          "S2086.I6.F2.T4",
+          "S2086.I6.F2.T5",
+          "S2086.I6.F2.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I6.F2.T2",
+      "type": "task",
+      "name": "Add ARIA attributes to Hero and Product Preview sections",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA attributes to Hero and Product Preview sections"
+      },
+      "purpose": "Mark decorative elements (gradient orbs, grid overlays, glow effects) with aria-hidden='true' to prevent screen reader verbosity",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "SlideHeroes"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-hero-*.tsx",
+          "apps/web/app/(marketing)/_components/home-product-preview-*.tsx"
+        ],
+        "dependencies": [
+          "S2086.I6.F2.T1 (global CSS styles)"
+        ],
+        "constraints": [
+          "Only decorative animations get aria-hidden",
+          "Interactive elements must NOT have aria-hidden",
+          "Verify with screen reader that decorative elements are not announced"
+        ]
+      },
+      "input_state": "Hero and Product Preview components exist without ARIA attributes on decorative elements",
+      "output_state": "Decorative animations marked with aria-hidden='true', semantic structure preserved",
+      "acceptance_criterion": "All decorative gradient orbs, grid overlays, glow effects have aria-hidden='true', screen readers skip these elements",
+      "verification_command": "grep -r 'aria-hidden' apps/web/app/\\(marketing\\)/_components/home-hero-*.tsx apps/web/app/\\(marketing\\)/_components/home-product-preview-*.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-hero-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-product-preview-*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I6.F2.T1"
+        ],
+        "blocks": [
+          "S2086.I6.F2.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I6.F2.T3",
+      "type": "task",
+      "name": "Add ARIA attributes to Logo Cloud and Statistics sections",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA attributes to Logo Cloud and Statistics sections"
+      },
+      "purpose": "Mark decorative elements (marquee decorations, stat background elements) with aria-hidden='true' and ensure count-ups have appropriate ARIA",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Trusted by"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-logo-cloud-*.tsx",
+          "apps/web/app/(marketing)/_components/home-statistics-*.tsx"
+        ],
+        "dependencies": [
+          "S2086.I6.F2.T1 (global CSS styles)"
+        ],
+        "constraints": [
+          "Marquee decorations get aria-hidden",
+          "Stat counters should have aria-live='polite' if values update dynamically",
+          "Logo images need proper alt text or aria-label"
+        ]
+      },
+      "input_state": "Logo Cloud and Statistics components exist without comprehensive ARIA support",
+      "output_state": "Decorative elements marked with aria-hidden, stat counters properly announced",
+      "acceptance_criterion": "All decorative marquee/background elements have aria-hidden='true', stat counters accessible to screen readers",
+      "verification_command": "grep -r 'aria-hidden\\|aria-live' apps/web/app/\\(marketing\\)/_components/home-logo-cloud-*.tsx apps/web/app/\\(marketing\\)/_components/home-statistics-*.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-logo-cloud-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-statistics-*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I6.F2.T1"
+        ],
+        "blocks": [
+          "S2086.I6.F2.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S2086.I6.F2.T4",
+      "type": "task",
+      "name": "Add ARIA attributes to Feature Showcase sections",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA attributes to Feature Showcase sections"
+      },
+      "purpose": "Mark decorative elements (spotlight glow, stepper decorations) with aria-hidden='true' in Sticky Scroll, How It Works, and Features Grid",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Features"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-sticky-scroll-*.tsx",
+          "apps/web/app/(marketing)/_components/home-how-it-works-*.tsx",
+          "apps/web/app/(marketing)/_components/home-features-grid-*.tsx"
+        ],
+        "dependencies": [
+          "S2086.I6.F2.T1 (global CSS styles)"
+        ],
+        "constraints": [
+          "Spotlight glow effects get aria-hidden",
+          "Stepper connecting lines get aria-hidden if purely decorative",
+          "Interactive feature cards must NOT have aria-hidden"
+        ]
+      },
+      "input_state": "Feature showcase components exist without ARIA attributes on decorative elements",
+      "output_state": "Decorative animations marked with aria-hidden='true', interactive elements remain accessible",
+      "acceptance_criterion": "All decorative glow effects, spotlight animations, and stepper decorations have aria-hidden='true'",
+      "verification_command": "grep -r 'aria-hidden' apps/web/app/\\(marketing\\)/_components/home-sticky-scroll-*.tsx apps/web/app/\\(marketing\\)/_components/home-how-it-works-*.tsx apps/web/app/\\(marketing\\)/_components/home-features-grid-*.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-sticky-scroll-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-how-it-works-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-features-grid-*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I6.F2.T1"
+        ],
+        "blocks": [
+          "S2086.I6.F2.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S2086.I6.F2.T5",
+      "type": "task",
+      "name": "Add ARIA attributes to Social Proof and Conversion sections",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA attributes to Social Proof and Conversion sections"
+      },
+      "purpose": "Mark decorative elements (quotation marks, comparison decorations, pricing highlights) with aria-hidden='true'",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Pricing"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-comparison-*.tsx",
+          "apps/web/app/(marketing)/_components/home-testimonials-*.tsx",
+          "apps/web/app/(marketing)/_components/home-pricing-*.tsx",
+          "apps/web/app/(marketing)/_components/home-final-cta-*.tsx"
+        ],
+        "dependencies": [
+          "S2086.I6.F2.T1 (global CSS styles)"
+        ],
+        "constraints": [
+          "Large decorative quotation marks get aria-hidden",
+          "Comparison checkmark/cross icons may need aria-label for meaning",
+          "Pricing cards must have proper heading hierarchy",
+          "CTA buttons must have descriptive text"
+        ]
+      },
+      "input_state": "Social proof and conversion components exist without comprehensive ARIA support",
+      "output_state": "Decorative elements marked with aria-hidden, interactive elements properly labeled",
+      "acceptance_criterion": "All decorative quotation marks, comparison decorations, and CTA orbs have aria-hidden='true', pricing structure is semantically correct",
+      "verification_command": "grep -r 'aria-hidden' apps/web/app/\\(marketing\\)/_components/home-comparison-*.tsx apps/web/app/\\(marketing\\)/_components/home-testimonials-*.tsx apps/web/app/\\(marketing\\)/_components/home-pricing-*.tsx apps/web/app/\\(marketing\\)/_components/home-final-cta-*.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-comparison-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-testimonials-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-pricing-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-final-cta-*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I6.F2.T1"
+        ],
+        "blocks": [
+          "S2086.I6.F2.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S2086.I6.F2.T6",
+      "type": "task",
+      "name": "Add reduced-motion static fallbacks",
+      "action": {
+        "verb": "Add",
+        "target": "reduced-motion static fallbacks"
+      },
+      "purpose": "Ensure all animated sections show appropriate static states when prefers-reduced-motion is active (immediate text reveal, stopped marquee, static stat values)",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "SlideHeroes"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-hero-*.tsx",
+          "apps/web/app/(marketing)/_components/home-logo-cloud-*.tsx",
+          "apps/web/app/(marketing)/_components/home-statistics-*.tsx",
+          "apps/web/app/(marketing)/_components/home-sticky-scroll-*.tsx",
+          "apps/web/app/(marketing)/_components/home-how-it-works-*.tsx",
+          "apps/web/app/(marketing)/_components/home-features-grid-*.tsx",
+          "apps/web/app/(marketing)/_components/home-comparison-*.tsx",
+          "apps/web/app/(marketing)/_components/home-pricing-*.tsx"
+        ],
+        "dependencies": [
+          "S2086.I6.F2.T1 (global CSS styles)",
+          "MotionProvider from S2086.I1.F2 (already provides reducedMotion: 'user' for Framer Motion)"
+        ],
+        "constraints": [
+          "Use useReducedMotion hook from motion/react for component-level checks",
+          "CSS animations handled by global @media query from T1",
+          "Static states: text shows immediately, stats show final values, marquee stops or shows static grid",
+          "No animation should play when prefers-reduced-motion: reduce is active"
+        ]
+      },
+      "input_state": "Section components have animations but may not have proper reduced-motion fallbacks",
+      "output_state": "All sections respect prefers-reduced-motion with appropriate static alternatives",
+      "acceptance_criterion": "With prefers-reduced-motion active, all scroll animations disabled, text revealed immediately, count-ups show final values, marquee stops",
+      "verification_command": "grep -r 'useReducedMotion' apps/web/app/\\(marketing\\)/_components/home-*.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-hero-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-logo-cloud-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-statistics-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-sticky-scroll-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-how-it-works-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-features-grid-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-comparison-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-pricing-*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I6.F2.T1"
+        ],
+        "blocks": [
+          "S2086.I6.F2.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S2086.I6.F2.T7",
+      "type": "task",
+      "name": "Verify semantic HTML structure",
+      "action": {
+        "verb": "Verify",
+        "target": "semantic HTML structure"
+      },
+      "purpose": "Ensure all homepage sections use proper semantic elements (section, article, nav, h2-h3 hierarchy) for screen reader navigation and SEO",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "main"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/_components/home-*.tsx"
+        ],
+        "dependencies": [
+          "S2086.I6.F2.T2",
+          "S2086.I6.F2.T3",
+          "S2086.I6.F2.T4",
+          "S2086.I6.F2.T5",
+          "S2086.I6.F2.T6"
+        ],
+        "constraints": [
+          "Each section must be wrapped in <section> with appropriate aria-labelledby or aria-label",
+          "Headings must follow logical h1 -> h2 -> h3 hierarchy (no skipping levels)",
+          "Feature grids should use <ul>/<li> or <dl>/<dt>/<dd> for lists",
+          "Navigation must use <nav>",
+          "Main content must use <main>"
+        ]
+      },
+      "input_state": "Section components exist but may have inconsistent semantic HTML usage",
+      "output_state": "All sections use proper semantic elements with correct heading hierarchy",
+      "acceptance_criterion": "All sections wrapped in semantic elements, heading hierarchy is logical (h1-h3), no div soup for interactive content",
+      "verification_command": "grep -r '<section\\|<article\\|<nav\\|<h2\\|<h3' apps/web/app/\\(marketing\\)/_components/home-*.tsx | wc -l && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I6.F2.T2",
+          "S2086.I6.F2.T3",
+          "S2086.I6.F2.T4",
+          "S2086.I6.F2.T5",
+          "S2086.I6.F2.T6"
+        ],
+        "blocks": [
+          "S2086.I6.F2.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S2086.I6.F2.T8",
+      "type": "task",
+      "name": "Test keyboard navigation flow",
+      "action": {
+        "verb": "Test",
+        "target": "keyboard navigation flow"
+      },
+      "purpose": "Verify Tab key navigates through all interactive elements in logical order with visible focus indicators",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/(marketing)/page.tsx",
+          "apps/web/app/(marketing)/_components/home-*.tsx"
+        ],
+        "dependencies": [
+          "S2086.I6.F2.T7 (semantic HTML)",
+          "S2086.I6.F2.T1 (focus indicators)"
+        ],
+        "constraints": [
+          "Tab order must follow visual reading order (left-to-right, top-to-bottom)",
+          "Focus indicators must be visible with 3:1+ contrast",
+          "All interactive elements (links, buttons, form inputs) must be focusable",
+          "No keyboard traps",
+          "Skip-to-content link should be first focusable element (nice-to-have)"
+        ]
+      },
+      "input_state": "Sections exist with focus styles from T1 but navigation order unverified",
+      "output_state": "Tab navigation flows logically through all interactive elements with visible focus",
+      "acceptance_criterion": "Tab through entire page reaches all buttons/links in logical order, focus indicators visible at each stop, no elements skipped or trapped",
+      "verification_command": "Manual testing with Tab key + grep -r 'tabindex' apps/web/app/\\(marketing\\)/_components/home-*.tsx && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I6.F2.T1",
+          "S2086.I6.F2.T7"
+        ],
+        "blocks": [
+          "S2086.I6.F2.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S2086.I6.F2.T9",
+      "type": "task",
+      "name": "Audit WCAG contrast ratios",
+      "action": {
+        "verb": "Audit",
+        "target": "WCAG contrast ratios"
+      },
+      "purpose": "Systematically verify all text/background combinations meet WCAG AA (4.5:1 body, 3:1 large text) using automated tools and manual verification for glass card overlays",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 9,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "SlideHeroes"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/styles/theme.css",
+          "apps/web/app/(marketing)/_components/home-*.tsx"
+        ],
+        "dependencies": [
+          "All section components (T2-T6)",
+          "Design tokens from S2086.I1.F1"
+        ],
+        "constraints": [
+          "Body text (< 18pt) on #0a0a0f backgrounds: 4.5:1 minimum",
+          "Large text (>= 18pt) on #0a0a0f: 3:1 minimum",
+          "UI components and graphics: 3:1 minimum",
+          "Focus indicators: 3:1 against both background and adjacent colors",
+          "Glass card backdrop-filter: blur() contrast requires manual visual verification (automated tools may fail)",
+          "Nice-to-have: WCAG AAA (7:1) for primary text"
+        ]
+      },
+      "input_state": "Sections built with dark theme design tokens but contrast unverified",
+      "output_state": "All text/background combinations verified to meet WCAG AA, contrast issues fixed",
+      "acceptance_criterion": "Lighthouse accessibility audit passes contrast checks, manual verification confirms glass cards readable, no text below 4.5:1 (body) or 3:1 (large)",
+      "verification_command": "npx lighthouse http://localhost:3000 --only-categories=accessibility --output=json | jq '.categories.accessibility.score' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/styles/theme.css"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-*.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I6.F2.T2",
+          "S2086.I6.F2.T3",
+          "S2086.I6.F2.T4",
+          "S2086.I6.F2.T5",
+          "S2086.I6.F2.T6"
+        ],
+        "blocks": [
+          "S2086.I6.F2.T10"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S2086.I6.F2.T10",
+      "type": "task",
+      "name": "Run Lighthouse accessibility audit",
+      "action": {
+        "verb": "Run",
+        "target": "Lighthouse accessibility audit"
+      },
+      "purpose": "Execute comprehensive Lighthouse accessibility audit and achieve >= 95 score, fixing any remaining issues",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 10,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/",
+        "wait_ms": 5000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "SlideHeroes"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "All marketing components and styles"
+        ],
+        "dependencies": [
+          "All previous tasks (T1-T9)"
+        ],
+        "constraints": [
+          "Target score: >= 95/100",
+          "Fix all critical issues (color contrast, ARIA, keyboard navigation)",
+          "Address warnings where feasible (skip links, live regions)",
+          "Document any false positives or acceptable trade-offs"
+        ]
+      },
+      "input_state": "All accessibility features implemented in T1-T9",
+      "output_state": "Lighthouse accessibility score >= 95, all critical issues resolved",
+      "acceptance_criterion": "Lighthouse accessibility score >= 95, no critical violations, keyboard navigation works, reduced motion respected",
+      "verification_command": "npx lighthouse http://localhost:3000 --only-categories=accessibility --output=json --chrome-flags='--headless' | jq '.categories.accessibility.score' && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/(marketing)/_components/home-*.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/styles/globals.css"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S2086.I6.F2.T9"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation",
+        "task_ids": [
+          "S2086.I6.F2.T1"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Section ARIA and Reduced Motion",
+        "task_ids": [
+          "S2086.I6.F2.T2",
+          "S2086.I6.F2.T3",
+          "S2086.I6.F2.T4",
+          "S2086.I6.F2.T5",
+          "S2086.I6.F2.T6"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 14,
+        "parallel_hours": 5
+      },
+      {
+        "id": 3,
+        "name": "Semantic Structure and Navigation",
+        "task_ids": [
+          "S2086.I6.F2.T7",
+          "S2086.I6.F2.T8"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 4,
+        "parallel_hours": 3
+      },
+      {
+        "id": 4,
+        "name": "Contrast Verification",
+        "task_ids": [
+          "S2086.I6.F2.T9"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 5,
+        "name": "Final Audit",
+        "task_ids": [
+          "S2086.I6.F2.T10"
+        ],
+        "depends_on_groups": [
+          3,
+          4
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S2086.I6.F2.T1",
+        "S2086.I6.F2.T6",
+        "S2086.I6.F2.T9",
+        "S2086.I6.F2.T10"
+      ],
+      "total_hours": 13
+    },
+    "duration": {
+      "sequential": 27,
+      "parallel": 13,
+      "time_saved_percent": 51.9
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
