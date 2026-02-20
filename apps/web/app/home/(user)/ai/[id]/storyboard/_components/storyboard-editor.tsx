@@ -54,6 +54,7 @@ import type {
 } from "../../_lib/types/storyboard.types";
 import { exportPowerPointAction } from "../_actions/export-powerpoint.action";
 import { generateStoryboardAction } from "../_actions/generate-storyboard.action";
+import { regenerateSlideAction } from "../_actions/regenerate-slide.action";
 import {
 	useSaveStoryboardSlides,
 	useStoryboardContents,
@@ -217,6 +218,9 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 	const [isExporting, startExporting] = useTransition();
 	const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
 	const [generationError, setGenerationError] = useState<string | null>(null);
+	const [regeneratingSlideId, setRegeneratingSlideId] = useState<string | null>(
+		null,
+	);
 	const [activeDragSlideId, setActiveDragSlideId] = useState<string | null>(
 		null,
 	);
@@ -353,6 +357,55 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 			handleSave(newSlides);
 		},
 		[slides, handleSave],
+	);
+
+	const handleSlideRegenerate = useCallback(
+		async (slideId: string) => {
+			const sorted = [...slides].sort((a, b) => a.order - b.order);
+			const targetIndex = sorted.findIndex((slide) => slide.id === slideId);
+			if (targetIndex === -1) return;
+
+			const targetSlide = sorted[targetIndex];
+			if (!targetSlide) return;
+
+			setGenerationError(null);
+			setRegeneratingSlideId(slideId);
+
+			try {
+				const result = await regenerateSlideAction({
+					presentationId,
+					slideId,
+					slideIndex: targetIndex,
+					totalSlides: sorted.length,
+					slideTitle: targetSlide.title || "Untitled slide",
+					slidePurpose: targetSlide.purpose,
+				});
+
+				if (result && "data" in result && result.data?.slide) {
+					const normalizedRegenerated = normalizeSlide(result.data.slide);
+					const updatedSlides = slides.map((slide) =>
+						slide.id === slideId ? normalizedRegenerated : slide,
+					);
+					setSlides(updatedSlides);
+					handleSave(updatedSlides);
+				} else if (result && "error" in result) {
+					setGenerationError(
+						typeof result.error === "string"
+							? result.error
+							: "Slide regeneration failed. Try again.",
+					);
+				}
+			} catch (err) {
+				setGenerationError(
+					err instanceof Error
+						? err.message
+						: "Slide regeneration failed. Try again.",
+				);
+			} finally {
+				setRegeneratingSlideId(null);
+			}
+		},
+		[slides, presentationId, handleSave],
 	);
 
 	const handleSlideDelete = useCallback(
@@ -564,6 +617,8 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 								slide={selectedSlide}
 								onUpdate={handleSlideUpdate}
 								onDelete={handleSlideDelete}
+								onRegenerate={handleSlideRegenerate}
+								isRegenerating={regeneratingSlideId === selectedSlide.id}
 							/>
 						)}
 					</div>

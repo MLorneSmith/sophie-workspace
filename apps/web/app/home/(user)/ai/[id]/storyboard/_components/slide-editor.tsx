@@ -27,6 +27,8 @@ import {
 	Italic as ItalicIcon,
 	List,
 	ListOrdered,
+	Loader2,
+	RefreshCw,
 	Trash2,
 	Underline as UnderlineIcon,
 } from "lucide-react";
@@ -41,6 +43,8 @@ interface SlideEditorProps {
 	slide: StoryboardSlide;
 	onUpdate: (slide: StoryboardSlide) => void;
 	onDelete: (slideId: string) => void;
+	onRegenerate: (slideId: string) => void;
+	isRegenerating?: boolean;
 }
 
 function NotesToolbar({ editor }: { editor: Editor | null }) {
@@ -113,7 +117,13 @@ function NotesToolbar({ editor }: { editor: Editor | null }) {
 	);
 }
 
-export function SlideEditor({ slide, onUpdate, onDelete }: SlideEditorProps) {
+export function SlideEditor({
+	slide,
+	onUpdate,
+	onDelete,
+	onRegenerate,
+	isRegenerating = false,
+}: SlideEditorProps) {
 	const notesContent = useMemo(() => {
 		if (!slide.speaker_notes) {
 			return {
@@ -231,6 +241,20 @@ export function SlideEditor({ slide, onUpdate, onDelete }: SlideEditorProps) {
 						<SelectItem value="blank">Blank</SelectItem>
 					</SelectContent>
 				</Select>
+				<Button
+					variant="ghost"
+					size="sm"
+					onClick={() => onRegenerate(slide.id)}
+					disabled={isRegenerating}
+					className="text-muted-foreground hover:text-foreground h-8 w-8 shrink-0 p-0"
+					aria-label="Regenerate slide"
+				>
+					{isRegenerating ? (
+						<Loader2 className="h-3.5 w-3.5 animate-spin" />
+					) : (
+						<RefreshCw className="h-3.5 w-3.5" />
+					)}
+				</Button>
 				<Button
 					variant="ghost"
 					size="sm"
