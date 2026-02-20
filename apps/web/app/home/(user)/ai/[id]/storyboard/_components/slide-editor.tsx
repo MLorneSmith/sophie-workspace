@@ -43,7 +43,7 @@ interface SlideEditorProps {
 	slide: StoryboardSlide;
 	onUpdate: (slide: StoryboardSlide) => void;
 	onDelete: (slideId: string) => void;
-	onRegenerate: (slideId: string) => void;
+	onRegenerate?: (slideId: string) => void;
 	isRegenerating?: boolean;
 }
 
@@ -241,20 +241,22 @@ export function SlideEditor({
 						<SelectItem value="blank">Blank</SelectItem>
 					</SelectContent>
 				</Select>
-				<Button
-					variant="ghost"
-					size="sm"
-					onClick={() => onRegenerate(slide.id)}
-					disabled={isRegenerating}
-					className="text-muted-foreground hover:text-foreground h-8 w-8 shrink-0 p-0"
-					aria-label="Regenerate slide"
-				>
-					{isRegenerating ? (
-						<Loader2 className="h-3.5 w-3.5 animate-spin" />
-					) : (
-						<RefreshCw className="h-3.5 w-3.5" />
-					)}
-				</Button>
+				{onRegenerate && (
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={() => onRegenerate(slide.id)}
+						disabled={isRegenerating}
+						className="text-muted-foreground hover:text-foreground h-8 w-8 shrink-0 p-0"
+						aria-label="Regenerate slide"
+					>
+						{isRegenerating ? (
+							<Loader2 className="h-3.5 w-3.5 animate-spin" />
+						) : (
+							<RefreshCw className="h-3.5 w-3.5" />
+						)}
+					</Button>
+				)}
 				<Button
 					variant="ghost"
 					size="sm"
