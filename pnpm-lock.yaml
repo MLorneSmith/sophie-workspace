@@ -558,6 +558,9 @@ importers:
       '@kit/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
+      '@kit/loops':
+        specifier: workspace:*
+        version: link:../../packages/loops
       '@kit/mailers':
         specifier: workspace:*
         version: link:../../packages/mailers/core
@@ -1516,6 +1519,31 @@ importers:
         specifier: ^16.3.5
         version: 16.3.5(i18next@25.7.0(typescript@5.9.3))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
 
+  packages/loops:
+    dependencies:
+      '@kit/shared':
+        specifier: workspace:*
+        version: link:../shared
+      loops:
+        specifier: ^6.2.0
+        version: 6.2.1
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      zod:
+        specifier: ^4.1.13
+        version: 4.1.13
+    devDependencies:
+      '@kit/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.10.1
+      vitest:
+        specifier: ^4.0.15
+        version: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@24.10.1)(jiti@2.6.1)(jsdom@27.3.0(postcss@8.5.6))(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+
   packages/mailers/core:
     dependencies:
       '@hookform/resolvers':
@@ -1680,7 +1708,7 @@ importers:
         version: 5.2.2(react-hook-form@7.67.0(react@19.2.1))
       '@sentry/nextjs':
         specifier: ^10.38.0
-        version: 10.39.0(@opentelemetry/context-async-hooks@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.1(@opentelemetry/api@1.9.0))(next@16.1.5(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(sass@1.77.4))(react@19.2.1)(webpack@5.102.1)
+        version: 10.39.0(@opentelemetry/context-async-hooks@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.1(@opentelemetry/api@1.9.0))(next@16.1.5(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(sass@1.77.4))(react@19.2.1)(webpack@5.102.1)
     devDependencies:
       '@kit/monitoring-core':
         specifier: workspace:*
@@ -9423,6 +9451,10 @@ packages:
   lookup-closest-locale@6.2.0:
     resolution: {integrity: sha512-/c2kL+Vnp1jnV6K6RpDTHK3dgg0Tu2VVp+elEiJpjfS1UyY7AjOYHohRug6wT0OpoX2qFgNORndE9RqesfVxWQ==}
 
+  loops@6.2.1:
+    resolution: {integrity: sha512-UF321fEmlX7KeGlbjxXnL49hk8gVyMqHB2sbeEiEbHyacHYJN20NRh0f2FQSvW2r9X9/xpKBwO5gFYqy5ztauQ==}
+    engines: {node: '>=18'}
+
   loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
@@ -16630,7 +16662,7 @@ snapshots:
 
   '@sentry/core@9.47.1': {}
 
-  '@sentry/nextjs@10.39.0(@opentelemetry/context-async-hooks@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.1(@opentelemetry/api@1.9.0))(next@16.1.5(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(sass@1.77.4))(react@19.2.1)(webpack@5.102.1)':
+  '@sentry/nextjs@10.39.0(@opentelemetry/context-async-hooks@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.1(@opentelemetry/api@1.9.0))(next@16.1.5(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(sass@1.77.4))(react@19.2.1)(webpack@5.102.1)':
     dependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/semantic-conventions': 1.38.0
@@ -20772,6 +20804,8 @@ snapshots:
   longest@2.0.1: {}
 
   lookup-closest-locale@6.2.0: {}
+
+  loops@6.2.1: {}
 
   loose-envify@1.4.0:
     dependencies:

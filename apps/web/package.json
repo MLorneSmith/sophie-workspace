@@ -51,6 +51,7 @@
 		"@kit/e2b": "workspace:*",
 		"@kit/email-templates": "workspace:*",
 		"@kit/i18n": "workspace:*",
+		"@kit/loops": "workspace:*",
 		"@kit/mailers": "workspace:*",
 		"@kit/mailers-shared": "workspace:*",
 		"@kit/monitoring": "workspace:*",
