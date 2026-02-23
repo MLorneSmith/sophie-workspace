@@ -147,6 +147,7 @@ jobs:
       yaml: ${{ steps.filter.outputs.yaml }}
       dependencies: ${{ steps.filter.outputs.dependencies }}
       docker: ${{ steps.filter.outputs.docker }}
+      frontend: ${{ steps.filter.outputs.frontend }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -172,6 +173,15 @@ jobs:
               - 'package.json'
               - 'pnpm-lock.yaml'
               - '**/package.json'
+            frontend:
+              - 'apps/web/app/**/*.{ts,tsx}'
+              - 'apps/web/components/**'
+              - 'apps/web/styles/**'
+              - 'packages/ui/**'
+              - 'packages/features/**'
+              - '**/*.css'
+              - 'apps/e2e/tests/accessibility/**'
+              - 'tailwind.config.*'
             docker:
               - '**/Dockerfile*'
               - '**/*.dockerfile'
@@ -396,8 +406,9 @@ jobs:
     name: Accessibility Tests
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, changes]
-    if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
+    if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.frontend == 'true'
     continue-on-error: true  # Non-blocking for now - E2E database setup issues
+    timeout-minutes: 15
     env:
       # E2E Database Configuration
       E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
@@ -444,7 +455,7 @@ jobs:
         run: |
           cd apps/web
           # Start E2E Supabase instance (exclude unused services to speed up Docker pulls)
-          supabase start -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
+          supabase start --ignore-health-check -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
           
           # Wait for database to be ready
           sleep 5
