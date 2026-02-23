@@ -56,11 +56,18 @@ jobs:
       - name: Check if already validated
         id: check
         run: |
+          # Always validate on manual trigger (workflow_dispatch)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual trigger, forcing validation"
+            echo "should-validate=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           # Skip validation if this commit was already validated in a PR
           # This happens when PRs are merged to staging
           COMMIT=${{ github.sha }}
           PARENT_COMMIT=$(git rev-parse HEAD^)
-          
+
           # Check if this is a merge commit from a PR
           if git log --format=%s -n 1 | grep -q "^Merge pull request"; then
             echo "This is a PR merge, validation already done"
