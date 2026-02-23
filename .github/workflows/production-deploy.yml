@@ -112,6 +112,7 @@ jobs:
     name: Deploy Web App to Production
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: build
+    if: always() && !failure() && !cancelled()
     environment:
       name: production
       url: https://slideheroes.com
@@ -180,6 +181,7 @@ jobs:
     name: Deploy Payload CMS to Production
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: build
+    if: always() && !failure() && !cancelled()
     environment:
       name: production-payload
       url: ${{ steps.deploy.outputs.url }}

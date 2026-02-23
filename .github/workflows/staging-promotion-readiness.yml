@@ -438,7 +438,7 @@ jobs:
             const pr = await github.rest.pulls.create({
               owner,
               repo,
-              title: `🏭 Promote Staging to Production - ${new Date().toISOString().split('T')[0]}`,
+              title: `chore(deploy): promote staging to production - ${new Date().toISOString().split('T')[0]}`,
               head: 'staging',
               base: 'main',
               body,
