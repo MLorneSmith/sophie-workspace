@@ -4,8 +4,13 @@ import OpenAI from "openai";
 // Initialize service logger
 const { getLogger } = createServiceLogger("AI-GATEWAY");
 
-// Define the Portkey Gateway URL
+// Define the Portkey Gateway URL — falls back to direct OpenAI when Portkey is not configured
 const PORTKEY_GATEWAY_URL = "https://api.portkey.ai/v1/proxy";
+const OPENAI_DIRECT_URL = "https://api.openai.com/v1";
+
+function isPortkeyConfigured(): boolean {
+	return Boolean(process.env.PORTKEY_API_KEY);
+}
 
 /**
  * Determines the correct provider based on the model name
@@ -105,6 +110,33 @@ export async function _createGatewayClient(options: PortkeyClientOptions = {}) {
 	(await getLogger()).info(`Creating gateway client for model: ${model}`, {
 		provider,
 	});
+
+	// When Portkey is not configured, call providers directly
+	if (!isPortkeyConfigured()) {
+		(await getLogger()).info(
+			"Portkey not configured — using direct provider API",
+			{ provider },
+		);
+
+		if (provider === "anthropic") {
+			// Anthropic uses OpenAI-compatible API via their proxy
+			const client = new OpenAI({
+				apiKey: process.env.ANTHROPIC_API_KEY || "",
+				baseURL: "https://api.anthropic.com/v1",
+				defaultHeaders: {
+					"anthropic-version": "2023-06-01",
+				},
+			});
+			return client;
+		}
+
+		// Default: direct OpenAI
+		const client = new OpenAI({
+			apiKey: process.env.OPENAI_API_KEY || "",
+			baseURL: OPENAI_DIRECT_URL,
+		});
+		return client;
+	}
 
 	// Create headers using our Portkey config headers function
 	const headers = await _createPortkeyConfigHeaders({
