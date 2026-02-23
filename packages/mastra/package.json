@@ -6,10 +6,12 @@
 	"exports": {
 		".": "./src/index.ts",
 		"./agents": "./src/agents/index.ts",
-		"./config": "./src/config/index.ts"
+		"./config": "./src/config/index.ts",
+		"./workflows": "./src/workflows/index.ts"
 	},
 	"scripts": {
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run --config ./vitest.config.ts"
 	},
 	"dependencies": {
 		"@mastra/core": "^1.5.0",

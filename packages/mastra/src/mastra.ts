@@ -8,6 +8,12 @@
 import { Mastra } from "@mastra/core";
 import { PostgresStore } from "@mastra/pg";
 
+import { partnerAgent } from "./agents/partner-agent";
+import { researchAgent } from "./agents/research-agent";
+import { skepticAgent } from "./agents/skeptic-agent";
+import { audienceProfilingWorkflow } from "./workflows/audience-profiling-workflow";
+import { postProcessWorkflow } from "./workflows/post-process-workflow";
+
 let _mastra: Mastra | null = null;
 
 /**
@@ -35,8 +41,15 @@ export function getMastra(): Mastra {
 
 	_mastra = new Mastra({
 		storage,
-		// Agents are registered dynamically as they are defined
-		agents: {},
+		agents: {
+			researchAgent,
+			partnerAgent,
+			skepticAgent,
+		},
+		workflows: {
+			audienceProfilingWorkflow,
+			postProcessWorkflow,
+		},
 	});
 
 	return _mastra;
