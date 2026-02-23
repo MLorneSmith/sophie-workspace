@@ -1,6 +1,6 @@
 import { withPayload } from "@payloadcms/next/withPayload";
 
-/** @type {import('next').NextConfig} */
+/** @type {import('next').NextConfig} - cache bust: 2026-02-23 */
 const nextConfig = {
 	// Your Next.js config here
 	// Next.js 16 uses Turbopack by default - add empty config to acknowledge
