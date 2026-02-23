@@ -474,13 +474,15 @@ export function ProfileStepForm(props: {
 										if (url) handleResearchWithSelection(url);
 									}
 								}}
-								id="manual-linkedin-url"
+								id={`${reactId}-manual-linkedin-url`}
 							/>
 							<Button
 								variant="secondary"
 								size="sm"
 								onClick={() => {
-									const input = document.getElementById("manual-linkedin-url") as HTMLInputElement;
+									const input = document.getElementById(
+										`${reactId}-manual-linkedin-url`,
+									) as HTMLInputElement;
 									const url = input?.value?.trim();
 									if (url) handleResearchWithSelection(url);
 								}}
