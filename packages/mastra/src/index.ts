@@ -5,9 +5,20 @@
  * and model routing configuration.
  */
 
-export { getMastra } from "./mastra";
+export {
+	getMastra,
+	getMastraMemory,
+	getPgVector,
+	MastraWorkingMemorySchema,
+	type MastraWorkingMemory,
+} from "./mastra";
 export { PORTKEY_GATEWAY_URL } from "./gateway/portkey-gateway";
 export { getRunTokenUsage } from "./config/spike-tracing";
+export {
+	SLIDEHEROES_EMBEDDINGS_INDEX,
+	embedDocument,
+	querySimilar,
+} from "./rag";
 export {
 	audienceProfilingWorkflow,
 	createAudienceProfilingWorkflow,
