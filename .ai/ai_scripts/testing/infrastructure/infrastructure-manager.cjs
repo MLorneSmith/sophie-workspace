@@ -705,6 +705,36 @@ class InfrastructureManager {
 	}
 
 	/**
+	 * Deep readiness check for Payload CMS
+	 * Verifies Payload can actually serve API requests beyond the basic health endpoint.
+	 * The /api/health endpoint may return 200 before database connections are fully initialized.
+	 */
+	async deepReadinessCheckPayload() {
+		const payloadPort = 3021;
+		const payloadUrl = `http://localhost:${payloadPort}`;
+
+		try {
+			// Try /api/globals as a lightweight API request that exercises the DB connection
+			const response = await fetch(`${payloadUrl}/api/globals`, {
+				signal: AbortSignal.timeout(5000),
+			});
+
+			if (response.status >= 200 && response.status < 500) {
+				// Any non-server-error response means Payload is serving API requests
+				// (401/403 is fine — it means auth is working, DB is connected)
+				log(`  ✅ Deep readiness check passed (status ${response.status})`);
+				return true;
+			}
+
+			log(`  ❌ Deep readiness check failed (status ${response.status})`);
+			return false;
+		} catch (error) {
+			log(`  ❌ Deep readiness check failed: ${error.message || error}`);
+			return false;
+		}
+	}
+
+	/**
 	 * Setup Payload CMS server for E2E tests (shards 7 and 8)
 	 * Uses dev:test script which runs on port 3021
 	 */
@@ -779,15 +809,27 @@ class InfrastructureManager {
 
 			// Wait for Payload to be ready
 			log("⏳ Waiting for Payload CMS to be ready...");
-			const maxWaitTime = 60000; // 60 seconds
+			const maxWaitTime = 90000; // 90 seconds (increased from 60s for slower CI runners)
 			const startTime = Date.now();
 			const checkInterval = 2000;
 
 			while (Date.now() - startTime < maxWaitTime) {
 				const checkStatus = await this.healthCheckPayloadServer();
 				if (checkStatus === "healthy") {
-					log("✅ Payload CMS server is ready");
-					return "started";
+					// Deep readiness check: verify Payload can actually serve API requests
+					// The health endpoint may respond 200 before DB connections are fully initialized
+					log("🔍 Running deep readiness check on Payload API...");
+					const deepReady = await this.deepReadinessCheckPayload();
+					if (deepReady) {
+						// Stabilization delay: allow internal connections to settle
+						log("⏳ Stabilization delay (3s) before marking Payload ready...");
+						await new Promise((resolve) => setTimeout(resolve, 3000));
+						log("✅ Payload CMS server is ready (deep check passed)");
+						return "started";
+					}
+					log(
+						"⚠️ Payload health check passed but deep readiness check failed, retrying...",
+					);
 				}
 				await new Promise((resolve) => setTimeout(resolve, checkInterval));
 			}

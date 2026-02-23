@@ -158,7 +158,7 @@ services:
   # Required for E2E billing tests to receive checkout.session.completed events
   #
   # How it works:
-  # 1. Uses the stripe/stripe-cli Docker image
+  # 1. Uses the Stripe CLI Docker image (mirrored to GHCR to avoid Docker Hub auth)
   # 2. Authenticates with Stripe using STRIPE_SECRET_KEY
   # 3. Forwards webhook events to the app container
   # 4. The webhook signing secret is captured and written to /stripe/webhook-secret
@@ -166,7 +166,7 @@ services:
   #
   # To enable: Set ENABLE_STRIPE_WEBHOOK=true and provide STRIPE_SECRET_KEY
   stripe-webhook:
-    image: stripe/stripe-cli:latest
+    image: ghcr.io/slideheroes/stripe-cli:v1.35.1
     container_name: slideheroes-stripe-webhook
     restart: unless-stopped
     profiles:

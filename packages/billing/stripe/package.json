@@ -7,7 +7,7 @@
 		"format": "biome format src",
 		"lint": "biome lint .",
 		"typecheck": "tsc --noEmit",
-		"start": "docker run --rm -it --name=stripe -v ~/.config/stripe:/root/.config/stripe stripe/stripe-cli:latest listen --forward-to http://host.docker.internal:3000/api/billing/webhook"
+		"start": "docker run --rm -it --name=stripe -v ~/.config/stripe:/root/.config/stripe ghcr.io/slideheroes/stripe-cli:v1.35.1 listen --forward-to http://host.docker.internal:3000/api/billing/webhook"
 	},
 	"exports": {
 		".": "./src/index.ts",
