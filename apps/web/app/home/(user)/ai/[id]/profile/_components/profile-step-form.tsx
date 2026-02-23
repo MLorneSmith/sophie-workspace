@@ -397,7 +397,7 @@ export function ProfileStepForm(props: {
 				</div>
 
 				<div className="grid gap-3">
-					{searchResults.map((person) => {
+					{searchResults.map((person, index) => {
 						const linkedinUrl =
 							person.linkedinURL ??
 							(person.username
@@ -408,7 +408,7 @@ export function ProfileStepForm(props: {
 
 						return (
 							<button
-								key={person.urn || person.id}
+								key={person.urn || person.id || `search-result-${index}`}
 								type="button"
 								className="flex items-center gap-4 rounded-lg border border-white/10 bg-white/5 p-4 text-left transition-colors hover:border-primary/50 hover:bg-white/10"
 								onClick={() => handleResearchWithSelection(linkedinUrl)}
@@ -440,22 +440,57 @@ export function ProfileStepForm(props: {
 					})}
 				</div>
 
-				<div className="flex items-center gap-3">
-					<Button
-						variant="ghost"
-						onClick={() => {
-							setSearchResults([]);
-							setFormState("input");
-						}}
-					>
-						← Back
-					</Button>
-					<Button
-						variant="secondary"
-						onClick={() => handleResearchWithSelection(undefined)}
-					>
-						None of these — continue without LinkedIn
-					</Button>
+				<div className="space-y-3">
+					<div className="flex items-center gap-3">
+						<Button
+							variant="ghost"
+							onClick={() => {
+								setSearchResults([]);
+								setFormState("input");
+							}}
+						>
+							← Back
+						</Button>
+						<Button
+							variant="secondary"
+							onClick={() => handleResearchWithSelection(undefined)}
+						>
+							None of these — continue without LinkedIn
+						</Button>
+					</div>
+
+					<details className="rounded-lg border border-white/10 bg-white/5 p-3">
+						<summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+							Know their LinkedIn URL? Paste it here
+						</summary>
+						<div className="mt-3 flex gap-2">
+							<input
+								type="url"
+								placeholder="https://www.linkedin.com/in/..."
+								className="flex-1 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
+								onKeyDown={(e) => {
+									if (e.key === "Enter") {
+										const url = (e.target as HTMLInputElement).value.trim();
+										if (url) handleResearchWithSelection(url);
+									}
+								}}
+								id={`${reactId}-manual-linkedin-url`}
+							/>
+							<Button
+								variant="secondary"
+								size="sm"
+								onClick={() => {
+									const input = document.getElementById(
+										`${reactId}-manual-linkedin-url`,
+									) as HTMLInputElement;
+									const url = input?.value?.trim();
+									if (url) handleResearchWithSelection(url);
+								}}
+							>
+								Use this profile
+							</Button>
+						</div>
+					</details>
 				</div>
 			</div>
 		);

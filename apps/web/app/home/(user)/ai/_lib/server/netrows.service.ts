@@ -214,20 +214,37 @@ export async function searchPersonFuzzy(
 	name: string,
 	company: string,
 ): Promise<NetrowsPersonSearchItem[]> {
-	// Try exact name + company
+	const parts = name.trim().split(/\s+/);
+	const firstName = parts[0] ?? "";
+	const lastName = parts.length > 1 ? parts[parts.length - 1] : "";
+
+	// Strategy 1: exact name + company
 	let results = await searchPerson(name, company);
 	if (results && results.length > 0) return results;
 
-	// Fallback: first name only + company (handles Ajay vs Ajaypal)
-	const firstName = name.split(/\s+/)[0];
+	// Strategy 2: last name + company (catches "Ajay Banga" → "Ajaypal Singh Banga")
+	if (lastName && lastName !== name) {
+		results = await searchPerson(lastName, company);
+		if (results && results.length > 0) return results;
+	}
+
+	// Strategy 3: first name + company (catches partial first names)
 	if (firstName && firstName !== name) {
 		results = await searchPerson(firstName, company);
 		if (results && results.length > 0) return results;
 	}
 
-	// Fallback: full name without company filter
+	// Strategy 4: full name without company filter
 	results = await searchPerson(name, "");
-	return results ?? [];
+	if (results && results.length > 0) return results;
+
+	// Strategy 5: last name without company filter (broadest)
+	if (lastName && lastName !== name) {
+		results = await searchPerson(lastName, "");
+		if (results && results.length > 0) return results;
+	}
+
+	return [];
 }
 
 /**
