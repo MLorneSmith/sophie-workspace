@@ -10,9 +10,11 @@ import { Memory } from "@mastra/memory";
 import { PgVector, PostgresStore } from "@mastra/pg";
 import { z } from "zod";
 
+import { editorAgent } from "./agents/editor-agent";
 import { partnerAgent } from "./agents/partner-agent";
 import { researchAgent } from "./agents/research-agent";
 import { validatorAgent } from "./agents/validator-agent";
+import { whispererAgent } from "./agents/whisperer-agent";
 import { CompanyBriefSchema } from "./schemas/company-brief";
 import { AudienceBriefSchema } from "./schemas/presentation-artifacts";
 import { audienceProfilingWorkflow } from "./workflows/audience-profiling-workflow";
@@ -159,6 +161,8 @@ export function getMastra(): Mastra {
 			researchAgent,
 			partnerAgent,
 			validatorAgent,
+			whispererAgent,
+			editorAgent,
 		},
 		workflows: {
 			audienceProfilingWorkflow,
