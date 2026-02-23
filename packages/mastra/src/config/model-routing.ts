@@ -15,7 +15,7 @@
 export type AgentName =
 	| "research"
 	| "partner"
-	| "skeptic"
+	| "validator"
 	| "whisperer"
 	| "editor"
 	| "brief-generator"
@@ -58,15 +58,15 @@ export const AGENT_MODEL_POLICY: Record<AgentName, ModelPolicy> = {
 		creative: "openai/gpt-4o",
 	},
 
-	// Partner agent — collaboratively builds the narrative
+	// Partner agent — senior consulting partner narrative review
 	partner: {
 		default: "openai/gpt-4o",
 		reasoning: "anthropic/claude-sonnet-4-20250514",
 		fast: "openai/gpt-4o-mini",
 	},
 
-	// Skeptic agent — stress-tests arguments, finds weaknesses
-	skeptic: {
+	// Validator agent — verifies evidence quality and factual support
+	validator: {
 		default: "anthropic/claude-sonnet-4-20250514",
 		reasoning: "anthropic/claude-sonnet-4-20250514",
 		fast: "openai/gpt-4o-mini",
