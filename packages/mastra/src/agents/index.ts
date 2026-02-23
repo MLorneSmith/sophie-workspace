@@ -6,3 +6,5 @@
  */
 
 export { researchAgent } from "./research-agent";
+export { partnerAgent } from "./partner-agent";
+export { skepticAgent } from "./skeptic-agent";
