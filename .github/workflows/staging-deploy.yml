@@ -33,6 +33,7 @@ permissions:
   checks: write
   security-events: write
   actions: read  # Required for workflow job introspection
+  packages: read  # Required to pull Stripe CLI image from GHCR
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -406,13 +407,16 @@ jobs:
 
           echo "✅ JWT keys extracted successfully"
 
+      - name: Login to GHCR
+        run: echo "${{ github.token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
       - name: Start Stripe CLI for webhook testing
         run: |
           # Start Stripe CLI in background for billing webhook tests (shards 10, 11)
           # The application server is started by Playwright's webServer configuration
           # See Issue #1830, #1832: Removed explicit app startup to avoid port 3001 conflict
           docker run --add-host=host.docker.internal:host-gateway --rm -it --name=stripe -d \
-            stripe/stripe-cli:latest listen \
+            ghcr.io/slideheroes/stripe-cli:v1.35.1 listen \
             --forward-to http://host.docker.internal:3001/api/billing/webhook \
             --skip-verify --api-key "$STRIPE_SECRET_KEY" --log-level debug &
 

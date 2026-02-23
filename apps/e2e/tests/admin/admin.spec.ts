@@ -28,29 +28,7 @@ test.describe("Admin Auth flow with Super Admin but without MFA", () => {
 test.describe("Admin", () => {
 	test.describe.configure({ mode: "parallel" });
 
-	// Ensure test user is in clean state before ALL admin tests run
-	// This prevents accumulated state corruption from previous test runs
-	test.beforeAll(async () => {
-		const testUserEmail = "test1@slideheroes.com";
-		try {
-			const restored = await unbanUser(testUserEmail);
-			if (restored) {
-				console.log(
-					`[admin.spec.ts beforeAll] Test user ${testUserEmail} was banned, now restored to active state`,
-				);
-			} else {
-				console.log(
-					`[admin.spec.ts beforeAll] Test user ${testUserEmail} was already in active state`,
-				);
-			}
-		} catch (error) {
-			console.warn(
-				"[admin.spec.ts beforeAll] Failed to ensure test user state:",
-				error instanceof Error ? error.message : error,
-			);
-			// Don't throw - let tests proceed and fail with more specific errors if needed
-		}
-	});
+	// No global beforeAll needed — each test creates its own fresh user via bootstrapUser()
 
 	test.describe("Admin Dashboard", () => {
 		AuthPageObject.setupSession(AUTH_STATES.SUPER_ADMIN);
@@ -472,11 +450,20 @@ test.describe
 		});
 	});
 
-async function createUser(_page: Page) {
-	// Use pre-existing test user from seed data
-	// test1@slideheroes.com is a regular user without super-admin privileges
-	// Note: test2@slideheroes.com has super-admin role in seed data and cannot be banned
-	return "test1@slideheroes.com";
+async function createUser(page: Page) {
+	// Bootstrap a fresh user with a randomized email to avoid collisions
+	// when shards run in parallel (previously used hardcoded test1@slideheroes.com)
+	const auth = new AuthPageObject(page);
+	const email = auth.createRandomEmail();
+
+	await auth.bootstrapUser({
+		email,
+		password: process.env.E2E_TEST_USER_PASSWORD || "aiesec1992",
+		name: "Admin Test User",
+	});
+
+	console.log(`[admin.spec.ts] Created fresh test user: ${email}`);
+	return email;
 }
 
 async function filterAccounts(page: Page, email: string) {
