@@ -1,0 +1,42 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Admin & Invitations",
+		"files": [
+			"tests/admin/admin.spec.ts",
+			"tests/invitations/invitations.spec.ts"
+		],
+		"expectedTests": 13,
+		"shardCommand": "test:shard4"
+	},
+	"execution": {
+		"startTime": "2026-02-23T16:53:57.254Z",
+		"endTime": "2026-02-23T16:54:50.254Z",
+		"duration": "53s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 13,
+		"passed": 9,
+		"failed": 0,
+		"skipped": 4,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values.",
+		"Failed to create user michael@slideheroes.com: AuthApiError: A user with this email address has already been registered",
+		"    at handleError (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.86.2/node_modules/@supabase/auth-js/src/lib/fetch.ts:102:9)",
+		"  __isAuthError: true,",
+		"Failed to create user newuser@slideheroes.com: AuthApiError: Database error creating new user",
+		"    at handleError (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.86.2/node_modules/@supabase/auth-js/src/lib/fetch.ts:102:9)",
+		"  __isAuthError: true,",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 221 bytes)...\nslideheroes/apps/e2e/.playwright-results-shard-1.json --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n\n🔍 Running E2E Environment Pre-flight Validations...\n\n📋 Environment Diagnostics:\n   NODE_ENV: test\n   CI: 1\n   PLAYWRIGHT_BASE_URL: http://localhost:3001\n   E2E_SUPABASE_URL: http://host.docker.internal:54521\n   Platform: linux\n   Node version: v22.16.0\n\n✅ NODE_ENV: NODE_ENV is correctly set to 'test'\n✅ CLI Path: Payload CLI path configured: apps/payload/src/seed/seed-engine/index.ts\n✅ Supabase: Supabase connection validated successfully\n✅ Stripe Webhook Secret: Stripe webhook secret configured\n✅ Stripe Webhook Endpoint: Webhook endpoint accessible at http://localhost:3001/api/billing/webhook\n\n✅ All validations passed\n\n🧹 Cleaning up billing test data...\n✅ Billing test data cleanup complete\n\n\n🏥 Running server health checks...\n\n🔄 Using full Supabase health checks (local development mode)...\n[2026-02-23T16:54:04.456Z] [PostgreSQL] Starting health check... {\"host\":\"localhost\",\"port\":54522}\n[2026-02-23T16:54:04.456Z] [PostgREST] Starting health check... {\"url\":\"http://host.docker.internal:54521/rest/v1/\"}\n[2026-02-23T16:54:04.465Z] [PostgreSQL] Health check passed in 9ms\n[2026-02-23T16:54:04.467Z] [PostgREST] Health check passed in 11ms {\"status\":200}\n✅ Supabase health checks passed (local development mode)\n\n📋 Server Health Check Results:\n  ✅ Supabase: Supabase healthy (12ms)\n  ✅ Next.js: Next.js healthy (117ms)\n  ⚠️ Payload: Payload unreachable: This operation was aborted\n\n🔧 Setting up test users...\n✅ Updated test user metadata: test2@slideheroes.com\n✅ Updated test user metadata: test1@slideheroes.com\n✅ Super admin MFA factor already exists\n✅ Test users ready\n🌐 Using BASE_URL: http://localhost:3001\n🔗 Using Supabase URL: http://host.docker.internal:54521\n🍪 Expected cookie name: sb-host-auth-token\n⚠️  IMPORTANT: This must match NEXT_PUBLIC_SUPABASE_URL in the deployed app!\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n   🍪 sb-host-auth-token:\n      Domain: localhost\n      SameSite: Lax\n      Secure: false\n      HttpOnly: false\n✅ Session injected into cookies and localStorage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n✅ API authentication successful for owner user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n   🍪 sb-host-auth-token:\n      Domain: localhost\n      SameSite: Lax\n      Secure: false\n      HttpOnly: false\n✅ Session injected into cookies and localStorage for owner user\n✅ owner user auth state saved successfully\n\n🔐 Authenticating super-admin user via Supabase API...\n✅ API authentication successful for super-admin user\n✅ MFA verified (AAL2) for super-admin user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n   🍪 sb-host-auth-token.0:\n      Domain: localhost\n      SameSite: Lax\n      Secure: false\n      HttpOnly: false\n   🍪 sb-host-auth-token.1:\n      Domain: localhost\n      SameSite: Lax\n      Secure: false\n      HttpOnly: false\n✅ Session injected into cookies and localStorage for super-admin user\n✅ super-admin user auth state saved successfully\n\n🔐 Authenticating payload-admin user via Supabase API...\n✅ API authentication successful for payload-admin user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n   🍪 sb-host-auth-token.0:\n      Domain: localhost\n      SameSite: Lax\n      Secure: false\n      HttpOnly: false\n   🍪 sb-host-auth-token.1:\n      Domain: localhost\n      SameSite: Lax\n      Secure: false\n      HttpOnly: false\n✅ Session injected into cookies and localStorage for payload-admin user\n⏭️  Skipping Payload auth for payload-admin user (Payload server unhealthy)\n✅ payload-admin user auth state saved successfully\n\n✅ Global Setup Complete: All auth states created via API\n\n\nRunning 13 tests using 1 worker\n··[admin.spec.ts beforeAll] Test user test1@slideheroes.com was banned, now restored to active state\n[admin.spec.ts] User unbanned after test: test1@slideheroes.com\n·[admin.spec.ts] User unbanned after test: test1@slideheroes.com\n·[loginAsUser] Starting login for test1@slideheroes.com, target: /home\n[loginAsUser] Waiting for DOM content loaded to ensure page is ready...\n[loginAsUser] 150ms safety timeout for React hydration...\n[loginAsUser] Form submitted, waiting for auth API...\n[loginAsUser] Auth API response: 200\n[loginAsUser] Auth API responded with 200 (459ms)\n[loginAsUser] ✅ Login complete (3953ms). Final URL: http://localhost:3001/home\n[admin.spec.ts] User unbanned after test: test1@slideheroes.com\n·°°[admin.spec.ts beforeAll] Test user test1@slideheroes.com was banned, now restored to active state\n·°°[invitations.spec.ts beforeAll] Test user test1@slideheroes.com was banned, now restored\nInviting 1146830893120@slideheroes.com with role member...\n·Inviting 889076975713@slideheroes.com with role member...\n·Inviting 4682235513031@slideheroes.com with role member...\nInviting 4682235513031@slideheroes.com with role member...\n·\n  4 skipped\n  9 passed (52.0s)\n"
+}

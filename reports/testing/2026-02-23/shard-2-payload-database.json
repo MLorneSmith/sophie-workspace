@@ -1,0 +1,38 @@
+{
+	"shard": {
+		"id": 2,
+		"name": "Payload Database",
+		"files": ["tests/payload/payload-database.spec.ts"],
+		"expectedTests": 12,
+		"shardCommand": "test:shard9"
+	},
+	"execution": {
+		"startTime": "2026-02-23T16:53:57.450Z",
+		"endTime": "2026-02-23T16:54:14.450Z",
+		"duration": "17s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 0,
+		"passed": 0,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values.",
+		"Failed to create user michael@slideheroes.com: AuthApiError: A user with this email address has already been registered",
+		"    at handleError (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.86.2/node_modules/@supabase/auth-js/src/lib/fetch.ts:102:9)",
+		"  __isAuthError: true,",
+		"❌ Failed to set session for super-admin user: Auth session missing!",
+		"❌ Global Setup Failed for super-admin user",
+		"Error Details:",
+		"  Stack: AuthSessionMissingError: Auth session missing!",
+		"    at handleError (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.86.2/node_modules/@supabase/auth-js/src/lib/fetch.ts:99:11)"
+	],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard9 /home/msmith/projects/2025slideheroes/apps/e2e\n> PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021 playwright test tests/payload/payload-database.spec.ts --project=payload -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-2.json --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n\n🔍 Running E2E Environment Pre-flight Validations...\n\n📋 Environment Diagnostics:\n   NODE_ENV: test\n   CI: 1\n   PLAYWRIGHT_BASE_URL: http://localhost:3001\n   E2E_SUPABASE_URL: http://host.docker.internal:54521\n   Platform: linux\n   Node version: v22.16.0\n\n✅ NODE_ENV: NODE_ENV is correctly set to 'test'\n✅ CLI Path: Payload CLI path configured: apps/payload/src/seed/seed-engine/index.ts\n✅ Supabase: Supabase connection validated successfully\n✅ Stripe Webhook Secret: Stripe webhook secret configured\n✅ Stripe Webhook Endpoint: Webhook endpoint accessible at http://localhost:3001/api/billing/webhook\n\n✅ All validations passed\n\n🧹 Cleaning up billing test data...\n✅ Billing test data cleanup complete\n\n\n🏥 Running server health checks...\n\n🔄 Using full Supabase health checks (local development mode)...\n[2026-02-23T16:54:04.456Z] [PostgreSQL] Starting health check... {\"host\":\"localhost\",\"port\":54522}\n[2026-02-23T16:54:04.457Z] [PostgREST] Starting health check... {\"url\":\"http://host.docker.internal:54521/rest/v1/\"}\n[2026-02-23T16:54:04.465Z] [PostgreSQL] Health check passed in 9ms\n[2026-02-23T16:54:04.479Z] [PostgREST] Health check passed in 22ms {\"status\":200}\n✅ Supabase health checks passed (local development mode)\n\n📋 Server Health Check Results:\n  ✅ Supabase: Supabase healthy (11ms)\n  ✅ Next.js: Next.js healthy (214ms)\n  ⚠️ Payload: Payload unreachable: This operation was aborted\n\n🔧 Setting up test users...\n✅ Updated test user metadata: test1@slideheroes.com\n✅ Updated test user metadata: test2@slideheroes.com\n✅ Created test user: newuser@slideheroes.com\n✅ Super admin MFA factor already exists\n✅ Test users ready\n🌐 Using BASE_URL: http://localhost:3001\n🔗 Using Supabase URL: http://host.docker.internal:54521\n🍪 Expected cookie name: sb-host-auth-token\n⚠️  IMPORTANT: This must match NEXT_PUBLIC_SUPABASE_URL in the deployed app!\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n   🍪 sb-host-auth-token:\n      Domain: localhost\n      SameSite: Lax\n      Secure: false\n      HttpOnly: false\n✅ Session injected into cookies and localStorage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n✅ API authentication successful for owner user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n   🍪 sb-host-auth-token:\n      Domain: localhost\n      SameSite: Lax\n      Secure: false\n      HttpOnly: false\n✅ Session injected into cookies and localStorage for owner user\n✅ owner user auth state saved successfully\n\n🔐 Authenticating super-admin user via Supabase API...\n✅ API authentication successful for super-admin user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n\nError: Global setup failed for super-admin user: Auth session missing!\n\n   at ../global-setup.ts:1360\n\n  1358 |\n  1359 | \t\t\t// Re-throw after providing diagnostics\n> 1360 | \t\t\tthrow new Error(\n       | \t\t\t      ^\n  1361 | \t\t\t\t`Global setup failed for ${authState.name}: ${error.message}`,\n  1362 | \t\t\t);\n  1363 | \t\t}\n    at globalSetup (/home/msmith/projects/2025slideheroes/apps/e2e/global-setup.ts:1360:10)\n\n\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard9: `PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021 playwright test tests/payload/payload-database.spec.ts --project=payload -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-2.json --retries=0`\nExit status 1\n"
+}

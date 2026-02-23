@@ -1,0 +1,53 @@
+{
+	"executionDate": "2026-02-23",
+	"lastUpdated": "2026-02-23T16:56:43.069Z",
+	"totalShards": 0,
+	"completedShards": 3,
+	"failedShards": 0,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 35,
+		"passed": 30,
+		"failed": 0,
+		"skipped": 5,
+		"intentionalFailures": 0
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Admin & Invitations",
+			"success": true,
+			"duration": "53s",
+			"tests": 13,
+			"passed": 9,
+			"failures": 0,
+			"skipped": 4,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 1,
+			"name": "Payload Collections",
+			"success": true,
+			"duration": "113s",
+			"tests": 22,
+			"passed": 21,
+			"failures": 0,
+			"skipped": 1,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "Payload Database",
+			"success": true,
+			"duration": "17s",
+			"tests": 0,
+			"passed": 0,
+			"failures": 0,
+			"skipped": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		}
+	]
+}

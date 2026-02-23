@@ -197,7 +197,16 @@ jobs:
           echo "✅ Exported SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_KEY:0:20}..."
 
       - name: Build application
-        run: pnpm turbo build:test --filter=web
+        run: |
+          pnpm turbo build:test --filter=web
+
+          # Verify webpack-runtime.js exists (Turbo excludes it from cache, causing stale builds)
+          # See: commit 33c039d81, recurring issue with Turbo remote cache
+          if [ ! -f "apps/web/.next/server/webpack-runtime.js" ]; then
+            echo "⚠️ webpack-runtime.js missing from build (stale Turbo cache)"
+            echo "🔄 Rebuilding with --force to bypass cache..."
+            pnpm turbo build:test --filter=web --force
+          fi
 
       - name: Build Payload CMS
         run: pnpm turbo build --filter=payload
@@ -323,6 +332,19 @@ jobs:
               exit 1
             fi
           fi
+
+          # Verify webpack-runtime.js (excluded from Turbo cache, can go stale)
+          if [ ! -f "apps/web/.next/server/webpack-runtime.js" ]; then
+            echo "⚠️ webpack-runtime.js missing (stale Turbo cache) - rebuilding with --force..."
+            pnpm turbo build:test --filter=web --force
+          fi
+
+          # Final validation
+          if [ ! -f "apps/web/.next/BUILD_ID" ] || [ ! -f "apps/web/.next/server/webpack-runtime.js" ]; then
+            echo "❌ Build verification failed after rebuild"
+            exit 1
+          fi
+          echo "✅ Build fully verified (BUILD_ID + webpack-runtime.js)"
 
       - name: Cache Playwright browsers
         id: playwright-cache
