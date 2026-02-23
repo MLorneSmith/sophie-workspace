@@ -5,6 +5,7 @@ import { InMemoryStore } from "@mastra/core/storage";
 import { describe, expect, it } from "vitest";
 
 import { getRunTokenUsage } from "../config/spike-tracing";
+import { CompanyBriefSchema } from "../schemas/company-brief";
 import {
 	AudienceBriefSchema,
 	type StoryboardContent,
@@ -61,16 +62,39 @@ function buildStoryboardInput(): StoryboardContent {
 }
 
 describe("Mastra validation spike", () => {
-	it("runs audienceProfilingWorkflow with suspend/resume and captures token usage", async () => {
+	it("runs audienceProfilingWorkflow with two briefs, HITL edits, and token usage", async () => {
+		const audienceUsage = {
+			promptTokens: 120,
+			completionTokens: 60,
+			totalTokens: 180,
+		};
+		const companyUsage = {
+			promptTokens: 80,
+			completionTokens: 50,
+			totalTokens: 130,
+		};
+
 		const audienceWorkflow = createAudienceProfilingWorkflow({
 			researchPerson: async ({ personName, company }) => ({
 				personName,
 				company,
 				linkedinSignals: ["Mocked leadership signal"],
-				companySignals: ["Mocked strategic signal"],
-				notes: "Mocked research payload for spike test",
+				communicationSignals: ["Prefers concise executive summaries"],
+				decisionSignals: ["Metrics-first with risk framing"],
+				notes: "Mocked person research payload for spike test",
 			}),
-			synthesizeBrief: async ({
+			researchCompany: async ({ company }) => ({
+				company,
+				strategySignals: ["Focus on operating margin expansion"],
+				performanceSignals: ["Growth has slowed quarter-over-quarter"],
+				competitorSignals: ["Primary rival launched pricing disruption"],
+				challenges: ["Need to improve execution consistency"],
+				recentNews: ["Announced enterprise transformation initiative"],
+				industryTrends: ["Procurement cycles emphasizing ROI proof"],
+				regulatoryContext: "No material change in regulatory environment",
+				notes: "Mocked company research payload for spike test",
+			}),
+			synthesizeAudienceBrief: async ({
 				presentationId,
 				personName,
 				company,
@@ -79,7 +103,7 @@ describe("Mastra validation spike", () => {
 			}) => {
 				const now = new Date().toISOString();
 				return {
-					brief: AudienceBriefSchema.parse({
+					audienceBrief: AudienceBriefSchema.parse({
 						id: "fbcbf67a-b4bc-4f09-9110-2f8d990823fe",
 						presentationId,
 						personName,
@@ -87,24 +111,56 @@ describe("Mastra validation spike", () => {
 						title,
 						linkedinUrl,
 						enrichmentData: {
-							source: "mocked",
+							source: "mocked-person-research",
 						},
 						adaptiveAnswers: [],
-						briefText: "Initial synthesized brief text.",
+						briefText: "Initial synthesized audience brief text.",
 						briefStructured: {
-							focus: "execution",
+							focus: "executive decision framing",
 						},
 						createdAt: now,
 						updatedAt: now,
 					}),
-					usage: {
-						promptTokens: 120,
-						completionTokens: 60,
-						totalTokens: 180,
-					},
-					model: "mock/synthesizer",
+					usage: audienceUsage,
+					model: "mock/audience-synthesizer",
 				};
 			},
+			synthesizeCompanyBrief: async ({ company }) => ({
+				companyBrief: CompanyBriefSchema.parse({
+					companySnapshot: {
+						name: company,
+						industry: "B2B SaaS",
+						size: "Enterprise",
+						marketPosition: "Top-3 incumbent",
+					},
+					currentSituation: {
+						summary: "Company is in a margin-focused transformation.",
+						recentNews: [
+							"CEO announced strategic reset with cost discipline goals",
+						],
+						strategicFocus: "Margin expansion with selective growth bets",
+						challenges: [
+							"Aligning execution across regions",
+							"Proving impact of strategic investments",
+						],
+						archetype: "in-transformation",
+					},
+					industryContext: {
+						trends: ["ROI scrutiny in enterprise buying decisions"],
+						regulatory: "Routine compliance expectations",
+						competitors: ["Rival A", "Rival B"],
+					},
+					presentationImplications: {
+						framingAdvice:
+							"Lead with measurable business impact and execution realism.",
+						topicsToAcknowledge: ["resource constraints", "execution risk"],
+						relevantBenchmarks: ["Gross margin trajectory", "Retention"],
+						avoidTopics: ["speculative outcomes"],
+					},
+				}),
+				usage: companyUsage,
+				model: "mock/company-synthesizer",
+			}),
 		});
 
 		const postProcessWorkflow = createPostProcessWorkflow();
@@ -116,7 +172,6 @@ describe("Mastra validation spike", () => {
 			},
 		});
 
-		// Keep an explicit reference so `mastra` is used in this test context.
 		expect(mastra.getWorkflow("audienceWorkflow")).toBeDefined();
 
 		const run = await audienceWorkflow.createRun({
@@ -135,27 +190,42 @@ describe("Mastra validation spike", () => {
 
 		expect(initialResult.status).toBe("suspended");
 		if (initialResult.status !== "suspended") {
-			throw new Error("Expected workflow to suspend at review step");
+			throw new Error("Expected workflow to suspend at briefs review step");
 		}
 
-		const initialSuspendedBrief =
-			(initialResult.suspendPayload as { brief?: unknown })?.brief ??
-			(
-				initialResult.steps["review-brief"]?.suspendPayload as
-					| { brief?: unknown }
-					| undefined
-			)?.brief;
+		const initialSuspendPayload =
+			(initialResult.steps["review-briefs"]?.suspendPayload as
+				| { audienceBrief?: unknown; companyBrief?: unknown }
+				| undefined) ??
+			(initialResult.suspendPayload as
+				| { audienceBrief?: unknown; companyBrief?: unknown }
+				| undefined);
 
-		expect(AudienceBriefSchema.safeParse(initialSuspendedBrief).success).toBe(
-			true,
-		);
+		expect(
+			AudienceBriefSchema.safeParse(initialSuspendPayload?.audienceBrief)
+				.success,
+		).toBe(true);
+		expect(
+			CompanyBriefSchema.safeParse(initialSuspendPayload?.companyBrief).success,
+		).toBe(true);
 
 		const editedResult = await run.resume({
-			step: "review-brief",
+			step: "review-briefs",
 			resumeData: {
 				approved: false,
 				edits: {
-					briefText: "Edited brief text from reviewer.",
+					audienceBrief: {
+						briefText: "Edited audience brief text from reviewer.",
+					},
+					companyBrief: {
+						currentSituation: {
+							summary: "Edited company situation summary focused on urgency.",
+						},
+						presentationImplications: {
+							framingAdvice:
+								"Edited framing: lead with quantified downside risk.",
+						},
+					},
 				},
 			},
 		});
@@ -163,25 +233,43 @@ describe("Mastra validation spike", () => {
 		expect(editedResult.status).toBe("suspended");
 		if (editedResult.status !== "suspended") {
 			throw new Error(
-				"Expected workflow to suspend again after rejected review",
+				"Expected workflow to suspend again after unapproved briefs review",
 			);
 		}
 
-		const editedSuspendedBrief =
-			(editedResult.suspendPayload as { brief?: { briefText: string } })
-				?.brief ??
-			(
-				editedResult.steps["review-brief"]?.suspendPayload as
-					| { brief?: { briefText: string } }
-					| undefined
-			)?.brief;
+		const editedSuspendPayload =
+			(editedResult.steps["review-briefs"]?.suspendPayload as
+				| {
+						audienceBrief?: { briefText?: string };
+						companyBrief?: {
+							currentSituation?: { summary?: string };
+							presentationImplications?: { framingAdvice?: string };
+						};
+				  }
+				| undefined) ??
+			(editedResult.suspendPayload as
+				| {
+						audienceBrief?: { briefText?: string };
+						companyBrief?: {
+							currentSituation?: { summary?: string };
+							presentationImplications?: { framingAdvice?: string };
+						};
+				  }
+				| undefined);
 
-		expect(editedSuspendedBrief?.briefText).toBe(
-			"Edited brief text from reviewer.",
+		expect(editedSuspendPayload?.audienceBrief?.briefText).toBe(
+			"Edited audience brief text from reviewer.",
 		);
+		expect(editedSuspendPayload?.companyBrief?.currentSituation?.summary).toBe(
+			"Edited company situation summary focused on urgency.",
+		);
+		expect(
+			editedSuspendPayload?.companyBrief?.presentationImplications
+				?.framingAdvice,
+		).toBe("Edited framing: lead with quantified downside risk.");
 
 		const finalResult = await run.resume({
-			step: "review-brief",
+			step: "review-briefs",
 			resumeData: {
 				approved: true,
 			},
@@ -189,27 +277,30 @@ describe("Mastra validation spike", () => {
 
 		expect(finalResult.status).toBe("success");
 		if (finalResult.status !== "success") {
-			throw new Error("Expected workflow to complete after approval");
+			throw new Error("Expected workflow to complete after briefs approval");
 		}
 
-		expect(finalResult.result.brief.briefText).toBe(
-			"Edited brief text from reviewer.",
+		expect(finalResult.result.audienceBrief.briefText).toBe(
+			"Edited audience brief text from reviewer.",
+		);
+		expect(finalResult.result.companyBrief.currentSituation.summary).toBe(
+			"Edited company situation summary focused on urgency.",
 		);
 
 		const usage = await getRunTokenUsage(run.runId, mastra);
-		expect(usage.promptTokens).toBe(120);
-		expect(usage.completionTokens).toBe(60);
-		expect(usage.totalTokens).toBe(180);
+		expect(usage.promptTokens).toBe(200);
+		expect(usage.completionTokens).toBe(110);
+		expect(usage.totalTokens).toBe(310);
 		expect(usage.estimatedCost).toBeGreaterThan(0);
 	});
 
-	it("runs postProcessWorkflow with parallel partner/skeptic reviews and merges output", async () => {
+	it("runs postProcessWorkflow with partner + validator reviews and merges output", async () => {
 		const partnerUsage = {
 			promptTokens: 90,
 			completionTokens: 30,
 			totalTokens: 120,
 		};
-		const skepticUsage = {
+		const validatorUsage = {
 			promptTokens: 70,
 			completionTokens: 50,
 			totalTokens: 120,
@@ -222,23 +313,30 @@ describe("Mastra validation spike", () => {
 					slides: storyboard.slides.map((slide) => ({
 						slideId: slide.id,
 						narrativeStrength: "Storyline is coherent.",
-						improvement: "Clarify the business impact one level deeper.",
+						improvement:
+							"Clarify the business impact one level deeper for executives.",
 					})),
 				},
 				usage: partnerUsage,
 				model: "mock/partner",
 			}),
-			runSkepticReview: async ({ storyboard }) => ({
+			runValidatorReview: async ({ storyboard }) => ({
 				review: {
-					reviewer: "skeptic",
-					slides: storyboard.slides.map((slide) => ({
+					reviewer: "validator",
+					slides: storyboard.slides.map((slide, index) => ({
 						slideId: slide.id,
-						weakness: "Assumptions are not fully backed by data.",
-						toughQuestion: "What disproves the alternative interpretation?",
+						claim: slide.takeawayHeadline,
+						verdict: index === 0 ? "unsupported" : "supported",
+						confidence: index === 0 ? 0.86 : 0.74,
+						source: index === 0 ? undefined : "Internal KPI dashboard Q4",
+						suggestion:
+							index === 0
+								? "Add data evidence from an audited source for this claim."
+								: "Keep the claim but attach citation in speaker notes.",
 					})),
 				},
-				usage: skepticUsage,
-				model: "mock/skeptic",
+				usage: validatorUsage,
+				model: "mock/validator",
 			}),
 		});
 
@@ -267,17 +365,36 @@ describe("Mastra validation spike", () => {
 		}
 
 		expect(result.steps["partner-review"]?.status).toBe("success");
-		expect(result.steps["skeptic-review"]?.status).toBe("success");
+		expect(result.steps["validator-review"]?.status).toBe("success");
 
 		expect(result.result.partnerReview.reviewer).toBe("partner");
-		expect(result.result.skepticReview.reviewer).toBe("skeptic");
+		expect(result.result.validatorReview.reviewer).toBe("validator");
+		expect(result.result.validatorReview.slides.length).toBe(2);
+		expect(
+			result.result.validatorReview.slides.every(
+				(slide) =>
+					slide.verdict === "supported" ||
+					slide.verdict === "unsupported" ||
+					slide.verdict === "unverifiable",
+			),
+		).toBe(true);
+		expect(
+			result.result.validatorReview.slides.every(
+				(slide) => slide.confidence >= 0 && slide.confidence <= 1,
+			),
+		).toBe(true);
+
 		expect(result.result.suggestions.length).toBe(4);
-		expect(result.result.suggestions.some((s) => s.source === "partner")).toBe(
-			true,
-		);
-		expect(result.result.suggestions.some((s) => s.source === "skeptic")).toBe(
-			true,
-		);
+		expect(
+			result.result.suggestions.some(
+				(suggestion) => suggestion.source === "partner",
+			),
+		).toBe(true);
+		expect(
+			result.result.suggestions.some(
+				(suggestion) => suggestion.source === "validator",
+			),
+		).toBe(true);
 
 		const usage = await getRunTokenUsage(run.runId, mastra);
 		expect(usage.promptTokens).toBe(160);

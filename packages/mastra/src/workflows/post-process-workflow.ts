@@ -2,7 +2,7 @@ import { createStep, createWorkflow } from "@mastra/core/workflows";
 import { z } from "zod";
 
 import { partnerAgent } from "../agents/partner-agent";
-import { skepticAgent } from "../agents/skeptic-agent";
+import { validatorAgent } from "../agents/validator-agent";
 import { getModelForAgent } from "../config/model-routing";
 import {
 	finalizeRunTrace,
@@ -29,32 +29,35 @@ const PARTNER_REVIEW_OUTPUT_SCHEMA = z.object({
 	),
 });
 
-const SKEPTIC_REVIEW_OUTPUT_SCHEMA = z.object({
-	reviewer: z.literal("skeptic"),
+const VALIDATOR_REVIEW_OUTPUT_SCHEMA = z.object({
+	reviewer: z.literal("validator"),
 	slides: z.array(
 		z.object({
 			slideId: z.string().min(1),
-			weakness: z.string().min(1),
-			toughQuestion: z.string().min(1),
+			claim: z.string().min(1),
+			verdict: z.enum(["supported", "unsupported", "unverifiable"]),
+			confidence: z.number().min(0).max(1),
+			source: z.string().min(1).optional(),
+			suggestion: z.string().min(1),
 		}),
 	),
 });
 
 const MERGED_SUGGESTION_SCHEMA = z.object({
 	slideId: z.string().min(1),
-	source: z.enum(["partner", "skeptic"]),
+	source: z.enum(["partner", "validator"]),
 	summary: z.string().min(1),
 	priority: z.enum(["high", "medium", "low"]),
 });
 
 const PARALLEL_REVIEWS_SCHEMA = z.object({
 	"partner-review": PARTNER_REVIEW_OUTPUT_SCHEMA,
-	"skeptic-review": SKEPTIC_REVIEW_OUTPUT_SCHEMA,
+	"validator-review": VALIDATOR_REVIEW_OUTPUT_SCHEMA,
 });
 
 const POST_PROCESS_OUTPUT_SCHEMA = z.object({
 	partnerReview: PARTNER_REVIEW_OUTPUT_SCHEMA,
-	skepticReview: SKEPTIC_REVIEW_OUTPUT_SCHEMA,
+	validatorReview: VALIDATOR_REVIEW_OUTPUT_SCHEMA,
 	suggestions: z.array(MERGED_SUGGESTION_SCHEMA),
 });
 
@@ -73,17 +76,17 @@ type AgentReviewResult<TReview> = {
 };
 
 type PartnerReview = z.infer<typeof PARTNER_REVIEW_OUTPUT_SCHEMA>;
-type SkepticReview = z.infer<typeof SKEPTIC_REVIEW_OUTPUT_SCHEMA>;
+type ValidatorReview = z.infer<typeof VALIDATOR_REVIEW_OUTPUT_SCHEMA>;
 
 export type PostProcessWorkflowDependencies = {
 	runPartnerReview?: (input: {
 		storyboard: StoryboardContent;
 		agentPrompt: string;
 	}) => Promise<AgentReviewResult<PartnerReview>>;
-	runSkepticReview?: (input: {
+	runValidatorReview?: (input: {
 		storyboard: StoryboardContent;
 		agentPrompt: string;
-	}) => Promise<AgentReviewResult<SkepticReview>>;
+	}) => Promise<AgentReviewResult<ValidatorReview>>;
 };
 
 const POST_PROCESS_WORKFLOW_ID = "post-process-workflow";
@@ -102,21 +105,25 @@ function mockPartnerReview(storyboard: StoryboardContent): PartnerReview {
 		slides: storyboard.slides.map((slide) => ({
 			slideId: slide.id,
 			narrativeStrength:
-				"Clear storyline progression and strong executive framing.",
+				"Clear storyline progression and executive-level framing.",
 			improvement:
-				"Tighten the headline to emphasize business outcome in the first 5 seconds.",
+				"Lead with the business consequence earlier and make the decision ask explicit.",
 		})),
 	});
 }
 
-function mockSkepticReview(storyboard: StoryboardContent): SkepticReview {
-	return SKEPTIC_REVIEW_OUTPUT_SCHEMA.parse({
-		reviewer: "skeptic",
-		slides: storyboard.slides.map((slide) => ({
+function mockValidatorReview(storyboard: StoryboardContent): ValidatorReview {
+	return VALIDATOR_REVIEW_OUTPUT_SCHEMA.parse({
+		reviewer: "validator",
+		slides: storyboard.slides.map((slide, index) => ({
 			slideId: slide.id,
-			weakness: "Evidence depth may not fully justify the recommendation.",
-			toughQuestion:
-				"What concrete proof shows this approach will outperform alternatives?",
+			claim: slide.takeawayHeadline,
+			verdict: index % 2 === 0 ? "unverifiable" : "unsupported",
+			confidence: index % 2 === 0 ? 0.64 : 0.78,
+			suggestion:
+				index % 2 === 0
+					? "Add a cited source or internal metric to make this claim testable."
+					: "Replace the assertion with quantified evidence and a referenced data point.",
 		})),
 	});
 }
@@ -158,23 +165,23 @@ async function defaultRunPartnerReview(input: {
 	};
 }
 
-async function defaultRunSkepticReview(input: {
+async function defaultRunValidatorReview(input: {
 	storyboard: StoryboardContent;
 	agentPrompt: string;
-}): Promise<AgentReviewResult<SkepticReview>> {
+}): Promise<AgentReviewResult<ValidatorReview>> {
 	if (!hasLlmCredentials()) {
 		return {
-			review: mockSkepticReview(input.storyboard),
+			review: mockValidatorReview(input.storyboard),
 			usage: {
 				promptTokens: 150,
 				completionTokens: 130,
 				totalTokens: 280,
 			},
-			model: "mock/skeptic-review",
+			model: "mock/validator-review",
 		};
 	}
 
-	const result = await skepticAgent.generate(
+	const result = await validatorAgent.generate(
 		[
 			{
 				role: "user",
@@ -183,15 +190,15 @@ async function defaultRunSkepticReview(input: {
 		],
 		{
 			structuredOutput: {
-				schema: SKEPTIC_REVIEW_OUTPUT_SCHEMA,
+				schema: VALIDATOR_REVIEW_OUTPUT_SCHEMA,
 			},
 		},
 	);
 
 	return {
-		review: SKEPTIC_REVIEW_OUTPUT_SCHEMA.parse(result.object),
+		review: VALIDATOR_REVIEW_OUTPUT_SCHEMA.parse(result.object),
 		usage: await result.totalUsage,
-		model: getModelForAgent("skeptic"),
+		model: getModelForAgent("validator"),
 	};
 }
 
@@ -199,7 +206,8 @@ export function createPostProcessWorkflow(
 	deps: PostProcessWorkflowDependencies = {},
 ) {
 	const runPartnerReview = deps.runPartnerReview ?? defaultRunPartnerReview;
-	const runSkepticReview = deps.runSkepticReview ?? defaultRunSkepticReview;
+	const runValidatorReview =
+		deps.runValidatorReview ?? defaultRunValidatorReview;
 
 	const prepareContextStep = createStep({
 		id: "prepare-context",
@@ -248,12 +256,12 @@ export function createPostProcessWorkflow(
 		},
 	});
 
-	const skepticReviewStep = createStep({
-		id: "skeptic-review",
+	const validatorReviewStep = createStep({
+		id: "validator-review",
 		inputSchema: PREPARE_CONTEXT_OUTPUT_SCHEMA,
-		outputSchema: SKEPTIC_REVIEW_OUTPUT_SCHEMA,
+		outputSchema: VALIDATOR_REVIEW_OUTPUT_SCHEMA,
 		execute: async ({ inputData, mastra, runId }) => {
-			const result = await runSkepticReview({
+			const result = await runValidatorReview({
 				storyboard: inputData.storyboard,
 				agentPrompt: inputData.agentPrompt,
 			});
@@ -263,8 +271,8 @@ export function createPostProcessWorkflow(
 					mastra,
 					runId,
 					workflowId: POST_PROCESS_WORKFLOW_ID,
-					stepId: "skeptic-review",
-					model: result.model ?? getModelForAgent("skeptic"),
+					stepId: "validator-review",
+					model: result.model ?? getModelForAgent("validator"),
 					usage: result.usage,
 				});
 			}
@@ -285,11 +293,23 @@ export function createPostProcessWorkflow(
 					summary: `${slide.narrativeStrength} ${slide.improvement}`,
 					priority: "medium" as const,
 				})),
-				...inputData["skeptic-review"].slides.map((slide) => ({
+				...inputData["validator-review"].slides.map((slide) => ({
 					slideId: slide.slideId,
-					source: "skeptic" as const,
-					summary: `${slide.weakness} ${slide.toughQuestion}`,
-					priority: "high" as const,
+					source: "validator" as const,
+					summary: [
+						`Claim: ${slide.claim}`,
+						`Verdict: ${slide.verdict} (${Math.round(slide.confidence * 100)}% confidence).`,
+						slide.source ? `Source: ${slide.source}.` : null,
+						slide.suggestion,
+					]
+						.filter(Boolean)
+						.join(" "),
+					priority:
+						slide.verdict === "unsupported"
+							? ("high" as const)
+							: slide.verdict === "unverifiable"
+								? ("medium" as const)
+								: ("low" as const),
 				})),
 			];
 
@@ -301,7 +321,7 @@ export function createPostProcessWorkflow(
 
 			return {
 				partnerReview: inputData["partner-review"],
-				skepticReview: inputData["skeptic-review"],
+				validatorReview: inputData["validator-review"],
 				suggestions,
 			};
 		},
@@ -313,7 +333,7 @@ export function createPostProcessWorkflow(
 		outputSchema: POST_PROCESS_OUTPUT_SCHEMA,
 	})
 		.then(prepareContextStep)
-		.parallel([partnerReviewStep, skepticReviewStep])
+		.parallel([partnerReviewStep, validatorReviewStep])
 		.then(mergeSuggestionsStep)
 		.commit();
 }
@@ -324,5 +344,5 @@ export const postProcessSchemas = {
 	input: StoryboardContentSchema,
 	output: POST_PROCESS_OUTPUT_SCHEMA,
 	partnerReview: PARTNER_REVIEW_OUTPUT_SCHEMA,
-	skepticReview: SKEPTIC_REVIEW_OUTPUT_SCHEMA,
+	validatorReview: VALIDATOR_REVIEW_OUTPUT_SCHEMA,
 };
