@@ -827,7 +827,6 @@ export function ProfileStepForm(props: {
 					</Card>
 				) : null}
 
-<<<<<<< HEAD
 				{/* Adaptive Follow-up Questions */}
 				{showAdaptive && adaptiveQuestions.length > 0 ? (
 					<Card>
@@ -870,8 +869,6 @@ export function ProfileStepForm(props: {
 					</Card>
 				) : null}
 
-=======
->>>>>>> origin/staging
 				{error ? <p className="text-app-sm text-destructive">{error}</p> : null}
 
 				<div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
