@@ -1,21 +1,27 @@
 import OpenAI from "openai";
 
-if (!process.env.PORTKEY_API_KEY) {
-	throw new Error("PORTKEY_API_KEY environment variable is not set");
-}
+let openai: OpenAI;
 
-if (!process.env.PORTKEY_VIRTUAL_KEY) {
-	throw new Error("PORTKEY_VIRTUAL_KEY environment variable is not set");
+if (process.env.PORTKEY_API_KEY && process.env.PORTKEY_VIRTUAL_KEY) {
+	// Route through Portkey proxy
+	openai = new OpenAI({
+		apiKey: "",
+		baseURL: "https://api.portkey.ai/v1/proxy",
+		defaultHeaders: {
+			"x-portkey-api-key": process.env.PORTKEY_API_KEY,
+			"x-portkey-virtual-key": process.env.PORTKEY_VIRTUAL_KEY,
+			"x-portkey-provider": "openai",
+		},
+	});
+} else if (process.env.OPENAI_API_KEY) {
+	// Direct OpenAI fallback
+	openai = new OpenAI({
+		apiKey: process.env.OPENAI_API_KEY,
+	});
+} else {
+	throw new Error(
+		"Either PORTKEY_API_KEY+PORTKEY_VIRTUAL_KEY or OPENAI_API_KEY must be set",
+	);
 }
-
-const openai = new OpenAI({
-	apiKey: "", // Can be left blank when using virtual keys
-	baseURL: "https://api.portkey.ai/v1/proxy",
-	defaultHeaders: {
-		"x-portkey-api-key": process.env.PORTKEY_API_KEY,
-		"x-portkey-virtual-key": process.env.PORTKEY_VIRTUAL_KEY,
-		"x-portkey-provider": "openai",
-	},
-});
 
 export default openai;
