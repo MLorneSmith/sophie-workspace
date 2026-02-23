@@ -5,261 +5,201 @@ import { Button } from "@kit/ui/button";
 import { Card, CardContent } from "@kit/ui/card";
 import { Textarea } from "@kit/ui/textarea";
 import { cn } from "@kit/ui/utils";
-import {
-	ArrowDown,
-	ArrowUp,
-	Check,
-	Pencil,
-	Plus,
-	Trash2,
-	X,
-} from "lucide-react";
-import { useMemo, useState } from "react";
+import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
+import { Check, Pencil, Plus, Trash2, X } from "lucide-react";
 
-import type {
-	ArgumentMapNode as ArgumentMapNodeType,
-	ArgumentMapNodeType as ArgumentMapNodeTypeEnum,
-} from "../../_lib/schemas/presentation-artifacts";
+import type { ArgumentMapNodeType } from "../../_lib/schemas/presentation-artifacts";
 
-const TYPE_LABEL: Record<ArgumentMapNodeTypeEnum, string> = {
+const TYPE_LABEL: Record<ArgumentMapNodeType, string> = {
 	claim: "Claim",
 	support: "Support",
 	evidence: "Evidence",
 };
 
-function typeStyles(type: ArgumentMapNodeTypeEnum): {
-	badgeVariant: "default" | "secondary" | "destructive" | "outline";
+type NodeStyle = {
 	badgeClassName: string;
 	cardClassName: string;
-	connectorClassName: string;
-} {
+	handleClassName: string;
+};
+
+function nodeStyles(type: ArgumentMapNodeType): NodeStyle {
 	switch (type) {
 		case "claim":
 			return {
-				badgeVariant: "secondary",
 				badgeClassName:
-					"bg-blue-500/15 text-blue-300 border border-blue-500/25",
-				cardClassName: "border-blue-500/20 bg-blue-500/5",
-				connectorClassName: "bg-blue-400/35",
+					"border border-blue-500/25 bg-blue-500/15 text-blue-300",
+				cardClassName: "border-blue-500/30 bg-blue-500/10",
+				handleClassName: "!bg-blue-400 !border-blue-300/80",
 			};
 		case "support":
 			return {
-				badgeVariant: "secondary",
 				badgeClassName:
-					"bg-amber-500/15 text-amber-300 border border-amber-500/25",
-				cardClassName: "border-amber-500/20 bg-amber-500/5",
-				connectorClassName: "bg-amber-400/35",
+					"border border-amber-500/25 bg-amber-500/15 text-amber-300",
+				cardClassName: "border-amber-500/30 bg-amber-500/10",
+				handleClassName: "!bg-amber-400 !border-amber-300/80",
 			};
 		case "evidence":
 			return {
-				badgeVariant: "secondary",
 				badgeClassName:
-					"bg-emerald-500/15 text-emerald-300 border border-emerald-500/25",
-				cardClassName: "border-emerald-500/20 bg-emerald-500/5",
-				connectorClassName: "bg-emerald-400/35",
+					"border border-emerald-500/25 bg-emerald-500/15 text-emerald-300",
+				cardClassName: "border-emerald-500/30 bg-emerald-500/10",
+				handleClassName: "!bg-emerald-400 !border-emerald-300/80",
 			};
 	}
 }
 
-export interface ArgumentMapNodeProps {
-	node: ArgumentMapNodeType;
-	depth: number;
-	isRoot: boolean;
-	canMoveUp: boolean;
-	canMoveDown: boolean;
-	onEditText: (nodeId: string, nextText: string) => void;
-	onAddChild: (parentId: string) => void;
-	onDelete: (nodeId: string) => void;
-	onMove: (nodeId: string, direction: "up" | "down") => void;
+function truncateText(text: string, maxLength = 150): string {
+	const compact = text.replace(/\s+/g, " ").trim();
+	if (compact.length <= maxLength) return compact;
+	return `${compact.slice(0, maxLength - 1)}…`;
 }
 
-export function ArgumentMapNode({
-	node,
-	depth,
-	isRoot,
-	canMoveUp,
-	canMoveDown,
-	onEditText,
-	onAddChild,
-	onDelete,
-	onMove,
-}: ArgumentMapNodeProps) {
-	const styles = useMemo(() => typeStyles(node.type), [node.type]);
-	const [isEditing, setIsEditing] = useState(false);
-	const [draft, setDraft] = useState(node.text);
+export type ArgumentMapFlowNodeData = {
+	nodeType: ArgumentMapNodeType;
+	text: string;
+	isRoot: boolean;
+	isEditing: boolean;
+	draft: string;
+	onStartEdit: (nodeId: string, currentText: string) => void;
+	onDraftChange: (nodeId: string, nextDraft: string) => void;
+	onSaveEdit: (nodeId: string) => void;
+	onCancelEdit: (nodeId: string, currentText: string) => void;
+	onAddChild: (parentId: string) => void;
+	onDelete: (nodeId: string) => void;
+};
 
-	const canAddChild = node.type === "claim" || node.type === "support";
+export type ArgumentMapFlowNode = Node<ArgumentMapFlowNodeData, "argumentNode">;
+
+export function ArgumentMapNode({
+	id,
+	data,
+	selected,
+}: NodeProps<ArgumentMapFlowNode>) {
+	const styles = nodeStyles(data.nodeType);
+	const canAddChild = data.nodeType === "claim" || data.nodeType === "support";
+	const displayText = truncateText(data.text);
 
 	return (
-		<div className="relative">
-			{/* Horizontal connector into this node (for non-root) */}
-			{!isRoot && (
-				<div
-					className={cn(
-						"absolute left-0 top-7 h-px w-4",
-						styles.connectorClassName,
-					)}
-				/>
-			)}
+		<>
+			<Handle
+				type="target"
+				position={Position.Top}
+				className={cn("!h-2 !w-2 !border-2", styles.handleClassName)}
+			/>
 
-			<Card className={cn("relative", styles.cardClassName)}>
-				<CardContent className="p-4">
-					<div className="flex items-start justify-between gap-3">
-						<div className="min-w-0 flex-1">
-							<div className="mb-2 flex items-center gap-2">
-								<Badge
-									variant={styles.badgeVariant}
-									className={cn("text-[11px]", styles.badgeClassName)}
-								>
-									{TYPE_LABEL[node.type]}
-								</Badge>
-								<span className="text-muted-foreground text-xs">
-									Depth {depth}
-								</span>
-							</div>
+			<Card
+				className={cn(
+					"w-[300px] shadow-sm transition-shadow",
+					styles.cardClassName,
+					selected && "ring-1 ring-primary/60",
+				)}
+			>
+				<CardContent className="space-y-3 p-3">
+					<div className="flex items-start justify-between gap-2">
+						<Badge
+							variant="secondary"
+							className={cn("text-[11px]", styles.badgeClassName)}
+						>
+							{TYPE_LABEL[data.nodeType]}
+						</Badge>
 
-							{isEditing ? (
-								<div className="space-y-2">
-									<Textarea
-										value={draft}
-										onChange={(e) => setDraft(e.target.value)}
-										className="min-h-[72px] resize-y"
-										placeholder={
-											node.type === "claim"
-												? "Write the main claim / recommendation..."
-												: node.type === "support"
-													? "Write a supporting argument..."
-													: "Add evidence (facts, data, examples)..."
-										}
-									/>
+						<div className="flex items-center gap-1">
+							<Button
+								type="button"
+								size="icon"
+								variant="ghost"
+								className="nodrag nowheel h-7 w-7"
+								onClick={() => data.onStartEdit(id, data.text)}
+								aria-label="Edit node text"
+							>
+								<Pencil className="h-3.5 w-3.5" />
+							</Button>
 
-									<div className="flex items-center gap-2">
-										<Button
-											size="sm"
-											onClick={() => {
-												const next = draft.trim();
-												if (next.length === 0) return;
-												onEditText(node.id, next);
-												setIsEditing(false);
-											}}
-											disabled={draft.trim().length === 0}
-										>
-											<Check className="mr-1.5 h-3.5 w-3.5" />
-											Save
-										</Button>
-										<Button
-											size="sm"
-											variant="outline"
-											onClick={() => {
-												setDraft(node.text);
-												setIsEditing(false);
-											}}
-										>
-											<X className="mr-1.5 h-3.5 w-3.5" />
-											Cancel
-										</Button>
-									</div>
-								</div>
-							) : (
-								<p className="whitespace-pre-wrap text-sm leading-relaxed">
-									{node.text}
-								</p>
-							)}
-						</div>
-
-						<div className="flex flex-col items-end gap-2">
-							<div className="flex items-center gap-1">
+							{canAddChild && (
 								<Button
+									type="button"
 									size="icon"
 									variant="ghost"
-									onClick={() => {
-										setDraft(node.text);
-										setIsEditing(true);
-									}}
-									aria-label="Edit"
+									className="nodrag nowheel h-7 w-7"
+									onClick={() => data.onAddChild(id)}
+									aria-label="Add child node"
 								>
-									<Pencil className="h-4 w-4" />
+									<Plus className="h-3.5 w-3.5" />
 								</Button>
+							)}
 
-								{canAddChild && (
-									<Button
-										size="icon"
-										variant="ghost"
-										onClick={() => onAddChild(node.id)}
-										aria-label="Add child"
-									>
-										<Plus className="h-4 w-4" />
-									</Button>
-								)}
-
-								{!isRoot && (
-									<Button
-										size="icon"
-										variant="ghost"
-										onClick={() => onDelete(node.id)}
-										aria-label="Delete"
-									>
-										<Trash2 className="h-4 w-4" />
-									</Button>
-								)}
-							</div>
-
-							{!isRoot && (
-								<div className="flex items-center gap-1">
-									<Button
-										size="icon"
-										variant="ghost"
-										onClick={() => onMove(node.id, "up")}
-										disabled={!canMoveUp}
-										aria-label="Move up"
-									>
-										<ArrowUp className="h-4 w-4" />
-									</Button>
-									<Button
-										size="icon"
-										variant="ghost"
-										onClick={() => onMove(node.id, "down")}
-										disabled={!canMoveDown}
-										aria-label="Move down"
-									>
-										<ArrowDown className="h-4 w-4" />
-									</Button>
-								</div>
+							{!data.isRoot && (
+								<Button
+									type="button"
+									size="icon"
+									variant="ghost"
+									className="nodrag nowheel h-7 w-7"
+									onClick={() => data.onDelete(id)}
+									aria-label="Delete node"
+								>
+									<Trash2 className="h-3.5 w-3.5" />
+								</Button>
 							)}
 						</div>
 					</div>
+
+					{data.isEditing ? (
+						<div className="space-y-2">
+							<Textarea
+								value={data.draft}
+								onChange={(event) => data.onDraftChange(id, event.target.value)}
+								placeholder={
+									data.nodeType === "claim"
+										? "Write the main claim..."
+										: data.nodeType === "support"
+											? "Write a supporting point..."
+											: "Write supporting evidence..."
+								}
+								className="nodrag nowheel min-h-[82px] resize-y"
+							/>
+
+							<div className="flex items-center gap-2">
+								<Button
+									type="button"
+									size="sm"
+									className="nodrag nowheel h-7 px-2"
+									onClick={() => data.onSaveEdit(id)}
+									disabled={data.draft.trim().length === 0}
+								>
+									<Check className="mr-1 h-3.5 w-3.5" />
+									Save
+								</Button>
+								<Button
+									type="button"
+									size="sm"
+									variant="outline"
+									className="nodrag nowheel h-7 px-2"
+									onClick={() => data.onCancelEdit(id, data.text)}
+								>
+									<X className="mr-1 h-3.5 w-3.5" />
+									Cancel
+								</Button>
+							</div>
+						</div>
+					) : (
+						<button
+							type="button"
+							className="nodrag nowheel w-full rounded-sm text-left text-sm leading-relaxed text-foreground/90 transition-colors hover:text-foreground"
+							onClick={() => data.onStartEdit(id, data.text)}
+						>
+							{displayText || "Click to add text"}
+						</button>
+					)}
 				</CardContent>
 			</Card>
 
-			{/* Children */}
-			{node.children.length > 0 && (
-				<div className="relative mt-3 pl-6">
-					{/* Vertical connector line */}
-					<div
-						className={cn(
-							"absolute left-[7px] top-0 h-full w-px",
-							styles.connectorClassName,
-						)}
-					/>
-
-					<div className="space-y-3">
-						{node.children.map((child, idx) => (
-							<ArgumentMapNode
-								key={child.id}
-								node={child}
-								depth={depth + 1}
-								isRoot={false}
-								canMoveUp={idx > 0}
-								canMoveDown={idx < node.children.length - 1}
-								onEditText={onEditText}
-								onAddChild={onAddChild}
-								onDelete={onDelete}
-								onMove={onMove}
-							/>
-						))}
-					</div>
-				</div>
+			{canAddChild && (
+				<Handle
+					type="source"
+					position={Position.Bottom}
+					className={cn("!h-2 !w-2 !border-2", styles.handleClassName)}
+				/>
 			)}
-		</div>
+		</>
 	);
 }

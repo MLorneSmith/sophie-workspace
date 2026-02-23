@@ -15,9 +15,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import debounce from "lodash/debounce";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ArgumentMapNode } from "../../_lib/schemas/presentation-artifacts";
+import { saveAssembleStepAction } from "../../[id]/assemble/_actions/save-assemble-step.action";
 import { getSuggestions } from "../_actions/ai-suggestions-action";
 import { submitBuildingBlocksAction } from "../_actions/submitBuildingBlocksAction";
-import { saveAssembleStepAction } from "../../[id]/assemble/_actions/save-assemble-step.action";
 import {
 	getQuestion,
 	presentationTypes,
@@ -25,6 +26,7 @@ import {
 	type QuestionOption,
 	questions,
 } from "../_config/formContent";
+import { ArgumentMapEditor } from "./argument-map-editor";
 import { type FormData, useSetupForm } from "./BlocksFormContext";
 
 // Create a client-safe logger wrapper
@@ -569,6 +571,19 @@ export function SetupForm({
 
 		const question = getQuestion(currentField as QuestionField);
 		const field = question.field;
+
+		// Special handling for argument_map — use the interactive tree editor
+		if (field === "argument_map") {
+			const argumentMapValue = formData.argument_map as ArgumentMapNode | null;
+			return (
+				<ArgumentMapEditor
+					value={argumentMapValue ?? null}
+					onChange={(next: ArgumentMapNode) => {
+						setFormData({ ...formData, argument_map: next });
+					}}
+				/>
+			);
+		}
 
 		const commonProps = {
 			id: field,
