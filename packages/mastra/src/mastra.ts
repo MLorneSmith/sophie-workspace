@@ -8,9 +8,11 @@
 import { Mastra } from "@mastra/core";
 import { PostgresStore } from "@mastra/pg";
 
+import { editorAgent } from "./agents/editor-agent";
 import { partnerAgent } from "./agents/partner-agent";
 import { researchAgent } from "./agents/research-agent";
 import { validatorAgent } from "./agents/validator-agent";
+import { whispererAgent } from "./agents/whisperer-agent";
 import { audienceProfilingWorkflow } from "./workflows/audience-profiling-workflow";
 import { postProcessWorkflow } from "./workflows/post-process-workflow";
 
@@ -45,6 +47,8 @@ export function getMastra(): Mastra {
 			researchAgent,
 			partnerAgent,
 			validatorAgent,
+			whispererAgent,
+			editorAgent,
 		},
 		workflows: {
 			audienceProfilingWorkflow,
