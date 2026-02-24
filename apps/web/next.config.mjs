@@ -48,7 +48,13 @@ const config = {
 			fullUrl: true,
 		},
 	},
-	serverExternalPackages: ["pino", "pino-pretty", "thread-stream"],
+	serverExternalPackages: [
+		"pino",
+		"pino-pretty",
+		"thread-stream",
+		// Native addon from @mastra/core that can't be bundled
+		"@ast-grep/napi",
+	],
 	// Bundle OpenTelemetry instrumentation packages instead of externalizing
 	webpack: (config, { isServer }) => {
 		if (isServer) {
