@@ -1,7 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { z } from "zod";
 
-import { getModelForAgent } from "../config/model-routing";
+import { createDynamicModelForAgent } from "../config/model-routing";
 
 export const EditorSlideActionSchema = z.object({
 	slideId: z.string().min(1),
@@ -53,7 +53,7 @@ export const editorAgent = new Agent({
 	name: "The Editor",
 	description:
 		"Deck shrinker that removes redundancy and improves narrative efficiency",
-	model: getModelForAgent("editor"),
+	model: createDynamicModelForAgent("editor"),
 	instructions: EDITOR_AGENT_INSTRUCTIONS,
 	tools: {},
 });

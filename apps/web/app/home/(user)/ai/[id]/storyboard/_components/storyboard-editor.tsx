@@ -58,10 +58,12 @@ import {
 	useSaveStoryboardSlides,
 	useStoryboardContents,
 } from "../_lib/hooks/use-storyboard-contents";
+import { AgentPanel, type AgentPanelCatalogEntry } from "./agent-panel";
 import { SlideEditor } from "./slide-editor";
 
 interface StoryboardEditorProps {
 	presentationId: string;
+	agentCatalog: ReadonlyArray<AgentPanelCatalogEntry>;
 }
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
@@ -206,7 +208,10 @@ function SortableSlideThumb({
 	);
 }
 
-export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
+export function StoryboardEditor({
+	presentationId,
+	agentCatalog,
+}: StoryboardEditorProps) {
 	const { data: storyboardData, isPending: isLoading } =
 		useStoryboardContents(presentationId);
 	const { mutate: saveSlides } = useSaveStoryboardSlides(presentationId);
@@ -484,6 +489,11 @@ export function StoryboardEditor({ presentationId }: StoryboardEditorProps) {
 						<Plus className="mr-1.5 h-3.5 w-3.5" />
 						Add Slide
 					</Button>
+					<AgentPanel
+						presentationId={presentationId}
+						agents={agentCatalog}
+						slides={sortedSlides}
+					/>
 					<Button
 						variant="default"
 						size="sm"

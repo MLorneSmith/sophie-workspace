@@ -1,7 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { z } from "zod";
 
-import { getModelForAgent } from "../config/model-routing";
+import { createDynamicModelForAgent } from "../config/model-routing";
 
 export const WhispererSlideNotesSchema = z.object({
 	slideId: z.string().min(1),
@@ -46,7 +46,7 @@ export const whispererAgent = new Agent({
 	id: "whisperer",
 	name: "The Whisperer",
 	description: "Executive speaking coach for slide-by-slide speaker notes",
-	model: getModelForAgent("whisperer"),
+	model: createDynamicModelForAgent("whisperer"),
 	instructions: WHISPERER_AGENT_INSTRUCTIONS,
 	tools: {},
 });

@@ -1,7 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { z } from "zod";
 
-import { getModelForAgent } from "../config/model-routing";
+import { createDynamicModelForAgent } from "../config/model-routing";
 
 export const PartnerSlideScoresSchema = z.object({
 	clarity: z.number().min(1).max(5),
@@ -52,7 +52,7 @@ export const partnerAgent = new Agent({
 	name: "The Partner",
 	description:
 		"Senior consulting partner review for narrative and strategic rigor",
-	model: getModelForAgent("partner"),
+	model: createDynamicModelForAgent("partner"),
 	instructions: PARTNER_AGENT_INSTRUCTIONS,
 	tools: {},
 });

@@ -13,12 +13,12 @@
 
 import { Agent } from "@mastra/core/agent";
 
-import { getModelForAgent } from "../config/model-routing";
+import { createDynamicModelForAgent } from "../config/model-routing";
 
 export const researchAgent = new Agent({
 	id: "research-agent",
 	name: "Research Agent",
-	model: getModelForAgent("research"),
+	model: createDynamicModelForAgent("research"),
 	instructions: [
 		"You are an expert audience researcher for presentation preparation.",
 		"Your job is to research a person and their company to help craft a targeted presentation.",

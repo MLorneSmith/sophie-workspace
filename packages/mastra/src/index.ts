@@ -25,4 +25,22 @@ export {
 	postProcessWorkflow,
 	createPostProcessWorkflow,
 } from "./workflows";
+export * from "./resilience";
 export * from "./agents";
+// persistence/agent-results is server-only — import via "@kit/mastra/persistence".
+// Do NOT re-export runtime values here; it would impose "server-only" on the entire package.
+export type {
+	AgentId,
+	AgentRunStatus,
+	AgentSuggestionType,
+	AgentSuggestionPriority,
+	AgentSuggestionStatus,
+	AgentRunTokenUsage,
+	AgentRun,
+	AgentSuggestion,
+	CreateAgentRunInput,
+	UpdateAgentRunInput,
+	CreateAgentSuggestionInput,
+	GetSuggestionsFilters,
+	SupabaseClientLike,
+} from "./persistence/agent-results";

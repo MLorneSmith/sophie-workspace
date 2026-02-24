@@ -1,7 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { z } from "zod";
 
-import { getModelForAgent } from "../config/model-routing";
+import { createDynamicModelForAgent } from "../config/model-routing";
 
 export const ValidatorClaimSchema = z.object({
 	claim: z.string().min(1),
@@ -55,7 +55,7 @@ export const validatorAgent = new Agent({
 	id: "validator",
 	name: "The Validator",
 	description: "Fact and claims checker for evidence quality and credibility",
-	model: getModelForAgent("validator"),
+	model: createDynamicModelForAgent("validator"),
 	instructions: VALIDATOR_AGENT_INSTRUCTIONS,
 	tools: {},
 });
