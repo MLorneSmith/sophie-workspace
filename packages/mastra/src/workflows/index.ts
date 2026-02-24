@@ -10,4 +10,6 @@ export {
 	postProcessSchemas,
 	createPostProcessWorkflow,
 	type PostProcessWorkflowDependencies,
+	type PostProcessOutput,
+	type PostProcessSuggestion,
 } from "./post-process-workflow";

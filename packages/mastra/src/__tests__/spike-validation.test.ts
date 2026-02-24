@@ -294,7 +294,7 @@ describe("Mastra validation spike", () => {
 		expect(usage.estimatedCost).toBeGreaterThan(0);
 	});
 
-	it("runs postProcessWorkflow with partner + validator reviews and merges output", async () => {
+	it("runs postProcessWorkflow with all 4 agent reviews and merges output", async () => {
 		const partnerUsage = {
 			promptTokens: 90,
 			completionTokens: 30,
@@ -305,38 +305,158 @@ describe("Mastra validation spike", () => {
 			completionTokens: 50,
 			totalTokens: 120,
 		};
+		const whispererUsage = {
+			promptTokens: 60,
+			completionTokens: 40,
+			totalTokens: 100,
+		};
+		const editorUsage = {
+			promptTokens: 40,
+			completionTokens: 20,
+			totalTokens: 60,
+		};
 
 		const postProcessWorkflow = createPostProcessWorkflow({
 			runPartnerReview: async ({ storyboard }) => ({
 				review: {
-					reviewer: "partner",
+					overallScore: 4.1,
+					executiveSummary:
+						"Narrative is compelling but can tighten action framing.",
+					narrativeFlow: "Flow is coherent and mostly decision-ready.",
 					slides: storyboard.slides.map((slide) => ({
 						slideId: slide.id,
-						narrativeStrength: "Storyline is coherent.",
-						improvement:
-							"Clarify the business impact one level deeper for executives.",
+						scores: {
+							clarity: 4,
+							relevance: 4,
+							impact: 4,
+							audienceAlignment: 3,
+						},
+						headline: slide.takeawayHeadline,
+						strengths: ["Strong storyline linkage", "Clear executive framing"],
+						weaknesses: ["Could increase urgency", "Decision ask is implied"],
+						suggestion: "Make business impact explicit in the first sentence.",
+						priority: "important",
 					})),
+					topIssues: [
+						{
+							issue: "Decision ask should appear earlier",
+							affectedSlides: [storyboard.slides[0]?.id ?? "unknown-slide"],
+							fix: "Move explicit ask to opening context slide",
+						},
+					],
 				},
 				usage: partnerUsage,
 				model: "mock/partner",
 			}),
 			runValidatorReview: async ({ storyboard }) => ({
 				review: {
-					reviewer: "validator",
+					overallDataQuality: "adequate",
+					summary:
+						"Most claims are directionally sound but one needs explicit sourcing.",
 					slides: storyboard.slides.map((slide, index) => ({
 						slideId: slide.id,
-						claim: slide.takeawayHeadline,
-						verdict: index === 0 ? "unsupported" : "supported",
-						confidence: index === 0 ? 0.86 : 0.74,
-						source: index === 0 ? undefined : "Internal KPI dashboard Q4",
-						suggestion:
+						claims: [
+							{
+								claim: slide.takeawayHeadline,
+								verdict: index === 0 ? "unsupported" : "supported",
+								confidence: index === 0 ? 0.86 : 0.74,
+								evidence:
+									index === 0
+										? null
+										: "Internal KPI dashboard Q4 2025 trendline",
+								suggestion:
+									index === 0
+										? "Add data evidence from an audited source for this claim."
+										: "Keep the claim but attach citation in speaker notes.",
+							},
+						],
+						dataQuality: index === 0 ? "weak" : "strong",
+						recommendation:
 							index === 0
-								? "Add data evidence from an audited source for this claim."
-								: "Keep the claim but attach citation in speaker notes.",
+								? "Add source date and metric definition."
+								: "Retain and cite in footnote.",
 					})),
+					criticalFlags: [
+						{
+							slideId: storyboard.slides[0]?.id ?? "unknown-slide",
+							issue: "Top-line claim has no source citation.",
+							severity: "high",
+						},
+					],
 				},
 				usage: validatorUsage,
 				model: "mock/validator",
+			}),
+			runWhispererReview: async ({ storyboard }) => ({
+				review: {
+					totalTimeMinutes: 3,
+					paceNotes:
+						"Keep each slide under 90 seconds and pause before the ask.",
+					slides: storyboard.slides.map((slide, index) => ({
+						slideId: slide.id,
+						openingLine:
+							index === 0
+								? "Let me frame the risk and the opportunity."
+								: "Here is the execution path that controls risk.",
+						keyMessages: [
+							"State the business implication first.",
+							"Support with one metric and one owner.",
+						],
+						transitionTo:
+							index === storyboard.slides.length - 1
+								? "I will close with the decision request."
+								: "Now let me walk through execution.",
+						timingSeconds: index === 0 ? 85 : 70,
+						doNot: ["Do not read slide text directly."],
+						audienceTip: index === 0 ? "Keep tradeoffs explicit." : null,
+					})),
+					openingHook:
+						"The current plan leaves avoidable risk; this story shows how to reduce it quickly.",
+					closingStatement:
+						"If you approve this path now, we can begin execution this week.",
+				},
+				usage: whispererUsage,
+				model: "mock/whisperer",
+			}),
+			runEditorReview: async ({ storyboard }) => ({
+				review: {
+					currentSlideCount: storyboard.slides.length,
+					recommendedSlideCount: Math.max(1, storyboard.slides.length - 1),
+					summary:
+						"Deck can be tighter by rewriting setup and merging overlap.",
+					slides: storyboard.slides.map((slide, index) => ({
+						slideId: slide.id,
+						action: index === 0 ? "rewrite" : "merge",
+						mergeWith:
+							index === 0
+								? null
+								: (storyboard.slides[0]?.id ?? "unknown-slide"),
+						reason:
+							index === 0
+								? "Opening is clear but not decisive enough."
+								: "Execution detail overlaps with the context slide.",
+						rewriteSuggestion:
+							index === 0
+								? "Lead with quantified impact and explicit decision ask."
+								: null,
+					})),
+					narrativeImpact:
+						"Changes shorten time-to-understanding and strengthen executive focus.",
+					redundancyPairs:
+						storyboard.slides.length >= 2 &&
+						storyboard.slides[0] &&
+						storyboard.slides[1]
+							? [
+									{
+										slideA: storyboard.slides[0].id,
+										slideB: storyboard.slides[1].id,
+										overlap: "Both describe execution risk context.",
+									},
+								]
+							: [],
+				},
+				usage: editorUsage,
+				model: "mock/editor",
 			}),
 		});
 
@@ -366,40 +486,64 @@ describe("Mastra validation spike", () => {
 
 		expect(result.steps["partner-review"]?.status).toBe("success");
 		expect(result.steps["validator-review"]?.status).toBe("success");
+		expect(result.steps["whisperer-review"]?.status).toBe("success");
+		expect(result.steps["editor-review"]?.status).toBe("success");
 
-		expect(result.result.partnerReview.reviewer).toBe("partner");
-		expect(result.result.validatorReview.reviewer).toBe("validator");
+		expect(result.result.partnerReview.overallScore).toBeGreaterThan(0);
 		expect(result.result.validatorReview.slides.length).toBe(2);
+		expect(result.result.whispererReview.slides.length).toBe(2);
+		expect(result.result.editorReview.slides.length).toBe(2);
 		expect(
 			result.result.validatorReview.slides.every(
 				(slide) =>
-					slide.verdict === "supported" ||
-					slide.verdict === "unsupported" ||
-					slide.verdict === "unverifiable",
+					slide.claims[0]?.verdict === "supported" ||
+					slide.claims[0]?.verdict === "unsupported" ||
+					slide.claims[0]?.verdict === "unverifiable" ||
+					slide.claims[0]?.verdict === "outdated",
 			),
 		).toBe(true);
 		expect(
 			result.result.validatorReview.slides.every(
-				(slide) => slide.confidence >= 0 && slide.confidence <= 1,
+				(slide) =>
+					(slide.claims[0]?.confidence ?? -1) >= 0 &&
+					(slide.claims[0]?.confidence ?? 2) <= 1,
 			),
 		).toBe(true);
 
-		expect(result.result.suggestions.length).toBe(4);
+		expect(result.result.suggestions.length).toBe(9);
+		expect(result.result.suggestions.every((suggestion) => suggestion.id)).toBe(
+			true,
+		);
 		expect(
-			result.result.suggestions.some(
-				(suggestion) => suggestion.source === "partner",
+			result.result.suggestions.every(
+				(suggestion) => suggestion.status === "pending",
 			),
 		).toBe(true);
 		expect(
 			result.result.suggestions.some(
-				(suggestion) => suggestion.source === "validator",
+				(suggestion) => suggestion.agentId === "partner",
+			),
+		).toBe(true);
+		expect(
+			result.result.suggestions.some(
+				(suggestion) => suggestion.agentId === "validator",
+			),
+		).toBe(true);
+		expect(
+			result.result.suggestions.some(
+				(suggestion) => suggestion.agentId === "whisperer",
+			),
+		).toBe(true);
+		expect(
+			result.result.suggestions.some(
+				(suggestion) => suggestion.agentId === "editor",
 			),
 		).toBe(true);
 
 		const usage = await getRunTokenUsage(run.runId, mastra);
-		expect(usage.promptTokens).toBe(160);
-		expect(usage.completionTokens).toBe(80);
-		expect(usage.totalTokens).toBe(240);
+		expect(usage.promptTokens).toBe(260);
+		expect(usage.completionTokens).toBe(140);
+		expect(usage.totalTokens).toBe(400);
 		expect(usage.estimatedCost).toBeGreaterThan(0);
 	});
 });
