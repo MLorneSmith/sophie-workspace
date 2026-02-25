@@ -1,0 +1,523 @@
+# SlideHeroes Points of View on Presentations
+# Belief statements extracted from blog content for use in email campaigns
+# Each POV includes hook angles to help connect beliefs to email hooks
+---
+metadata:
+  last_updated: "2026-01-27"
+  version: "1.0.0"
+  source: "SlideHeroes blog posts (8 articles)"
+  total_povs: 32
+
+# =============================================================================
+# CATEGORY: IDENTITY - What Business Presentations ARE (and aren't)
+# =============================================================================
+identity:
+
+  - id: "identity-001"
+    belief: "Business presentations are NOT speeches"
+    full_statement: |
+      'Sit-down' McKinsey-style business presentations around a board table are
+      fundamentally different from public speaking and require a completely
+      different approach to communication.
+    contrast: "Most 'presentation tips' are actually speech tips - and they'll get you fired in a boardroom"
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "contrarian"
+        angle: "Challenge the TED-talk obsession that's ruining business communication"
+      - type: "story"
+        angle: "The time someone channeled JFK in a quarterly review and got fired"
+      - type: "question"
+        angle: "Why does your boss roll their eyes when you try to 'inspire' them?"
+
+  - id: "identity-002"
+    belief: "Presentations are the lingua franca of corporate America"
+    full_statement: |
+      Business presentations combine words, images and delivery to communicate
+      our message. They are how we communicate in the corporate world.
+    implication: "If you can't present well, you can't communicate well - and that limits your career"
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "stakes"
+        angle: "The hidden skill that determines who gets promoted"
+      - type: "cultural_reference"
+        angle: "Like not speaking the local language while working abroad"
+
+  - id: "identity-003"
+    belief: "This is NOT a performance - it IS business"
+    full_statement: |
+      Your presentation to your board, boss, customer, or investor is not a
+      TED Talk. It is not a speech. It is not public speaking.
+    contrast: "Stop worrying about your opening joke and start worrying about your structure"
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "contrarian"
+        angle: "Why I tell clients to skip the joke"
+      - type: "permission"
+        angle: "You don't have to be entertaining - you have to be clear"
+
+# =============================================================================
+# CATEGORY: STRUCTURE - How to organize your argument
+# =============================================================================
+structure:
+
+  - id: "structure-001"
+    belief: "Answer a question, don't present a topic"
+    full_statement: |
+      Rather than presenting about 'Customer Relationship Management Software',
+      present an answer to the question 'Our CRM software is old, does it need
+      to be replaced?' This creates relevance and clarity.
+    example: |
+      Topic: "2022 Marketing Plan"
+      Question: "What is the best plan for accelerating growth?"
+      The resulting presentations would be VERY different.
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "reframe"
+        angle: "The simple shift that makes audiences actually care"
+      - type: "before_after"
+        angle: "Same content, completely different impact"
+      - type: "question"
+        angle: "What question is in your audience's mind right now?"
+
+  - id: "structure-002"
+    belief: "Structure is how you help your audience follow"
+    full_statement: |
+      When the audience cannot follow your logic, or the flow of your argument,
+      they become frustrated. They get pissed off. They stop paying attention.
+      Structure is how you signpost where you are going.
+    implication: "Expect half your time to be spent working on structure"
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "empathy"
+        angle: "That moment when you see eyes glaze over..."
+      - type: "behind_scenes"
+        angle: "Where the best presenters actually spend their time"
+      - type: "contrarian"
+        angle: "Stop designing slides. Start designing arguments."
+
+  - id: "structure-003"
+    belief: "Every presentation needs an introduction that plants the question"
+    full_statement: |
+      Craft an introduction that outlines the background, presents the catalyst
+      (what has changed), and explicitly or implicitly states the question you
+      are there to answer.
+    framework: "Barbara Minto's SCQ (Situation, Complication, Question)"
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "how_to"
+        angle: "The 3-part intro that hooks executives"
+      - type: "cultural_reference"
+        angle: "What McKinsey consultants learn in week one"
+
+  - id: "structure-004"
+    belief: "Limit your lists to no more than 5 items"
+    full_statement: |
+      If you have more than 5 items, bucket these ideas into a new set of
+      groupings, one level of abstraction higher. Apply MECE principles
+      (mutually exclusive, collectively exhaustive).
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "rule"
+        angle: "The 5-item rule that separates amateurs from pros"
+      - type: "analogy"
+        angle: "Why your grocery list is organized but your presentation isn't"
+
+# =============================================================================
+# CATEGORY: EVIDENCE - Demonstrate, don't assert
+# =============================================================================
+evidence:
+
+  - id: "evidence-001"
+    belief: "Demonstrate, don't simply assert"
+    full_statement: |
+      You know what they say about opinions. And everyone has one. Your
+      credibility skyrockets when you demonstrate the truth of your assertions
+      through data, facts, or very compelling logic.
+    contrast: "The 'because I say so' argument is surprisingly common in presentations"
+    source: "presentation-tips.mdoc, typology-business-charts.mdoc"
+    hook_angles:
+      - type: "contrarian"
+        angle: "Why your opinions are worthless (and what to use instead)"
+      - type: "credibility"
+        angle: "The single change that makes executives take you seriously"
+
+  - id: "evidence-002"
+    belief: "Footnotes provide credibility"
+    full_statement: |
+      When you cite numbers and statistics, you need to say where you got the
+      data from. Not providing footnotes is, at best, lazy, and at worst, dishonest.
+    source: "presentation-review-bcg.mdoc"
+    hook_angles:
+      - type: "standards"
+        angle: "The 'small' thing that makes consultants look professional"
+      - type: "contrarian"
+        angle: "Why I judge presentations by their footnotes"
+
+  - id: "evidence-003"
+    belief: "Data is a good thing. Use it."
+    full_statement: |
+      Data is a good thing. Footnotes are a good thing. Make sure the data is
+      correct - triple check. And make sure your business charts tell the truth.
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "permission"
+        angle: "You're allowed to use lots of data (actually, you should)"
+      - type: "warning"
+        angle: "The career-ending mistake: wrong data in front of the CEO"
+
+  - id: "evidence-004"
+    belief: "State your survey population (n)"
+    full_statement: |
+      With survey data it is usually a good idea to state the size of the survey
+      population (n). The bigger the n, the more confidence readers have. It's
+      the kind of thing that comes up as a question - easier to anticipate it.
+    source: "presentation-review-bcg.mdoc"
+    hook_angles:
+      - type: "pro_tip"
+        angle: "The detail that signals you know what you're doing"
+      - type: "anticipate"
+        angle: "Answer the question before they ask it"
+
+# =============================================================================
+# CATEGORY: DATA VISUALIZATION - Charts and graphs
+# =============================================================================
+data_visualization:
+
+  - id: "dataviz-001"
+    belief: "Don't use pie charts, crazy animations, 3D, or random special effects"
+    full_statement: |
+      Don't use pie charts, crazy animations, 3D, or random special effects.
+      Just don't. Resist the temptation to sex things up by slapping things
+      into a chart.
+    source: "presentation-tips.mdoc, typology-business-charts.mdoc"
+    hook_angles:
+      - type: "contrarian"
+        angle: "The chart types that make you look like an amateur"
+      - type: "rule"
+        angle: "Three words: No. Pie. Charts."
+
+  - id: "dataviz-002"
+    belief: "Chart type must match the data relationship"
+    full_statement: |
+      It is critical to understand what data relationship you are trying to
+      highlight, and what chart type best illustrates this type of relationship.
+      Different relationships need different charts.
+    relationships:
+      - "Nominal comparison → Bar chart"
+      - "Time series → Line chart"
+      - "Ranking → Sorted bar chart"
+      - "Part-to-whole → Stacked bar (not pie!)"
+      - "Correlation → Scatter plot"
+    source: "typology-business-charts.mdoc"
+    hook_angles:
+      - type: "framework"
+        angle: "The 8 data relationships (and which chart to use for each)"
+      - type: "diagnostic"
+        angle: "Why your chart isn't landing (it's probably the wrong type)"
+
+  - id: "dataviz-003"
+    belief: "A cardinal sin: when you can't see the point in the data"
+    full_statement: |
+      It is a cardinal sin when you cannot actually see in the data the point
+      that is being made in the headline. The chart must visually prove the
+      headline's claim.
+    source: "presentation-review-bcg.mdoc"
+    hook_angles:
+      - type: "teardown"
+        angle: "When pretty charts hide ugly logic"
+      - type: "test"
+        angle: "The 3-second test your chart probably fails"
+
+  - id: "dataviz-004"
+    belief: "Use tables when looking up individual values"
+    full_statement: |
+      Tables are effective when the primary use is to look up particular values.
+      Graphs are better when the message is in the SHAPE of the data.
+    source: "typology-business-charts.mdoc"
+    hook_angles:
+      - type: "decision"
+        angle: "Table or chart? Here's how to know"
+      - type: "contrarian"
+        angle: "Sometimes a table beats a fancy visualization"
+
+  - id: "dataviz-005"
+    belief: "Be careful how you scale your axes"
+    full_statement: |
+      Notice how BCG lengthened the bars to visually disguise the delta and
+      reinforce their conclusion? A 16% difference 'sure seems material to me.'
+      Charts can mislead without lying.
+    source: "presentation-review-bcg.mdoc"
+    hook_angles:
+      - type: "exposé"
+        angle: "How consultants use chart tricks to tell the story they want"
+      - type: "ethics"
+        angle: "The line between persuasion and manipulation"
+
+# =============================================================================
+# CATEGORY: DESIGN - Style and visual presentation
+# =============================================================================
+design:
+
+  - id: "design-001"
+    belief: "Design is important - it just isn't everything"
+    full_statement: |
+      Your objective is not to create a pretty deck. The objective is to
+      communicate your point. Having said this, design matters. The medium
+      is the message. I can't take you seriously if you can't be bothered
+      to make your deck look good.
+    balance: "But don't allow design to get in the way of communicating your point"
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "balance"
+        angle: "The Goldilocks problem of presentation design"
+      - type: "credibility"
+        angle: "Why ugly decks undermine brilliant ideas"
+
+  - id: "design-002"
+    belief: "Adopt a minimalist design ethos"
+    full_statement: |
+      Adopt a minimalist design ethos - not because it is inherently superior,
+      but because it strips out the extraneous. It allows us to focus on that
+      which is most important.
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "philosophy"
+        angle: "The case for boring design"
+      - type: "analogy"
+        angle: "Why Apple's slides have almost nothing on them"
+
+  - id: "design-003"
+    belief: "Reserve each slide for a single primary idea"
+    full_statement: |
+      Adopt a message-driven slide layout: Reserve each slide for a single
+      primary idea. Write concise two-line headlines that make your main
+      assertion or introduce your primary idea.
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "rule"
+        angle: "One slide, one idea (no exceptions)"
+      - type: "diagnostic"
+        angle: "If you can't summarize the slide in one sentence, split it"
+
+  - id: "design-004"
+    belief: "Headlines should be assertions, not labels"
+    full_statement: |
+      Your headline should clearly lay out the take-away of your slide.
+      BCG's two-line style - pithy label plus descriptive assertion - helps
+      the audience understand what the slide is trying to say.
+    source: "presentation-review-bcg.mdoc"
+    hook_angles:
+      - type: "before_after"
+        angle: "'Q3 Revenue' vs. 'Q3 Revenue exceeded forecast by 12%'"
+      - type: "test"
+        angle: "Can someone understand your deck from headlines alone?"
+
+  - id: "design-005"
+    belief: "Create slides that are scannable"
+    full_statement: |
+      Employ the three-second rule - people should be able to 'get' the slide
+      in 1, 2, 3 seconds. More whitespace improves scannability.
+    source: "presentation-tips.mdoc, presentation-review-bcg.mdoc"
+    hook_angles:
+      - type: "test"
+        angle: "The 3-second test every slide should pass"
+      - type: "empathy"
+        angle: "Your audience is tired. Make it easy for them."
+
+  - id: "design-006"
+    belief: "Kill the 'Draft - for discussion only' label"
+    full_statement: |
+      The 'Draft – for discussion only' label should really be tossed. It has
+      dubious legal weight and creates visual noise. Keep repeating visual
+      elements to an absolute minimum.
+    source: "presentation-review-bcg.mdoc"
+    hook_angles:
+      - type: "pet_peeve"
+        angle: "The label that screams 'I'm not confident in this'"
+      - type: "cleanup"
+        angle: "Visual noise you can delete today"
+
+# =============================================================================
+# CATEGORY: AUDIENCE - Understanding who you're presenting to
+# =============================================================================
+audience:
+
+  - id: "audience-001"
+    belief: "Identify the 'Power Behind The Throne'"
+    full_statement: |
+      Who is your audience? Who has power? Who makes decisions? Sometimes it
+      is not clear who the real decision makers are, or where power lies.
+      Once identified, determine how they like to consume information.
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "strategy"
+        angle: "The person in the room who actually matters"
+      - type: "story"
+        angle: "The time I presented to the wrong person"
+
+  - id: "audience-002"
+    belief: "What Is In It For Them?"
+    full_statement: |
+      The most effective formula to ensuring your audience connects with your
+      material is to give a presentation about something they care about.
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "empathy"
+        angle: "The question every audience member is silently asking"
+      - type: "reframe"
+        angle: "Stop thinking about what YOU want to say"
+
+  - id: "audience-003"
+    belief: "Research your investors before pitching"
+    full_statement: |
+      VCs tend to specialize. Fit between investor and startup is critical.
+      Research past investments to understand what ideas resonate. Tailor
+      your story to their investment thesis.
+    source: "pitch-deck.mdoc"
+    hook_angles:
+      - type: "pro_tip"
+        angle: "The research most founders skip (and why they fail)"
+      - type: "numbers"
+        angle: "VCs see 5,000 pitches a year. Here's how to stand out."
+
+# =============================================================================
+# CATEGORY: DELIVERY - Performance and confidence
+# =============================================================================
+delivery:
+
+  - id: "delivery-001"
+    belief: "If your meeting is important enough for a presentation, it's important enough for a GREAT one"
+    full_statement: |
+      If your meeting is important enough to prepare a presentation for, it is
+      important enough to prepare a great presentation for. Put in the effort.
+      If you don't, you have no one to blame but yourself.
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "tough_love"
+        angle: "The uncomfortable truth about your last presentation"
+      - type: "standards"
+        angle: "Good enough isn't"
+
+  - id: "delivery-002"
+    belief: "Have conviction in your material - or have someone else present"
+    full_statement: |
+      Have conviction in the material you are presenting. If you don't, work
+      harder. Demonstrate passion and enthusiasm. If you're not feeling it,
+      drink some coffee. Fake it. If you can't fake it, have someone else present.
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "tough_love"
+        angle: "If you don't believe it, neither will they"
+      - type: "permission"
+        angle: "It's OK to fake enthusiasm (sometimes)"
+
+  - id: "delivery-003"
+    belief: "End with clear next steps"
+    full_statement: |
+      You need a call to action. The objective of your presentation should be
+      for your audience to DO SOMETHING as a result. Identify your desired
+      next step early and design the presentation so it's the logical consequence.
+    source: "presentation-tips.mdoc"
+    hook_angles:
+      - type: "mistake"
+        angle: "The presentation that went great... and led nowhere"
+      - type: "reverse_engineer"
+        angle: "Start with what you want them to do"
+
+# =============================================================================
+# CATEGORY: STORYTELLING - Narrative and engagement
+# =============================================================================
+storytelling:
+
+  - id: "story-001"
+    belief: "Storytelling is underused in consulting - and it's a missed opportunity"
+    full_statement: |
+      BCG has not really utilized any storytelling techniques in this
+      presentation. To be fair, storytelling is not common in consulting.
+      But this topic presents a real opportunity to bring an emotional
+      dimension into focus.
+    source: "presentation-review-bcg.mdoc"
+    hook_angles:
+      - type: "opportunity"
+        angle: "The technique consultants ignore (that would make them more persuasive)"
+      - type: "contrarian"
+        angle: "Data isn't enough. Here's what's missing."
+
+  - id: "story-002"
+    belief: "Attack and rebut hypotheses forming in the audience's mind"
+    full_statement: |
+      The strength of this slide is that it attacks and rebuts a hypothesis
+      the audience may have started to formulate... 'Yes, but older people
+      sure don't have the same attitudes...'
+    source: "presentation-review-bcg.mdoc"
+    hook_angles:
+      - type: "anticipation"
+        angle: "Reading the room before they speak"
+      - type: "persuasion"
+        angle: "The judo move that turns objections into agreement"
+
+# =============================================================================
+# CATEGORY: PITCH DECKS - Investor presentations
+# =============================================================================
+pitch_decks:
+
+  - id: "pitch-001"
+    belief: "The pitch deck you used for seed won't work for Series A"
+    full_statement: |
+      Your business will have changed, the market too, and what you want to
+      get out of the investor meetings. Different stages need different stories.
+    source: "pitch-deck.mdoc"
+    hook_angles:
+      - type: "evolution"
+        angle: "Why your winning deck stopped working"
+      - type: "stage"
+        angle: "The 4 pitch deck stages (and what each requires)"
+
+  - id: "pitch-002"
+    belief: "The best pitch is a conversation"
+    full_statement: |
+      The best pitch is a conversation. It should be cohesive, tell a story,
+      and explain a trend.
+    attribution: "Mark Suster, 2X Entrepreneur, Venture Capitalist"
+    source: "pitch-deck.mdoc"
+    hook_angles:
+      - type: "quote"
+        angle: "What top VCs actually want from your pitch"
+      - type: "reframe"
+        angle: "Stop presenting. Start conversing."
+
+  - id: "pitch-003"
+    belief: "Financial and team slides get viewed the longest"
+    full_statement: |
+      Research from Harvard/Docsend: Financial and team slides were viewed
+      23.3 and 22.8 seconds each. Problem and solution pages? 11.3 and 10.6
+      seconds. Investors care about WHO and HOW MUCH.
+    source: "pitch-deck.mdoc"
+    hook_angles:
+      - type: "data"
+        angle: "Where investors actually spend time in your deck"
+      - type: "contrarian"
+        angle: "Your problem/solution slides matter less than you think"
+
+# =============================================================================
+# USAGE GUIDELINES
+# =============================================================================
+usage:
+  how_to_use_in_campaigns: |
+    1. During strategy phase, scan POVs for relevant beliefs
+    2. Match POVs to hook types from hooks-library.yaml
+    3. Use the 'contrast' field to sharpen the hook
+    4. Use 'hook_angles' for specific email approaches
+    5. Reference the 'source' to pull detailed examples from blog posts
+
+  hook_type_mapping:
+    contrarian: "Challenge conventional wisdom with the belief"
+    story: "Use the belief as the lesson from a story"
+    question: "Turn the belief into a question for the reader"
+    reframe: "Show how the belief changes perspective"
+    stakes: "Emphasize consequences of ignoring the belief"
+    empathy: "Connect the belief to reader's frustration"
+    permission: "Use the belief to give permission to do/not do something"
+    rule: "Present the belief as a clear, memorable rule"
+    data: "Support the belief with statistics or research"
+    teardown: "Use the belief to critique a real example"

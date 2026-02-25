@@ -18,8 +18,8 @@
 ## Preferences
 
 - **Default model (Sophie):** Opus 4.6 (`anthropic/claude-opus-4-6`) - conversation, planning, research, complex reasoning.
-- **Coding sub-agents:** GPT-5.2 Codex (`openai-codex/gpt-5.2`) - spawn sub-agents with this model for implementation work.
-- **Coding fallback:** GLM 4.7 (`zai/glm-4.7`) - use if GPT-5.2 Codex fails/unavailable.
+- **Coding sub-agents:** GPT-5.3 Codex via ccproxy (`ccproxy/gpt-5.3-codex`) - coding-optimized model via local ccproxy → ChatGPT Pro subscription, $0 extra cost. Also available: `gpt-5.2`, `gpt-5`, `gpt-5.3-codex-spark`.
+- **Coding fallback:** GLM 4.7 (`zai/glm-4.7`) - use if GPT-5.2/ccproxy fails/unavailable.
 - **Web search tasks:** Spawn GLM sub-agents for search-heavy research (bulk lookups, multi-query research, competitive analysis). Quick single searches on Opus are fine; batch/bulk goes to GLM.
 - **Basic/slow tasks (GLM):** Use GLM for bulk processing, scheduled background jobs, draft generation, data extraction, translation, async code review, research summaries - anything where latency doesn't matter.
 

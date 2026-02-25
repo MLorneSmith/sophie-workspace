@@ -1,0 +1,180 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: "Unified customer dimension combining app accounts, Stripe customers, and Attio people (matched by normalized email)."
+    columns:
+      - name: email
+        description: "Normalized email used as the primary identity key for joining across systems."
+      - name: account_id
+        description: "SlideHeroes account id (Supabase)."
+      - name: stripe_customer_id
+        description: "Stripe customer id."
+      - name: attio_person_id
+        description: "Attio person id."
+
+  - name: dim_customers_deduped
+    description: "Deduped + classified customer dimension. Merges Supabase/Stripe/Attio rows by email (Supabase > Stripe > Attio). Flags internal/test records and extracts Attio company id for clean joins."
+    columns:
+      - name: customer_key
+        description: "Stable person key: email when present, otherwise 'attio_person:<id>' for Attio-only people with no email."
+      - name: email
+        description: "Normalized email (lowercased)."
+      - name: email_domain
+        description: "Email domain extracted from email."
+      - name: customer_name
+        description: "Best available name (Supabase > Stripe > Attio)."
+      - name: account_id
+        description: "Supabase account id when present."
+      - name: stripe_customer_id
+        description: "Stripe customer id when present."
+      - name: attio_person_id
+        description: "Attio person id when present."
+      - name: attio_company_id
+        description: "Attio company record id extracted from Attio person.company record-reference JSON."
+      - name: customer_type
+        description: "Classification: paying_customer/product_user/past_customer/prospect/unknown."
+      - name: source_systems
+        description: "Comma-separated list of contributing systems (supabase,stripe,attio)."
+      - name: is_internal
+        description: "True when the person email ends with @slideheroes.com."
+      - name: is_test_record
+        description: "True for known test/seed emails (test*@slideheroes.com, +test aliases, etc.)."
+
+  - name: company_person_map
+    description: "Bridge table linking people (dim_customers_deduped) to companies (dim_companies) via Attio company id and email-domain matching."
+    columns:
+      - name: customer_key
+        description: "Person key from dim_customers_deduped."
+      - name: email
+        description: "Person email."
+      - name: company_id
+        description: "Company id from dim_companies."
+      - name: link_method
+        description: "How the link was created (attio_company_id or email_domain)."
+
+  - name: entity_resolution_audit
+    description: "Diagnostics view: counts by source overlap, internal/test flags, missing emails, company linkage coverage, and top email domains."
+
+  - name: dim_companies
+    description: "Company dimension combining Attio companies with Apollo organization enrichment (matched on normalized domain)."
+    columns:
+      - name: company_id
+        description: "Attio company id when available; otherwise a synthetic id 'apollo:<apollo_id>' for Apollo-only companies."
+      - name: company_name
+        description: "Company name (Attio preferred, Apollo fallback)."
+      - name: domains
+        description: "Primary domain / domains string used for company matching."
+      - name: employee_count
+        description: "Estimated employee count. Apollo does not currently supply a headcount field in staging.apollo_organizations, so we derive from Attio employee_range when possible."
+      - name: industry
+        description: "Industry label derived from Apollo SIC codes (Management Consulting / Professional Services / Technology / Other)."
+      - name: annual_revenue
+        description: "Annual revenue (numeric USD) from Apollo organization_revenue when present."
+      - name: revenue_printed
+        description: "Human-readable revenue bucket from Apollo."
+      - name: founded_year
+        description: "Company founded year from Apollo."
+      - name: headcount_growth_6m
+        description: "6-month headcount growth (decimal fraction) from Apollo."
+      - name: headcount_growth_12m
+        description: "12-month headcount growth (decimal fraction) from Apollo."
+      - name: headcount_growth_24m
+        description: "24-month headcount growth (decimal fraction) from Apollo."
+      - name: linkedin_url
+        description: "LinkedIn URL from Apollo."
+      - name: website_url
+        description: "Website URL from Apollo."
+      - name: apollo_id
+        description: "Apollo organization id when matched or Apollo-only row."
+
+  - name: fct_subscriptions
+    description: "Subscription fact table joining app subscriptions with Stripe subscriptions (via billing_customer_id)."
+    columns:
+      - name: subscription_id
+        description: "App subscription id (Supabase)."
+      - name: stripe_subscription_id
+        description: "Stripe subscription id (if matched)."
+
+  - name: fct_orders
+    description: "Order fact table (from Supabase orders) with numeric revenue fields."
+    columns:
+      - name: order_id
+        description: "Order id (Supabase)."
+      - name: total_amount
+        description: "Total order amount as NUMERIC."
+
+  - name: fct_events
+    description: "Cleaned PostHog events fact table."
+    columns:
+      - name: event_id
+        description: "Event UUID from PostHog."
+      - name: occurred_at
+        description: "Event timestamp."
+      - name: event_name
+        description: "Name of the event."
+
+  - name: fct_bookings
+    description: "Cal.com bookings fact table (empty until raw calcom_bookings table exists)."
+    columns:
+      - name: booking_id
+        description: "Booking identifier."
+      - name: attendee_email
+        description: "Attendee email (if available)."
+
+  - name: icp_scores
+    description: "ICP scoring model: scores each company on firmographic, behavioral, growth, and recency dimensions and assigns grade/segment."
+    columns:
+      - name: company_id
+        description: "Company id (matches dim_companies.company_id)."
+      - name: icp_total_score
+        description: "Total ICP score (0-100)."
+      - name: icp_grade
+        description: "Letter grade based on icp_total_score (A/B/C/F)."
+      - name: icp_segment
+        description: "Segment label derived from ICP rules (Primary/Secondary/etc.)."
+      - name: firm_size_score
+        description: "Firm size points (0-10)."
+      - name: industry_score
+        description: "Industry points (0-10)."
+      - name: revenue_score
+        description: "Revenue points (0-10)."
+      - name: geography_score
+        description: "Geography points (0-10)."
+      - name: engagement_score
+        description: "Engagement points (0-15) based on PostHog events per company."
+      - name: payment_score
+        description: "Payment points (0-15) based on Stripe customer/subscription status."
+      - name: growth_score
+        description: "Growth points (0-15) based on 12m headcount growth from Apollo."
+      - name: recency_score
+        description: "Recency points (0-15) based on first associated account creation date."
+
+  - name: mvl_qualified_leads
+    description: "Minimum Viable Lead (MVL) qualification table. Filters to consulting/professional-services companies that meet outbound or sales outreach thresholds based on ICP score and/or product engagement."
+    columns:
+      - name: mvl_tier
+        description: "Qualification tier. 'sales' takes priority over 'outbound'."
+      - name: already_in_attio
+        description: "True when company_id is NOT synthetic Apollo-only (i.e., does not start with 'apollo:')."
+      - name: has_product_engagement
+        description: "True when the company has at least one linked person with customer_type in (product_user, paying_customer)."
+      - name: has_active_subscription
+        description: "True when the company has at least one linked person with an active/trialing Stripe subscription."
+      - name: contact_count
+        description: "Number of distinct people (customer_key) linked to the company via company_person_map."
+      - name: linkedin_url
+        description: "LinkedIn URL from dim_companies (Apollo enrichment)."
+      - name: website_url
+        description: "Website URL from dim_companies (Apollo enrichment)."
+      - name: annual_revenue
+        description: "Annual revenue (numeric USD) from dim_companies (also present on icp_scores)."
+      - name: revenue_printed
+        description: "Human-readable revenue bucket from Apollo."
+      - name: headcount_growth_12m
+        description: "12-month headcount growth (decimal fraction) from Apollo (also present on icp_scores)."
+      - name: qualified_at
+        description: "Timestamp when MVL qualification was computed."
+
+  - name: mvl_summary
+    description: "Diagnostic view summarizing MVL qualification counts, averages, industry breakdown, and top qualified companies by score. Long-format output with a 'section' column."

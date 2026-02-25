@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "created": "2026-02-19",
+  "period": "Q2 2026",
+  "checkIn": {
+    "cadence": "weekly",
+    "day": "friday",
+    "time": "08:00",
+    "timezone": "America/Toronto",
+    "channel": "1475203108908044490"
+  },
+  "goals": {
+    "business": [
+      {
+        "id": "beta_users",
+        "name": "Ship Beta",
+        "metric": "Beta users onboarded",
+        "target": 10,
+        "timeframe": "end of Q2 2026",
+        "tracking": "manual",
+        "unit": "users"
+      },
+      {
+        "id": "feature_velocity",
+        "name": "Feature Velocity",
+        "metric": "Features shipped per week",
+        "target": 2,
+        "timeframe": "weekly",
+        "tracking": "auto",
+        "source": "mc_tasks_completed",
+        "unit": "features/week"
+      },
+      {
+        "id": "linkedin_posts",
+        "name": "Content Output",
+        "metric": "LinkedIn posts published per week",
+        "target": 2,
+        "timeframe": "weekly",
+        "tracking": "manual",
+        "unit": "posts/week"
+      },
+      {
+        "id": "blog_posts",
+        "name": "Blog Output",
+        "metric": "Blog posts published per week",
+        "target": 1,
+        "timeframe": "weekly",
+        "tracking": "manual",
+        "unit": "posts/week"
+      },
+      {
+        "id": "email_list",
+        "name": "Email List Growth",
+        "metric": "Net new subscribers",
+        "target": 200,
+        "timeframe": "end of Q2 2026",
+        "tracking": "manual",
+        "unit": "subscribers"
+      }
+    ],
+    "personal": [
+      {
+        "id": "exercise",
+        "name": "Exercise",
+        "metric": "Sessions per week",
+        "target": 4,
+        "timeframe": "weekly",
+        "tracking": "calendar_confirm",
+        "unit": "sessions/week"
+      },
+      {
+        "id": "learning",
+        "name": "Learning",
+        "metric": "Books or long-form articles consumed",
+        "target": 1,
+        "timeframe": "monthly",
+        "tracking": "manual",
+        "unit": "books/month"
+      }
+    ]
+  },
+  "reflectionQuestions": [
+    "What's your biggest win this week?",
+    "What's blocking you right now?",
+    "Energy/mood: 1-10?",
+    "One thing you want to do differently next week?"
+  ]
+}

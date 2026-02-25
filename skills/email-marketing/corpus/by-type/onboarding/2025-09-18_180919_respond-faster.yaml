@@ -1,0 +1,114 @@
+metadata:
+  id: 1995edff6eea9b9d
+  exportedAt: '2026-01-28T22:05:27.513Z'
+  source: gmail
+  labels:
+  - IMPORTANT
+  - superhuman
+  - CATEGORY_PERSONAL
+headers:
+  from: Rahul Vohra <rahul.vohra@superhuman.com>
+  to: michael@slideheroes.com
+  subject: Respond faster ⚡
+  date: Thu, 18 Sep 2025 22:09:19 +0000
+  messageId: <C8.D5.27381.F038CC86@i-0a79d48b81f4690d4.mta1vrest.sd.prd.sparkpost>
+thread:
+  threadId: 1995edff6eea9b9d
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: 'Hi Michael,
+
+
+    With Superhuman, you''ll fly through your inbox and respond faster to what
+
+    matters.
+
+
+    Hit Enter to reply all, or F to forward.
+
+
+    Write entire emails in seconds ✨
+
+    Just jot down some phrases, and we''ll turn them into a fully written email.
+
+    Superhuman AI matches your own voice and tone, so the email sounds like you do.
+
+
+    To use Superhuman AI, hit Cmd+J (Mac) or Ctrl+J (Windows). To use Superhuman AI,
+
+    tap Reply All then the AI icon (iOS only).
+
+
+    Type 30-50% faster ⚡
+
+    For when you need to type, our AI-powered Autocorrect fixes errors as you go.
+    It
+
+    beats Gmail and Outlook across multiple benchmarks, so you type 30-50% faster.
+
+
+    Hit Enter, and tell us: what do you love about Superhuman so far? What would you
+
+    like us to change?
+
+
+    Just hit Cmd+Enter or Ctrl+Enter to send! Tap Reply All, and tell us: what do
+
+    you love about Superhuman so far? What would you like us to change? We''ll be
+
+    sure to reply 💜
+
+
+    Speak soon,
+
+    Rahul
+
+
+    ps. hit Z within 10 seconds to undo your send! ps. tap Undo within 10 seconds
+    to
+
+    undo your send!
+
+
+    Take me to Superhuman [https://mail.superhuman.com]
+
+
+    If you don''t want to hear from me again, please let me know
+
+    [https://iterable-links.superhuman.com/e/eh?_t=745eb48f80414c6f895aa53319f24f24&amp;_m=0914f07d46344d64886f8ea947bc29b6&amp;_e=uTYoApfMbP5G5g04vd6poRd84aWhtUH-4FA5hbsSuDs9OiQYP9cr40fvXTJIbxS6J_IA6BgEn2L68s2iyCo4DtdJ-Zkir1rLoTUxWrMfT31sOqYNfG70bbcsr4HLlko62QTvDcfsplBai4jBizN9zphYRagmtYKRBEahZz2dY9wre8uFyvIDrpBzsNjymumoHlSP2wJbA40Y9iNwoGsteOGjDBtupsjrgV2ONrP4NnTVKbs14NRbuJB26AJiyWzI8c4FJQK7PGMvWjKiYVyOCs2L2Umr1sOv9Pgm1f5y-j7lD0EL8cb5wDgoXXRGQEtOxTNPEc0Er67lghCj-r4Lkb6eLPshqk_gDac2NmRxImfzdhDwXeSaAqht9LbuTOfn]'
+  hasHtml: true
+annotations:
+  campaign: ''
+  campaign_full: ''
+  position: null
+  sequence_length: null
+  email_type: nurture
+  purpose: ''
+  audience: ''
+  techniques_used:
+  - technique: Personal Greeting
+    location: subject_line
+    example: Hi Michael,
+    notes: Detected via pattern matching
+  - technique: P.S. Section
+    location: P.S.
+    example: ps.
+    notes: Detected via pattern matching
+  - technique: Question Hook
+    location: body
+    example: '?
+
+      '
+    notes: Detected via pattern matching
+  hooks:
+    primary:
+      type: ''
+      text: ''
+      why_effective: ''
+  open_loops: []
+  callbacks: []
+  quotable_lines: []
+  notes: Auto-annotated via pattern matching. Review and enhance manually.

@@ -1,0 +1,33 @@
+# Systemd user service for OpenClaw gateway watchdog
+#
+# Install (as ubuntu):
+#   mkdir -p ~/.config/systemd/user
+#   cp ~/clawd/scripts/watchdog.service ~/.config/systemd/user/watchdog-openclaw.service
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now watchdog-openclaw.service
+#
+# Observe:
+#   systemctl --user status watchdog-openclaw.service
+#   tail -f ~/clawd/logs/watchdog.log
+
+[Unit]
+Description=OpenClaw Gateway Watchdog
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/ubuntu/clawd
+ExecStart=/home/ubuntu/clawd/scripts/watchdog.sh
+Restart=always
+RestartSec=5
+
+# Hardening (keep reasonable; this needs journalctl + systemctl --user)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/ubuntu/clawd
+
+[Install]
+WantedBy=default.target

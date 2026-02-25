@@ -1,0 +1,247 @@
+# Email Export - [LEM] Make Someone Hungry (Part 1 of 2)
+# Exported from Gmail on 2026-01-24T18:15:26.783Z
+# Fill in the annotations section to capture writing style patterns
+---
+metadata:
+  id: "16ca53e476d48d01"
+  exportedAt: "2026-01-24T18:15:26.783Z"
+  source: "gmail"
+  labels:
+    - "andre"
+    - "IMPORTANT"
+    - "Experts/Email marketing examples/Andre Chaperon"
+    - "CATEGORY_UPDATES"
+headers:
+  from: "\"Andre Chaperon\" <hello@tinylittlebusinesses.com>"
+  to: "msmith@slideheroes.com"
+  subject: "[LEM] Make Someone Hungry (Part 1 of 2)"
+  date: "Sun, 18 Aug 2019 15:00:00 +0000 (UTC)"
+  messageId: "<tvQPy7ADSZej7WzmOUUi6w@ismtpd0038p1mdw1.sendgrid.net>"
+thread:
+  threadId: "16ca53e476d48d01"
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: "Hey Mike,
+
+
+    THE ANSWER TO the subject line is the (SIMPLE) SECRET to creating
+
+    suspense in emails.
+
+
+    And suspense in emails is the key ingredient to the narrative
+
+    engine of your email sequence.
+
+
+    ... the REASON for people to keep opening your emails and reading
+
+    to the end.
+
+
+    You know ... like you're doing here :-)
+
+
+    I teach this in detail within ARM ( http://t.dripemail2.com/c/eyJhY2NvdW50X2lkIjoiNzAyNjQ1NiIsImRlbGl2ZXJ5X2lkIjoiNzY4NDU3NDYwOSIsInVybCI6Imh0dHA6Ly9kcmlwLmxhL2MvZXlKaFkyTnZkVzUwWDJsa0lqb2lOekF5TmpRMU5pSXNJblJ5YVdkblpYSmZhV1FpT2lJeU5ETXpOalkzTVNJc0luVnliQ0k2SW1oMGRIQnpPaTh2ZEdsdWVXeHBkSFJzWldKMWMybHVaWE56WlhNdVkyOXRMMlZ0WVdsc0wyRjFkRzl5WlhOd2IyNWtaWEl0YldGa2JtVnpjeThpZlE_X19zPXl6eW1pYXF0eWl0c2kyc2lhZW1pIn0 ) (with lots of examples)...
+
+
+    But the big secret is already in this email.
+
+
+    And it has been sprinkled in clear sight in most of the previous
+
+    emails I've sent you so far.
+
+
+    Think you know what it is?
+
+
+    Here's another clue.
+
+
+    It's the REASON WHY you're still reading.
+
+
+    Readers are human, and humans are programmed (hardwired) to wait
+
+    for answers to questions they've been exposed to.
+
+
+    It's called the Zeigarnik Effect.
+
+
+    You ask a question. Or better yet, IMPLY a question, but then
+
+    DON'T GIVE THE ANSWER.
+
+
+    You move on.
+
+
+    It keeps people on the hook, so to speak.
+
+
+    That's the simple secret to creating suspense (it builds more and
+
+    more TENSION).
+
+
+    And suspense, tension, drama ... it all works to create
+
+    ATTENTION.
+
+
+    Which is the whole point, right?
+
+
+    I have two killer examples for you. The first one I read 8 years
+
+    ago, and it blew me away.
+
+
+    In fact it completely changed the game for me.
+
+
+    Myself and 3 business partners run this small exclusive
+
+    mastermind called Ocean's Four.
+
+
+    We run it once, sometimes twice a year.
+
+
+    The last one was in Orlando a few weeks ago (as I write this
+
+    email):
+
+
+    Andre at Ocean's Four, Orlando 2016 (NOTE: If you're seeing this
+
+    text it means you have not allowed images to show for this email.
+
+    Enable images to see this.)
+
+
+    We charge clients $5K for a ONE HOUR hot seat (this is over two
+
+    days, and we only take 8 people, max; excluding bringing an
+
+    additional business partner if they choose).
+
+
+    This last one, I purchased every attendee a (fiction) book. The
+
+    same book that completely changed the game for me.
+
+
+    ... and the same book I'll share with you in the next email.
+
+
+    Same time, same place.
+
+
+    Andre \"suspense, tension, drama\" Chaperon
+
+
+    ---------------------
+
+    To make sure you keep getting these emails, please add
+
+    hello@tinylittlebusinesses.com to your address book or whitelist us. Want out of
+
+    the loop? <a href=\"https://t.dripemail2.com/c/eyJhY2NvdW50X2lkIjoiNzAyNjQ1NiIsImRlbGl2ZXJ5X2lkIjoiNzY4NDU3NDYwOSIsInVybCI6Imh0dHBzOi8vd3d3LmdldGRyaXAuY29tL3N1YnNjcmliZXJzL3l6eW1pYXF0eWl0c2kyc2lhZW1pL3N1YnNjcmlwdGlvbnM_ZD1hNGtrZDI0c2d0MWthYnl5NDF0elx1MDAyNmV4Y2x1ZGVfY2xpY2s9MVx1MDAyNmludGVudD11bnN1YnNjcmliZVx1MDAyNl9fcz15enltaWFxdHlpdHNpMnNpYWVtaSJ9\">Unsubscribe</a>.
+
+
+    Our corp. address: Suite 23, Portland House, Glacis Road, GX11 1AA, GIBRALTAR
+
+
+    This email has been lovingly handcrafted by yours truly and sent with the awesome DRIP [ trydrip.co ] email software."
+  hasHtml: true
+annotations:
+  # === CAMPAIGN CONTEXT ===
+  campaign: "LEM"
+  campaign_full: "Lucrative Email Marketing"
+  position: 10
+  sequence_length: ~21
+  email_type: "nurture"
+
+  # === PURPOSE & AUDIENCE ===
+  purpose: |
+    Teaches the concept of creating suspense through implied questions (Zeigarnik Effect).
+    Demonstrates the technique while explaining it. Teases a book recommendation that
+    will be revealed in the next email, creating an open loop.
+
+  audience: "Email marketers with existing lists (500+ subscribers)"
+
+  # === TECHNIQUES USED ===
+  techniques_used:
+    - technique: "Personal Greeting"
+      location: "opening"
+      example: "Hey Mike,"
+      notes: "Consistent personalization"
+    - technique: "Campaign Abbreviation"
+      location: "subject_line"
+      example: "[LEM] Make Someone Hungry (Part 1 of 2)"
+      notes: "Intriguing metaphor + part numbering"
+    - technique: "Subject Line Callback"
+      location: "opening"
+      example: "THE ANSWER TO the subject line is the (SIMPLE) SECRET to creating suspense in emails."
+      notes: "Immediately references subject for cohesion"
+    - technique: "Meta-Commentary"
+      location: "body"
+      example: "You know ... like you're doing here :-)"
+      notes: "Points out reader is experiencing the technique"
+    - technique: "Psychological Principle Naming"
+      location: "body"
+      example: "It's called the Zeigarnik Effect."
+      notes: "Scientific name adds credibility"
+    - technique: "Short Line Rhythm"
+      location: "throughout"
+      example: "You move on.\n\nIt keeps people on the hook, so to speak."
+      notes: "Emphasizes key points"
+    - technique: "Challenge Question"
+      location: "body"
+      example: "Think you know what it is?"
+      notes: "Engages reader in guessing game"
+    - technique: "Social Proof Through Exclusivity"
+      location: "body"
+      example: "We charge clients $5K for a ONE HOUR hot seat... we only take 8 people, max"
+      notes: "Positions author as high-value expert"
+    - technique: "Open Loop"
+      location: "closing"
+      example: "... and the same book I'll share with you in the next email."
+      notes: "Classic cliffhanger"
+    - technique: "Clever Signature"
+      location: "sign-off"
+      example: "Andre \"suspense, tension, drama\" Chaperon"
+      notes: "Summarizes the lesson"
+
+  # === HOOK ANALYSIS ===
+  hook:
+    type: "subject_line_callback"
+    text: "THE ANSWER TO the subject line is the (SIMPLE) SECRET to creating suspense in emails."
+    effectiveness: "Creates immediate curiosity about what 'making someone hungry' means"
+
+  # === STRUCTURAL NOTES ===
+  structure:
+    opening: "References subject line, introduces suspense concept"
+    body: "Reveals Zeigarnik Effect -> Ocean's Four mastermind story -> book tease"
+    closing: "Open loop about book title"
+
+  # === WHAT MAKES THIS EMAIL EFFECTIVE ===
+  effectiveness_notes: |
+    - Teaches technique while demonstrating it (meta)
+    - Zeigarnik Effect provides scientific credibility
+    - $5K/hour mastermind establishes value
+    - Book tease creates genuine curiosity
+    - No P.S. keeps focus on main open loop
+
+  # === QUOTABLE LINES ===
+  quotable:
+    - "The ANSWER TO the subject line is the (SIMPLE) SECRET to creating suspense in emails."
+    - "Readers are human, and humans are programmed (hardwired) to wait for answers to questions they've been exposed to."
+    - "You ask a question. Or better yet, IMPLY a question, but then DON'T GIVE THE ANSWER."
+    - "And suspense, tension, drama ... it all works to create ATTENTION."

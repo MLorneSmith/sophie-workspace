@@ -1,0 +1,1 @@
+/home/ubuntu/clawd/sops/blog-writing-process.md

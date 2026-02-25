@@ -1,0 +1,150 @@
+# Email Export - TEST: [5S] Style: An Ancient Buddha Presentation Secret
+# Exported from Gmail on 2026-01-24T18:15:17.118Z
+# Fill in the annotations section to capture writing style patterns
+---
+metadata:
+  id: "19bf131e4db08c48"
+  exportedAt: "2026-01-24T18:15:17.118Z"
+  source: "gmail"
+  labels:
+    - "UNREAD"
+    - "andre"
+    - "CATEGORY_FORUMS"
+    - "SENT"
+headers:
+  from: "Michael Smith <msmith@slideheroes.com>"
+  to: "msmith@slideheroes.com"
+  subject: "TEST: [5S] Style: An Ancient Buddha Presentation Secret"
+  date: "Sat, 24 Jan 2026 18:08:56 +0000 (GMT)"
+  messageId: "<1703453188.2456855.1769278136637@cell-5-74bcb6f7bb-964hc>"
+thread:
+  threadId: "19bf131e4db08c48"
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: "How do I make my slides look good?View in Web Browser http://slideheroes.activehosted.com/p_v.php?c=17&m=19&s=254303af226d1e258d117bd0fb6519ce&d=0&v=2&l
+
+
+    **'Lesson Zero'**Log-in https://app.slideheroes.com/users/sign_in?utm_source=bpm_sequence&utm_medium=email
+
+
+    **You are receiving this email because you signed-up at SlideHeroes to watch 'Lesson Zero' of our Decks for Decision Makers high-stakes business presentation course. (If you decide you're in the wrong place, no worries. You'll find an unsubscribe link in the footer of this email.)**
+
+
+    Hi Michael,
+
+
+    **\"How do I make my slides look good?!\"**
+
+
+    I get asked this question...
+
+
+    **a lot!**
+
+
+    Turns out a big part of the answer, for most people, is surprisingly common.
+
+
+    **Less is More.
+
+
+    **(click image)****
+
+
+    **Michael \"less is more\" Smith**
+
+
+    **P.S.**
+
+
+    **As you know, I place a huge emphasis on the CREATION of presentation content.  **
+
+
+    **But every presentation has to be delivered. And for all of us there will be some level of anxiety.**
+
+
+    **As Mark Twain put it - 'There are two types of speakers. Those who get nervous and those who are liars.'**
+
+
+    **Tomorrow I discuss some tips for managing the stress of speaking in public.**
+
+
+    **See you then.**
+
+
+    **Your attention is a privilege I never take for granted. If this communication is no longer of interest to you, just click the unsubscribe link below to be removed from this email list:**
+
+
+    Unsubscribe http://slideheroes.activehosted.com/proc.php?c=17&m=19&s=254303af226d1e258d117bd0fb6519ce&d=0&v=2&nl&act=unsub
+
+
+    **SlideHeroes Incorporated, 125-720 King Street West Suite 2000, Toronto, Ontario M5V 3S5, Canada**"
+  hasHtml: true
+annotations:
+  campaign: "5S"
+  campaign_full: "5S Skills Disciplines"
+  position: 4
+  sequence_length: 5
+  email_type: "nurture"
+  author: "Michael Smith"
+
+  purpose: |
+    Addresses the 'Style' discipline of the 5S framework with the simple but powerful principle 'Less is More'. Brief email that links to visual content and teases the Self-Confidence topic.
+
+  audience: "presentation professionals struggling with visual design of slides"
+
+  techniques_used:
+    - technique: "Common Question Hook"
+      location: "opening"
+      example: "How do I make my slides look good?!"
+      notes: "Directly addresses the question readers are thinking"
+    - technique: "Brevity as Demonstration"
+      location: "entire email"
+      example: "Less is More."
+      notes: "The email itself demonstrates the principle - it's short"
+    - technique: "Visual Content Link"
+      location: "body"
+      example: "(click image)"
+      notes: "Relies on linked visual rather than lengthy explanation"
+    - technique: "Authority Quote"
+      location: "P.S."
+      example: "As Mark Twain put it - 'There are two types of speakers...'"
+      notes: "Uses famous quote to introduce next topic"
+
+  hook:
+    type: "reader's question"
+    text: "How do I make my slides look good?!"
+    effectiveness: "Mirrors the exact question in reader's mind, creating immediate relevance"
+
+  structure:
+    opening: "Common question acknowledgment"
+    body: "Simple answer: Less is More, with image link"
+    closing: "Mark Twain quote teasing Self-Confidence topic"
+
+  effectiveness_notes: |
+    - Shortest email in the series - practices what it preaches
+    - 'Less is More' is memorable and actionable
+    - Visual demonstration more effective than text explanation
+    - Clever use of the email format to reinforce the message
+    - Smooth transition to next topic via speaking anxiety angle
+
+  quotable:
+    - "How do I make my slides look good?!"
+    - "Less is More."
+    - "There are two types of speakers. Those who get nervous and those who are liars."
+
+  andre_style_elements:
+    present:
+      - "Playful signature nickname (Michael 'less is more' Smith)"
+      - "Ultra-short paragraphs"
+      - "Bold emphasis"
+      - "Famous quote"
+      - "P.S. with teaser"
+      - "Brevity matching message"
+    missing:
+      - "Story or parable"
+      - "Testimonial"
+      - "Framework or bullet points"

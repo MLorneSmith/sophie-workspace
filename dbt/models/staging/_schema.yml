@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: stg_apollo_organizations
+    description: "Cleaned Apollo organizations staged from staging.apollo_organizations (types cast, domains normalized, SIC codes parsed)."
+    columns:
+      - name: apollo_id
+        description: "Apollo organization id."
+      - name: primary_domain
+        description: "Normalized primary domain (lowercase, no leading www) used for matching to Attio company domains."
+      - name: annual_revenue
+        description: "Annual revenue (numeric USD) from Apollo organization_revenue."
+      - name: revenue_printed
+        description: "Human-readable revenue string from Apollo (e.g. '$1M-$5M')."
+      - name: founded_year
+        description: "Year the organization was founded (integer)."
+      - name: headcount_growth_6m
+        description: "6-month headcount growth as a decimal fraction (e.g. 0.12 = 12%)."
+      - name: headcount_growth_12m
+        description: "12-month headcount growth as a decimal fraction."
+      - name: headcount_growth_24m
+        description: "24-month headcount growth as a decimal fraction."
+      - name: sic_codes
+        description: "Array of SIC codes parsed from the raw JSON string."
+
+  - name: stg_posthog_persons
+    description: "PostHog persons with extracted email (from properties.email) for joining events to customers."
+    columns:
+      - name: posthog_person_uuid
+        description: "PostHog person uuid (matches stg_posthog_events.person_id)."
+      - name: email
+        description: "Normalized email extracted from properties.email."

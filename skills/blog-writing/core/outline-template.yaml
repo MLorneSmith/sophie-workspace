@@ -1,0 +1,81 @@
+# Blog Strategy Template
+# Used by /blog-strategy to generate a consistent, machine-readable outline.
+#
+# Notes:
+# - Keep the outline detailed (H2 + bullets) so /blog-write can draft section-by-section.
+# - Store Mission Control task_id here so /blog-write can update progress.
+---
+mission_control:
+  task_id: null
+  board_id: 3
+  created_at: null
+
+post:
+  title: ""
+  slug: ""
+  topic: ""              # user-provided topic string
+  post_type: "how-to"     # how-to | listicle | case-study | thought-leadership
+  target_persona: ""      # e.g., solo-consultant
+
+  intent:
+    primary_goal: ""      # educate | rank for keyword | product-led | thought-leadership
+    reader_takeaway: ""   # one sentence
+
+  seo:
+    primary_keyword: ""
+    secondary_keywords: []
+    search_intent: ""     # informational | commercial | navigational
+    title_options: []      # 3-5
+    meta_description: ""  # draft; 120-160 chars target
+
+  angle:
+    thesis: ""            # single-sentence thesis
+    contrarian_take: ""   # optional
+    unique_value: ""      # what competitors miss
+
+  research:
+    competitor_serp_notes:
+      - title: ""
+        url: ""
+        notes: ""         # what's good / what's missing
+    sources:
+      - title: ""
+        url: ""
+        why_trustworthy: ""
+
+  outline:
+    h1: ""
+    intro:
+      hook_ideas: []        # 3 options
+      setup_points: []      # bullets
+    sections:
+      - h2: ""
+        purpose: ""        # why this section exists
+        key_points: []      # bullets to cover
+        examples: []        # examples/stories/data
+        suggested_links:
+          internal: []      # slugs/URLs
+          external: []      # URLs
+      - h2: ""
+        purpose: ""
+        key_points: []
+        examples: []
+        suggested_links:
+          internal: []
+          external: []
+    conclusion:
+      summary_points: []
+      cta: ""              # soft CTA
+
+  requirements:
+    word_count_target: 1500
+    min_h2s: 5
+    include_faq: true
+    faq_questions: []
+
+  status:
+    strategy_status: "draft"    # draft | approved | ready-for-writing
+    writing_status: "not-started" # not-started | in-progress | complete
+
+notes: |
+  

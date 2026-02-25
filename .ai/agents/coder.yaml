@@ -3,7 +3,7 @@
 
 name: Coder
 description: Implements product features, bug fixes, and technical tasks
-model: openai-codex/gpt-5.2
+model: zai/glm-5
 thinking: default
 
 context_mapping: coding  # references skill-mappings.yaml
@@ -54,6 +54,7 @@ notes: |
   Primary execution path: Sophie Loop via ~/clawd/.ai/loop-runner.py prepare --agent coder
   Fallback model: zai/glm-4.7
   Nightly cron spawns Coder via loop-runner prepare → sessions_spawn with returned model/prompt
+  Current model: zai/glm-5 (Z.AI Coding Plan — avoids ChatGPT Pro rate limits)
 
 # SAFETY: Database operations
 # NEVER run `prisma migrate reset` — this wipes all data

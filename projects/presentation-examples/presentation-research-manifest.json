@@ -2864,6 +2864,752 @@
         "threshold": 3.5,
         "evaluated_at": "2026-02-12T03:17:18.097026+00:00"
       }
+    },
+    {
+      "id": "520c44d1f9e4",
+      "firm": "accenture",
+      "title": "Accenture Q1 Fiscal 2026 Earnings Presentation",
+      "url": "https://investor.accenture.com/~/media/Files/A/accenture-v4/investors/earnings-reports/2026/first-quarter-fiscal-2026-earnings-presentation.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.92,
+        "argument_average": 2.2,
+        "design_average": 4.0,
+        "argument_scores": {
+          "logical_flow": 2,
+          "mece_structure": 2,
+          "headline_quality": 3,
+          "completeness": 2,
+          "storyline": 2
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 4,
+          "text_density": 3,
+          "visual_consistency": 5,
+          "information_design": 4
+        },
+        "storyline_summary": "The headlines suggest a focus on Q1 fiscal performance metrics and some strategic initiatives but lack a coherent narrative that demonstrates logical progression from problems to solutions. Key insights and recommendations are not effectively communicated through the headlines alone.",
+        "argument_strengths": [
+          "The headlines cover various aspects of financial performance and strategic initiatives.",
+          "Some summaries provide relevant key takeaways."
+        ],
+        "argument_weaknesses": [
+          "Several slides lack clear headlines, resulting in a disjointed presentation.",
+          "The action-oriented aspect of the headlines is inconsistent, with many still functioning as labels."
+        ],
+        "design_strengths": [
+          "Clean layout with good visual hierarchy",
+          "Consistent color scheme and professional appearance"
+        ],
+        "design_weaknesses": [
+          "Some slides have dense text",
+          "Occasional lack of emphasis on key points"
+        ],
+        "slide_count": 23,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-24T08:00:59.543992+00:00"
+      }
+    },
+    {
+      "id": "87973aef4bcb",
+      "firm": "accenture",
+      "title": "Accenture FY24 Q4 Infographics",
+      "url": "https://investor.accenture.com/~/media/Files/A/accenture-v4/investors/earnings-reports/2024/q4/q4-fy2024-infographics-final.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 3.08,
+        "argument_average": 2.6,
+        "design_average": 3.8,
+        "argument_scores": {
+          "logical_flow": 3,
+          "mece_structure": 2,
+          "headline_quality": 3,
+          "completeness": 2,
+          "storyline": 3
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 4,
+          "text_density": 3,
+          "visual_consistency": 4,
+          "information_design": 4
+        },
+        "storyline_summary": "The headlines suggest a strong performance in FY24 with record new bookings and earnings growth. However, the lack of clear problem identification and structured recommendations undermines the overall argument flow.",
+        "argument_strengths": [
+          "Highlights strong financial performance",
+          "Includes informative summary pages"
+        ],
+        "argument_weaknesses": [
+          "Lacks clear problem and solution progression",
+          "Headlines sometimes read as labels rather than insights"
+        ],
+        "design_strengths": [
+          "Effective use of color to differentiate sections",
+          "Clear labeling of data points and categories"
+        ],
+        "design_weaknesses": [
+          "Some areas may appear text-heavy",
+          "Minor inconsistencies in font sizes"
+        ],
+        "slide_count": 1,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-24T08:01:07.871665+00:00"
+      }
+    },
+    {
+      "id": "e6dd536fe707",
+      "firm": "accenture",
+      "title": "Accenture Fourth Quarter Fiscal 2024 Supporting Materials",
+      "url": "https://investor.accenture.com/~/media/Files/A/Accenture-IR-V3/quarterly-earnings/2024/q4fy24/accentures-fourth-quarter-fiscal-2024-supporting-materials--.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 3.08,
+        "argument_average": 2.6,
+        "design_average": 3.8,
+        "argument_scores": {
+          "logical_flow": 3,
+          "mece_structure": 2,
+          "headline_quality": 2,
+          "completeness": 3,
+          "storyline": 3
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 4,
+          "text_density": 3,
+          "visual_consistency": 4,
+          "information_design": 4
+        },
+        "storyline_summary": "The presentation outlines Q4 FY24 performance and full-year trends, highlighting strong new bookings and revenue growth across various sectors. However, the transition to return metrics and reconciliations appears abrupt, lacking a clear connection to the initial performance insights.",
+        "argument_strengths": [
+          "Highlights strong performance in bookings and revenue growth",
+          "Provides summary metrics for strategic priorities"
+        ],
+        "argument_weaknesses": [
+          "Headlines often lack action-oriented statements and insights",
+          "Incomplete logical flow and MECE structure, especially with the return metrics section"
+        ],
+        "design_strengths": [
+          "Effective use of data visualization",
+          "Consistent styling throughout slides"
+        ],
+        "design_weaknesses": [
+          "Some slides are text-heavy",
+          "Minor inconsistencies in spacing on certain slides"
+        ],
+        "slide_count": 13,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-24T08:01:18.199930+00:00"
+      }
+    },
+    {
+      "id": "63623a6dabfe",
+      "firm": "accenture",
+      "title": "Accenture Fiscal 2024 Annual Report",
+      "url": "https://investor.accenture.com/~/media/Files/A/Accenture-IR-V3/home/accenture-fiscal-2024-annual-report.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.16,
+        "argument_average": 1.2,
+        "design_average": 3.6,
+        "argument_scores": {
+          "logical_flow": 1,
+          "mece_structure": 1,
+          "headline_quality": 1,
+          "completeness": 2,
+          "storyline": 1
+        },
+        "design_scores": {
+          "layout_clarity": 3,
+          "data_visualization": 3,
+          "text_density": 4,
+          "visual_consistency": 4,
+          "information_design": 4
+        },
+        "storyline_summary": "The headlines largely lack coherence and clarity, failing to convey a structured narrative or actionable insights. The absence of clear titles and the abundance of vague sub-headlines result in confusion rather than a logical progression from problem to solution.",
+        "argument_strengths": [],
+        "argument_weaknesses": [
+          "Most slides lack clear and actionable headlines.",
+          "The overall structure is incoherent and lacks logical flow."
+        ],
+        "design_strengths": [
+          "Good use of headings and subheadings for text organization",
+          "Effective use of tables for financial data presentation"
+        ],
+        "design_weaknesses": [
+          "Some slides are text-heavy and could benefit from more visuals",
+          "Charts lack distinct color differentiation for better clarity"
+        ],
+        "slide_count": 123,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-24T08:01:34.694555+00:00"
+      }
+    },
+    {
+      "id": "d62b0b2afc34",
+      "firm": "strategy_pwc",
+      "title": "PwC Strategy& eReadiness Study 2023",
+      "url": "https://www.strategyand.pwc.com/it/en/assets/pdf/ereadiness-study-2023.pdf",
+      "status": "evaluated_kept",
+      "r2_key": "best-practice-examples/strategy_pwc/strategy_pwc-PwC-Strategy-eReadiness-Study-2023.pdf",
+      "evaluation": {
+        "combined_score": 3.56,
+        "argument_average": 3.0,
+        "design_average": 4.4,
+        "argument_scores": {
+          "logical_flow": 3,
+          "mece_structure": 2,
+          "headline_quality": 3,
+          "completeness": 4,
+          "storyline": 3
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 5,
+          "text_density": 4,
+          "visual_consistency": 5,
+          "information_design": 4
+        },
+        "storyline_summary": "The slides aim to present an analysis of consumer viewpoints in the e-mobility market segmented by EV owners, prospects, and skeptics. Key insights and recommendations are provided to highlight the strategic direction for e-mobility players. However, the inconsistency in the organization and unclear headlines affects the overall clarity.",
+        "argument_strengths": [
+          "Provides comprehensive consumer insights into different segments",
+          "Includes actionable recommendations for e-mobility players"
+        ],
+        "argument_weaknesses": [
+          "Lacks logical sequence in some sections, leading to confusion",
+          "Presence of non-descriptive headlines diminishes clarity and impact"
+        ],
+        "design_strengths": [
+          "Effective use of data visualization to convey insights",
+          "Consistent and professional visual styling throughout the slides"
+        ],
+        "design_weaknesses": [
+          "Some slides may have slightly dense text for quick scanning",
+          "Certain visuals could benefit from clearer labels for accessibility"
+        ],
+        "slide_count": 83,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-24T08:01:48.072302+00:00"
+      },
+      "mc_synced": true,
+      "mc_id": "cmm0bhpz90002p2lcy25794zv"
+    },
+    {
+      "id": "2aec408e053c",
+      "firm": "strategy_pwc",
+      "title": "Strategy& Company Factsheet",
+      "url": "https://www.strategyand.pwc.com/de/en/press/strategyand-factsheet-en.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.8,
+        "argument_average": 2.0,
+        "design_average": 4.0,
+        "argument_scores": {
+          "logical_flow": 2,
+          "mece_structure": 2,
+          "headline_quality": 2,
+          "completeness": 2,
+          "storyline": 2
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 4,
+          "text_density": 3,
+          "visual_consistency": 5,
+          "information_design": 4
+        },
+        "storyline_summary": "The headlines present a scattered overview of the company and its position in the consulting industry, but they lack clear action-oriented insights. There is no coherent progression from a problem to analysis and recommendations, making it difficult to grasp a unified narrative.",
+        "argument_strengths": [
+          "Provides a basic introduction to Strategy&",
+          "Mentions experience and recognition of the company"
+        ],
+        "argument_weaknesses": [
+          "Headlines lack clarity and action orientation",
+          "Missing clear conclusions or recommendations",
+          "No discernible logical progression or analysis present"
+        ],
+        "design_strengths": [
+          "Consistent styling and professional appearance throughout the slides.",
+          "Effective use of visual elements to support the information presented."
+        ],
+        "design_weaknesses": [
+          "Some slides have a higher text density that could be further simplified.",
+          "A few charts could be enhanced with clearer labels for better understanding."
+        ],
+        "slide_count": 8,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-24T08:02:03.683392+00:00"
+      }
+    },
+    {
+      "id": "6a661f647f73",
+      "firm": "strategy_pwc",
+      "title": "The Strategy Crisis Insights from Strategy Profiler",
+      "url": "https://www.strategyand.pwc.com/gx/en/unique-solutions/cds/the-strategy-crisis.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.84,
+        "argument_average": 2.2,
+        "design_average": 3.8,
+        "argument_scores": {
+          "logical_flow": 2,
+          "mece_structure": 2,
+          "headline_quality": 2,
+          "completeness": 3,
+          "storyline": 2
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 4,
+          "text_density": 3,
+          "visual_consistency": 4,
+          "information_design": 4
+        },
+        "storyline_summary": "The presentation seems to address a crisis in strategy faced by companies, yet the slides lack a logical flow and coherence in building the narrative. Key findings about strategic myths are mentioned, but the action-oriented responses and recommendations are muddled and unclear.",
+        "argument_strengths": [
+          "Identifies a significant issue with strategy crisis",
+          "Highlights the importance of understanding strategic archetypes"
+        ],
+        "argument_weaknesses": [
+          "Headlines are often vague and lack action-oriented insights",
+          "Logical progression is broken, with unclear connections between slides"
+        ],
+        "design_strengths": [
+          "Clear visual hierarchy",
+          "Effective use of imagery"
+        ],
+        "design_weaknesses": [
+          "Some slides may have too much text",
+          "Minor inconsistencies in text alignment"
+        ],
+        "slide_count": 20,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-25T08:01:22.799866+00:00"
+      }
+    },
+    {
+      "id": "67b9976155d9",
+      "firm": "strategy_pwc",
+      "title": "Future of Public-Sector Digital Services",
+      "url": "https://www.strategyand.pwc.com/m1/en/strategic-foresight/sector-strategies/technology/future-of-public-sector/future-of-public-sector-digital-services.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 3.4,
+        "argument_average": 3.0,
+        "design_average": 4.0,
+        "argument_scores": {
+          "logical_flow": 3,
+          "mece_structure": 3,
+          "headline_quality": 2,
+          "completeness": 4,
+          "storyline": 3
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 4,
+          "text_density": 3,
+          "visual_consistency": 5,
+          "information_design": 4
+        },
+        "storyline_summary": "The slides present a case for the transformation of public-sector digital services through the implementation of one-stop digital channels, highlighting issues related to service fragmentation and proposing solutions involving AI and enhanced customer engagement. However, the headlines lack clarity and action-oriented phrasing, which obscures the argument's structure.",
+        "argument_strengths": [
+          "Clear focus on improving public-service delivery",
+          "Inclusion of executive summary and recommendations provides context"
+        ],
+        "argument_weaknesses": [
+          "Headlines are often labeled rather than action-oriented",
+          "Logical flow between sections could be more cohesive"
+        ],
+        "design_strengths": [
+          "Professional and cohesive visual style",
+          "Effective use of data visualization to present insights"
+        ],
+        "design_weaknesses": [
+          "Some slides have higher text density than ideal",
+          "Occasional lack of clear hierarchy in text elements"
+        ],
+        "slide_count": 20,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-25T08:01:36.501080+00:00"
+      }
+    },
+    {
+      "id": "16ebffa6a6e4",
+      "firm": "strategy_pwc",
+      "title": "Global Power Strategies: The Future of Utilities Industry",
+      "url": "https://www.strategyand.pwc.com/gx/en/insights/2019/Global-power-strategies/global-power-strategies.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.88,
+        "argument_average": 2.0,
+        "design_average": 4.2,
+        "argument_scores": {
+          "logical_flow": 2,
+          "mece_structure": 2,
+          "headline_quality": 2,
+          "completeness": 2,
+          "storyline": 2
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 5,
+          "text_density": 4,
+          "visual_consistency": 4,
+          "information_design": 4
+        },
+        "storyline_summary": "The headlines suggest a fragmented evaluation of the global utilities industry focusing on strategies and market responses, but it lacks a coherent progression from the introduction to actionable recommendations. The titles are primarily headings or exhibits that do not deliver a unified narrative.",
+        "argument_strengths": [
+          "Covers various aspects of utility strategies",
+          "Includes multiple relevant exhibits for data support"
+        ],
+        "argument_weaknesses": [
+          "Lacks clear action-oriented titles",
+          "Poor logical flow and coherence throughout the slides"
+        ],
+        "design_strengths": [
+          "Effective data visualizations that illuminate insights",
+          "Consistent professional appearance and cohesive color scheme"
+        ],
+        "design_weaknesses": [
+          "Some slides have slightly dense text that could be better organized",
+          "Occasional lack of whitespace in complex slides"
+        ],
+        "slide_count": 60,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-25T08:01:48.372799+00:00"
+      }
+    },
+    {
+      "id": "634b5803a82c",
+      "firm": "strategy_pwc",
+      "title": "PwC's Framework for Growth",
+      "url": "https://www.pwc.co.uk/industries/industry-in-focus/framework-for-growth/pwc-framework-for-growth.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.84,
+        "argument_average": 2.2,
+        "design_average": 3.8,
+        "argument_scores": {
+          "logical_flow": 2,
+          "mece_structure": 2,
+          "headline_quality": 2,
+          "completeness": 3,
+          "storyline": 2
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 3,
+          "text_density": 4,
+          "visual_consistency": 4,
+          "information_design": 4
+        },
+        "storyline_summary": "The headlines suggest an exploration of economic growth in the UK through PwC\u2019s Framework, but the flow is hampered by unclear or missing headlines. There is an attempt to address skills, digital transformation, and infrastructure issues, yet the argument lacks cohesion and clarity.",
+        "argument_strengths": [
+          "Addresses multiple facets of economic growth",
+          "Attempts to frame a structured approach using the PwC framework"
+        ],
+        "argument_weaknesses": [
+          "Many slides lack clear, action-oriented headlines",
+          "Logical progression and structure are not well-defined"
+        ],
+        "design_strengths": [
+          "Clear layout with effective use of whitespace",
+          "Logical organization of information on slides"
+        ],
+        "design_weaknesses": [
+          "Some charts lack clarity in labeling",
+          "Occasional high text density in specific areas"
+        ],
+        "slide_count": 41,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-25T08:01:59.661488+00:00"
+      }
+    },
+    {
+      "id": "5176e267dc50",
+      "firm": "oliver_wyman",
+      "title": "Oliver Wyman InsureTech Connect 2016 Presentation",
+      "url": "https://www.oliverwyman.com/content/dam/oliver-wyman/global/en/2016/nov/InsureTech%20Connect%202016%20-%20Oliver%20Wyman%20Presentation.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.76,
+        "argument_average": 1.8,
+        "design_average": 4.2,
+        "argument_scores": {
+          "logical_flow": 2,
+          "mece_structure": 2,
+          "headline_quality": 2,
+          "completeness": 1,
+          "storyline": 2
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 4,
+          "text_density": 4,
+          "visual_consistency": 5,
+          "information_design": 4
+        },
+        "storyline_summary": "The headlines indicate a discussion around the changing dynamics of the insurance industry, the need for innovation, and potential new business models. However, the lack of clear progression and coherence makes it difficult to derive actionable insights or a unified narrative.",
+        "argument_strengths": [
+          "Some headlines hint at emerging trends in the insurance sector",
+          "Highlights the importance of technology and collaboration"
+        ],
+        "argument_weaknesses": [
+          "Many headlines are vague or lack action-oriented insights",
+          "Absence of a clear introduction or conclusion reduces overall impact"
+        ],
+        "design_strengths": [
+          "Consistent styling throughout",
+          "Clear visual hierarchy"
+        ],
+        "design_weaknesses": [
+          "Some slides may have slightly dense text",
+          "Minor inconsistencies in image alignment"
+        ],
+        "slide_count": 17,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-25T08:02:09.608473+00:00"
+      }
+    },
+    {
+      "id": "b247cd179392",
+      "firm": "oliver_wyman",
+      "title": "Artificial Intelligence: Intelligent Enough for the Real World?",
+      "url": "https://www.suerf.org/wp-content/uploads/2024/01/Panel-Rainer-Glaser_OliverWayman-SUERF_AI-presentation.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.2,
+        "argument_average": 1.0,
+        "design_average": 4.0,
+        "argument_scores": {
+          "logical_flow": 1,
+          "mece_structure": 1,
+          "headline_quality": 1,
+          "completeness": 1,
+          "storyline": 1
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 3,
+          "text_density": 4,
+          "visual_consistency": 5,
+          "information_design": 4
+        },
+        "storyline_summary": "The slide headlines fail to convey a coherent argument and lack a logical flow, leaving the audience with no clear understanding of the subject matter. Several slides lack clear titles, making it difficult to follow any progression from problem to analysis and conclusions.",
+        "argument_strengths": [],
+        "argument_weaknesses": [
+          "No clear headlines for most slides",
+          "Lack of logical flow and coherence in presenting the argument"
+        ],
+        "design_strengths": [
+          "Strong visual consistency across slides",
+          "Effective use of whitespace for clarity"
+        ],
+        "design_weaknesses": [
+          "Some slides contain too much text",
+          "Data visualization could be more insightful"
+        ],
+        "slide_count": 13,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-25T08:02:20.865890+00:00"
+      }
+    },
+    {
+      "id": "9fbeff39a73c",
+      "firm": "kpmg",
+      "title": "KPMG 2024 Transparency Report",
+      "url": "https://kpmg.com/kpmg-us/content/dam/kpmg/pdf/2025/2024-transparency-report-jan-2025.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.8,
+        "argument_average": 2.0,
+        "design_average": 4.0,
+        "argument_scores": {
+          "logical_flow": 2,
+          "mece_structure": 2,
+          "headline_quality": 2,
+          "completeness": 2,
+          "storyline": 2
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 3,
+          "text_density": 4,
+          "visual_consistency": 5,
+          "information_design": 4
+        },
+        "storyline_summary": "The headlines suggest a focus on enhancing audit quality within KPMG, emphasizing values, governance, and technological advancements. However, the lack of coherent action-oriented statements and logical progression leaves the argument unclear and fragmented.",
+        "argument_strengths": [
+          "Addresses audit quality through various components",
+          "Indicates a multi-year strategy for development"
+        ],
+        "argument_weaknesses": [
+          "Headlines lack clarity and coherence",
+          "Weak action-oriented statements lead to ineffective communication"
+        ],
+        "design_strengths": [
+          "Consistent styling and professional appearance",
+          "Effective use of color scheme enhancing visual appeal"
+        ],
+        "design_weaknesses": [
+          "Some slides have high text density which may overwhelm viewers",
+          "Charts could be more effective in illustrating data insights"
+        ],
+        "slide_count": 37,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-25T08:02:35.116680+00:00"
+      }
+    },
+    {
+      "id": "15864b262b71",
+      "firm": "kpmg",
+      "title": "Transforming the Enterprise of the Future",
+      "url": "https://kpmg.com/kpmg-us/content/dam/kpmg/pdf/2024/transforming-the-enterprise-of-the-future-report.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 3.32,
+        "argument_average": 3.0,
+        "design_average": 3.8,
+        "argument_scores": {
+          "logical_flow": 3,
+          "mece_structure": 3,
+          "headline_quality": 2,
+          "completeness": 4,
+          "storyline": 3
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 4,
+          "text_density": 3,
+          "visual_consistency": 4,
+          "information_design": 4
+        },
+        "storyline_summary": "The headlines indicate a presentation about the importance of digital transformation in organizations, highlighting the challenges faced due to external factors, the role of leadership, and the necessity of technology and partnerships. Overall, it emphasizes that transformation is vital for maintaining competitiveness in a rapidly changing environment.",
+        "argument_strengths": [
+          "Includes a clear introduction and conclusion",
+          "Addresses the impact of external challenges on transformation efforts"
+        ],
+        "argument_weaknesses": [
+          "Headlines lack sufficient action-oriented language",
+          "Some headlines are vague and don't provide clear insights or conclusions."
+        ],
+        "design_strengths": [
+          "Strong visual appeal with effective use of images",
+          "Clear data visualizations that support insights"
+        ],
+        "design_weaknesses": [
+          "Some slides have higher text density than ideal",
+          "Minor inconsistencies in text alignment across slides"
+        ],
+        "slide_count": 31,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-25T08:02:54.447619+00:00"
+      }
+    },
+    {
+      "id": "44cd8c76fd61",
+      "firm": "kpmg",
+      "title": "KPMG International Transparency Report 2024",
+      "url": "https://assets.kpmg.com/content/dam/kpmg/lu/pdf/transparency-report-2024-luxembourg.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.24,
+        "argument_average": 1.2,
+        "design_average": 3.8,
+        "argument_scores": {
+          "logical_flow": 1,
+          "mece_structure": 1,
+          "headline_quality": 1,
+          "completeness": 2,
+          "storyline": 1
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 3,
+          "text_density": 4,
+          "visual_consistency": 4,
+          "information_design": 4
+        },
+        "storyline_summary": "The headlines primarily consist of repetitive introductory phrases that fail to convey a cohesive argument or narrative. There is an overwhelming focus on introductory segments rather than a structured progression towards findings or recommendations.",
+        "argument_strengths": [],
+        "argument_weaknesses": [
+          "Overuse of repetitive introductory phrases without substantial information",
+          "Lack of clear action-oriented statements or insights"
+        ],
+        "design_strengths": [
+          "Strong visual appeal with a cohesive color scheme",
+          "Good use of whitespace and layout for clarity"
+        ],
+        "design_weaknesses": [
+          "Some slides could benefit from more effective data visualization",
+          "A few text-heavy areas may overwhelm the audience"
+        ],
+        "slide_count": 59,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-25T08:03:05.102287+00:00"
+      }
+    },
+    {
+      "id": "804be7d40ca6",
+      "firm": "ey_parthenon",
+      "title": "EY-Parthenon European Wireless Infrastructure Report 2024",
+      "url": "https://www.ey.com/content/dam/ey-unified-site/ey-com/en-gl/insights/strategy/documents/ey-parthenon-european-wireless-infrastructure-report-05-2024.pdf",
+      "status": "evaluated_deleted",
+      "r2_key": null,
+      "evaluation": {
+        "combined_score": 2.64,
+        "argument_average": 2.0,
+        "design_average": 3.6,
+        "argument_scores": {
+          "logical_flow": 2,
+          "mece_structure": 2,
+          "headline_quality": 1,
+          "completeness": 3,
+          "storyline": 2
+        },
+        "design_scores": {
+          "layout_clarity": 4,
+          "data_visualization": 4,
+          "text_density": 3,
+          "visual_consistency": 4,
+          "information_design": 3
+        },
+        "storyline_summary": "The headlines attempt to outline the economic contribution of the European wireless infrastructure sector but lack clarity and coherence. There is a disconnect in the sequencing and logical progression from context to analysis and ultimately to recommendations, which obscures the overall narrative.",
+        "argument_strengths": [
+          "Inclusion of an Executive Summary",
+          "Attempts to structure content by segments such as market analysis and economic assessment"
+        ],
+        "argument_weaknesses": [
+          "Headlines are largely labels rather than action-oriented statements",
+          "Poor logical flow and coherence in the presentation of arguments"
+        ],
+        "design_strengths": [
+          "Clear visual hierarchy and use of whitespace",
+          "Effective use of charts that illuminate insights"
+        ],
+        "design_weaknesses": [
+          "Some slides have higher text density",
+          "Information organization could be improved on certain slides"
+        ],
+        "slide_count": 38,
+        "threshold": 3.5,
+        "evaluated_at": "2026-02-25T08:03:20.790812+00:00"
+      }
     }
   ]
 }

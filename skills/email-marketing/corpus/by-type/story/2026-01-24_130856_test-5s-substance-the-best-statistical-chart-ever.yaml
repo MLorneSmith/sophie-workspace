@@ -1,0 +1,234 @@
+# Email Export - TEST: [5S] Substance: The Best Statistical Chart Ever
+# Exported from Gmail on 2026-01-24T18:15:16.816Z
+# Fill in the annotations section to capture writing style patterns
+---
+metadata:
+  id: "19bf131e63aebc51"
+  exportedAt: "2026-01-24T18:15:16.816Z"
+  source: "gmail"
+  labels:
+    - "UNREAD"
+    - "andre"
+    - "CATEGORY_FORUMS"
+    - "SENT"
+headers:
+  from: "Michael Smith <msmith@slideheroes.com>"
+  to: "msmith@slideheroes.com"
+  subject: "TEST: [5S] Substance: The Best Statistical Chart Ever"
+  date: "Sat, 24 Jan 2026 18:08:56 +0000 (GMT)"
+  messageId: "<2142874596.2455785.1769278136781@cell-5-74bcb6f7bb-ltjl9>"
+thread:
+  threadId: "19bf131e63aebc51"
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: "Napoleon Bonaparte and the Display of DataView in Web Browser http://slideheroes.activehosted.com/p_v.php?c=15&m=17&s=254303af226d1e258d117bd0fb6519ce&d=0&v=2&l
+
+
+    **'Lesson Zero'**Log-in https://app.slideheroes.com/users/sign_in?utm_source=bpm_sequence&utm_medium=email
+
+
+    **You are receiving this email because you signed-up at SlideHeroes to watch 'Lesson Zero' of our Decks for Decision Makers high-stakes business presentation course. (If you decide you're in the wrong place, no worries. You'll find an unsubscribe link in the footer of this email.)**
+
+
+    Hi Michael,
+
+
+    The year is 1812.
+
+
+    His Imperial and Royal Majesty
+
+
+    **Napoleon I** is doing pretty well for himself.
+
+
+    He has most of Europe under his control.
+
+
+    Except for England. No matter how many times he has tried to invade, he can't break through the English defenses.
+
+
+    His plan is to place an embargo on England, forcing other European countries to stop trade and weaken England enough so that Napoleon can invade.
+
+
+    Czar Alexander of Russia, believing that Napoleon is becoming too powerful, refuses to participate in this embargo.
+
+
+    On June 24, 1812, ignoring the advice of his closest advisors, Napoleon invades Russia.
+
+
+    Never in living memory has so large an army been assembled — Italians, Poles, German, French — more than
+
+
+    **600,000** men from every corner of his empire.
+
+
+    Napoleon prophesies that the war will be over in twenty days.
+
+
+    **\"I know Alexander,\" Napoleon says. \"I once had influence over him; it will come back. If not, let destiny be accomplished and let Russia be crushed under my hatred of England.\"**
+
+
+    Napoleon's army marches.
+
+
+    Woops.
+
+
+    In 1869, Charles Joseph Minard sets about to create what will become recognized as the
+
+
+    **\"the best statistical graphic ever drawn\"**.
+
+
+    But he faces an incredible challenge.
+
+
+    Humans can't accurately grasp large numbers. Our cognitive systems are very much tied to our PERCEPTIONS. And we have no experience perceiving large numbers.
+
+
+    (Think about your everyday life experiences.  When you set the table you ask your child (brother, sister, Mom, Dad), how many knives do we need? It's never going to be 10,000 - unless you have a very big dinner party!)
+
+
+    And, in telling the story of Napoleon's March, Minard is dealing with
+
+
+    **some very large numbers**.
+
+
+    Six months after invading, on 14 December 1812, the last of Napoleon's 600,000 troops retreat from Russia.  Only
+
+
+    ****27,000**** soldiers are left.
+
+
+    So Minard invents an entirely new way to graphically present this information – dialing into our visual perception to allow our cognitive systems to process what losing 563,000 men means.
+
+
+    As a statistical chart, the map unites six different sets of data:
+
+
+    **Geography:** rivers, cities and battles are named and placed according to their occurrence on a regular map
+
+
+    **The army's course:** the path's flow follows the way in and out that Napoleon followed
+
+
+    **The army's direction:** indicated by the colour of the path, gold leading into Russia, black leading out of it
+
+
+    **The number of soldiers remaining:** the path gets successively narrower, a plain reminder of the campaigns human toll, as each millimetre represents 10.000 men
+
+
+    **Temperature:** the freezing cold of the Russian winter on the return trip is indicated at the bottom
+
+
+    **Time:** in relation to the temperature indicated at the bottom, from right to left
+
+
+    Visit this page https://www.masswerk.at/minard/ for a terrific interactive version (and a larger image) of Minard's map.
+
+
+    Nearly 150 years later,
+
+
+    **the skill to translate data graphically** so your audience can
+
+
+    **understand** its meaning is
+
+
+    **more important than ever**.
+
+
+    **Michael \"show me some proof\" Smith**
+
+
+    **P.S.**
+
+
+    If you liked this email, you'll probably dig this article from Popular Science https://www.popsci.com/greatest-infographic-history/. Charles Minard was hardly a one hit wonder.
+
+
+    **Your attention is a privilege I never take for granted. If this communication is no longer of interest to you, just click the unsubscribe link below to be removed from this email list:**
+
+
+    Unsubscribe http://slideheroes.activehosted.com/proc.php?c=15&m=17&s=254303af226d1e258d117bd0fb6519ce&d=0&v=2&nl&act=unsub
+
+
+    **SlideHeroes Incorporated, 125-720 King Street West Suite 2000, Toronto, Ontario M5V 3S5, Canada**"
+  hasHtml: true
+annotations:
+  campaign: "5S"
+  campaign_full: "5S Substance Series"
+  position: 1
+  sequence_length: null
+  email_type: "story"
+  author: "Michael Smith"
+
+  purpose: |
+    Educational email using historical narrative about Napoleon's Russian campaign to illustrate the power of data visualization through Charles Minard's famous statistical map, connecting it to modern presentation skills.
+
+  audience: "Data-oriented presentation professionals who appreciate history and want to improve their data communication skills"
+
+  techniques_used:
+    - technique: "Historical Narrative Opening"
+      location: "Opening paragraphs"
+      example: "The year is 1812. His Imperial and Royal Majesty Napoleon I is doing pretty well for himself."
+      notes: "Present tense creates immediacy, draws reader into story"
+    - technique: "Dramatic Number Revelation"
+      location: "Throughout"
+      example: "more than 600,000 men... Only 27,000 soldiers are left"
+      notes: "Contrast between starting and ending numbers creates emotional impact"
+    - technique: "Historical Quote"
+      location: "Mid-story"
+      example: "\"I know Alexander,\" Napoleon says. \"I once had influence over him...\""
+      notes: "Direct quote adds authenticity and human dimension"
+    - technique: "Pattern Interrupt"
+      location: "After buildup"
+      example: "Woops."
+      notes: "Single-word paragraph breaks tension, signals dramatic turn"
+    - technique: "Educational List Structure"
+      location: "Data explanation"
+      example: "Geography, The army's course, The army's direction, The number of soldiers remaining, Temperature, Time"
+      notes: "Structured breakdown makes complex visualization understandable"
+    - technique: "Bridge to Present"
+      location: "Closing"
+      example: "Nearly 150 years later, the skill to translate data graphically... is more important than ever."
+      notes: "Connects historical lesson to reader's current needs"
+
+  hook:
+    type: "Historical scene-setting"
+    text: "The year is 1812. His Imperial and Royal Majesty Napoleon I is doing pretty well for himself."
+    effectiveness: "Unexpected historical opening creates intrigue, promises a story rather than lecture"
+
+  structure:
+    opening: "Historical narrative setup with Napoleon's invasion of Russia"
+    body: "Story of catastrophic campaign leading to Minard's visualization innovation"
+    closing: "Modern relevance connection with playful sign-off and additional resources"
+
+  effectiveness_notes: |
+    - Storytelling makes data visualization tangible and memorable
+    - Cognitive insight about humans not grasping large numbers validates the need for visualization
+    - Interactive resource link extends engagement beyond email
+    - Story structure (hero, conflict, resolution) keeps reader engaged
+    - Parenthetical aside about dinner parties adds relatability
+
+  quotable:
+    - "Humans can't accurately grasp large numbers. Our cognitive systems are very much tied to our PERCEPTIONS."
+    - "the skill to translate data graphically so your audience can understand its meaning is more important than ever."
+
+  andre_style_elements:
+    present:
+      - "Historical storytelling as teaching device"
+      - "Playful sign-off nickname (\"show me some proof\")"
+      - "Extended P.S. with additional resources"
+      - "Strategic bold text for key concepts"
+      - "Short paragraphs for dramatic effect"
+      - "Conversational asides in parentheses"
+    missing:
+      - "Direct call to action or engagement request"
+      - "Product pitch or course mention"

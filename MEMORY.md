@@ -1,5 +1,52 @@
 # MEMORY.md - Long-Term Memory
 
+## CodeRabbit — Code Review Integration (Feb 24 2026)
+
+**Two-stage code review process:**
+
+1. **Pre-commit CLI:** `coderabbit --prompt-only --base upstream/dev` — catches issues before PR
+2. **Post-PR webhook:** CodeRabbit reviews PR → webhook fires → Sophie iterates → Mike reviews clean PR
+
+**Setup:**
+- **Account:** Sophie's GitHub (`SophieLegerPA`) — $24/month Pro plan
+- **CLI:** `coderabbit` v0.3.6 installed at `~/.local/bin/coderabbit`
+- **Webhook:** GitHub → Tailscale funnel → `github-webhook-proxy` (port 8790) → OpenClaw hook
+- **Config:** `.coderabbit.yaml` in repo root with stack-specific rules
+
+**Workflow:**
+```
+Sophie codes → coderabbit --prompt-only → fix issues → commit → push →
+CodeRabbit reviews PR → webhook → Sophie iterates → Mike reviews clean PR
+```
+
+**SOP:** `~/clawd/docs/sops/coderabbit-workflow.md`
+
+---
+
+## 🤖 Agent Fleet (Feb 23 2026)
+
+**5-agent architecture** with isolated workspaces and curated skills per agent:
+
+| Agent | Model | Workspace | Skills | Cron Jobs | Role |
+|-------|-------|-----------|--------|-----------|------|
+| 🦁 **Sophie** | Opus 4.6 | `~/clawd/skills/` (33) | All business, content, research, perplexity-research | 6 | Orchestration, conversation, planning |
+| 🧑‍💻 **Coder** | GPT-5.3 Codex (ccproxy) | `~/coder-agent/skills/` (10) | coding-agent, context7, systematic-debugging, github, gh-issues, tailwind-*, frontend-design, vercel-react, supabase-postgres | 2 (nightly backlog + initiatives) | Implementation, PRs, bug fixes |
+| 🔍 **Research** | GLM-5 | `~/research-agent/skills/` (7) | perplexity-research, context7, seo-audit, stealth-browser, blog-post-optimizer, find-skills, web-design-guidelines | 3 (feed scoring, competitive intel, content extraction) | Competitive intel, market research, content extraction |
+| 🛠️ **DevOps** | GLM-5 | `~/devops-agent/skills/` (2) | healthcheck, github | 5 (monitoring, backups, updates) | Infrastructure, health checks |
+| 🔄 **Pipeline** | GLM-5 | `~/data-pipeline-agent/skills/` (0) | None | 1 (ETL + dbt) | Data syncs & transforms |
+
+**Agent YAML configs:** `~/clawd/.ai/agents/` (coder.yaml, researcher.yaml, devops.yaml, etc.)
+
+**Key design decisions:**
+- Skills are **symlinked** from source to each agent's workspace (updates propagate automatically)
+- Bundled OpenClaw skills (53) are injected into every agent by OpenClaw itself — can't control that
+- Sophie orchestrates and delegates to specialized agents; went from 18 → 6 cron jobs
+- Codex for code, GLM for routine/bulk work, Opus for reasoning/planning
+
+**Sophie = Orchestrator, not implementer.** Sophie's job is to route work to the right agent, not do it herself. If Sophie spends >5 min on a task without Mike interaction, it should have been delegated. See AGENTS.md for delegation rules.
+
+---
+
 ## 🎯 Strategic Priorities — Q1 2026
 
 **Active priorities (in order):**
@@ -231,6 +278,33 @@ Researched Opus 4.6 at Mike's request. Key new features:
 
 ---
 
+## CCProxy — ChatGPT Pro via OpenClaw (Feb 24 2026)
+
+**Problem:** OpenClaw's built-in `openai-codex` provider routes through `chatgpt.com/backend-api`, but Cloudflare blocks server-side requests from EC2. The ChatGPT OAuth token lacks `model.request` scope for the standard `api.openai.com` endpoint — that's by design, it's meant for ChatGPT's backend API only.
+
+**Solution:** `ccproxy-api` (v0.2.3) runs locally on port 8787, bridging the ChatGPT OAuth token to an OpenAI-compatible API. Registered as custom provider `openai-ccproxy` in OpenClaw.
+
+**Architecture:** `OpenClaw → openai-ccproxy/gpt-5.2 → localhost:8787 → ccproxy → chatgpt.com/backend-api → GPT-5.2`
+
+**Key components:**
+- **ccproxy:** systemd service (`ccproxy.service`), config at `~/.config/ccproxy/config.toml`
+- **Auth:** Uses `~/.codex/auth.json` (managed by `codex login`)
+- **OpenClaw provider:** `openai-ccproxy` with `baseUrl: http://127.0.0.1:8787/codex/v1/`
+- **Auth profile:** Dummy `api_key` profile (`openai-ccproxy:default`) — ccproxy doesn't need real auth from OpenClaw
+- **Alias:** `codex` → `openai-ccproxy/gpt-5.2`
+- **Cost:** $0 extra — uses Mike's ChatGPT Pro subscription
+
+**What was updated:**
+- Coder agent model: `openai-ccproxy/gpt-5.2`
+- model-dispatch.json: `code` role → `openai-ccproxy/gpt-5.2`
+- All 10 cron jobs that used `openai-codex/gpt-5.3-codex` → `openai-ccproxy/gpt-5.2`
+
+**If it breaks:** Check `sudo systemctl status ccproxy`. If auth expired: `codex login` + `sudo systemctl restart ccproxy`.
+
+**SOP:** `~/clawd/docs/sops/ccproxy-setup.md`
+
+---
+
 ## Coding Sub-Agent Strategy (Feb 8 2026)
 
 **Primary coding agent: Sophie Loop workflow via `~/clawd/.ai/loop-runner.py`**
@@ -246,12 +320,12 @@ Researched Opus 4.6 at Mike's request. Key new features:
 - Sophie Loop (`~/clawd/.ai/loop-runner.py`) orchestrates autonomous work
 - Agent profiles defined in `~/clawd/.ai/agents/*.yaml`
 - Model selection via `~/clawd/config/model-dispatch.json` (source of truth)
-- Coder agent uses GPT-5.2 Codex for implementation work
+- Coder agent uses GPT-5.3 Codex for implementation work (via ccproxy)
 
 **Model dispatch roles:**
-- `code` → `openai-codex/gpt-5.2` (implementation, PRs, bug fixes)
-- `research` → `zai/glm-4.7` (web search, bulk lookups, competitive analysis)
-- `bulk` → `zai/glm-4.7` (batch processing, data extraction, drafts)
+- `code` → `ccproxy/gpt-5.3-codex` (implementation, PRs, bug fixes — via ccproxy → ChatGPT Pro, coding-optimized)
+- `research` → `zai/glm-5` (web search, bulk lookups, competitive analysis)
+- `bulk` → `zai/glm-5` (batch processing, data extraction, drafts)
 - `default` → `anthropic/claude-opus-4-6` (conversation, planning, reasoning)
 
 **Auth status:** Codex CLI configured. Mike has a Todoist task to switch to OAuth via ChatGPT subscription (`codex login --device-auth`).
@@ -271,6 +345,20 @@ Researched Opus 4.6 at Mike's request. Key new features:
 
 ---
 
+## GLM-5 > GPT-5.2 for Coding Sub-Agents (Feb 25 2026)
+
+**Finding:** GPT-5.2 via ccproxy gets stuck in "thinking" loops without executing tools. GLM-5 executes cleanly.
+
+**Observed behavior:**
+- GPT-5.2: Repeated same git/find commands 10+ times without writing code
+- GLM-5: Explored → understood types → created files → committed → pushed → created PR
+
+**Recommendation:** Use `zai/glm-5` for coding sub-agents until ccproxy stabilizes. Keep GPT-5.2 for interactive/local use only.
+
+**Task #485** (Agent Suggestions UI) was completed by GLM-5 after GPT-5.2 failed 3 times → PR #2185.
+
+---
+
 ## Model Dispatch Architecture (Feb 9 2026)
 
 **Deterministic role-based model selection** to prevent model drift.
@@ -279,12 +367,12 @@ Researched Opus 4.6 at Mike's request. Key new features:
 **Script:** `~/clawd/scripts/dispatch-model.sh <role>` — returns model ID
 
 **Roles:**
-- `code` → `openai-codex/gpt-5.2` (implementation, PRs, bug fixes)
+- `code` → `openai-ccproxy/gpt-5.2` (implementation, PRs, bug fixes — via ccproxy → ChatGPT Pro)
 - `research` → `zai/glm-4.7` (web search, bulk lookups, competitive analysis)
 - `bulk` → `zai/glm-4.7` (batch processing, data extraction, drafts)
 - `default` → `anthropic/claude-opus-4-6` (conversation, planning, reasoning)
 
-**Fallback chain:** Codex → GLM → Opus
+**Fallback chain:** ccproxy/GPT-5.2 → GLM → Opus
 
 **ALWAYS set model explicitly when spawning sub-agents.** Never rely on defaults. Check the dispatch config.
 
@@ -319,7 +407,7 @@ The morning briefing is generated by cron job `2cd6c98b-85bd-4b7c-9459-fb408df8f
 
 - Mike prefers friendly + professional tone
 - Default model: Opus 4.6 (conversation, planning, research, complex reasoning)
-- Coding sub-agents: Codex CLI / GPT-5.2-codex (implementation work)
+- Coding sub-agents: Codex CLI / GPT-5.3-codex (implementation work)
 - Coding fallback: GLM 4.7 if Codex unavailable
 - GLM for bulk/slow tasks: batch processing, scheduled jobs, draft generation, research summaries
 - Nightly builds: delegate to GPT agent → internal-tools repo → Sophie reviews/merges → Mike reviews in morning

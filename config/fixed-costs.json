@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Perplexity API",
+    "monthlyCost": 1.00,
+    "currency": "USD",
+    "note": "Sonar API ~$0.006-0.015/request. Light usage ~100-150 req/mo.",
+    "updatedAt": "2026-02-12"
+  },
+  {
+    "name": "Supadata",
+    "monthlyCost": 9.00,
+    "currency": "USD",
+    "note": "YouTube transcript API — Starter plan",
+    "updatedAt": "2026-02-12"
+  },
+  {
+    "name": "DataForSEO",
+    "monthlyCost": 10.00,
+    "currency": "USD",
+    "note": "SEO keyword research — prepaid balance, estimated monthly burn",
+    "updatedAt": "2026-02-12"
+  }
+]

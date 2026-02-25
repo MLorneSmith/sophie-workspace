@@ -1,0 +1,28 @@
+{
+  "taskId": 491,
+  "agent": "coder",
+  "persona": "solo-consultant",
+  "iteration": 1,
+  "createdAt": "2026-02-16T07:02:13+00:00",
+  "updatedAt": "2026-02-16T07:07:54+00:00",
+  "status": "mike_review",
+  "checks": {
+    "taskType": "coding",
+    "passed": false,
+    "reportFile": "/home/ubuntu/clawd/.ai/runs/491/checks.log"
+  },
+  "contextMapping": "coding",
+  "builderModel": "openai-codex/gpt-5.2",
+  "builderThinking": "default",
+  "contextFiles": [
+    "/home/ubuntu/clawd/.ai/contexts/company/about.md",
+    "/home/ubuntu/clawd/.ai/contexts/company/products.md"
+  ],
+  "taskType": "coding",
+  "maxIterations": 3,
+  "lastPrepareAt": "2026-02-16T07:02:13+00:00",
+  "lastReviewPrepAt": "2026-02-16T07:06:31+00:00",
+  "verdict": "PASS",
+  "reviewSummary": "Passed on iteration 1. PASS All checks verified by inspecting the actual source files: 1. Routes call `openclaw cron enable/disable` with timeout — Both routes use `execFile(\"openclaw\", [\"cron\", \"enable\"|\"disable\", id, \"--timeout\", \"30000\"])` with a 30s Node-side timeout. Uses `execFile` (not `exec`),…",
+  "lastProcessReviewAt": "2026-02-16T07:07:54+00:00"
+}

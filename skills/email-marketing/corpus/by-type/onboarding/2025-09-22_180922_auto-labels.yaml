@@ -1,0 +1,121 @@
+metadata:
+  id: '1997379735833644'
+  exportedAt: '2026-01-28T22:05:26.783Z'
+  source: gmail
+  labels:
+  - IMPORTANT
+  - superhuman
+  - CATEGORY_PERSONAL
+headers:
+  from: Rahul Vohra <rahul.vohra@superhuman.com>
+  to: michael@slideheroes.com
+  subject: Auto Labels 🏷️
+  date: Mon, 22 Sep 2025 22:09:22 +0000
+  messageId: <54.0B.12642.219C1D86@i-04064ebb55cc92937.mta1vrest.sd.prd.sparkpost>
+thread:
+  threadId: '1997379735833644'
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: 'Hi Michael,
+
+
+    Superhuman AI doesn''t just help you write, read, schedule, and search faster
+    —
+
+    it also organizes your inbox, so you don''t have to.
+
+
+    Auto Labels 🏷 Superhuman automatically labels emails like marketing, cold
+
+    pitches, and social network updates. These emails stay out of your Important
+
+    split, so you can focus on what matters most.
+
+
+    Custom Auto Labels ✨ Our built-in Auto Labels are great, but what''s even better
+
+    is making your own. Just write a prompt, like "requests to review work". You can
+
+    then immediately see when people ask you to review work.
+
+
+    You can even combine these prompts with rules based on senders, recipients,
+
+    subject lines, and labels. This combines best of both worlds: the power of AI
+
+    with the reliability of rules!
+
+    Create Auto Label [https://mail.superhuman.com/deeplink/auto-labels-settings]
+
+
+    To create an Auto Label, pull down for Superhuman Command, then type New Auto
+
+    Label (iOS only).
+
+
+    Split Inbox & Auto Labels 💌 You can then split your inbox using your own Auto
+
+    Labels. So even when your inbox is overflowing, you can jump to a specific topic
+
+    — and then get through emails of the same type, at the same time.
+
+    Create Split Inbox [https://mail.superhuman.com/deeplink/split-inbox-settings]
+
+
+    Pull down to open Superhuman Command, then type Split Inbox Settings.
+
+
+    Auto Archive 🧹 Want to keep certain low-priority emails out of sight? Turn on
+
+    Auto Archive, and eliminate clutter for good.
+
+    Open Auto Archive Settings
+
+    [https://mail.superhuman.com/deeplink/auto-archive-settings]
+
+
+    To enable, pull down for Superhuman Command, then type Auto Archive Settings.
+
+
+    We''d love to know how you''re organizing your inbox. Just hit reply and let us
+
+    know!
+
+
+    Speak soon,
+
+    Rahul
+
+
+    Take me to Superhuman [https://mail.superhuman.com]
+
+
+    If you don''t want to hear from me again, please let me know
+
+    [https://iterable-links.superhuman.com/e/eh?_t=745eb48f80414c6f895aa53319f24f24&amp;_m=1ccb7bf362614478af82600a6ccb689a&amp;_e=-bSdeBuEkd8OqIiBDvjyp1WTUwSiTML2JKt3eDmEhKKGJKb4Xs9-g2MXk3V5_IYqzITOpdv3sUgy2BHx7ug6yD33gOVUheBpIEySXqRcDAPjm8hTkrApUzwYGMdLRrUYsQBRZv4j168GVWcMtQpAug-4LmDDi5s9RWYYwbyPnhrdXLRmUjSNcQPQlIcRIMYYNYP9qiW18xlMswgyH5PE9msTXOIaftZ2HJ6xoX_gv-5-96KvEUNtz0ukNRLFEHj9NOhAg_Mxx5Fvx4YaAcDCn_KrRNE6nD03dcMG2HwIefvZohuOqbwMiBEfhZFv4d7kTgx3dfT9r28PaOPcs0mIWEheftOh_PPKfO_1PhhZlA0eZi9nZqJ9ulw6Ua62NkLD]'
+  hasHtml: true
+annotations:
+  campaign: ''
+  campaign_full: ''
+  position: null
+  sequence_length: null
+  email_type: nurture
+  purpose: ''
+  audience: ''
+  techniques_used:
+  - technique: Personal Greeting
+    location: subject_line
+    example: Hi Michael,
+    notes: Detected via pattern matching
+  hooks:
+    primary:
+      type: ''
+      text: ''
+      why_effective: ''
+  open_loops: []
+  callbacks: []
+  quotable_lines: []
+  notes: Auto-annotated via pattern matching. Review and enhance manually.

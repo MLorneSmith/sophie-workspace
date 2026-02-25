@@ -1,102 +1,48 @@
 # HEARTBEAT.md
 
-## Bookend Routines
-- **Morning (first heartbeat after 07:00 EST):** Run morning briefing from `state/ROUTINES.md`
-  - ⚠️ **MANDATORY:** Read the PRE-FLIGHT CHECKLIST in ROUTINES.md before generating! No localhost links. Calendar section required.
-- **During day:** Update `state/current.md` if anything significant happened
-- **Evening (after 22:00 EST):** Run EOD routine if not done yet
+## Bookend Checkpoints
 
-## Rotating Periodic Checks
-Use `memory/heartbeat-state.json` to track last-run timestamps. On each heartbeat, check which tasks are due based on cadence and time window (EST hours). Update timestamps after each check.
+**Always keep `state/current.md` up to date.** This file survives context compaction.
 
-| Check | Cadence | Window (EST) | What to do |
-|-------|---------|--------------|------------|
-| email | 2h | 07:00–22:00 | `gog gmail list --unread` — flag urgent |
-| calendar | 4h | 07:00–21:00 | `gog cal list` — upcoming 24h events |
-| capture | 30min | always | Check #capture channel for new links |
-| weather | 8h | 07:00–17:00 | Check weather for Toronto |
-| memory_maintenance | weekly | 21:00–01:00 | Review daily files → update MEMORY.md |
-| todoist_reconciliation | daily | 22:00–00:00 | Compare MC↔Todoist status for drift |
+Checkpoint when:
+- Every ~30 min during active work
+- After completing a major task
+- Before any `/new` or `/reset`
+- When conversation is getting long
+- Before going quiet for a while
 
-**How to decide what runs:**
-```bash
-now=$(date +%s)
-last=$(jq -r '.lastChecks.email // 0' memory/heartbeat-state.json)
-interval=$((2 * 60 * 60))  # 2 hours
-if (( now - last > interval )); then # due
-```
-Run 1-3 checks per heartbeat to keep token usage low. Prioritize: capture > email > calendar > others.
+See `state/ROUTINES.md` for full morning/checkpoint/EOD procedures.
 
-## #capture Channel Monitoring
-**Check every heartbeat:** Look for new links in #capture (id: `1468019433854210259`)
+## Memory Maintenance (During Heartbeats)
 
-When a link appears:
-1. Identify source type (Substack/article, YouTube, Reddit)
-2. Fetch content:
-   - Articles: `web_fetch`
-   - YouTube: `python3 ~/clawd/scripts/get-youtube-transcript.py <url>`
-   - Reddit: `web_fetch` on post
-3. **ALWAYS create Resource entry first** (source info: title, URL, author, date)
-4. Extract 3-7 best practices using LLM
-5. **Handle results:**
-   - **If actionable practices found:** Create Best Practice entries, each linked to Resource
-   - **If nothing actionable:** Reply in #capture: "Reviewed [title] — no specific best practices extracted, but saved as resource for reference" and note this in Resource
-6. Reply in #capture confirming extraction with summary of what was captured
+Periodically (every few days), use a heartbeat to:
+1. Read through recent `memory/YYYY-MM-DD.md` files
+2. Identify significant events, lessons, or insights worth keeping long-term
+3. Update `MEMORY.md` with distilled learnings
+4. Remove outdated info from MEMORY.md that's no longer relevant
 
-**Source Attribution Rules:**
-- Every Best Practice MUST link back to its Resource entry
-- Resource entry MUST include: title, URL, author (if known), source type, capture date
-- Best Practices MUST include: the practice, why it matters, source attribution
+Think of it like a human reviewing their journal and updating their mental model. Daily files are raw notes; MEMORY.md is curated wisdom.
 
-**Activity Logging:**
-After each capture, log the activity for Morning Brief summary:
-```bash
-# If practices extracted:
-~/clawd/scripts/capture-log.sh "Article Title" "https://url" "5"
+## Tasks Moved to Cron Jobs
 
-# If nothing actionable:
-~/clawd/scripts/capture-log.sh "Article Title" "https://url" "0" "nothing_actionable"
-```
+The following tasks are now handled by dedicated cron jobs instead of heartbeats:
 
-**Save to Mission Control:**
-```bash
-curl -X POST http://localhost:3001/api/v1/practices \
-  -H "Content-Type: application/json" \
-  -d '{
-    "resource": {
-      "url": "https://...",
-      "title": "Article Title",
-      "sourceType": "article|youtube|reddit",
-      "author": "Author Name (optional)"
-    },
-    "practices": [
-      {
-        "practice": "The practice statement",
-        "domain": "Sales|Marketing|Product|Operations|Leadership|Technical|Personal|Other",
-        "context": "When to apply (optional)",
-        "implementation": "How to do it (optional)"
-      }
-    ]
-  }'
-```
-
-**Notion IDs (backup/reference):**
-- Resources: `c81f483f-1f70-4b10-9b38-0eca92924929`
-- Best Practices: `18d2323e-f8ce-458e-9231-0097b4785dce`
+| Task | Schedule | Script |
+|------|----------|--------|
+| **Email check** | Hourly (07:00-22:00) | `check-email.py` |
+| **Calendar check** | Every 4h (07:00-19:00) | `check-calendar.py` |
+| **#capture monitoring** | Every 30 min | `capture-monitor.py` |
+| **Todoist sync** | 7am, 12pm, 6pm | `sync-mc-todoist-wrapper.py` |
+| **Weather** | In morning brief | `morning-briefing-data.sh` |
 
 ## Nighttime Backlog Work
+
 **After 22:00 EST**, if no recent conversation with Mike (>1 hour since last message):
 
-1. Check Mission Control for assigned backlog tasks:
-   ```bash
-   curl -s 'http://localhost:3001/api/v1/tasks?status=backlog&assigned=true' | jq -r 'sort_by(.priority) | .[0]'
-   ```
+1. Check Mission Control for assigned backlog tasks
 2. Pick the highest priority assigned task
 3. Update `state/current.md` with what you're working on
 4. Work on it (spawn sub-agent if complex)
 5. When done or blocked, update the task status and pick another
 
 **After context compression or fresh session at night:** Re-read `state/current.md` to see if there's work in progress, then check the backlog.
-
-## One-off Items
-*(No active one-off items)*

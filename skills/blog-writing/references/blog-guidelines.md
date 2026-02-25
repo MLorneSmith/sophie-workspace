@@ -1,0 +1,1 @@
+/home/ubuntu/clawd/.ai/contexts/guidelines/blog-guidelines.md

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Morning Brief</title>
+  <style>
+    /* Reset & Base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      line-height: 1.6;
+      color: #1a1a2e;
+      background-color: #f8f9fa;
+      padding: 20px;
+    }
+    
+    /* Container */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 24px 28px;
+    }
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .header .date {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    /* Content */
+    .content {
+      padding: 24px 28px;
+    }
+    
+    /* Sections */
+    .section {
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #e9ecef;
+    }
+    .section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title .emoji {
+      font-size: 18px;
+    }
+    
+    /* Weather */
+    .weather-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .weather-card {
+      background: #f8f9fa;
+      padding: 12px 16px;
+      border-radius: 8px;
+    }
+    .weather-card .label {
+      font-size: 12px;
+      color: #6c757d;
+      margin-bottom: 4px;
+    }
+    .weather-card .value {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    /* Quote */
+    .quote {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 16px 20px;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+    .quote-text {
+      font-style: italic;
+      font-size: 15px;
+      color: #343a40;
+      margin-bottom: 8px;
+    }
+    .quote-author {
+      font-size: 13px;
+      color: #6c757d;
+      text-align: right;
+    }
+    
+    /* Lists */
+    .item-list {
+      list-style: none;
+    }
+    .item-list li {
+      padding: 8px 0;
+      font-size: 14px;
+      border-bottom: 1px solid #f1f3f4;
+    }
+    .item-list li:last-child {
+      border-bottom: none;
+    }
+    .item-list .time {
+      color: #667eea;
+      font-weight: 500;
+      margin-right: 8px;
+    }
+    
+    /* Feed Items */
+    .feed-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f3f4;
+    }
+    .feed-item:last-child {
+      border-bottom: none;
+    }
+    .feed-item .title {
+      font-weight: 500;
+      color: #1a1a2e;
+      text-decoration: none;
+    }
+    .feed-item .title:hover {
+      color: #667eea;
+    }
+    .feed-item .score {
+      font-size: 12px;
+      color: #6c757d;
+      margin-left: 8px;
+    }
+    .feed-item .desc {
+      font-size: 13px;
+      color: #6c757d;
+      margin: 4px 0;
+    }
+    .feed-item .actions {
+      font-size: 12px;
+      margin-top: 6px;
+    }
+    .feed-item .actions a {
+      color: #667eea;
+      text-decoration: none;
+      margin-right: 12px;
+    }
+    
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .stat-card {
+      background: #f8f9fa;
+      padding: 12px 16px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .stat-card .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #667eea;
+    }
+    .stat-card .stat-label {
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 4px;
+    }
+    
+    /* Model Usage */
+    .usage-bar {
+      background: #e9ecef;
+      border-radius: 4px;
+      height: 24px;
+      margin: 6px 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .usage-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+    }
+    .usage-fill span {
+      color: white;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    
+    /* Task Lists */
+    .task-list {
+      list-style: none;
+    }
+    .task-list li {
+      padding: 10px 12px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .task-list li:last-child {
+      margin-bottom: 0;
+    }
+    .task-list .check {
+      color: #28a745;
+      font-weight: bold;
+    }
+    .task-list .priority-high {
+      border-left: 3px solid #dc3545;
+    }
+    .task-list .priority-medium {
+      border-left: 3px solid #ffc107;
+    }
+    
+    /* System Status */
+    .status-ok {
+      color: #28a745;
+      font-weight: 500;
+    }
+    .status-warn {
+      color: #ffc107;
+      font-weight: 500;
+    }
+    .status-error {
+      color: #dc3545;
+      font-weight: 500;
+    }
+    
+    /* Footer */
+    .footer {
+      background: #f8f9fa;
+      padding: 16px 28px;
+      text-align: center;
+      font-size: 12px;
+      color: #6c757d;
+    }
+    
+    /* Responsive */
+    @media (max-width: 480px) {
+      body { padding: 10px; }
+      .header, .content, .footer { padding: 16px 20px; }
+      .weather-grid, .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>☀️ Morning Brief</h1>
+      <div class="date">{{DAY_OF_WEEK}}, {{DATE_LONG}}</div>
+    </div>
+    
+    <!-- Content -->
+    <div class="content">
+      
+      <!-- Weather -->
+      <div class="section">
+        <div class="section-title">
+          <span class="emoji">🌡️</span> Toronto Weather
+        </div>
+        <div class="weather-grid">
+          <div class="weather-card">
+            <div class="label">Today</div>
+            <div class="value">{{WEATHER_TODAY}}</div>
+          </div>
+          <div class="weather-card">
+            <div class="label">Tomorrow</div>
+            <div class="value">{{WEATHER_TOMORROW}}</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Quote -->
+      <div class="section">
+        <div class="section-title">
+          <span class="emoji">💬</span> Quote of the Day
+        </div>
+        <div class="quote">
+          <div class="quote-text">"{{QUOTE_TEXT}}"</div>
+          <div class="quote-author">— {{QUOTE_AUTHOR}}</div>
+        </div>
+      </div>
+      
+      <!-- Today's Calendar -->
+      <div class="section">
+        <div class="section-title">
+          <span class="emoji">📅</span> Today's Meetings
+        </div>
+        <ul class="item-list">
+          {{CALENDAR_TODAY_ITEMS}}
+        </ul>
+      </div>
+      
+      <!-- Tomorrow's Calendar -->
+      <div class="section">
+        <div class="section-title">
+          <span class="emoji">📅</span> Tomorrow's Meetings
+        </div>
+        <ul class="item-list">
+          {{CALENDAR_TOMORROW_ITEMS}}
+        </ul>
+      </div>
+      
+      <!-- Feed Monitor -->
+      <div class="section">
+        <div class="section-title">
+          <span class="emoji">📡</span> Feed Monitor Picks
+        </div>
+        {{FEED_ITEMS}}
+      </div>
+      
+      <!-- Model Usage -->
+      <div class="section">
+        <div class="section-title">
+          <span class="emoji">📊</span> Model Usage (Yesterday)
+        </div>
+        {{MODEL_USAGE_BARS}}
+      </div>
+      
+      <!-- AWS Costs -->
+      <div class="section">
+        <div class="section-title">
+          <span class="emoji">💰</span> AWS Costs
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value">{{AWS_DAILY_COST}}</div>
+            <div class="stat-label">Today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{AWS_MONTHLY_COST}}</div>
+            <div class="stat-label">Month to Date</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- System Health -->
+      <div class="section">
+        <div class="section-title">
+          <span class="emoji">🏥</span> System Health
+        </div>
+        <div class="{{HEALTH_STATUS_CLASS}}">{{HEALTH_STATUS}}</div>
+      </div>
+      
+      <!-- Overnight Work -->
+      <div class="section">
+        <div class="section-title">
+          <span class="emoji">🌙</span> Overnight Work
+        </div>
+        <ul class="task-list">
+          {{OVERNIGHT_TASKS}}
+        </ul>
+      </div>
+      
+      <!-- Sophie Can Do -->
+      <div class="section">
+        <div class="section-title">
+          <span class="emoji">✅</span> Sophie Can Do Today
+        </div>
+        <ul class="task-list">
+          {{SOPHIE_TASKS}}
+        </ul>
+      </div>
+      
+      <!-- Mike's Agenda -->
+      <div class="section">
+        <div class="section-title">
+          <span class="emoji">📋</span> Mike's Agenda
+        </div>
+        <ul class="task-list">
+          {{MIKE_TASKS}}
+        </ul>
+      </div>
+      
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+      Generated by Sophie · {{TIMESTAMP}}
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,183 @@
+# Email Export - TEST: [5S] Structure, Story, Substance, Style & Self-Confidence
+# Exported from Gmail on 2026-01-24T18:15:17.550Z
+# Fill in the annotations section to capture writing style patterns
+---
+metadata:
+  id: "19bf131e1cacec1c"
+  exportedAt: "2026-01-24T18:15:17.550Z"
+  source: "gmail"
+  labels:
+    - "UNREAD"
+    - "andre"
+    - "CATEGORY_FORUMS"
+    - "SENT"
+headers:
+  from: "Michael Smith <msmith@slideheroes.com>"
+  to: "msmith@slideheroes.com"
+  subject: "TEST: [5S] Structure, Story, Substance, Style & Self-Confidence"
+  date: "Sat, 24 Jan 2026 18:08:55 +0000 (GMT)"
+  messageId: "<466578373.2400770.1769278135421@cell-5-74bcb6f7bb-mphmr>"
+thread:
+  threadId: "19bf131e1cacec1c"
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: "The 5 Skills Disciplines You Must MasterView in Web Browser http://slideheroes.activehosted.com/p_v.php?c=12&m=14&s=254303af226d1e258d117bd0fb6519ce&d=0&v=2&l
+
+
+    **'Lesson Zero'**Log-in https://app.slideheroes.com/users/sign_in?utm_source=bpm_sequence&utm_medium=email
+
+
+    **You are receiving this email because you signed-up at SlideHeroes to watch 'Lesson Zero' of our Decks for Decision Makers high-stakes business presentation course. (If you decide you're in the wrong place, no worries. You'll find an unsubscribe link in the footer of this email.)**
+
+
+    Hi Michael,
+
+
+    Welcome back.
+
+
+    OK. Let's take stock.
+
+
+    We know what we are trying to accomplish (our OBJECTIVE): gain the skills to create killer presentations for high-stakes meetings.
+
+
+    We have a Who, Why, What, How PROCESS blueprint for creating these killer presentations (read more here https://www.slideheroes.com/bpm-presentations-reinvented-4 if you missed that email)
+
+
+    But a roadmap is not enough.
+
+
+    Crafting successful presentations is a
+
+
+    **multi-disciplinary challenge** that requires the mastery of a broad set of distinct SKILLS:
+
+
+    • The ability to order ideas in a logical and structured way
+
+
+    • The skill to utilize words succinctly, powerfully, accurately
+
+
+    • Numeracy, and the ability to communicate data effectively
+
+
+    • Taste - the appreciation for and ability to create aesthetically pleasing design
+
+
+    • Charisma and executive presence
+
+
+    Over the next few days we are going to dive a little deeper into each of these '5S' skills DISIPLINES:
+
+
+    **Structure:** Exploiting the Power of Logical Structure
+
+
+    **Story:** Mastering the Art of Storytelling
+
+
+    **Substance:** Learning the Science of Fact-based Persuasion
+
+
+    **Style:** Understanding the Harmony of Design
+
+
+    **Self-Confidence:** Deploying the Drama of Performance
+
+
+    Until tomorrow,
+
+
+    **Michael **
+
+
+    **P.S.**
+
+
+    **We have talked about STRUCTURE already, because it is just so damn important.  The Pyramid Principle is a powerful framework for structuring your answer to the question that your audience has.**
+
+
+    **But how do you know what that question is?  And, better yet, how do you plant that question in the mind of the audience so that you can answer the question you want to answer?**
+
+
+    **Ah! That is the trick, isn't it?**
+
+
+    **Frameworks to do just that up next.**
+
+
+    **Your attention is a privilege I never take for granted. If this communication is no longer of interest to you, just click the unsubscribe link below to be removed from this email list:**
+
+
+    Unsubscribe http://slideheroes.activehosted.com/proc.php?c=12&m=14&s=254303af226d1e258d117bd0fb6519ce&d=0&v=2&nl&act=unsub
+
+
+    **SlideHeroes Incorporated, 125-720 King Street West Suite 2000, Toronto, Ontario M5V 3S5, Canada**"
+  hasHtml: true
+annotations:
+  campaign: "5S"
+  campaign_full: "5S Skills Disciplines"
+  position: 1
+  sequence_length: 5
+  email_type: "nurture"
+  author: "Michael Smith"
+
+  purpose: |
+    Introduces the 5S framework (Structure, Story, Substance, Style, Self-Confidence) as the multi-disciplinary skillset required for creating killer presentations. Sets up the upcoming email series that will dive deeper into each discipline.
+
+  audience: "presentation professionals seeking to master high-stakes business presentations"
+
+  techniques_used:
+    - technique: "Framework Introduction"
+      location: "body middle"
+      example: "Structure, Story, Substance, Style, Self-Confidence"
+      notes: "Uses memorable alliteration (5 S's) to make the framework sticky"
+    - technique: "Recap and Continuity"
+      location: "opening"
+      example: "OK. Let's take stock. We know what we are trying to accomplish..."
+      notes: "References previous emails to maintain narrative continuity"
+    - technique: "Bullet Point Clarity"
+      location: "body"
+      example: "The ability to order ideas in a logical and structured way"
+      notes: "Breaks down complex multi-disciplinary challenge into digestible points"
+    - technique: "Teaser for Next Email"
+      location: "P.S. section"
+      example: "But how do you know what that question is? Ah! That is the trick, isn't it?"
+      notes: "Creates anticipation with rhetorical questions"
+
+  hook:
+    type: "recap and orientation"
+    text: "OK. Let's take stock."
+    effectiveness: "Grounds reader in the journey so far before introducing new framework"
+
+  structure:
+    opening: "Recap of objectives and process established in previous emails"
+    body: "Introduction of 5S framework with skill definitions and preview"
+    closing: "Teaser about deeper frameworks coming next"
+
+  effectiveness_notes: |
+    - Strong use of capitalized keywords (OBJECTIVE, PROCESS, SKILLS) for emphasis
+    - Framework is memorable due to alliteration
+    - P.S. section adds value by teasing advanced content
+    - Maintains conversational tone while delivering educational content
+
+  quotable:
+    - "Crafting successful presentations is a multi-disciplinary challenge"
+    - "But a roadmap is not enough"
+    - "Ah! That is the trick, isn't it?"
+
+  andre_style_elements:
+    present:
+      - "Short paragraphs for scanability"
+      - "Bold text for emphasis"
+      - "P.S. section with valuable content"
+      - "Conversational sign-off"
+      - "Teaser for next email"
+    missing:
+      - "Personal story or anecdote"
+      - "Humor or playful nickname in signature"

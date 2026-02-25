@@ -1,0 +1,56 @@
+version: 2
+
+sources:
+  - name: staging
+    database: slideheroes-data-platform
+    schema: staging
+    tables:
+      - name: accounts
+      - name: accounts_memberships
+      - name: ai_cost_configuration
+      - name: ai_credit_transactions
+      - name: ai_request_logs
+      - name: ai_usage_allocations
+      - name: ai_usage_limits
+      - name: apollo_organizations
+      - name: attio_companies
+      - name: attio_deals
+      - name: attio_people
+      - name: billing_customers
+      - name: building_blocks_submissions
+      - name: calcom_event_types
+      - name: certificates
+      - name: config
+      - name: course_progress
+      - name: invitations
+      - name: lesson_progress
+      - name: loops_contact_properties
+      - name: loops_mailing_lists
+      - name: loops_transactional_emails
+      - name: maintenance_log
+      - name: nonces
+      - name: notifications
+      - name: onboarding
+      - name: order_items
+      - name: orders
+      - name: posthog_event_definitions
+      - name: posthog_events
+      - name: posthog_persons
+      - name: posthog_property_definitions
+      - name: quiz_attempts
+      - name: role_permissions
+      - name: roles
+      - name: stripe_charges
+      - name: stripe_customers
+      - name: stripe_invoices
+      - name: stripe_payment_intents
+      - name: stripe_prices
+      - name: stripe_products
+      - name: stripe_subscriptions
+      - name: subscription_items
+      - name: subscriptions
+      - name: subtasks
+      - name: survey_progress
+      - name: survey_responses
+      - name: tasks
+      - name: testimonials

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Wrapper script for Context7 get-context
+SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Load API key
+[ -f "$SKILL_DIR/.env" ] && set -a && source "$SKILL_DIR/.env" && set +a
+
+# Create symlink bridge for Python module imports
+BRIDGE="/tmp/ctx7-path/tools"
+mkdir -p /tmp/ctx7-path/tools 2>/dev/null
+ln -sfn "$SKILL_DIR/tools" "$BRIDGE/context7" 2>/dev/null
+
+PYTHONPATH="/tmp/ctx7-path" python3 -m tools.context7.cli_get_context "$@"

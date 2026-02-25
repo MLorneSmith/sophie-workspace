@@ -27,6 +27,106 @@
       "status": "failed",
       "reason": "http_000000",
       "date": "2026-02-12"
+    },
+    "https://www.mckinsey.com/~/media/mckinsey/business%20functions/operations/our%20insights/gii/summit/2024%20dubai/accelerating-future-ready-infrastructure.pdf": {
+      "status": "failed",
+      "reason": "http_000000",
+      "date": "2026-02-24"
+    },
+    "https://www.mckinsey.com/~/media/mckinsey/mckinsey%20global%20institute/our%20research/geopolitics%20and%20the%20geometry%20of%20global%20trade/geopolitics-and-the-geometry-of-global-trade-vf.pdf": {
+      "status": "failed",
+      "reason": "http_000000",
+      "date": "2026-02-24"
+    },
+    "https://www.mckinsey.com/~/media/mckinsey/business%20functions/mckinsey%20digital/our%20insights/the%20top%20trends%20in%20tech%202024/mckinsey-technology-trends-outlook-2024.pdf": {
+      "status": "failed",
+      "reason": "http_000000",
+      "date": "2026-02-24"
+    },
+    "https://www.mckinsey.com/~/media/mckinsey/industries/energy%20and%20materials/our%20insights/global%20energy%20perspective%202024/global-energy-perspective-2024.pdf": {
+      "status": "failed",
+      "reason": "http_000000",
+      "date": "2026-02-24"
+    },
+    "https://investor.accenture.com/~/media/Files/A/accenture-v4/investors/earnings-reports/2026/first-quarter-fiscal-2026-earnings-presentation.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/accenture/accenture-Accenture-Q1-Fiscal-2026-Earnings-Presentation.pdf",
+      "date": "2026-02-24"
+    },
+    "https://investor.accenture.com/~/media/Files/A/accenture-v4/investors/earnings-reports/2024/q4/q4-fy2024-infographics-final.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/accenture/accenture-Accenture-FY24-Q4-Infographics.pdf",
+      "date": "2026-02-24"
+    },
+    "https://investor.accenture.com/~/media/Files/A/Accenture-IR-V3/quarterly-earnings/2024/q4fy24/accentures-fourth-quarter-fiscal-2024-supporting-materials--.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/accenture/accenture-Accenture-Fourth-Quarter-Fiscal-2024-Supporting-Materials.pdf",
+      "date": "2026-02-24"
+    },
+    "https://investor.accenture.com/~/media/Files/A/Accenture-IR-V3/home/accenture-fiscal-2024-annual-report.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/accenture/accenture-Accenture-Fiscal-2024-Annual-Report.pdf",
+      "date": "2026-02-24"
+    },
+    "https://www.strategyand.pwc.com/it/en/assets/pdf/ereadiness-study-2023.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/strategy_pwc/strategy_pwc-PwC-Strategy-eReadiness-Study-2023.pdf",
+      "date": "2026-02-24"
+    },
+    "https://www.strategyand.pwc.com/de/en/press/strategyand-factsheet-en.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/strategy_pwc/strategy_pwc-Strategy-Company-Factsheet.pdf",
+      "date": "2026-02-24"
+    },
+    "https://www.strategyand.pwc.com/gx/en/unique-solutions/cds/the-strategy-crisis.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/strategy_pwc/strategy_pwc-The-Strategy-Crisis-Insights-from-Strategy-Profiler.pdf",
+      "date": "2026-02-25"
+    },
+    "https://www.strategyand.pwc.com/m1/en/strategic-foresight/sector-strategies/technology/future-of-public-sector/future-of-public-sector-digital-services.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/strategy_pwc/strategy_pwc-Future-of-Public-Sector-Digital-Services.pdf",
+      "date": "2026-02-25"
+    },
+    "https://www.strategyand.pwc.com/gx/en/insights/2019/Global-power-strategies/global-power-strategies.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/strategy_pwc/strategy_pwc-Global-Power-Strategies-The-Future-of-Utilities-Industry.pdf",
+      "date": "2026-02-25"
+    },
+    "https://www.pwc.co.uk/industries/industry-in-focus/framework-for-growth/pwc-framework-for-growth.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/strategy_pwc/strategy_pwc-PwCs-Framework-for-Growth.pdf",
+      "date": "2026-02-25"
+    },
+    "https://www.oliverwyman.com/content/dam/oliver-wyman/global/en/2016/nov/InsureTech%20Connect%202016%20-%20Oliver%20Wyman%20Presentation.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/oliver_wyman/oliver_wyman-Oliver-Wyman-InsureTech-Connect-2016-Presentation.pdf",
+      "date": "2026-02-25"
+    },
+    "https://www.suerf.org/wp-content/uploads/2024/01/Panel-Rainer-Glaser_OliverWayman-SUERF_AI-presentation.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/oliver_wyman/oliver_wyman-Artificial-Intelligence-Intelligent-Enough-for-the-Real-World.pdf",
+      "date": "2026-02-25"
+    },
+    "https://kpmg.com/kpmg-us/content/dam/kpmg/pdf/2025/2024-transparency-report-jan-2025.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/kpmg/kpmg-KPMG-2024-Transparency-Report.pdf",
+      "date": "2026-02-25"
+    },
+    "https://kpmg.com/kpmg-us/content/dam/kpmg/pdf/2024/transforming-the-enterprise-of-the-future-report.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/kpmg/kpmg-Transforming-the-Enterprise-of-the-Future.pdf",
+      "date": "2026-02-25"
+    },
+    "https://assets.kpmg.com/content/dam/kpmg/lu/pdf/transparency-report-2024-luxembourg.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/kpmg/kpmg-KPMG-International-Transparency-Report-2024.pdf",
+      "date": "2026-02-25"
+    },
+    "https://www.ey.com/content/dam/ey-unified-site/ey-com/en-gl/insights/strategy/documents/ey-parthenon-european-wireless-infrastructure-report-05-2024.pdf": {
+      "status": "uploaded",
+      "r2Key": "to-be-evaluated/ey_parthenon/ey_parthenon-EY-Parthenon-European-Wireless-Infrastructure-Report-2024.pdf",
+      "date": "2026-02-25"
     }
   }
 }

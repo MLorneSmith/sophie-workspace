@@ -1,0 +1,201 @@
+# Email Export - [LEM] My "Evil" Experiment (Part 1 of 2)
+# Exported from Gmail on 2026-01-24T18:15:27.274Z
+# Fill in the annotations section to capture writing style patterns
+---
+metadata:
+  id: "16c90a4cd2b58baa"
+  exportedAt: "2026-01-24T18:15:27.274Z"
+  source: "gmail"
+  labels:
+    - "andre"
+    - "IMPORTANT"
+    - "Experts/Email marketing examples/Andre Chaperon"
+    - "CATEGORY_UPDATES"
+headers:
+  from: "\"Andre Chaperon\" <hello@tinylittlebusinesses.com>"
+  to: "msmith@slideheroes.com"
+  subject: "[LEM] My \"Evil\" Experiment (Part 1 of 2)"
+  date: "Wed, 14 Aug 2019 15:00:00 +0000 (UTC)"
+  messageId: "<LUL_rbTVSK6L63hDxkV5HQ@ismtpd0050p1iad1.sendgrid.net>"
+thread:
+  threadId: "16c90a4cd2b58baa"
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: "Hey Mike,
+
+
+    I ran this \"experiment\" a number of years ago.
+
+
+    The results were pretty damn shocking.
+
+
+    I'm going to share the whole process with you...
+
+
+    But please don't abuse this! (Or it will backfire on you.)
+
+
+    Reread what I wrote in the previous email about \"giving a f*ck\"
+
+    and caring for your people.
+
+
+    The result of this experiment almost TRIPLED my opt-in rate.
+
+
+    But that wasn't the most important thing that happened.
+
+
+    Something FAR MORE important happened as a result...
+
+
+    It directly allowed me to sell over 600 copies of a $67 product
+
+    in ONE DAY, a few months later...
+
+
+    Anyhoo...
+
+
+    Here's the experiment:
+
+
+    https://t.dripemail2.com/c/eyJhY2NvdW50X2lkIjoiNzAyNjQ1NiIsImRlbGl2ZXJ5X2lkIjoiNzYzNTMxNDczMCIsInVybCI6Imh0dHBzOi8vdGlueWxpdHRsZWJ1c2luZXNzZXMuY29tL2VtYWlsL2V2aWwtZXhwZXJpbWVudC8_X19zPXl6eW1pYXF0eWl0c2kyc2lhZW1pIn0 ( https://t.dripemail2.com/c/eyJhY2NvdW50X2lkIjoiNzAyNjQ1NiIsImRlbGl2ZXJ5X2lkIjoiNzYzNTMxNDczMCIsInVybCI6Imh0dHBzOi8vdGlueWxpdHRsZWJ1c2luZXNzZXMuY29tL2VtYWlsL2V2aWwtZXhwZXJpbWVudC8_X19zPXl6eW1pYXF0eWl0c2kyc2lhZW1pIn0 )
+
+
+    Now let's see if you've been paying attention.
+
+
+    Let's see how smart you are. {grin}
+
+
+    HIT REPLY and let me know why you think my email list become so
+
+    much more POWERFUL after running this experiment.
+
+
+    I won't reply personally.
+
+
+    ... but I will give you the answer in the next email.
+
+
+    The answer is right in front of you btw.
+
+
+    Hit reply and lemme know.
+
+
+    Andre \"slightly evil\" Chaperon
+
+
+    PS.
+
+
+    Nothing down here today, but thanks for checking anyway :-)
+
+
+    ---------------------
+
+    To make sure you keep getting these emails, please add
+
+    hello@tinylittlebusinesses.com to your address book or whitelist us. Want out of
+
+    the loop? <a href=\"https://t.dripemail2.com/c/eyJhY2NvdW50X2lkIjoiNzAyNjQ1NiIsImRlbGl2ZXJ5X2lkIjoiNzYzNTMxNDczMCIsInVybCI6Imh0dHBzOi8vd3d3LmdldGRyaXAuY29tL3N1YnNjcmliZXJzL3l6eW1pYXF0eWl0c2kyc2lhZW1pL3N1YnNjcmlwdGlvbnM_ZD01YWUzbTFnbXZwYm40aDM3eXUxbFx1MDAyNmV4Y2x1ZGVfY2xpY2s9MVx1MDAyNmludGVudD11bnN1YnNjcmliZVx1MDAyNl9fcz15enltaWFxdHlpdHNpMnNpYWVtaSJ9\">Unsubscribe</a>.
+
+
+    Our corp. address: Suite 23, Portland House, Glacis Road, GX11 1AA, GIBRALTAR
+
+
+    This email has been lovingly handcrafted by yours truly and sent with the awesome DRIP [ trydrip.co ] email software."
+  hasHtml: true
+annotations:
+  # === CAMPAIGN CONTEXT ===
+  campaign: "LEM"
+  campaign_full: "Lucrative Email Marketing"
+  position: 6
+  sequence_length: ~21
+  email_type: "story"
+
+  # === PURPOSE & AUDIENCE ===
+  purpose: |
+    Teases a counterintuitive "evil experiment" that tripled opt-in rates and led to
+    600 sales in one day. Creates massive curiosity through withholding details and
+    challenges reader to guess why it worked. Drives clicks to external article.
+
+  audience: "Email marketers with existing lists (500+ subscribers)"
+
+  # === TECHNIQUES USED ===
+  techniques_used:
+    - technique: "Personal Greeting"
+      location: "opening"
+      example: "Hey Mike,"
+      notes: "Consistent personalization"
+    - technique: "Campaign Abbreviation"
+      location: "subject_line"
+      example: "[LEM] My \"Evil\" Experiment (Part 1 of 2)"
+      notes: "Quotes around 'Evil' create intrigue"
+    - technique: "Intriguing Hook"
+      location: "opening"
+      example: "I ran this 'experiment' a number of years ago. The results were pretty damn shocking."
+      notes: "Vague but compelling setup"
+    - technique: "Short Line Rhythm"
+      location: "throughout"
+      example: "The results were pretty damn shocking.\n\nI'm going to share the whole process with you..."
+      notes: "Builds anticipation through pacing"
+    - technique: "Warning/Callback"
+      location: "body"
+      example: "But please don't abuse this! (Or it will backfire on you.) Reread what I wrote in the previous email about 'giving a f*ck'"
+      notes: "Positions technique as powerful but requiring responsibility"
+    - technique: "Specific Results Tease"
+      location: "body"
+      example: "The result of this experiment almost TRIPLED my opt-in rate... It directly allowed me to sell over 600 copies of a $67 product in ONE DAY"
+      notes: "Concrete numbers without explaining how"
+    - technique: "Reader Engagement Challenge"
+      location: "closing"
+      example: "Let's see how smart you are. {grin}\n\nHIT REPLY and let me know why you think my email list become so much more POWERFUL"
+      notes: "Gamification creates investment in answer"
+    - technique: "Answer Withholding"
+      location: "closing"
+      example: "The answer is right in front of you btw."
+      notes: "Teases that reader could figure it out, increasing frustration/engagement"
+    - technique: "Clever Signature"
+      location: "sign-off"
+      example: "Andre \"slightly evil\" Chaperon"
+      notes: "Plays on email theme"
+    - technique: "Subversive P.S."
+      location: "closing"
+      example: "Nothing down here today, but thanks for checking anyway :-)"
+      notes: "Rewards P.S. readers while acknowledging their behavior"
+
+  # === HOOK ANALYSIS ===
+  hook:
+    type: "mystery"
+    text: "I ran this 'experiment' a number of years ago. The results were pretty damn shocking."
+    effectiveness: "Creates immediate curiosity through vague but dramatic setup"
+
+  # === STRUCTURAL NOTES ===
+  structure:
+    opening: "Teases shocking experiment"
+    body: "Warning -> results teaser -> external link -> challenge to guess"
+    closing: "Reply challenge -> meta P.S."
+
+  # === WHAT MAKES THIS EMAIL EFFECTIVE ===
+  effectiveness_notes: |
+    - "Evil" in quotes creates intrigue without being off-putting
+    - Specific numbers (tripled, 600 copies, $67, ONE DAY) build credibility
+    - External link satisfies some curiosity while maintaining open loop
+    - Reply request creates engagement and feedback loop
+    - P.S. acknowledges reader behavior pattern
+
+  # === QUOTABLE LINES ===
+  quotable:
+    - "The results were pretty damn shocking."
+    - "But please don't abuse this! (Or it will backfire on you.)"
+    - "Let's see how smart you are. {grin}"
+    - "The answer is right in front of you btw."
+    - "Nothing down here today, but thanks for checking anyway :-)"

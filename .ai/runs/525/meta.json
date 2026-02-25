@@ -1,0 +1,25 @@
+{
+  "taskId": 525,
+  "agent": "coder",
+  "persona": "solo-consultant",
+  "iteration": 1,
+  "createdAt": "2026-02-17T07:00:57+00:00",
+  "updatedAt": "2026-02-17T07:06:15+00:00",
+  "status": "review_prompt_prepared",
+  "checks": {
+    "taskType": "coding",
+    "passed": false,
+    "reportFile": "/home/ubuntu/clawd/.ai/runs/525/checks.log"
+  },
+  "contextMapping": "coding",
+  "builderModel": "openai-codex/gpt-5.2",
+  "builderThinking": "default",
+  "contextFiles": [
+    "/home/ubuntu/clawd/.ai/contexts/company/about.md",
+    "/home/ubuntu/clawd/.ai/contexts/company/products.md"
+  ],
+  "taskType": "coding",
+  "maxIterations": 3,
+  "lastPrepareAt": "2026-02-17T07:00:57+00:00",
+  "lastReviewPrepAt": "2026-02-17T07:06:15+00:00"
+}

@@ -1,0 +1,32 @@
+{
+  "objects": {
+    "customers": {
+      "last_created": 1768407700,
+      "last_sync_iso": "2026-02-19T11:15:12.247143+00:00"
+    },
+    "products": {
+      "last_created": 1765896372,
+      "last_sync_iso": "2026-02-19T11:15:17.481101+00:00"
+    },
+    "prices": {
+      "last_created": 1765896373,
+      "last_sync_iso": "2026-02-19T11:15:23.001370+00:00"
+    },
+    "subscriptions": {
+      "last_created": 1768407700,
+      "last_sync_iso": "2026-02-19T11:15:29.599686+00:00"
+    },
+    "invoices": {
+      "last_created": 1771355149,
+      "last_sync_iso": "2026-02-19T11:15:34.834706+00:00"
+    },
+    "payment_intents": {
+      "last_created": 1771358804,
+      "last_sync_iso": "2026-02-19T11:15:39.386677+00:00"
+    },
+    "charges": {
+      "last_created": 1771358806,
+      "last_sync_iso": "2026-02-19T11:15:46.114553+00:00"
+    }
+  }
+}

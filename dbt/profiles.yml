@@ -1,0 +1,11 @@
+slideheroes_data:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: slideheroes-data-platform
+      dataset: core
+      keyfile: /home/ubuntu/.clawdbot/gcp-service-account.json
+      location: us-east1
+      threads: 4

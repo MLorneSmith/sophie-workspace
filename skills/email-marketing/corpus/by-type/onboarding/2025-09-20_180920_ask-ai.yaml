@@ -1,0 +1,122 @@
+metadata:
+  id: 199692cb266de8b1
+  exportedAt: '2026-01-28T22:05:27.188Z'
+  source: gmail
+  labels:
+  - IMPORTANT
+  - superhuman
+  - CATEGORY_PERSONAL
+headers:
+  from: Rahul Vohra <rahul.vohra@superhuman.com>
+  to: michael@slideheroes.com
+  subject: Ask AI 🧠
+  date: Sat, 20 Sep 2025 22:09:20 +0000
+  messageId: <C8.85.15541.0162FC86@i-0b5bb4a1d17510137.mta1vrest.sd.prd.sparkpost>
+thread:
+  threadId: 199692cb266de8b1
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: 'Hi Michael,
+
+
+    We each receive 3 million words of email every single year.
+
+
+    This includes project updates, deal execution, customer communication, travel
+
+    details, and so much more.
+
+
+    How do we find what matters?
+
+
+    Ask AI 🧠
+
+    Hit ? and simply ask: "where is the q2 offsite" or "when is my flight to sfo".
+
+    In the inbox, pull down to search, tap Ask AI, then simply ask: "where is the
+    q2
+
+    offsite" or "when is my flight to sfo".
+
+
+    You can also combine information from many emails: "what was the customer
+
+    feedback from our last launch?"
+
+
+    You can even ask about your calendar and create meetings: "find time with @Alice
+
+    next tuesday".
+
+    [https://storage.googleapis.com/email-assets.superhuman.com/asi_ai_athena_4.gif]
+
+    Search 🔎
+
+    Hit / to search by sender, keyword, subject, and more. In the inbox, pull down
+
+    to search by sender, keyword, subject, and more.
+
+
+    Try it out, and reply to let us know what you think 💜
+
+
+    Speak soon,
+
+    Rahul
+
+
+    ps. to share Superhuman with your team, hit Cmd+K or Ctrl+K → Add to Team ps.
+    to
+
+    share Superhuman with your team, tap the gift icon in your inbox and select Add
+
+    to Team.
+
+
+    Take me to Superhuman [https://mail.superhuman.com]
+
+
+    If you don''t want to hear from me again, please let me know
+
+    [https://iterable-links.superhuman.com/e/eh?_t=745eb48f80414c6f895aa53319f24f24&amp;_m=f538831cfdcf4417bdd40a4e21dae97e&amp;_e=-Salq5wXAz49dKt11YtvWJe9L_I1Ul4g_rGj8kW5k5iBYzdO_hKb7SWJblrhEF5rDYFvgAa_tj5DVLozCGHSFOuGHCll8dao4VgyWIWtCPSt48vS9sj-mxmhr2hJGo_uGMVGrsvS6PrcMzQnuHXdqVwiAAhaE1E0ZTCZdBAM63OwUMu7QclceyV_zA-lgmHYfgmvEBCh9tQcCQjPAmCjA1UXdIrJD78zbm5dvZn7UaB3td4noP_mRN6e5nTC029Wu8E_QwKdUENbkZQv1ol-8Ai39iAFzN2ALGLZ9WkBhEE8S74vqW80Z2zPt7c3oNjLZA1MAWgD0b9nACsM6273-T-P-hA6ETv9oJc3T21NnXmfk0bOgBgkH6X3J6tQ0fjU]'
+  hasHtml: true
+annotations:
+  campaign: ''
+  campaign_full: ''
+  position: null
+  sequence_length: null
+  email_type: nurture
+  purpose: ''
+  audience: ''
+  techniques_used:
+  - technique: Personal Greeting
+    location: subject_line
+    example: Hi Michael,
+    notes: Detected via pattern matching
+  - technique: Campaign Abbreviation
+    location: body
+    example: 'Hit / '
+    notes: Detected via pattern matching
+  - technique: P.S. Section
+    location: P.S.
+    example: ps.
+    notes: Detected via pattern matching
+  - technique: Question Hook
+    location: opening
+    example: '?
+
+      '
+    notes: Detected via pattern matching
+  hooks:
+    primary:
+      type: ''
+      text: ''
+      why_effective: ''
+  open_loops: []
+  callbacks: []
+  quotable_lines: []
+  notes: Auto-annotated via pattern matching. Review and enhance manually.

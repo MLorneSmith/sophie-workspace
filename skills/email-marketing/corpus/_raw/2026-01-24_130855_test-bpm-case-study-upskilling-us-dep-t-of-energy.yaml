@@ -1,0 +1,191 @@
+# Email Export - TEST: [BPM] Case Study: Upskilling US Dep't of Energy
+# Exported from Gmail on 2026-01-24T18:15:17.407Z
+# Fill in the annotations section to capture writing style patterns
+---
+metadata:
+  id: "19bf131e217f8141"
+  exportedAt: "2026-01-24T18:15:17.407Z"
+  source: "gmail"
+  labels:
+    - "UNREAD"
+    - "andre"
+    - "CATEGORY_FORUMS"
+    - "SENT"
+headers:
+  from: "Michael Smith <msmith@slideheroes.com>"
+  to: "msmith@slideheroes.com"
+  subject: "TEST: [BPM] Case Study: Upskilling US Dep't of Energy"
+  date: "Sat, 24 Jan 2026 18:08:55 +0000 (GMT)"
+  messageId: "<1139499630.2456853.1769278135686@cell-5-74bcb6f7bb-964hc>"
+thread:
+  threadId: "19bf131e217f8141"
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: "Helping DoE present to the Secretary of EnergyView in Web Browser http://slideheroes.activehosted.com/p_v.php?c=10&m=12&s=254303af226d1e258d117bd0fb6519ce&d=0&v=2&l
+
+
+    **'Lesson Zero'**Log-in https://app.slideheroes.com/users/sign_in?utm_source=bpm_sequence&utm_medium=email
+
+
+    **You are receiving this email because you signed-up at SlideHeroes to watch 'Lesson Zero' of our Decks for Decision Makers high-stakes business presentation course. (If you decide you're in the wrong place, no worries. You'll find an unsubscribe link in the footer of this email.)**
+
+
+    Hi Michael,
+
+
+    John Lushetsky is the
+
+
+    **Chief Operating Officer** of the Office of Policy at the
+
+
+    **U.S. Department of Energy.**
+
+
+    John's team is the main office advising the
+
+
+    **Secretary of Energy** on U.S. Energy policy.
+
+
+    A couple of years ago John came to me early in Secretary Rick Perry's term as Secretary with a problem.
+
+
+    You see – US Energy Policy is pretty complex.  It is a complex market, with complex technologies. You know – nuclear reactors and all.
+
+
+    **\"Michael, I have a team of world-class experts – but we can improve how we communicate our recommendations and insights to non-experts.  **
+
+
+    **Sometimes we can get lost in the data.  Sometimes we can get lost in explaining how things work.  **
+
+
+    **Sometime we are not as CLEAR as we need to be in communicating what we have to say.' **
+
+
+    **Can you help?\"**
+
+
+    I put together a week long structured program for 35 of John's top analysts, with the Decks for Decision Makers video course at its core.
+
+
+    Here is what John had to say about Decks for Decision Makers:
+
+
+    **\"10 out of 10.**
+
+
+    **Great content and support materials!**
+
+
+    **Michael's delivery and the flexibility of the pre-recorded online format were fantastic.\"**
+
+
+    Here are some more comments from members of John's team:
+
+
+    **\"The training was detailed, insightful, professional, and directly impacted the work that I do.\" **
+
+
+    – Stephen Hendrickson, Policy Analyst, DOE
+
+
+    **\"Concise treatment of the most important points--not too much \"fluff\" in this course.\"**
+
+
+    – Nathaniel Horner, Policy Analyst, DOE
+
+
+    John got promoted shortly after the team went through DDM.  Correlation does not equal causation but… I'm just sayin'…
+
+
+    See you tomorrow,
+
+
+    **Michael 'just sayin' Smith**
+
+
+    **P.S.**
+
+
+    **If you have a team at work that could benefit from Decks for Decision Makers, we offer Team packages. Hit reply to this email to set-up a call so we can discuss your needs.**
+
+
+    **Your attention is a privilege I never take for granted. If this communication is no longer of interest to you, just click the unsubscribe link below to be removed from this email list:**
+
+
+    Unsubscribe http://slideheroes.activehosted.com/proc.php?c=10&m=12&s=254303af226d1e258d117bd0fb6519ce&d=0&v=2&nl&act=unsub
+
+
+    **SlideHeroes Incorporated, 125-720 King Street West Suite 2000, Toronto, Ontario M5V 3S5, Canada**"
+  hasHtml: true
+annotations:
+  campaign: "BPM"
+  campaign_full: "Business Presentation Mastery"
+  position: 5
+  sequence_length: 7
+  email_type: "case_study"
+  author: "Michael Smith"
+
+  purpose: |
+    Provides social proof through a high-profile government case study demonstrating the real-world impact of DDM training. Uses the U.S. Department of Energy success story to build credibility and create desire for the course.
+
+  audience: "professionals in leadership roles who need to communicate complex information to executives"
+
+  techniques_used:
+    - technique: "Authority by Association"
+      location: "opening"
+      example: "Chief Operating Officer of the Office of Policy at the U.S. Department of Energy"
+      notes: "Establishes credibility through prestigious client"
+    - technique: "Problem-Solution Narrative"
+      location: "body"
+      example: "Sometimes we can get lost in the data... Can you help?"
+      notes: "Uses client's own words to articulate common pain point"
+    - technique: "Testimonial Stacking"
+      location: "middle-to-end"
+      example: "10 out of 10... Great content!"
+      notes: "Multiple testimonials from different team members add depth"
+    - technique: "Correlation-Causation Humor"
+      location: "closing"
+      example: "John got promoted shortly after... Correlation does not equal causation but... I'm just sayin'..."
+      notes: "Self-aware humor while implying benefit"
+    - technique: "Playful Signature"
+      location: "signature"
+      example: "Michael 'just sayin' Smith"
+      notes: "Signature references the joke, adding personality"
+
+  hook:
+    type: "name-drop authority"
+    text: "John Lushetsky is the Chief Operating Officer of the Office of Policy at the U.S. Department of Energy."
+    effectiveness: "Immediately establishes high-stakes credibility with government authority"
+
+  structure:
+    opening: "Introduction of prestigious client and their role"
+    body: "Problem statement in client's voice, followed by solution and testimonials"
+    closing: "Humorous promotion correlation, team offer CTA in P.S."
+
+  effectiveness_notes: |
+    - Uses direct quotes extensively for authenticity
+    - Problem is relatable: experts who struggle to communicate to non-experts
+    - Multiple testimonials reinforce message from different angles
+    - Humor at the end disarms and entertains
+    - P.S. offers team packages - soft upsell
+
+  quotable:
+    - "Sometimes we can get lost in the data. Sometimes we can get lost in explaining how things work."
+    - "Correlation does not equal causation but... I'm just sayin'..."
+    - "10 out of 10. Great content and support materials!"
+
+  andre_style_elements:
+    present:
+      - "Playful nickname in signature"
+      - "Short paragraphs"
+      - "Bold text emphasis"
+      - "P.S. with CTA"
+      - "Testimonials with attribution"
+      - "Self-deprecating/playful humor"
+    missing:
+      - "Parable or metaphor"

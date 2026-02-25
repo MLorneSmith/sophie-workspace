@@ -1,0 +1,9 @@
+Chunking 14 documents by token count...
+[node-llama-cpp] The prebuilt binary for platform "linux" "x64" with Vulkan support is not compatible with the current system, falling back to using no GPU
+Embedding 14 documents (48 chunks, 112.2 KB)
+12 documents split into multiple chunks
+Model: embeddinggemma
+
+[?25l]9;4;3]9;4;1;64███████████████████░░░░░░░░░░░  64% 32/48 429.77744115590775 B/s ETA 1m 36s   ]9;4;1;100██████████████████████████████ 100% 48/48 445.3891635165261 B/s ETA 0s   ]9;4;0[?25h██████████████████████████████ 100%                                    
+
+✓ Done! Embedded 48 chunks from 14 documents in 4m 18s (445.3891635165261 B/s)

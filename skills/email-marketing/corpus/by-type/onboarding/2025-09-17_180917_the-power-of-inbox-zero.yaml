@@ -1,0 +1,117 @@
+metadata:
+  id: 19959b9968006639
+  exportedAt: '2026-01-28T22:05:27.680Z'
+  source: gmail
+  labels:
+  - IMPORTANT
+  - superhuman
+  - CATEGORY_PERSONAL
+headers:
+  from: Rahul Vohra <rahul.vohra@superhuman.com>
+  to: michael@slideheroes.com
+  subject: The power of Inbox Zero 💜
+  date: Wed, 17 Sep 2025 22:09:17 +0000
+  messageId: <EE.07.32465.D813BC86@i-03e66a6c61d7e58ac.mta1vrest.sd.prd.sparkpost>
+thread:
+  threadId: 19959b9968006639
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: 'Hi Michael,
+
+
+    You''re most productive when the only things in your inbox are for today.
+
+
+    This creates a high-priority to-do list, and ensures nothing slips through the
+
+    cracks.
+
+
+    The Power of Inbox Zero
+
+    [https://storage.googleapis.com/email-assets.superhuman.com/Inbox_zero_thumbnail.png]
+
+    https://storage.googleapis.com/email-assets.superhuman.com/Inbox%20Zero%204K.mp4
+
+
+    As you go through your email, ask yourself:
+
+
+    Does it need action today?
+
+    Keep it in your inbox.
+
+    Hit J to check the next email. Swipe the Reply All bar to the left to check the
+
+    next email.
+
+
+    Can it wait?
+
+    Snooze it for later.
+
+    Hit H to set a reminder. Tap 🕓 on Mobile to set a reminder.
+
+
+    Is no action needed?
+
+    Mark it done.
+
+    Hit E to mark done. It''ll return if someone replies. Tap ✔️ to mark done. It''ll
+
+    return if someone replies.
+
+
+    With just these three shortcuts, you''ll fly through your inbox and hit Inbox
+
+    Zero.
+
+
+    And when you do, there''s a little Superhuman surprise waiting for you 💜
+
+
+    Speak soon,
+
+    Rahul
+
+
+    Take me to Superhuman [https://mail.superhuman.com]
+
+
+    If you don''t want to hear from me again, please let me know
+
+    [https://iterable-links.superhuman.com/e/eh?_t=745eb48f80414c6f895aa53319f24f24&amp;_m=0ebd8362800942d6b329b91753483de4&amp;_e=M6fsmHS8GGBWRkJWse91mgTqgMJUhuvOk0dvoCi-pBixIO9wDHl4mkXoDhLRP8EA4kHoro9cza_QN1KyJFFO8zzyE8msqin1yafwobS0AZXhG-9QMNfCMqAom09PP-u-CNPrb_ah9h1rCpD-oXNqYmrtSPhdSuhjdYuZU2lDnIMkRlGUxyZZMwahfjp76cpAqVOBABFiom-MbWyJNNZzpNP5ScIVJhlDzqImRR1jdzdBZjkHgl2-n_67n6eGJohKylM0arZOMcC4pLpuY6OfLz5V-YLSvrFpWgbFPqsAiHXHE7EOjpuqLa7JszdyHu23Heeg6pPiT_JdAUIkczHMf7tyKoXUkDj-B0UZSoHjIDaO7j4q6Goxt0kJbssYgOWc]'
+  hasHtml: true
+annotations:
+  campaign: ''
+  campaign_full: ''
+  position: null
+  sequence_length: null
+  email_type: nurture
+  purpose: ''
+  audience: ''
+  techniques_used:
+  - technique: Personal Greeting
+    location: subject_line
+    example: Hi Michael,
+    notes: Detected via pattern matching
+  - technique: Contrarian
+    location: body
+    example: lie
+    notes: Detected via pattern matching
+  - technique: Question Hook
+    location: body
+    example: '?'
+    notes: Detected via pattern matching
+  hooks:
+    primary:
+      type: ''
+      text: ''
+      why_effective: ''
+  open_loops: []
+  callbacks: []
+  quotable_lines: []
+  notes: Auto-annotated via pattern matching. Review and enhance manually.

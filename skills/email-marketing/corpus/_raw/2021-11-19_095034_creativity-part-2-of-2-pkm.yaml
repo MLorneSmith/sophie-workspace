@@ -1,0 +1,126 @@
+# Email Export - Creativity, Part 2 (of 2) - PKM
+# Exported from Gmail on 2026-01-24T18:15:24.308Z
+# Fill in the annotations section to capture writing style patterns
+---
+metadata:
+  id: "17d38ad824317e79"
+  exportedAt: "2026-01-24T18:15:24.308Z"
+  source: "gmail"
+  labels:
+    - "andre"
+    - "IMPORTANT"
+    - "CATEGORY_PERSONAL"
+headers:
+  from: "\"Andre & Shawn\" <hello@tinylittlebusinesses.com>"
+  to: "Michael <msmith@slideheroes.com>"
+  subject: "Creativity, Part 2 (of 2) - PKM"
+  date: "Fri, 19 Nov 2021 14:50:34 +0000 (UTC)"
+  messageId: "<zluz7lxep5unhm7mwwip@convertkit-mail.com>"
+thread:
+  threadId: "17d38ad824317e79"
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: |
+    [Original content preserved - abbreviated for space]
+  hasHtml: true
+annotations:
+  # === CAMPAIGN CONTEXT ===
+  campaign: "EMN"
+  campaign_full: "Emergent Marketing Newsletter - Creativity Series"
+  position: 2
+  sequence_length: 2
+  email_type: "story"
+
+  # === PURPOSE & AUDIENCE ===
+  purpose: |
+    Concludes creativity series by covering breakout and new normal phases,
+    then reveals key insight: Benson's framework is incomplete because it
+    doesn't address turning ideas into assets. Leads into Ideas to Assets launch.
+
+  audience: "Creators interested in turning ideas into tangible business assets"
+
+  # === TECHNIQUES USED ===
+  techniques_used:
+    - technique: "Plan Disruption Story"
+      location: "opening"
+      example: "You've probably heard the saying that 'no plan survives contact with reality.'"
+      notes: "Meta-commentary on writing process itself"
+    - technique: "Discovery Narrative"
+      location: "opening"
+      example: "Instead of the outcome we expected, we discovered an insight we didn't."
+      notes: "Frames email as real-time discovery"
+    - technique: "Time-Sensitive Alert"
+      location: "opening"
+      example: "(We also need to mention there's a time-sensitive offer in this email...)"
+      notes: "Parenthetical heads-up about commercial content"
+    - technique: "Series Callback"
+      location: "body"
+      example: "Two weeks ago we published Part 1 of a two-part series about creativity"
+      notes: "Links back for context"
+    - technique: "Piano Metaphor"
+      location: "body"
+      example: "the insight that connected with us like a metaphorical piano falling on our heads"
+      notes: "Vivid image for sudden realization"
+    - technique: "A-Ha Description"
+      location: "body"
+      example: "All of a sudden an idea appears, fully formed, in your mind."
+      notes: "Experiential description of breakout"
+    - technique: "Magic Language"
+      location: "body"
+      example: "They feel magical, like a surge of electricity from the top of our heads to the tips of our toes."
+      notes: "Physical sensation description"
+    - technique: "Pattern Revelation"
+      location: "body"
+      example: "Boom...out of nowhere, an idea..."
+      notes: "Dramatic pacing for breakthrough moment"
+    - technique: "Flywheel Reference"
+      location: "body"
+      example: "Benson's breakout framework functions as a flywheel"
+      notes: "Connects to Jim Collins concept"
+    - technique: "Incomplete Framework Critique"
+      location: "body"
+      example: "Benson's view of creativity isn't wrong - it's incomplete."
+      notes: "Respectful critique that adds value"
+    - technique: "Steve Jobs Callback"
+      location: "body"
+      example: "\"To me, ideas are worth nothing unless executed...\" - Steve Jobs"
+      notes: "Repeated quote from Part 1 reinforces theme"
+    - technique: "Interest List CTA"
+      location: "body"
+      example: "Hell Yes I'm Interested in Ideas to Assets..."
+      notes: "Enthusiastic, personality-filled CTA text"
+    - technique: "Big Announcement Tease"
+      location: "closing"
+      example: "We have a huge announcement for 2022...something so big we almost can't believe it ourselves"
+      notes: "Creates anticipation for future content"
+
+  # === HOOK ANALYSIS ===
+  hook:
+    type: "contrarian"
+    text: "We had a plan for today's email...and we thought it was pretty damn good. But then a funny thing happened..."
+    effectiveness: "Subverts expectations, creates curiosity about what changed"
+
+  # === STRUCTURAL NOTES ===
+  structure:
+    opening: "Plan disruption + discovery tease + time-sensitive alert"
+    body: "Part 1 callback + breakout/new normal phases + incomplete framework insight"
+    closing: "ITA launch details + interest list CTA + 2022 tease"
+
+  # === WHAT MAKES THIS EMAIL EFFECTIVE ===
+  effectiveness_notes: |
+    - "Plan disruption" narrative makes email feel authentic and unscripted
+    - A-ha moment descriptions are experiential and relatable
+    - Framework critique (incomplete vs wrong) shows intellectual honesty
+    - Missing piece (execution) leads naturally to ITA product
+    - "Hell Yes" CTA language is personality-driven
+    - 2022 announcement tease maintains engagement beyond current launch
+
+  # === QUOTABLE LINES ===
+  quotable:
+    - "no plan survives contact with reality"
+    - "the insight that connected with us like a metaphorical piano falling on our heads"
+    - "They feel magical, like a surge of electricity from the top of our heads to the tips of our toes."
+    - "Benson's view of creativity isn't wrong - it's incomplete."

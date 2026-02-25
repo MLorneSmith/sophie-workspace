@@ -1,0 +1,74 @@
+metadata:
+  id: 199a1d2cf97a5a84
+  exportedAt: '2026-01-28T22:05:25.398Z'
+  source: gmail
+  labels:
+  - IMPORTANT
+  - superhuman
+  - CATEGORY_PERSONAL
+headers:
+  from: Rahul Vohra <rahul.vohra@superhuman.com>
+  to: michael@slideheroes.com
+  subject: Delight 💜
+  date: Wed, 01 Oct 2025 22:09:30 +0000
+  messageId: <30.1D.45579.A96ADD86@i-0fda4a839e1ef0986.mta1vrest.sd.prd.sparkpost>
+thread:
+  threadId: 199a1d2cf97a5a84
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: 'Hi Michael,
+
+
+    At Superhuman, our main goal is to create delight. That''s why we do not have
+    a
+
+    support team; instead, we have a Delight team!
+
+
+    The Delight team is here to help you with anything. Ask about Superhuman, email,
+
+    productivity… or even just life in general. 😁
+
+
+    To get in touch, even if to say hello, hit Cmd+K (Mac) or Ctrl+K (Windows) →
+
+    Feedback 🙏
+
+
+    Thank you,
+
+    Rahul
+
+
+    Take me to Superhuman [https://mail.superhuman.com]
+
+
+    If you don''t want to hear from me again, please let me know
+
+    [https://iterable-links.superhuman.com/e/eh?_t=745eb48f80414c6f895aa53319f24f24&amp;_m=2632eb8c1195433697ad5398c0b11a62&amp;_e=zKQK5fWj705zU_ALpd_sB4iNR2pGaNH1oqqOuxe1DE_ahTC7Po0H3N6T88srWWyoav2J49SrDmZ0ZgLKXzudt9THCab-QPo7yhRSPwh4Yx3IaZ_gnCqxRE08GrG9S_PqSIAf3BuK0edawvNnyYOISA1_gQrPNUvMfuDsh_k0wzM9vsVvGEL5oM986b-bW0lfrylM9hcCTKaEp0Q88G1POw02bnEBRckjv3zJ3-8bsLsSgUwmfFBFrF8mGbdEkM_plfp_fuogB-5-exql4C90PWhLyzyOe9udg6xla5YZClAHkAfwNTpDsj3tg-bYBLu0B6-hnMSA3BPqDR3s_q5__6EO6fbtKYg95CFgNDiHav1Fir81JPg3Wu4p1F97H3AY]'
+  hasHtml: true
+annotations:
+  campaign: ''
+  campaign_full: ''
+  position: null
+  sequence_length: null
+  email_type: nurture
+  purpose: ''
+  audience: ''
+  techniques_used:
+  - technique: Personal Greeting
+    location: subject_line
+    example: Hi Michael,
+    notes: Detected via pattern matching
+  hooks:
+    primary:
+      type: ''
+      text: ''
+      why_effective: ''
+  open_loops: []
+  callbacks: []
+  quotable_lines: []
+  notes: Auto-annotated via pattern matching. Review and enhance manually.

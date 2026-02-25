@@ -1,0 +1,1 @@
+/home/ubuntu/clawd/sops/linkedin-post-drafting.md
