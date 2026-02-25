@@ -1,7 +1,7 @@
 import {
 	BlocksFeature,
-	UploadFeature,
 	lexicalEditor,
+	UploadFeature,
 } from "@payloadcms/richtext-lexical";
 import type { CollectionConfig } from "payload";
 import { BunnyVideo, CallToAction, TestBlock, YouTubeVideo } from "../blocks";

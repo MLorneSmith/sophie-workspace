@@ -10,13 +10,13 @@ import {
 	recordModelUsageSpan,
 } from "../config/spike-tracing";
 import {
-	AudienceBriefSchema,
-	type AudienceBrief,
-} from "../schemas/presentation-artifacts";
-import {
-	CompanyBriefSchema,
 	type CompanyBrief,
+	CompanyBriefSchema,
 } from "../schemas/company-brief";
+import {
+	type AudienceBrief,
+	AudienceBriefSchema,
+} from "../schemas/presentation-artifacts";
 
 const PERSON_RESEARCH_OUTPUT_SCHEMA = z.object({
 	personName: z.string().min(1),

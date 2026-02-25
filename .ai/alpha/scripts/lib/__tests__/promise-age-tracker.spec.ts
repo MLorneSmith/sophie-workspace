@@ -7,8 +7,8 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-	PromiseAgeTracker,
 	createPromiseAgeTracker,
+	PromiseAgeTracker,
 } from "../promise-age-tracker.js";
 
 // ============================================================================

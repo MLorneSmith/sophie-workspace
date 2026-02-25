@@ -1,8 +1,8 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Suspense } from "react";
-import { Loader2 } from "lucide-react";
 
 import { OutlineEditor } from "./_components/outline-editor";
 

@@ -1,27 +1,27 @@
 import {
-	editorAgent,
 	EditorRedundancyPairSchema,
 	EditorReviewSchema,
 	EditorSlideActionSchema,
+	editorAgent,
 } from "./editor-agent";
 import {
-	partnerAgent,
 	PartnerReviewSchema,
 	PartnerSlideReviewSchema,
 	PartnerSlideScoresSchema,
 	PartnerTopIssueSchema,
+	partnerAgent,
 } from "./partner-agent";
 import {
-	validatorAgent,
 	ValidatorClaimSchema,
 	ValidatorCriticalFlagSchema,
 	ValidatorReviewSchema,
 	ValidatorSlideReviewSchema,
+	validatorAgent,
 } from "./validator-agent";
 import {
-	whispererAgent,
 	WhispererReviewSchema,
 	WhispererSlideNotesSchema,
+	whispererAgent,
 } from "./whisperer-agent";
 
 export const AGENT_CATALOG = [

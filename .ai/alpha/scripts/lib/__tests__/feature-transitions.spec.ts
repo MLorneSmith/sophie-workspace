@@ -18,7 +18,6 @@ vi.mock("../manifest.js", () => ({
 	saveManifest: vi.fn(),
 }));
 
-import { saveManifest } from "../manifest.js";
 import {
 	transitionFeatureStatus,
 	transitionInitiativeStatus,
@@ -26,6 +25,7 @@ import {
 	VALID_FEATURE_TRANSITIONS,
 	VALID_INITIATIVE_TRANSITIONS,
 } from "../feature-transitions.js";
+import { saveManifest } from "../manifest.js";
 
 function createFeature(overrides: Partial<FeatureEntry> = {}): FeatureEntry {
 	return {

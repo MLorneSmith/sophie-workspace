@@ -10,8 +10,8 @@ import {
 	getPersonalAccountNavigationConfig,
 	personalAccountNavigationConfig,
 } from "~/config/personal-account-navigation.config";
-import { getEnableCourses } from "~/lib/server/feature-flags.server";
 import { withI18n } from "~/lib/i18n/with-i18n";
+import { getEnableCourses } from "~/lib/server/feature-flags.server";
 
 // home imports
 import { SkipToContent } from "./_components/dashboard/skip-to-content";

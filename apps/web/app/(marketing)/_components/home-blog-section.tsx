@@ -1,9 +1,8 @@
 "use client";
 
-import { type Variants, motion, useReducedMotion } from "motion/react";
-import Image from "next/image";
-
 import { Badge } from "@kit/ui/badge";
+import { motion, useReducedMotion, type Variants } from "motion/react";
+import Image from "next/image";
 
 const BLUR_PLACEHOLDER =
 	"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIyNSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48ZmlsdGVyIGlkPSJiIj48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyMCIvPjwvZmlsdGVyPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjYikiIGZpbGw9IiMxYTFhMjUiLz48L3N2Zz4=";

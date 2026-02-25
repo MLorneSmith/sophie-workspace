@@ -1,6 +1,6 @@
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { enhanceRouteHandler } from "@kit/next/routes";
 import { getLogger } from "@kit/shared/logger";
-import { createHmac, timingSafeEqual } from "node:crypto";
 
 import { insertLoopsEventToBigQuery } from "~/lib/loops-bigquery";
 import type {

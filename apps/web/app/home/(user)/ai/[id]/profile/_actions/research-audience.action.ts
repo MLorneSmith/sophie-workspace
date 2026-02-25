@@ -1,9 +1,9 @@
 "use server";
 
 import {
-	ConfigManager,
 	type ChatCompletionOptions,
 	type ChatMessage,
+	ConfigManager,
 	createOpenAIOnlyConfig,
 	getChatCompletion,
 } from "@kit/ai-gateway";
@@ -26,12 +26,12 @@ import {
 } from "../../../_lib/server/company-brief-synthesis.service";
 import { researchCompany } from "../../../_lib/server/company-research.service";
 import {
+	getCompanyDetails,
+	getPersonProfile,
 	type NetrowsEnrichmentResult,
 	researchPerson,
-	searchPersonFuzzy,
 	searchCompany,
-	getPersonProfile,
-	getCompanyDetails,
+	searchPersonFuzzy,
 } from "../../../_lib/server/netrows.service";
 
 // ---------------------------------------------------------------------------

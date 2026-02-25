@@ -95,10 +95,10 @@ vi.mock("../work-queue.js", async (importOriginal) => {
 
 // Import after mocking
 import { emitOrchestratorEvent } from "../event-emitter.js";
-import { readProgressFile, getProgressFileAge } from "../progress-file.js";
-import { saveManifest } from "../manifest.js";
-import { WorkLoop, type WorkLoopOptions } from "../work-loop.js";
 import { runFeatureImplementation } from "../feature.js";
+import { saveManifest } from "../manifest.js";
+import { getProgressFileAge, readProgressFile } from "../progress-file.js";
+import { WorkLoop, type WorkLoopOptions } from "../work-loop.js";
 
 // ============================================================================
 // Test Constants

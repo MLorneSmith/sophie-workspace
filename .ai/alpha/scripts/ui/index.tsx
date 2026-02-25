@@ -8,6 +8,7 @@ import {
 	MinimalOrchestratorUI,
 	OrchestratorUI,
 } from "./components/OrchestratorUI.js";
+import { useEventStream } from "./hooks/useEventStream.js";
 import {
 	createFsProgressReader,
 	createInitialState,
@@ -15,7 +16,6 @@ import {
 	type ProgressReader,
 	useProgressPoller,
 } from "./hooks/useProgressPoller.js";
-import { useEventStream } from "./hooks/useEventStream.js";
 import type {
 	OrchestratorEvent,
 	OrchestratorEventType,

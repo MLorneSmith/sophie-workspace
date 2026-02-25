@@ -4,6 +4,6 @@
  * For server-side analytics, import from "@kit/posthog/server" instead.
  */
 export {
-	createClientPostHogAnalyticsService as createPostHogAnalyticsService,
 	ClientPostHogImpl,
+	createClientPostHogAnalyticsService as createPostHogAnalyticsService,
 } from "./client";

@@ -1,11 +1,9 @@
 import "server-only";
 
-import { cache } from "react";
-
-import type { SupabaseClient } from "@supabase/supabase-js";
-
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { cache } from "react";
 
 import type { Database } from "~/lib/database.types";
 

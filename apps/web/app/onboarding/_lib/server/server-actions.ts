@@ -3,10 +3,8 @@
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
-
-import { sendUserSignedUpEvent } from "./loops-events";
-
 import { ServerFormSchema } from "../onboarding-form.schema";
+import { sendUserSignedUpEvent } from "./loops-events";
 
 // Define the onboarding data type
 type OnboardingData = {

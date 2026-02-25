@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { animate } from "motion";
 import { useInView } from "motion/react";
+import { useEffect, useRef } from "react";
 
 interface UseCountUpOptions {
 	target: number;

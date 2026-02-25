@@ -1,7 +1,5 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@kit/ui/enhanced-data-table";
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import {
@@ -11,6 +9,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@kit/ui/card";
+import { DataTable } from "@kit/ui/enhanced-data-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { Pencil, Plus } from "lucide-react";
 import Link from "next/link";
 

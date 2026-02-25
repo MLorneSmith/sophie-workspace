@@ -5,8 +5,16 @@
 * Re-exports all constants from the constants module
  */
 
+// Re-export environment getters and utilities for database operations
+export {
+	getSupabaseAccessToken,
+	getSupabaseProjectRef,
+	hasSupabaseAuth,
+	validateSupabaseConfig,
+} from "../lib/environment.js";
 export {
 	ARCHIVE_DIR,
+	DEFAULT_PROVIDER,
 	DEV_SERVER_PORT,
 	EVENT_SERVER_PORT,
 	FEATURE_TIMEOUT_MS,
@@ -35,7 +43,6 @@ export {
 	PTY_RECOVERY_POLL_INTERVAL_MS,
 	PTY_WAIT_TIMEOUT_MS,
 	RECENT_OUTPUT_LINES,
-	DEFAULT_PROVIDER,
 	SANDBOX_CREATION_MAX_RETRIES,
 	SANDBOX_CREATION_RETRY_BASE_DELAY_MS,
 	SANDBOX_KEEPALIVE_INTERVAL_MS,
@@ -51,11 +58,3 @@ export {
 	VSCODE_PORT,
 	WORKSPACE_DIR,
 } from "./constants.js";
-
-// Re-export environment getters and utilities for database operations
-export {
-	getSupabaseAccessToken,
-	getSupabaseProjectRef,
-	hasSupabaseAuth,
-	validateSupabaseConfig,
-} from "../lib/environment.js";

@@ -22,9 +22,9 @@ import type {
 	SpecManifest,
 } from "../types/index.js";
 import { transitionFeatureStatus } from "./feature-transitions.js";
-import { validateProgressStatus } from "./progress-file.js";
 import { createLogger } from "./logger.js";
 import { saveManifest } from "./manifest.js";
+import { validateProgressStatus } from "./progress-file.js";
 import { getForceKillCommand, getProviderDisplayName } from "./provider.js";
 import { sleep } from "./utils.js";
 

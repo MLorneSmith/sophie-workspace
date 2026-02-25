@@ -22,10 +22,10 @@ import type {
 	SandboxInstance,
 	SandboxProgress,
 } from "../types/index.js";
-import { createLogger } from "./logger.js";
 import { getProjectRoot } from "./lock.js";
-import { validateProgressStatus } from "./progress-file.js";
+import { createLogger } from "./logger.js";
 import { ensureUIProgressDir } from "./manifest.js";
+import { validateProgressStatus } from "./progress-file.js";
 import { sleep } from "./utils.js";
 
 // ============================================================================

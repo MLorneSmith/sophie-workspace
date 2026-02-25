@@ -3,8 +3,8 @@
 import {
 	closestCenter,
 	DndContext,
-	DragOverlay,
 	type DragEndEvent,
+	DragOverlay,
 	PointerSensor,
 	useSensor,
 	useSensors,

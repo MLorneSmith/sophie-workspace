@@ -1,5 +1,4 @@
 import { If } from "@kit/ui/if";
-import type { SidebarConfig } from "@kit/ui/sidebar";
 import {
 	Sidebar,
 	SidebarContent,
@@ -7,6 +6,7 @@ import {
 	SidebarHeader,
 	SidebarNavigation,
 } from "@kit/ui/shadcn-sidebar";
+import type { SidebarConfig } from "@kit/ui/sidebar";
 import { cn } from "@kit/ui/utils";
 
 import { AppLogo } from "~/components/app-logo";

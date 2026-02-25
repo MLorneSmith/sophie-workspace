@@ -6,8 +6,8 @@
  */
 
 export {
-	AudienceBriefSchema,
-	StoryboardContentSchema,
 	type AudienceBrief,
+	AudienceBriefSchema,
 	type StoryboardContent,
+	StoryboardContentSchema,
 } from "../../../../apps/web/app/home/(user)/ai/_lib/schemas/presentation-artifacts";

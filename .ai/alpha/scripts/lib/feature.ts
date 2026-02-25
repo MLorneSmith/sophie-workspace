@@ -37,12 +37,8 @@ import {
 import { transitionFeatureStatus } from "./feature-transitions.js";
 import { killClaudeProcess } from "./health.js";
 import { getProjectRoot } from "./lock.js";
+import { createLogger } from "./logger.js";
 import { saveManifest } from "./manifest.js";
-import {
-	buildImplementationPrompt,
-	buildProviderCommand,
-	getProviderDisplayName,
-} from "./provider.js";
 import {
 	checkForStall,
 	type OutputTracker,
@@ -50,6 +46,11 @@ import {
 	writeUIProgress,
 } from "./progress.js";
 import { validateProgressStatus } from "./progress-file.js";
+import {
+	buildImplementationPrompt,
+	buildProviderCommand,
+	getProviderDisplayName,
+} from "./provider.js";
 import {
 	PTYTimeoutError,
 	type WaitWithTimeoutResult,
@@ -62,7 +63,6 @@ import {
 	getRetryDelay,
 	updateOutputTracker,
 } from "./startup-monitor.js";
-import { createLogger } from "./logger.js";
 import { stripAnsiCodes } from "./utils.js";
 import { updateNextFeatureId } from "./work-queue.js";
 

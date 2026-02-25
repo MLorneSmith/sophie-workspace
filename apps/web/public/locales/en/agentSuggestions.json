@@ -1,0 +1,51 @@
+{
+	"title": "Agent Suggestions",
+	"loading": "Loading suggestions...",
+	"noSuggestions": "No suggestions available",
+	"runReview": "Run a review to get suggestions",
+	"slideLabel": "Slide {{slideId}}",
+	"countPending": "{{count}} pending",
+	"countAccepted": "{{count}} accepted",
+	"countApplied": "{{count}} applied",
+	"rejectAll": "Reject All",
+	"acceptAll": "Accept All",
+	"action": {
+		"reject": "Reject suggestion: {{summary}}",
+		"accept": "Accept suggestion: {{summary}}"
+	},
+	"agent": {
+		"partner": {
+			"name": "Partner",
+			"description": "Strategic review and scoring"
+		},
+		"validator": {
+			"name": "Validator",
+			"description": "Fact-checking and verification"
+		},
+		"whisperer": {
+			"name": "Whisperer",
+			"description": "Speaker notes and delivery"
+		},
+		"editor": {
+			"name": "Editor",
+			"description": "Structure and flow optimization"
+		}
+	},
+	"status": {
+		"pending": "Pending",
+		"accepted": "Accepted",
+		"rejected": "Rejected",
+		"applied": "Applied"
+	},
+	"type": {
+		"narrative": "Narrative",
+		"factual": "Factual",
+		"delivery": "Delivery",
+		"structural": "Structural"
+	},
+	"priority": {
+		"high": "High",
+		"medium": "Medium",
+		"low": "Low"
+	}
+}

@@ -1,23 +1,18 @@
 "use client";
 
-import { Button } from "@kit/ui/button";
 import { Badge } from "@kit/ui/badge";
+import { Button } from "@kit/ui/button";
 import { cn } from "@kit/ui/utils";
-import Bold from "@tiptap/extension-bold";
-import BulletList from "@tiptap/extension-bullet-list";
-import Heading from "@tiptap/extension-heading";
-import Italic from "@tiptap/extension-italic";
-import ListItem from "@tiptap/extension-list-item";
-import OrderedList from "@tiptap/extension-ordered-list";
 import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
-import StarterKit from "@tiptap/starter-kit";
 import {
 	type Editor,
-	type JSONContent,
 	EditorContent,
+	type JSONContent,
 	useEditor,
 } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import debounce from "lodash/debounce";
 import {
 	Bold as BoldIcon,
 	CheckCircle,
@@ -33,7 +28,6 @@ import {
 	Underline as UnderlineIcon,
 	Undo,
 } from "lucide-react";
-import debounce from "lodash/debounce";
 import {
 	useCallback,
 	useEffect,
@@ -245,17 +239,15 @@ export function OutlineEditor({ presentationId }: OutlineEditorProps) {
 		{
 			immediatelyRender: false,
 			extensions: [
-				StarterKit,
+				StarterKit.configure({
+					heading: {
+						levels: [1, 2, 3],
+					},
+				}),
 				Placeholder.configure({
 					placeholder: "Your presentation outline will appear here...",
 				}),
-				Bold,
-				Italic,
 				Underline,
-				Heading.configure({ levels: [1, 2, 3] }),
-				BulletList,
-				OrderedList,
-				ListItem,
 			],
 			content: initialContent,
 			editorProps: {

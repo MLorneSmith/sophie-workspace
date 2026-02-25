@@ -1,13 +1,5 @@
 "use client";
 
-import {
-	BookOpen,
-	ClipboardList,
-	Presentation,
-	ArrowRight,
-} from "lucide-react";
-import Link from "next/link";
-
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -16,6 +8,13 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@kit/ui/card";
+import {
+	ArrowRight,
+	BookOpen,
+	ClipboardList,
+	Presentation,
+} from "lucide-react";
+import Link from "next/link";
 
 interface WelcomeStep {
 	icon: React.ElementType;

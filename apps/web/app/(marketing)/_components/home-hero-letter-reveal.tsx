@@ -1,6 +1,6 @@
 "use client";
 
-import { m, type Variants, useReducedMotion } from "motion/react";
+import { m, useReducedMotion, type Variants } from "motion/react";
 import type { ElementType } from "react";
 
 interface LetterRevealProps {

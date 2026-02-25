@@ -36,10 +36,10 @@ vi.mock("../work-queue.js", () => ({
 	shouldRetryFailedFeature: vi.fn(),
 }));
 
-import { RecoveryCoordinator } from "../recovery-coordinator.js";
 import { transitionFeatureStatus } from "../feature-transitions.js";
 import { killClaudeProcess } from "../health.js";
 import { saveManifest } from "../manifest.js";
+import { RecoveryCoordinator } from "../recovery-coordinator.js";
 import { shouldRetryFailedFeature } from "../work-queue.js";
 
 // ============================================================================

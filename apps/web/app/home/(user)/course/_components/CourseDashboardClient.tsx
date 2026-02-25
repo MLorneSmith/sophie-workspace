@@ -1,13 +1,12 @@
 "use client";
 
-import { useSupabase } from "@kit/supabase/hooks/use-supabase";
-import { Badge } from "@kit/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
-
 import type {
 	Course,
 	CourseLesson as PayloadCourseLesson,
 } from "@kit/cms-types";
+import { useSupabase } from "@kit/supabase/hooks/use-supabase";
+import { Badge } from "@kit/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { CheckCircle, XCircle } from "lucide-react";
 import Image from "next/image";

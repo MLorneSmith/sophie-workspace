@@ -1,6 +1,5 @@
-import type { Metadata } from "next";
-
 import { PageBody } from "@kit/ui/page";
+import type { Metadata } from "next";
 
 import { HomeLayoutPageHeader } from "../_components/home-page-header";
 import PresentationsList from "./_components/PresentationsList";

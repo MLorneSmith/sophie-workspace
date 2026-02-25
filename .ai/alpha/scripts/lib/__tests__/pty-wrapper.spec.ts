@@ -15,11 +15,11 @@ import {
 } from "../../config/index.js";
 import type { ProgressFileData } from "../progress-file.js";
 import {
+	type PTYHandle,
 	PTYTimeoutError,
 	ptyTelemetry,
 	resetPtyTelemetry,
 	waitWithTimeout,
-	type PTYHandle,
 } from "../pty-wrapper.js";
 
 // ============================================================================
@@ -36,10 +36,10 @@ vi.mock("../progress-file.js", () => ({
 
 // Import mocked functions after vi.mock
 import {
-	readProgressFile,
-	isProgressFileStale,
 	isFeatureCompleted,
 	isFeatureFailed,
+	isProgressFileStale,
+	readProgressFile,
 } from "../progress-file.js";
 
 /**

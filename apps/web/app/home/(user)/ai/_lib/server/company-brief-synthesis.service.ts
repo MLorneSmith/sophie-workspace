@@ -1,9 +1,9 @@
 import "server-only";
 
 import {
-	ConfigManager,
 	type ChatCompletionOptions,
 	type ChatMessage,
+	ConfigManager,
 	createOpenAIOnlyConfig,
 	getChatCompletion,
 } from "@kit/ai-gateway";

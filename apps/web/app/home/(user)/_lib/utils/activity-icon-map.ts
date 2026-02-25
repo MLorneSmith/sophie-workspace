@@ -1,11 +1,10 @@
-import type { ComponentType, SVGProps } from "react";
-
 import {
 	BookOpen,
 	ClipboardCheck,
 	HelpCircle,
 	Presentation,
 } from "lucide-react";
+import type { ComponentType, SVGProps } from "react";
 
 import type { ActivityItem } from "../types/activity.types";
 

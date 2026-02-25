@@ -25,8 +25,8 @@ import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 
 import {
-	AdminSettingsSchema,
 	type AdminSettingsInput,
+	AdminSettingsSchema,
 } from "../_lib/schemas/settings.schema";
 import { updateConfigAction } from "../_lib/server/update-config-server-actions";
 

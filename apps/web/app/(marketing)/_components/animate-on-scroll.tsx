@@ -1,6 +1,6 @@
 "use client";
 
-import { type Variants, motion, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion, type Variants } from "motion/react";
 import type { ElementType, ReactNode } from "react";
 
 type MotionElement = "div" | "section" | "article" | "aside" | "main" | "span";

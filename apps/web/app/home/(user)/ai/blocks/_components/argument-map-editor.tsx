@@ -2,9 +2,9 @@
 
 import "@xyflow/react/dist/style.css";
 
+import Dagre from "@dagrejs/dagre";
 import { Button } from "@kit/ui/button";
 import { cn } from "@kit/ui/utils";
-import Dagre from "@dagrejs/dagre";
 import {
 	Background,
 	Controls,
@@ -22,7 +22,7 @@ import type {
 	ArgumentMapNode as ArgumentMapNodeType,
 	ArgumentMapNodeType as NodeType,
 } from "../../_lib/schemas/presentation-artifacts";
-import { ArgumentMapNode, type ArgumentMapFlowNode } from "./argument-map-node";
+import { type ArgumentMapFlowNode, ArgumentMapNode } from "./argument-map-node";
 
 export interface ArgumentMapEditorProps {
 	value: ArgumentMapNodeType | null;
