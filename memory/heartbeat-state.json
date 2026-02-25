@@ -1,42 +1,18 @@
 {
   "lastChecks": {
-    "email": 1772040390,
-    "calendar": 1740482400,
+    "email": 1740498000,
+    "calendar": 1740498000,
     "weather": 1740482400,
-    "capture": 1772040390,
+    "capture": 1740498000,
     "memory_maintenance": 1771916911,
     "todoist_reconciliation": 1771920186
   },
   "cadence": {
-    "email": {
-      "intervalMinutes": 120,
-      "windowStart": 12,
-      "windowEnd": 3
-    },
-    "calendar": {
-      "intervalMinutes": 240,
-      "windowStart": 12,
-      "windowEnd": 2
-    },
-    "weather": {
-      "intervalMinutes": 480,
-      "windowStart": 12,
-      "windowEnd": 22
-    },
-    "capture": {
-      "intervalMinutes": 30,
-      "windowStart": 0,
-      "windowEnd": 23
-    },
-    "memory_maintenance": {
-      "intervalMinutes": 10080,
-      "windowStart": 2,
-      "windowEnd": 6
-    },
-    "todoist_reconciliation": {
-      "intervalMinutes": 1440,
-      "windowStart": 3,
-      "windowEnd": 5
-    }
+    "email": {"intervalMinutes": 120, "windowStart": 12, "windowEnd": 3},
+    "calendar": {"intervalMinutes": 240, "windowStart": 12, "windowEnd": 2},
+    "weather": {"intervalMinutes": 480, "windowStart": 12, "windowEnd": 22},
+    "capture": {"intervalMinutes": 30, "windowStart": 0, "windowEnd": 23},
+    "memory_maintenance": {"intervalMinutes": 10080, "windowStart": 2, "windowEnd": 6},
+    "todoist_reconciliation": {"intervalMinutes": 1440, "windowStart": 3, "windowEnd": 5}
   }
 }
