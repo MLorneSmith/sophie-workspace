@@ -53,15 +53,24 @@ CREATE POLICY agent_runs_insert
 ON public.agent_runs
 FOR INSERT
 TO authenticated
-WITH CHECK (auth.uid() = user_id);
+WITH CHECK (
+  auth.uid() = user_id
+  AND account_id = (SELECT p.account_id FROM public.presentations p WHERE p.id = presentation_id)
+);
 
 DROP POLICY IF EXISTS agent_runs_update ON public.agent_runs;
 CREATE POLICY agent_runs_update
 ON public.agent_runs
 FOR UPDATE
 TO authenticated
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
+USING (
+  auth.uid() = user_id
+  AND account_id = (SELECT p.account_id FROM public.presentations p WHERE p.id = presentation_id)
+)
+WITH CHECK (
+  auth.uid() = user_id
+  AND account_id = (SELECT p.account_id FROM public.presentations p WHERE p.id = presentation_id)
+);
 
 DROP POLICY IF EXISTS agent_runs_delete ON public.agent_runs;
 CREATE POLICY agent_runs_delete

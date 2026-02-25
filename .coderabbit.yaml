@@ -1,0 +1,101 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# SlideHeroes CodeRabbit Configuration
+
+language: en
+early_access: true
+
+chat:
+  auto_reply: true
+
+reviews:
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+      - dev
+    ignore_title_keywords:
+      - "WIP"
+      - "DO NOT REVIEW"
+
+  # Review style - thorough but not nitpicky
+  profile: chill
+
+  # Summary and visualization
+  high_level_summary: true
+  sequence_diagrams: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  changed_files_summary: true
+
+  # Don't auto-approve once comments are resolved (Sophie iterates, Mike approves)
+  request_changes_workflow: false
+
+  # Exclude build artifacts, dependencies, and generated files
+  path_filters:
+    - "!**/node_modules/**"
+    - "!**/dist/**"
+    - "!**/.next/**"
+    - "!**/.turbo/**"
+    - "!**/package-lock.json"
+    - "!**/pnpm-lock.yaml"
+    - "!**/*.gen.ts"
+
+    - "!**/.ai/**"
+    - "!**/.claude/**"
+
+  # Stack-specific review instructions
+  path_instructions:
+    # TypeScript/React - main application code
+    - path: "**/*.{ts,tsx}"
+      instructions: |
+        This is a Next.js 15 monorepo (Turborepo) with:
+        - Supabase (auth, database, RLS policies)
+        - Tailwind CSS v4
+        - Payload CMS
+        - Biome for linting/formatting
+
+        Review for:
+        - Server Components by default; 'use client' only when necessary
+        - Proper Supabase RLS — never bypass security policies
+        - No exposed API keys, secrets, or sensitive data
+        - TypeScript strict mode — avoid 'any', use explicit types
+        - Prefer 'import type' for type-only imports
+        - React best practices: proper use of hooks, memo, useCallback
+        - Proper error handling and loading states
+        - Accessibility basics (semantic HTML, aria labels)
+
+    # Supabase database files
+    - path: "packages/supabase/**/*.sql"
+      instructions: |
+        Review SQL migrations and RLS policies for:
+        - Security: RLS policies must be present on all tables
+        - No overly permissive policies (avoid USING (true) on sensitive tables)
+        - Proper indexes for query performance
+        - Safe migration patterns (no data loss)
+        - Consistent naming conventions
+
+    # Package configurations
+    - path: "**/package.json"
+      instructions: |
+        Review for:
+        - Version consistency across the monorepo
+        - No unnecessary dependencies
+        - Proper workspace references (@kit/* packages)
+
+    # Environment and config files
+    - path: "**/*.env*"
+      instructions: |
+        CRITICAL: Flag any real secrets, API keys, or credentials.
+        Only .env.example files should be committed.
+
+    # Test files
+    - path: "**/*.test.{ts,tsx}"
+      instructions: |
+        Review tests for:
+        - Meaningful assertions (not just snapshot tests)
+        - Edge case coverage
+        - Proper mocking of Supabase and external services
+        - Async behavior properly handled
+
