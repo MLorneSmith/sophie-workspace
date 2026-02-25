@@ -207,7 +207,26 @@ export async function withRetry<T>(
 		!Number.isInteger(maxAttempts) ||
 		maxAttempts < 1
 	) {
-		throw new Error("Retry maxAttempts must be >= 1");
+		throw new Error("Retry maxAttempts must be a finite positive integer");
+	}
+
+	// Validate timing options to prevent NaN/negative delays
+	if (!Number.isFinite(initialDelayMs) || initialDelayMs < 0) {
+		throw new Error(
+			"Retry initialDelayMs must be a finite non-negative number",
+		);
+	}
+
+	if (!Number.isFinite(maxDelayMs) || maxDelayMs < 0) {
+		throw new Error("Retry maxDelayMs must be a finite non-negative number");
+	}
+
+	if (maxDelayMs < initialDelayMs) {
+		throw new Error("Retry maxDelayMs must be >= initialDelayMs");
+	}
+
+	if (!Number.isFinite(backoffMultiplier) || backoffMultiplier <= 0) {
+		throw new Error("Retry backoffMultiplier must be a finite positive number");
 	}
 
 	for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {

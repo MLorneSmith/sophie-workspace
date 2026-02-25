@@ -1,14 +1,12 @@
-import type { ZodSchema } from "zod";
-
 import { RequestContext } from "@mastra/core/request-context";
-
-import { researchAgent } from "../agents/research-agent";
+import type { ZodSchema } from "zod";
 import { LAUNCH_AGENTS } from "../agents/registry";
+import { researchAgent } from "../agents/research-agent";
 import {
-	getModelFallbackChain,
-	resolveModel,
 	type AgentName,
+	getModelFallbackChain,
 	type ModelOverrides,
+	resolveModel,
 	type TaskType,
 } from "../config/model-routing";
 import { CircuitBreaker } from "./circuit-breaker";
@@ -46,6 +44,13 @@ type AgentRunner = {
 	}>;
 };
 
+/**
+ * Module-level singletons for resilience state.
+ *
+ * NOTE: These persist for the process lifetime. In serverless/edge environments,
+ * they reset on cold starts, reducing effectiveness. For serverless deployments,
+ * consider externalizing circuit breaker state or using dependency injection.
+ */
 const MODEL_CIRCUIT_BREAKERS = new Map<string, CircuitBreaker>();
 const SHARED_RATE_LIMITER = new RateLimiter();
 
@@ -168,7 +173,13 @@ async function executeAgentCall<T>(params: {
 	);
 
 	const result = params.structuredOutput
-		? (params.structuredOutput.schema.parse(output.object) as T)
+		? output.object !== undefined
+			? (params.structuredOutput.schema.parse(output.object) as T)
+			: (() => {
+					throw new Error(
+						`Structured output requested but model "${params.modelId}" returned no object`,
+					);
+				})()
 		: (output.text as T);
 
 	const tokenUsage = output.totalUsage
@@ -205,10 +216,15 @@ export async function runAgentWithResilience<T>(
 	for (const modelId of modelChain) {
 		const circuitBreaker = getCircuitBreaker(modelId);
 
+		// Check if circuit is open before consuming rate limiter tokens
+		if (circuitBreaker.state === "open") {
+			continue; // Skip to next model in chain
+		}
+
 		try {
+			await SHARED_RATE_LIMITER.acquire(estimatedTokens);
 			const outcome = await withRetry(async () => {
 				attempts += 1;
-				await SHARED_RATE_LIMITER.acquire(estimatedTokens);
 				return circuitBreaker.execute(async () =>
 					executeAgentCall<T>({
 						agent,
@@ -229,6 +245,14 @@ export async function runAgentWithResilience<T>(
 		} catch (error) {
 			lastError = error;
 		}
+	}
+
+	if (attempts === 0) {
+		throw new Error(
+			`All circuit breakers open for agent "${options.agentId}". ` +
+				`Models skipped: ${modelChain.join(", ")}. ` +
+				"No requests attempted.",
+		);
 	}
 
 	const errorMessage = [

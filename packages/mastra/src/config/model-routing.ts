@@ -12,6 +12,9 @@
  * Portkey for cost tracking and fallbacks.
  */
 
+import type { MastraModelConfig } from "@mastra/core/llm";
+import type { RequestContext } from "@mastra/core/request-context";
+
 export type AgentName =
 	| "research"
 	| "partner"
@@ -34,8 +37,6 @@ export interface ModelPolicy {
 }
 
 export type ModelOverrides = Partial<Record<AgentName, string>>;
-
-const DEFAULT_FALLBACK_MODEL = "openai/gpt-4o-mini";
 
 export const MODEL_COST_TIERS: Record<string, CostTier> = {
 	"openai/gpt-4o-mini": "low",
@@ -101,6 +102,8 @@ export const AGENT_MODEL_POLICY: Record<AgentName, ModelPolicy> = {
 	},
 
 	// Editor agent — copy editing, consistency, formatting
+	// NOTE: Fallback chain intentionally escalates to higher-quality models.
+	// For editing tasks, quality trumps cost — a bad edit is worse than an expensive one.
 	editor: {
 		default: "openai/gpt-4o-mini",
 		reasoning: "openai/gpt-4o",
@@ -118,8 +121,7 @@ export function getModelForAgent(
 	taskType: TaskType = "default",
 ): string {
 	const policy = AGENT_MODEL_POLICY[agent];
-	if (!policy) return DEFAULT_FALLBACK_MODEL;
-
+	// Note: AGENT_MODEL_POLICY is Record<AgentName, ModelPolicy>, so policy is always defined
 	return policy[taskType] ?? policy.default;
 }
 
@@ -172,10 +174,10 @@ export function resolveModel(
 
 /**
  * Create a dynamic model resolver for an agent that supports runtime overrides
- * via Mastra's runtimeContext.
+ * via Mastra's RequestContext.
  *
  * When passed as `model` to a Mastra Agent constructor, this function is called
- * on each `agent.generate()` invocation. If `runtimeContext` contains a "modelId"
+ * on each `agent.generate()` invocation. If `requestContext` contains a "modelId"
  * key, that model is used instead of the agent's default.
  *
  * This enables the resilient-agent-runner to swap models during fallback without
@@ -192,15 +194,16 @@ export function resolveModel(
 export function createDynamicModelForAgent(
 	agent: AgentName,
 	taskType: TaskType = "default",
-) {
-	return ({
-		requestContext,
-	}: {
-		requestContext?: { get: (key: string) => string | undefined };
-	} = {}) => {
-		const override = requestContext?.get("modelId");
-		if (override) return override;
+): ({
+	requestContext,
+}: {
+	requestContext?: RequestContext;
+	mastra?: unknown;
+}) => MastraModelConfig {
+	return ({ requestContext }) => {
+		const override = requestContext?.get("modelId") as string | undefined;
+		if (override) return override as MastraModelConfig;
 
-		return getModelForAgent(agent, taskType);
+		return getModelForAgent(agent, taskType) as MastraModelConfig;
 	};
 }
