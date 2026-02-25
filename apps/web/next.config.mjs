@@ -72,8 +72,19 @@ const config = {
 		return config;
 	},
 	// needed for supporting dynamic imports for local content
+	// and native addons that use dynamic binary loading
 	outputFileTracingIncludes: {
-		"/*": ["./content/**/*"],
+		// Route key is URL pattern, not filesystem path - use /* for all routes
+		"/*": [
+			"./content/**/*",
+			// @ast-grep/napi dynamically loads platform-specific .node binaries
+			// These must be explicitly included for Vercel's output file tracer
+			// Includes both glibc (gnu) and musl (Alpine) variants
+			"./node_modules/@ast-grep/napi-linux-x64-gnu/**",
+			"./node_modules/@ast-grep/napi-linux-arm64-gnu/**",
+			"./node_modules/@ast-grep/napi-linux-x64-musl/**",
+			"./node_modules/@ast-grep/napi-linux-arm64-musl/**",
+		],
 	},
 	redirects: getRedirects,
 	rewrites: getPostHogRewrites,
