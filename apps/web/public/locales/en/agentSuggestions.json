@@ -48,6 +48,10 @@
 		"medium": "Medium",
 		"low": "Low"
 	},
+	"stale": {
+		"editsAgo": "{{count, plural, one {# edit ago} other {# edits ago}}}",
+		"tooltip": "{{count, plural, one {Results from # edit ago. Storyboard was modified after this agent run.} other {Results from # edits ago. Storyboard was modified after this agent run.}}}"
+	},
 	"runStatus": {
 		"pending": "Pending",
 		"running": "Running",

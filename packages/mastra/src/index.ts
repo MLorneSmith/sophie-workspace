@@ -32,6 +32,7 @@ export type {
 	SupabaseClientLike,
 	UpdateAgentRunInput,
 } from "./persistence/agent-results";
+// isSuggestionStale is server-only — import via "@kit/mastra/persistence"
 // RAG utilities moved to deep-import "@kit/mastra/rag" to avoid client-side bundling
 export * from "./resilience";
 // Agent output transformers (explicit exports to avoid collision with "./types")

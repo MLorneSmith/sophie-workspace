@@ -12,8 +12,8 @@ import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import { Card, CardContent, CardHeader } from "@kit/ui/card";
 import { ScrollArea } from "@kit/ui/scroll-area";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@kit/ui/tabs";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@kit/ui/tooltip";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
 import {
@@ -105,6 +105,8 @@ interface SuggestionCardProps {
 	onAccept: (id: string) => void;
 	onReject: (id: string) => void;
 	isProcessing?: boolean;
+	isStale?: boolean;
+	stalenessEdits?: number;
 }
 
 function SuggestionCard({
@@ -112,6 +114,8 @@ function SuggestionCard({
 	onAccept,
 	onReject,
 	isProcessing,
+	isStale = false,
+	stalenessEdits = 0,
 }: SuggestionCardProps) {
 	const { t } = useTranslation("agentSuggestions");
 	const statusConfig =
@@ -123,6 +127,7 @@ function SuggestionCard({
 			className={cn(
 				"bg-card/30 transition-opacity",
 				isProcessing && "opacity-50",
+				isStale && "opacity-60",
 			)}
 			data-testid={`suggestion-card-${suggestion.id}`}
 		>
@@ -133,12 +138,38 @@ function SuggestionCard({
 							{suggestion.summary}
 						</p>
 					</div>
-					<Badge
-						variant={statusConfig.variant}
-						className="text-[10px] shrink-0"
-					>
-						<Trans i18nKey={statusConfig.labelKey} />
-					</Badge>
+					<div className="flex items-center gap-1">
+						{isStale && (
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<Badge
+										variant="outline"
+										className="text-[10px] text-amber-600 border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-700"
+										data-testid="stale-badge"
+									>
+										<Trans
+											i18nKey="agentSuggestions:stale.editsAgo"
+											values={{ count: stalenessEdits }}
+										/>
+									</Badge>
+								</TooltipTrigger>
+								<TooltipContent>
+									<p className="text-xs">
+										<Trans
+											i18nKey="agentSuggestions:stale.tooltip"
+											values={{ count: stalenessEdits }}
+										/>
+									</p>
+								</TooltipContent>
+							</Tooltip>
+						)}
+						<Badge
+							variant={statusConfig.variant}
+							className="text-[10px] shrink-0"
+						>
+							<Trans i18nKey={statusConfig.labelKey} />
+						</Badge>
+					</div>
 				</div>
 			</CardHeader>
 			<CardContent className="pb-2 pt-0 px-3">
@@ -196,6 +227,8 @@ interface AgentGroupProps {
 	onRejectAll: (agentId: AgentId) => void;
 	processingIds: Set<string>;
 	isBulkProcessing?: boolean;
+	/** Current storyboard version for staleness detection */
+	currentStoryboardVersion?: number;
 	/** Run history for comparison feature */
 	runHistory?: AgentRun[];
 	/** Currently selected run ID for comparison */
@@ -221,6 +254,7 @@ function AgentGroup({
 	onRejectAll,
 	processingIds,
 	isBulkProcessing = false,
+	currentStoryboardVersion,
 	runHistory = [],
 	selectedCompareRunId,
 	onSelectCompareRun,
@@ -373,17 +407,37 @@ function AgentGroup({
 								<TabsContent value="suggestions" className="mt-0">
 									{/* Suggestion cards */}
 									<div className="p-2 space-y-2">
-										{suggestions.map((suggestion) => (
-											<SuggestionCard
-												key={suggestion.id}
-												suggestion={suggestion}
-												onAccept={onAccept}
-												onReject={onReject}
-												isProcessing={
-													processingIds.has(suggestion.id) || isBulkProcessing
-												}
-											/>
-										))}
+										{suggestions.map((suggestion) => {
+											const suggestionVersion = suggestion.storyboardVersion;
+											// Only stale when suggestion version is older than current (not just different)
+											const isStale =
+												currentStoryboardVersion !== undefined &&
+												suggestionVersion !== undefined &&
+												suggestionVersion !== null &&
+												suggestionVersion < currentStoryboardVersion;
+											// Calculate how many edits behind, validated to never be negative
+											const stalenessEdits =
+												isStale && suggestionVersion !== null
+													? Math.max(
+															0,
+															currentStoryboardVersion - suggestionVersion,
+														)
+													: 0;
+
+											return (
+												<SuggestionCard
+													key={suggestion.id}
+													suggestion={suggestion}
+													onAccept={onAccept}
+													onReject={onReject}
+													isProcessing={
+														processingIds.has(suggestion.id) || isBulkProcessing
+													}
+													isStale={isStale}
+													stalenessEdits={stalenessEdits}
+												/>
+											);
+										})}
 									</div>
 								</TabsContent>
 
@@ -466,6 +520,8 @@ export interface AgentSuggestionsPanelProps {
 	onAcceptAll?: (agentId?: AgentId) => Promise<void>;
 	onRejectAll?: (agentId?: AgentId) => Promise<void>;
 	isLoading?: boolean;
+	/** Current storyboard version for staleness detection */
+	currentStoryboardVersion?: number;
 	/** Run history for comparison feature */
 	runHistory?: AgentRun[];
 	/** ID of the current run (to exclude from comparison dropdown) */
@@ -481,6 +537,7 @@ export function AgentSuggestionsPanel({
 	onAcceptAll,
 	onRejectAll,
 	isLoading = false,
+	currentStoryboardVersion,
 	runHistory = [],
 	currentRunId,
 	onFetchRunSuggestions,
@@ -923,6 +980,7 @@ export function AgentSuggestionsPanel({
 								onRejectAll={handleRejectAllForAgent}
 								processingIds={processingIds}
 								isBulkProcessing={isBulkProcessing}
+								currentStoryboardVersion={currentStoryboardVersion}
 								runHistory={runHistory}
 								selectedCompareRunId={selectedCompareRunId}
 								onSelectCompareRun={handleSelectCompareRun}
