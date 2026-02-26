@@ -2,6 +2,7 @@
 
 import type {
 	AgentId,
+	AgentRun,
 	AgentSuggestion,
 	AgentSuggestionPriority,
 	AgentSuggestionStatus,
@@ -11,6 +12,8 @@ import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import { Card, CardContent, CardHeader } from "@kit/ui/card";
 import { ScrollArea } from "@kit/ui/scroll-area";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@kit/ui/tabs";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
 import {
@@ -26,12 +29,18 @@ import {
 	X,
 	XSquare,
 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { RunHistoryDropdown } from "./run-history-dropdown";
+import { SuggestionDiffView } from "./suggestion-diff-view";
 
 // Initialize logger after imports
 const clientLogger = createClientLogger("AGENT-SUGGESTIONS-PANEL");
 const { getLogger } = clientLogger;
+
+// Valid view mode values for type-safe tab handling
+const VIEW_MODES = ["suggestions", "comparison"] as const;
+type ViewMode = (typeof VIEW_MODES)[number];
 
 // Agent metadata for display - i18n keys for names and descriptions
 const AGENT_CONFIG: Record<
@@ -187,6 +196,20 @@ interface AgentGroupProps {
 	onRejectAll: (agentId: AgentId) => void;
 	processingIds: Set<string>;
 	isBulkProcessing?: boolean;
+	/** Run history for comparison feature */
+	runHistory?: AgentRun[];
+	/** Currently selected run ID for comparison */
+	selectedCompareRunId?: string | null;
+	/** Callback when comparison run is selected */
+	onSelectCompareRun?: (agentId: AgentId, runId: string | null) => void;
+	/** ID of the current run (to exclude from comparison dropdown) */
+	currentRunId?: string;
+	/** Suggestions from the selected previous run for comparison */
+	previousRunSuggestions?: AgentSuggestion[];
+	/** Whether previous suggestions are currently being loaded */
+	isLoadingPreviousSuggestions?: boolean;
+	/** Whether loading previous suggestions failed */
+	hasFailedPreviousSuggestions?: boolean;
 }
 
 function AgentGroup({
@@ -198,8 +221,16 @@ function AgentGroup({
 	onRejectAll,
 	processingIds,
 	isBulkProcessing = false,
+	runHistory = [],
+	selectedCompareRunId,
+	onSelectCompareRun,
+	currentRunId,
+	previousRunSuggestions,
+	isLoadingPreviousSuggestions = false,
+	hasFailedPreviousSuggestions = false,
 }: AgentGroupProps) {
 	const [isExpanded, setIsExpanded] = useState(true);
+	const [viewMode, setViewMode] = useState<ViewMode>("suggestions");
 	const panelId = `agent-group-${agentId}`;
 	const config = AGENT_CONFIG[agentId] ?? AGENT_CONFIG.partner;
 	const Icon = config.icon;
@@ -210,10 +241,24 @@ function AgentGroup({
 	);
 
 	const hasPending = pendingCount > 0;
+	const hasHistory = useMemo(
+		() =>
+			runHistory.some((r) => r.agentId === agentId && r.id !== currentRunId),
+		[runHistory, agentId, currentRunId],
+	);
 
 	if (suggestions.length === 0) {
 		return null;
 	}
+
+	const handleSelectCompareRun = (runId: string | null) => {
+		onSelectCompareRun?.(agentId, runId);
+		if (runId) {
+			setViewMode("comparison");
+		} else {
+			setViewMode("suggestions");
+		}
+	};
 
 	return (
 		<div
@@ -254,53 +299,164 @@ function AgentGroup({
 			<div id={panelId} className="border-t" aria-hidden={!isExpanded}>
 				{isExpanded && (
 					<>
-						{/* Bulk actions for pending suggestions */}
-						{hasPending && (
-							<div className="flex items-center justify-end gap-2 p-2 bg-muted/30 border-b">
-								<Button
-									variant="ghost"
-									size="sm"
-									onClick={() => onRejectAll(agentId)}
-									disabled={isBulkProcessing}
-									className="h-7 text-xs"
-									data-testid={`reject-all-${agentId}`}
-								>
-									<XSquare className="h-3 w-3 mr-1" />
-									<Trans i18nKey="agentSuggestions:rejectAll" />
-								</Button>
-								<Button
-									variant="ghost"
-									size="sm"
-									onClick={() => onAcceptAll(agentId)}
-									disabled={isBulkProcessing}
-									className="h-7 text-xs"
-									data-testid={`accept-all-${agentId}`}
-								>
-									<CheckCheck className="h-3 w-3 mr-1" />
-									<Trans i18nKey="agentSuggestions:acceptAll" />
-								</Button>
+						{/* Bulk actions and comparison controls */}
+						<div className="flex items-center justify-between gap-2 p-2 bg-muted/30 border-b">
+							{/* Run history dropdown for comparison */}
+							{hasHistory && onSelectCompareRun && (
+								<RunHistoryDropdown
+									agentId={agentId}
+									runs={runHistory}
+									selectedRunId={selectedCompareRunId ?? null}
+									onSelectRun={handleSelectCompareRun}
+									currentRunId={currentRunId}
+								/>
+							)}
+
+							{hasPending && viewMode === "suggestions" && (
+								<div className="flex items-center gap-2 ml-auto">
+									<Button
+										variant="ghost"
+										size="sm"
+										onClick={() => onRejectAll(agentId)}
+										disabled={isBulkProcessing}
+										className="h-7 text-xs"
+										data-testid={`reject-all-${agentId}`}
+									>
+										<XSquare className="h-3 w-3 mr-1" />
+										<Trans i18nKey="agentSuggestions:rejectAll" />
+									</Button>
+									<Button
+										variant="ghost"
+										size="sm"
+										onClick={() => onAcceptAll(agentId)}
+										disabled={isBulkProcessing}
+										className="h-7 text-xs"
+										data-testid={`accept-all-${agentId}`}
+									>
+										<CheckCheck className="h-3 w-3 mr-1" />
+										<Trans i18nKey="agentSuggestions:acceptAll" />
+									</Button>
+								</div>
+							)}
+						</div>
+
+						{/* View mode tabs when comparing */}
+						{selectedCompareRunId && previousRunSuggestions && (
+							<Tabs
+								value={viewMode}
+								onValueChange={(v) => {
+									if (VIEW_MODES.includes(v as ViewMode)) {
+										setViewMode(v as ViewMode);
+									}
+								}}
+								className="w-full"
+							>
+								<TabsList className="w-full grid grid-cols-2 h-8 rounded-none border-b">
+									<TabsTrigger
+										value="suggestions"
+										className="text-xs data-[state=active]:shadow-none"
+									>
+										<Trans i18nKey="agentSuggestions:comparison.suggestionsTab">
+											Suggestions
+										</Trans>
+									</TabsTrigger>
+									<TabsTrigger
+										value="comparison"
+										className="text-xs data-[state=active]:shadow-none"
+									>
+										<Trans i18nKey="agentSuggestions:comparison.comparisonTab">
+											Comparison
+										</Trans>
+									</TabsTrigger>
+								</TabsList>
+
+								<TabsContent value="suggestions" className="mt-0">
+									{/* Suggestion cards */}
+									<div className="p-2 space-y-2">
+										{suggestions.map((suggestion) => (
+											<SuggestionCard
+												key={suggestion.id}
+												suggestion={suggestion}
+												onAccept={onAccept}
+												onReject={onReject}
+												isProcessing={
+													processingIds.has(suggestion.id) || isBulkProcessing
+												}
+											/>
+										))}
+									</div>
+								</TabsContent>
+
+								<TabsContent value="comparison" className="mt-0">
+									{/* TODO: Expose viewMode toggle (unified/side-by-side) in comparison tab header.
+									    Currently hardcoded to "unified". SuggestionDiffView supports both modes. */}
+									<SuggestionDiffView
+										currentSuggestions={suggestions}
+										previousSuggestions={previousRunSuggestions}
+										viewMode="unified"
+									/>
+								</TabsContent>
+							</Tabs>
+						)}
+
+						{/* Loading state when fetching previous run suggestions */}
+						{selectedCompareRunId && isLoadingPreviousSuggestions && (
+							<div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
+								<Loader2 className="h-5 w-5 animate-spin mb-2" />
+								<p className="text-xs">
+									<Trans i18nKey="agentSuggestions:comparison.loadingPrevious">
+										Loading previous run...
+									</Trans>
+								</p>
 							</div>
 						)}
 
-						{/* Suggestion cards */}
-						<div className="p-2 space-y-2">
-							{suggestions.map((suggestion) => (
-								<SuggestionCard
-									key={suggestion.id}
-									suggestion={suggestion}
-									onAccept={onAccept}
-									onReject={onReject}
-									isProcessing={
-										processingIds.has(suggestion.id) || isBulkProcessing
-									}
-								/>
-							))}
-						</div>
+						{/* Error state when loading previous run failed */}
+						{selectedCompareRunId &&
+							hasFailedPreviousSuggestions &&
+							!isLoadingPreviousSuggestions && (
+								<div className="flex flex-col items-center justify-center h-24 text-destructive">
+									<AlertTriangle className="h-5 w-5 mb-2" />
+									<p className="text-xs">
+										<Trans i18nKey="agentSuggestions:comparison.errorLoading">
+											Failed to load comparison
+										</Trans>
+									</p>
+								</div>
+							)}
+
+						{/* Regular suggestion cards when not comparing */}
+						{(!selectedCompareRunId ||
+							(!previousRunSuggestions &&
+								!isLoadingPreviousSuggestions &&
+								!hasFailedPreviousSuggestions)) && (
+							<div className="p-2 space-y-2">
+								{suggestions.map((suggestion) => (
+									<SuggestionCard
+										key={suggestion.id}
+										suggestion={suggestion}
+										onAccept={onAccept}
+										onReject={onReject}
+										isProcessing={
+											processingIds.has(suggestion.id) || isBulkProcessing
+										}
+									/>
+								))}
+							</div>
+						)}
 					</>
 				)}
 			</div>
 		</div>
 	);
+}
+
+// Comparison state interface for consolidated state management
+interface ComparisonState {
+	selectedCompareRunIds: Partial<Record<AgentId, string | null>>;
+	previousRunSuggestionsCache: Record<string, AgentSuggestion[]>;
+	loadingPreviousRuns: Set<string>;
+	failedRunIds: Set<string>;
 }
 
 export interface AgentSuggestionsPanelProps {
@@ -310,6 +466,12 @@ export interface AgentSuggestionsPanelProps {
 	onAcceptAll?: (agentId?: AgentId) => Promise<void>;
 	onRejectAll?: (agentId?: AgentId) => Promise<void>;
 	isLoading?: boolean;
+	/** Run history for comparison feature */
+	runHistory?: AgentRun[];
+	/** ID of the current run (to exclude from comparison dropdown) */
+	currentRunId?: string;
+	/** Callback to fetch suggestions for a specific run */
+	onFetchRunSuggestions?: (runId: string) => Promise<AgentSuggestion[]>;
 }
 
 export function AgentSuggestionsPanel({
@@ -319,11 +481,36 @@ export function AgentSuggestionsPanel({
 	onAcceptAll,
 	onRejectAll,
 	isLoading = false,
+	runHistory = [],
+	currentRunId,
+	onFetchRunSuggestions,
 }: AgentSuggestionsPanelProps) {
 	const [processingState, setProcessingState] = useState({
 		processingIds: new Set<string>(),
 		isBulkProcessing: false,
 	});
+
+	// Consolidated comparison state (Issue #11)
+	const [comparisonState, setComparisonState] = useState<ComparisonState>({
+		selectedCompareRunIds: {},
+		previousRunSuggestionsCache: {},
+		loadingPreviousRuns: new Set(),
+		failedRunIds: new Set(),
+	});
+
+	// Use ref for cache to stabilize callback (Issue #9)
+	// The ref provides a stable reference for the async callback (doesn't trigger re-renders
+	// or cause dependency changes), while the state persists the value for renders.
+	//
+	// Invariant: The ref is the authoritative, write-through cache used to avoid stale
+	// closures in handleSelectCompareRun (checking if a run is already cached before
+	// fetching). comparisonState.previousRunSuggestionsCache drives re-renders and must
+	// be updated via setComparisonState. Whenever previousRunSuggestionsCacheRef.current
+	// is mutated, comparisonState.previousRunSuggestionsCache must also be updated to
+	// keep UI state consistent.
+	const previousRunSuggestionsCacheRef = useRef<
+		Record<string, AgentSuggestion[]>
+	>(comparisonState.previousRunSuggestionsCache);
 
 	const processingIds = processingState.processingIds;
 	const isBulkProcessing = processingState.isBulkProcessing;
@@ -514,6 +701,106 @@ export function AgentSuggestionsPanel({
 		}
 	}, [isBulkProcessing, onRejectAll]);
 
+	// Handle selecting a comparison run for an agent
+	const handleSelectCompareRun = useCallback(
+		async (agentId: AgentId, runId: string | null) => {
+			// Guard: exit early if this run is already being fetched
+			if (runId && comparisonState.loadingPreviousRuns.has(runId)) {
+				// Still update selection so UI reflects user choice
+				setComparisonState((prev) => ({
+					...prev,
+					selectedCompareRunIds: {
+						...prev.selectedCompareRunIds,
+						[agentId]: runId,
+					},
+				}));
+				return;
+			}
+
+			// Fetch suggestions for the selected run if not cached
+			if (
+				runId &&
+				onFetchRunSuggestions &&
+				!previousRunSuggestionsCacheRef.current[runId]
+			) {
+				// Set selected run AND loading flag together to prevent transient state flicker
+				setComparisonState((prev) => {
+					const nextLoading = new Set(prev.loadingPreviousRuns);
+					nextLoading.add(runId);
+					return {
+						...prev,
+						selectedCompareRunIds: {
+							...prev.selectedCompareRunIds,
+							[agentId]: runId,
+						},
+						loadingPreviousRuns: nextLoading,
+					};
+				});
+				try {
+					const runSuggestions = await onFetchRunSuggestions(runId);
+					previousRunSuggestionsCacheRef.current[runId] = runSuggestions;
+					setComparisonState((prev) => ({
+						...prev,
+						previousRunSuggestionsCache: {
+							...prev.previousRunSuggestionsCache,
+							[runId]: runSuggestions,
+						},
+						loadingPreviousRuns: (() => {
+							const next = new Set(prev.loadingPreviousRuns);
+							next.delete(runId);
+							return next;
+						})(),
+						// Clear failedRunIds on successful fetch to allow retry recovery
+						failedRunIds: (() => {
+							const next = new Set(prev.failedRunIds);
+							next.delete(runId);
+							return next;
+						})(),
+					}));
+				} catch (error) {
+					getLogger().error("Failed to fetch suggestions for run", {
+						runId,
+						error,
+					});
+					setComparisonState((prev) => {
+						const nextLoading = new Set(prev.loadingPreviousRuns);
+						nextLoading.delete(runId);
+						const nextFailed = new Set(prev.failedRunIds);
+						nextFailed.add(runId);
+						return {
+							...prev,
+							loadingPreviousRuns: nextLoading,
+							failedRunIds: nextFailed,
+						};
+					});
+				}
+			} else {
+				// No fetch needed - just update selected run
+				setComparisonState((prev) => ({
+					...prev,
+					selectedCompareRunIds: {
+						...prev.selectedCompareRunIds,
+						[agentId]: runId,
+					},
+				}));
+			}
+		},
+		[onFetchRunSuggestions, comparisonState.loadingPreviousRuns],
+	);
+
+	// Get previous run suggestions for an agent
+	const getPreviousRunSuggestions = useCallback(
+		(agentId: AgentId): AgentSuggestion[] | undefined => {
+			const selectedRunId = comparisonState.selectedCompareRunIds[agentId];
+			if (!selectedRunId) return undefined;
+			return comparisonState.previousRunSuggestionsCache[selectedRunId];
+		},
+		[
+			comparisonState.selectedCompareRunIds,
+			comparisonState.previousRunSuggestionsCache,
+		],
+	);
+
 	if (isLoading) {
 		return (
 			<div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
@@ -615,6 +902,16 @@ export function AgentSuggestionsPanel({
 						const agentSuggestions = suggestionsByAgent[agentId];
 						if (!agentSuggestions || agentSuggestions.length === 0) return null;
 
+						const selectedCompareRunId =
+							comparisonState.selectedCompareRunIds[agentId];
+						const previousSuggestions = getPreviousRunSuggestions(agentId);
+						const isLoadingPrevious = selectedCompareRunId
+							? comparisonState.loadingPreviousRuns.has(selectedCompareRunId)
+							: false;
+						const hasFailedPrevious = selectedCompareRunId
+							? comparisonState.failedRunIds.has(selectedCompareRunId)
+							: false;
+
 						return (
 							<AgentGroup
 								key={agentId}
@@ -626,6 +923,17 @@ export function AgentSuggestionsPanel({
 								onRejectAll={handleRejectAllForAgent}
 								processingIds={processingIds}
 								isBulkProcessing={isBulkProcessing}
+								runHistory={runHistory}
+								selectedCompareRunId={selectedCompareRunId}
+								onSelectCompareRun={handleSelectCompareRun}
+								currentRunId={currentRunId}
+								previousRunSuggestions={
+									isLoadingPrevious || hasFailedPrevious
+										? undefined
+										: previousSuggestions
+								}
+								isLoadingPreviousSuggestions={isLoadingPrevious}
+								hasFailedPreviousSuggestions={hasFailedPrevious}
 							/>
 						);
 					})}
@@ -634,5 +942,3 @@ export function AgentSuggestionsPanel({
 		</div>
 	);
 }
-
-export default AgentSuggestionsPanel;

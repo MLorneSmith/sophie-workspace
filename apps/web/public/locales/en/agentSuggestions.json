@@ -47,5 +47,30 @@
 		"high": "High",
 		"medium": "Medium",
 		"low": "Low"
+	},
+	"runStatus": {
+		"pending": "Pending",
+		"running": "Running",
+		"completed": "Completed",
+		"failed": "Failed"
+	},
+	"comparison": {
+		"selectRun": "Compare with previous run",
+		"currentRun": "Current Run",
+		"previousRun": "Previous Run",
+		"noPreviousRun": "No previous run to compare",
+		"loading": "Loading previous run...",
+		"loadingPrevious": "Loading comparison...",
+		"errorLoading": "Failed to load comparison",
+		"suggestionsTab": "Suggestions",
+		"comparisonTab": "Comparison",
+		"added": "Added",
+		"removed": "Removed",
+		"modified": "Modified",
+		"unchanged": "Unchanged",
+		"statsAdded": "{{count}} added",
+		"statsRemoved": "{{count}} removed",
+		"statsModified": "{{count}} modified",
+		"statsUnchanged": "{{count}} unchanged"
 	}
 }
