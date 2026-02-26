@@ -1,0 +1,8 @@
+{
+  "agent": "coder",
+  "task": "Fix CodeRabbit round 2 feedback on PR #2187",
+  "status": "done",
+  "result": "All 3 issues were already fixed in previous commits: (1) Empty previous-run data now correctly distinguishes undefined (loading) from [] (empty array) - shows diff with all current as 'added'; (2) Duplicate in-flight fetches guarded at line 708 with loadingPreviousRuns.has(runId) check; (3) Hardcoded English fallback removed from t('comparison.selectRun') call. Format/lint/typecheck all pass.",
+  "timestamp": "2026-02-25T19:52:00-05:00",
+  "runtime_seconds": 180
+}

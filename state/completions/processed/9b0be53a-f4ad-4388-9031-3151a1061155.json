@@ -1,0 +1,8 @@
+{
+  "agent": "coder",
+  "task": "Fix CodeRabbit feedback on PR #2187",
+  "status": "done",
+  "result": "Fixed all 5 CodeRabbit issues on the before/after comparison view PR:\n\n1. ✅ Issue 1 (Duplicate summaries overwrite Map entries) - Already fixed in previous commit: Map now uses arrays to store multiple suggestions with same summary\n\n2. ✅ Issue 2 (Fuzzy matching can produce incorrect results) - Implemented score-based matching algorithm in compute-suggestion-diff.ts:\n   - Scores candidates based on slideId (3pts), type (2pts), priority (1pt), and text similarity (up to 2pts)\n   - Minimum threshold of 3 points required for a match\n   - Returns highest-scoring candidate instead of first match\n\n3. ✅ Issue 3 (Selecting 'current' run doesn't reset viewMode) - Already fixed in previous commit: handleSelectCompareRun now resets viewMode to 'suggestions' when runId is null\n\n4. ✅ Issue 4 (Side-by-side previous panel doesn't highlight 'modified') - Already fixed in previous commit: Previous panel now checks diff.modified.some((m) => m.previous.id === s.id) to correctly identify modified suggestions\n\n5. ✅ Issue 5 (Hardcoded 'unchanged' string bypasses i18n) - Already fixed in previous commit: Uses Trans component with t('comparison.unchanged') for the unchanged label\n\nAll changes passed format:fix, lint:fix, and typecheck.",
+  "timestamp": "2026-02-25T23:20:00.000Z",
+  "runtime_seconds": 300
+}

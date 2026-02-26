@@ -35,6 +35,22 @@ The following tasks are now handled by dedicated cron jobs instead of heartbeats
 | **Todoist sync** | 7am, 12pm, 6pm | `sync-mc-todoist-wrapper.py` |
 | **Weather** | In morning brief | `morning-briefing-data.sh` |
 
+## Sub-Agent Notifications
+
+**Every heartbeat, check for sub-agent completion notifications:**
+
+```bash
+# Check for new notifications
+if [ -f ~/clawd/state/notifications.jsonl ] && [ -s ~/clawd/state/notifications.jsonl ]; then
+    echo "📢 Sub-agent notifications:"
+    cat ~/clawd/state/notifications.jsonl
+    # Clear after reading
+    > ~/clawd/state/notifications.jsonl
+fi
+```
+
+If there are notifications, report them to Mike. Then clear the file.
+
 ## Nighttime Backlog Work
 
 **After 22:00 EST**, if no recent conversation with Mike (>1 hour since last message):

@@ -344,6 +344,31 @@
         {{MODEL_USAGE_BARS}}
       </div>
       
+      <!-- Credit Status -->
+      <div class="section">
+        <div class="section-title">
+          <span class="emoji">💳</span> Credit Status
+        </div>
+        <div class="{{CREDIT_STATUS_CLASS}}">{{CREDIT_STATUS}}</div>
+      </div>
+      
+      <!-- Capture Activity -->
+      <div class="section">
+        <div class="section-title">
+          <span class="emoji">📝</span> Capture Activity
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value">{{CAPTURE_COUNT}}</div>
+            <div class="stat-label">Captures Yesterday</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{PRACTICES_COUNT}}</div>
+            <div class="stat-label">Practices This Week</div>
+          </div>
+        </div>
+      </div>
+      
       <!-- AWS Costs -->
       <div class="section">
         <div class="section-title">
@@ -359,6 +384,14 @@
             <div class="stat-label">Month to Date</div>
           </div>
         </div>
+      </div>
+      
+      <!-- OpenClaw Update Status -->
+      <div class="section">
+        <div class="section-title">
+          <span class="emoji">🔄</span> OpenClaw Update Status
+        </div>
+        <div class="{{OPENCLAW_STATUS_CLASS}}">{{OPENCLAW_STATUS}}</div>
       </div>
       
       <!-- System Health -->

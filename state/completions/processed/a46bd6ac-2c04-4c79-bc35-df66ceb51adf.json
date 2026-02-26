@@ -1,0 +1,29 @@
+{
+  "agent": "coder",
+  "task": "Nightly Backlog Work (Feb 25/26, 2026)",
+  "status": "done",
+  "result": "Built MVL-to-Attio promotion pipeline script. 224 qualified leads ready for sync once ATTIO_API_KEY is added. Checked 20+ tasks - most blocked on external access (ActiveCampaign, Loops, RB2B, Thinkific, Drip) or Mike's GTM/product decisions. All cron jobs healthy except transient ccproxy rate limits.",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "runtime_seconds": 3600,
+  "deliverables": [
+    {
+      "path": "~/clawd/scripts/promote-mvl-to-attio.py",
+      "description": "BigQuery → Attio promotion pipeline script",
+      "status": "ready",
+      "blocked_on": "ATTIO_API_KEY not in environment"
+    }
+  ],
+  "blocked_tasks": [
+    {"id": 432, "reason": "ATTIO_API_KEY missing"},
+    {"id": 437, "reason": "Requires Mike's GTM decisions"},
+    {"id": 436, "reason": "Requires Mike's product decisions"},
+    {"id": 453, "reason": "RB2B signup needed"},
+    {"id": 467, "reason": "ActiveCampaign dashboard access needed"},
+    {"id": 435, "reason": "Conversion data not yet in BigQuery"}
+  ],
+  "system_health": {
+    "internal_tools": "ok",
+    "cron_errors": "ccproxy rate limits (transient)",
+    "data_pipeline": "ok"
+  }
+}

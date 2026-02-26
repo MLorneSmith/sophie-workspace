@@ -1,0 +1,8 @@
+{
+  "agent": "coder",
+  "task": "Build before/after comparison view for agent runs",
+  "status": "done",
+  "result": "Implemented comparison view for agent runs with RunHistoryDropdown, SuggestionDiffView (unified and side-by-side modes), and integration into AgentSuggestionsPanel. Features include per-agent run selection, lazy-loaded previous run suggestions, color-coded change indicators (added/removed/modified/unchanged), and tab switching between suggestions and comparison views. PR #2187 opened.",
+  "timestamp": "2026-02-25T22:42:00.000Z",
+  "runtime_seconds": 600
+}

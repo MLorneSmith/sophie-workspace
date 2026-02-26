@@ -1,0 +1,94 @@
+{
+  "$schema": "https://internal.slideheroes.com/schemas/linux-cron-jobs.json",
+  "description": "Deterministic Python scripts that run via Linux cron (no LLM)",
+  "jobs": [
+    {
+      "id": "linux-completion-monitor",
+      "name": "Sub-agent Completion Monitor (2min)",
+      "description": "Monitors sub-agent completions and delivers notifications",
+      "enabled": true,
+      "command": "python3 /home/ubuntu/clawd/scripts/completion-monitor.py",
+      "schedule": {
+        "expr": "*/2 * * * *",
+        "tz": "America/Toronto"
+      }
+    },
+    {
+      "id": "linux-subagent-watchdog",
+      "name": "Sub-agent Watchdog (5min)",
+      "description": "Monitors sub-agent health and cleans up stuck sessions",
+      "enabled": true,
+      "command": "python3 /home/ubuntu/clawd/scripts/subagent-watchdog-deterministic.py",
+      "schedule": {
+        "expr": "*/5 * * * *",
+        "tz": "America/Toronto"
+      }
+    },
+    {
+      "id": "linux-healthcheck",
+      "name": "OpenClaw Health Check (every 4h)",
+      "description": "Health check for Gateway, ccproxy, disk space, memory, MC API",
+      "enabled": true,
+      "command": "python3 /home/ubuntu/clawd/scripts/openclaw-healthcheck.py",
+      "schedule": {
+        "expr": "0 */4 * * *",
+        "tz": "America/Toronto"
+      }
+    },
+    {
+      "id": "linux-todoist-sync",
+      "name": "MC ↔ Todoist Sync",
+      "description": "Two-way sync: pushes Mike's MC tasks to Todoist, pulls completions back",
+      "enabled": true,
+      "command": "python3 /home/ubuntu/clawd/scripts/sync-mc-todoist-wrapper.py",
+      "schedule": {
+        "expr": "*/30 7-23 * * *",
+        "tz": "America/Toronto"
+      }
+    },
+    {
+      "id": "linux-qmd-index",
+      "name": "qmd-nightly-index",
+      "description": "Nightly qmd update + embed to keep markdown search index fresh",
+      "enabled": true,
+      "command": "python3 /home/ubuntu/clawd/scripts/qmd-index-refresh.py",
+      "schedule": {
+        "expr": "0 4 * * *",
+        "tz": "America/Toronto"
+      }
+    },
+    {
+      "id": "linux-presentation-pipeline",
+      "name": "Nightly Presentation Pipeline (download, evaluate, MC sync)",
+      "description": "Downloads presentations, evaluates quality, syncs to Mission Control",
+      "enabled": true,
+      "command": "python3 /home/ubuntu/clawd/scripts/nightly-presentation-pipeline.py --limit 10",
+      "schedule": {
+        "expr": "0 3 * * *",
+        "tz": "America/New_York"
+      }
+    },
+    {
+      "id": "linux-feed-refresh",
+      "name": "Feed refresh (daily)",
+      "description": "Fetch latest articles from all RSS feeds before morning brief",
+      "enabled": true,
+      "command": "python3 /home/ubuntu/clawd/scripts/feed-monitor-refresh.py",
+      "schedule": {
+        "expr": "30 6 * * *",
+        "tz": "America/Toronto"
+      }
+    },
+    {
+      "id": "linux-backup-openclaw",
+      "name": "OpenClaw Local Backup (daily tar.gz)",
+      "description": "Daily backup of OpenClaw workspace to tar.gz archive",
+      "enabled": true,
+      "command": "python3 /home/ubuntu/clawd/scripts/backup-openclaw.py",
+      "schedule": {
+        "expr": "0 7 * * *",
+        "tz": "America/Toronto"
+      }
+    }
+  ]
+}

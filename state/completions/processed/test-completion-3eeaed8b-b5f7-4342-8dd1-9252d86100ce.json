@@ -1,0 +1,8 @@
+{
+  "agent": "coder",
+  "task": "Test completion notification",
+  "status": "done",
+  "result": "This is a test of the completion notification system",
+  "timestamp": "2026-02-25T21:00:00Z",
+  "runtime_seconds": 60
+}

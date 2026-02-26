@@ -1,0 +1,38 @@
+{
+  "task": "Fix CodeRabbit Feedback on PR #2188 (Staleness Indicator)",
+  "status": "completed",
+  "branch": "sophie/feat/staleness-indicator",
+  "commit": "163b5af96c8ca2fc1bbe4ac194c0aa863da7363a",
+  "issues_fixed": [
+    {
+      "severity": "critical",
+      "file": "packages/mastra/src/index.ts",
+      "description": "Removed isSuggestionStale export from package root (server-only function)",
+      "fix": "Removed export line, added comment: isSuggestionStale is server-only — import via '@kit/mastra/persistence'"
+    },
+    {
+      "severity": "major",
+      "file": "apps/web/app/home/(user)/ai/canvas/_components/agent-suggestions/agent-suggestions-panel.tsx",
+      "description": "Staleness math could show invalid negative 'X edits ago'",
+      "fix": "Changed !== to < for staleness check; wrapped stalenessEdits calculation in Math.max(0, ...) to ensure non-negative"
+    },
+    {
+      "severity": "major",
+      "file": "packages/mastra/src/persistence/agent-results.ts",
+      "description": "Staleness check triggered on any version mismatch instead of only when current is newer",
+      "fix": "Changed !== to < so only stale when suggestionVersion < currentStoryboardVersion"
+    },
+    {
+      "severity": "minor",
+      "file": "apps/web/public/locales/en/agentSuggestions.json",
+      "description": "Singular count showed '1 edits ago' instead of '1 edit ago'",
+      "fix": "Added ICU plural forms: {{count, plural, one {# edit ago} other {# edits ago}}}"
+    }
+  ],
+  "verification": {
+    "format": "passed",
+    "lint": "passed",
+    "typecheck": "passed (41/41 tasks successful)"
+  },
+  "notes": "Fixes were already committed and pushed in commit 163b5af96. All 4 CodeRabbit issues have been addressed."
+}

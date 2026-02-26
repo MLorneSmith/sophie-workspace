@@ -1,0 +1,8 @@
+{
+  "agent": "pipeline",
+  "task": "Nightly data pipeline run (all sources + dbt)",
+  "status": "error",
+  "result": "1 succeeded (Supabase), 5 failed due to missing credentials, dbt transforms ran successfully",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "runtime_seconds": 115
+}

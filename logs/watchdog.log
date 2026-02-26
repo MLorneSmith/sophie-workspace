@@ -464,3 +464,7 @@
 2026-02-25T17:52:14Z RESTART: gateway appears healthy (active + logs flowing).
 2026-02-25T17:53:14Z DETECT: gateway not running
 2026-02-25T17:53:14Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-02-26T04:32:49Z DETECT: gateway logs matched billing/cooldown pattern; verifying ZAI after 30s
+2026-02-26T04:33:20Z VERIFY: ZAI API responds OK; treating gateway billing/cooldown as false-positive → restart
+2026-02-26T04:33:21Z RESTART: initiating gateway restart. reason=false_billing_cooldown
+2026-02-26T04:34:40Z RESTART: gateway appears healthy (active + logs flowing).
