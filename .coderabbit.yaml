@@ -99,3 +99,13 @@ reviews:
         - Proper mocking of Supabase and external services
         - Async behavior properly handled
 
+
+# Issue Planner - Rabbit Plan integration
+issue_enrichment:
+  planning:
+    enabled: true
+    auto_planning:
+      enabled: true
+      labels:
+        - "plan-me"
+        - "!no-plan"
