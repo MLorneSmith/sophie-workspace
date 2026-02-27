@@ -191,6 +191,7 @@ export function SlideEditor({
 	onRegenerate,
 	isRegenerating = false,
 }: SlideEditorProps) {
+	const { t } = useTranslation();
 	const notesContent = useMemo(() => {
 		if (!slide.speaker_notes) {
 			return {
