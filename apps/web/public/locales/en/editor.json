@@ -1,11 +1,18 @@
 {
   "shortcuts": {
-    "bold": "Bold {{shortcut}}",
-    "italic": "Italic {{shortcut}}",
-    "underline": "Underline {{shortcut}}",
-    "bulletList": "Bullet List {{shortcut}}",
-    "orderedList": "Ordered List {{shortcut}}"
+    "bold": "Bold ({{shortcut}})",
+    "italic": "Italic ({{shortcut}})",
+    "underline": "Underline ({{shortcut}})",
+    "bulletList": "Bullet List ({{shortcut}})",
+    "orderedList": "Ordered List ({{shortcut}})"
   },
   "regenerateSlide": "Regenerate Slide",
-  "deleteSlide": "Delete Slide"
+  "deleteSlide": "Delete Slide",
+  "ariaLabels": {
+    "bold": "Bold",
+    "italic": "Italic",
+    "underline": "Underline",
+    "bulletList": "Bullet List",
+    "orderedList": "Ordered List"
+  }
 }

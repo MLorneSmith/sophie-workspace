@@ -18,6 +18,7 @@ import {
 } from "@kit/ui/tooltip";
 import { usePlatform } from "@kit/ui/use-platform";
 import { Trans } from "@kit/ui/trans";
+import { useTranslation } from "react-i18next";
 import { cn } from "@kit/ui/utils";
 import Bold from "@tiptap/extension-bold";
 import BulletList from "@tiptap/extension-bullet-list";
@@ -57,6 +58,7 @@ interface SlideEditorProps {
 
 function NotesToolbar({ editor }: { editor: Editor | null }) {
 	const { formatShortcut } = usePlatform();
+	const { t } = useTranslation();
 
 	if (!editor) return null;
 
@@ -73,7 +75,7 @@ function NotesToolbar({ editor }: { editor: Editor | null }) {
 								"h-6 w-6 p-0",
 								editor.isActive("bold") && "bg-accent text-accent-foreground",
 							)}
-							aria-label="Bold"
+							aria-label={t("editor.ariaLabels.bold")}
 						>
 							<BoldIcon className="h-3 w-3" />
 						</Button>
@@ -95,7 +97,7 @@ function NotesToolbar({ editor }: { editor: Editor | null }) {
 								"h-6 w-6 p-0",
 								editor.isActive("italic") && "bg-accent text-accent-foreground",
 							)}
-							aria-label="Italic"
+							aria-label={t("editor.ariaLabels.italic")}
 						>
 							<ItalicIcon className="h-3 w-3" />
 						</Button>
@@ -118,7 +120,7 @@ function NotesToolbar({ editor }: { editor: Editor | null }) {
 								editor.isActive("underline") &&
 									"bg-accent text-accent-foreground",
 							)}
-							aria-label="Underline"
+							aria-label={t("editor.ariaLabels.underline")}
 						>
 							<UnderlineIcon className="h-3 w-3" />
 						</Button>
@@ -142,7 +144,7 @@ function NotesToolbar({ editor }: { editor: Editor | null }) {
 								editor.isActive("bulletList") &&
 									"bg-accent text-accent-foreground",
 							)}
-							aria-label="Bullet List"
+							aria-label={t("editor.ariaLabels.bulletList")}
 						>
 							<List className="h-3 w-3" />
 						</Button>
@@ -165,7 +167,7 @@ function NotesToolbar({ editor }: { editor: Editor | null }) {
 								editor.isActive("orderedList") &&
 									"bg-accent text-accent-foreground",
 							)}
-							aria-label="Ordered List"
+							aria-label={t("editor.ariaLabels.orderedList")}
 						>
 							<ListOrdered className="h-3 w-3" />
 						</Button>
