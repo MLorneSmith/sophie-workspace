@@ -318,7 +318,7 @@ export function SlideEditor({
 									onClick={() => onRegenerate(slide.id)}
 									disabled={isRegenerating}
 									className="text-muted-foreground hover:text-foreground h-8 w-8 shrink-0 p-0"
-									aria-label="Regenerate slide"
+									aria-label={t("editor.regenerateSlide")}
 								>
 									{isRegenerating ? (
 										<Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -339,7 +339,7 @@ export function SlideEditor({
 								size="sm"
 								onClick={() => onDelete(slide.id)}
 								className="text-muted-foreground hover:text-destructive h-8 w-8 shrink-0 p-0"
-								aria-label="Delete slide"
+								aria-label={t("editor.deleteSlide")}
 							>
 								<Trash2 className="h-3.5 w-3.5" />
 							</Button>
