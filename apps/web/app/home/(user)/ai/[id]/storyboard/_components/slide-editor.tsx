@@ -17,6 +17,7 @@ import {
 	TooltipTrigger,
 } from "@kit/ui/tooltip";
 import { usePlatform } from "@kit/ui/use-platform";
+import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
 import Bold from "@tiptap/extension-bold";
 import BulletList from "@tiptap/extension-bullet-list";
@@ -78,7 +79,10 @@ function NotesToolbar({ editor }: { editor: Editor | null }) {
 						</Button>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>Bold {formatShortcut("Ctrl+B")}</p>
+						<Trans
+							i18nKey="editor.shortcuts.bold"
+							values={{ shortcut: formatShortcut("Ctrl+B") }}
+						/>
 					</TooltipContent>
 				</Tooltip>
 				<Tooltip>
@@ -97,7 +101,10 @@ function NotesToolbar({ editor }: { editor: Editor | null }) {
 						</Button>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>Italic {formatShortcut("Ctrl+I")}</p>
+						<Trans
+							i18nKey="editor.shortcuts.italic"
+							values={{ shortcut: formatShortcut("Ctrl+I") }}
+						/>
 					</TooltipContent>
 				</Tooltip>
 				<Tooltip>
@@ -117,7 +124,10 @@ function NotesToolbar({ editor }: { editor: Editor | null }) {
 						</Button>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>Underline {formatShortcut("Ctrl+U")}</p>
+						<Trans
+							i18nKey="editor.shortcuts.underline"
+							values={{ shortcut: formatShortcut("Ctrl+U") }}
+						/>
 					</TooltipContent>
 				</Tooltip>
 				<div className="mx-0.5 h-3 w-px bg-white/10" />
@@ -138,7 +148,10 @@ function NotesToolbar({ editor }: { editor: Editor | null }) {
 						</Button>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>Bullet List {formatShortcut("Ctrl+Shift+8")}</p>
+						<Trans
+							i18nKey="editor.shortcuts.bulletList"
+							values={{ shortcut: formatShortcut("Ctrl+Shift+8") }}
+						/>
 					</TooltipContent>
 				</Tooltip>
 				<Tooltip>
@@ -158,7 +171,10 @@ function NotesToolbar({ editor }: { editor: Editor | null }) {
 						</Button>
 					</TooltipTrigger>
 					<TooltipContent>
-						<p>Ordered List {formatShortcut("Ctrl+Shift+7")}</p>
+						<Trans
+							i18nKey="editor.shortcuts.orderedList"
+							values={{ shortcut: formatShortcut("Ctrl+Shift+7") }}
+						/>
 					</TooltipContent>
 				</Tooltip>
 			</div>
@@ -310,7 +326,7 @@ export function SlideEditor({
 								</Button>
 							</TooltipTrigger>
 							<TooltipContent>
-								<p>Regenerate Slide</p>
+								<Trans i18nKey="editor.regenerateSlide" />
 							</TooltipContent>
 						</Tooltip>
 					)}
@@ -327,7 +343,7 @@ export function SlideEditor({
 							</Button>
 						</TooltipTrigger>
 						<TooltipContent>
-							<p>Delete Slide</p>
+							<Trans i18nKey="editor.deleteSlide" />
 						</TooltipContent>
 					</Tooltip>
 				</TooltipProvider>

@@ -38,6 +38,7 @@ export const defaultI18nNamespaces = [
 	"testimonials",
 	"kanban",
 	"assessment",
+	"editor",
 ];
 
 /**

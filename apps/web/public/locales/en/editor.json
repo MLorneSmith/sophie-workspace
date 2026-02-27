@@ -1,0 +1,11 @@
+{
+  "shortcuts": {
+    "bold": "Bold {{shortcut}}",
+    "italic": "Italic {{shortcut}}",
+    "underline": "Underline {{shortcut}}",
+    "bulletList": "Bullet List {{shortcut}}",
+    "orderedList": "Ordered List {{shortcut}}"
+  },
+  "regenerateSlide": "Regenerate Slide",
+  "deleteSlide": "Delete Slide"
+}
