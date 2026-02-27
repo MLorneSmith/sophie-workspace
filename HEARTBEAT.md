@@ -57,8 +57,9 @@ If there are notifications, report them to Mike. Then clear the file.
 
 1. Check Mission Control for assigned backlog tasks
 2. Pick the highest priority assigned task
-3. Update `state/current.md` with what you're working on
-4. Work on it (spawn sub-agent if complex)
-5. When done or blocked, update the task status and pick another
+3. **Create a Mission Control task** with details about the work
+4. **Do NOT do the work yourself** — heartbeat sessions must stay lightweight
+
+**Why?** Heartbeat sessions accumulate context over time. Heavy work in a heartbeat = massive token usage. Real work should be done in fresh isolated sessions (cron jobs or manually spawned agents).
 
 **After context compression or fresh session at night:** Re-read `state/current.md` to see if there's work in progress, then check the backlog.

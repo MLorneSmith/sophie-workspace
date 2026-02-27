@@ -89,6 +89,28 @@
         "expr": "0 7 * * *",
         "tz": "America/Toronto"
       }
+    },
+    {
+      "id": "linux-workspace-git-backup",
+      "name": "Workspace Git Backup (daily push to GitHub)",
+      "description": "Daily git commit and push of workspace changes to GitHub",
+      "enabled": true,
+      "command": "python3 /home/ubuntu/clawd/scripts/workspace-git-backup.py",
+      "schedule": {
+        "expr": "0 5 * * *",
+        "tz": "America/Toronto"
+      }
+    },
+    {
+      "id": "linux-openclaw-auto-update",
+      "name": "OpenClaw Auto-Update (daily)",
+      "description": "Daily check for OpenClaw updates, auto-install if available",
+      "enabled": true,
+      "command": "python3 /home/ubuntu/clawd/scripts/openclaw-auto-update.py",
+      "schedule": {
+        "expr": "0 6 * * *",
+        "tz": "America/Toronto"
+      }
     }
   ]
 }

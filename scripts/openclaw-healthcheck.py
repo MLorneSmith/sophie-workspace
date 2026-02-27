@@ -122,6 +122,104 @@ class HealthCheck:
             self.add_result("Disk Space", False, str(e))
             return False
     
+    def check_inodes(self) -> bool:
+        """Check if inode usage is acceptable."""
+        try:
+            result = subprocess.run(
+                ["df", "-i", "/"],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+            
+            lines = result.stdout.strip().split("\n")
+            if len(lines) >= 2:
+                parts = lines[1].split()
+                # Format: Filesystem Inodes IUsed IFree IUse% Mounted on
+                inode_percent = int(parts[4].replace("%", ""))
+                
+                passed = inode_percent < 90  # Alert if > 90% inodes used
+                details = f"{inode_percent}% inodes used"
+                self.add_result("Inodes", passed, details)
+                return passed
+            else:
+                self.add_result("Inodes", True, "Could not parse (skipped)")
+                return True
+        except (subprocess.SubprocessError, ValueError) as e:
+            self.add_result("Inodes", True, f"Check skipped: {e}")
+            return True
+    
+    def check_swap(self) -> bool:
+        """Check if swap usage is acceptable."""
+        try:
+            result = subprocess.run(
+                ["free", "-m"],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+            
+            for line in result.stdout.split("\n"):
+                if line.startswith("Swap:"):
+                    parts = line.split()
+                    total_mb = int(parts[1])
+                    used_mb = int(parts[2])
+                    
+                    if total_mb == 0:
+                        self.add_result("Swap", True, "No swap configured")
+                        return True
+                    
+                    use_percent = (used_mb / total_mb) * 100
+                    passed = use_percent < 80  # Alert if > 80% swap used
+                    details = f"{use_percent:.0f}% swap used ({used_mb}MB/{total_mb}MB)"
+                    self.add_result("Swap", passed, details)
+                    return passed
+            
+            self.add_result("Swap", True, "Could not parse (skipped)")
+            return True
+        except (subprocess.SubprocessError, ValueError) as e:
+            self.add_result("Swap", True, f"Check skipped: {e}")
+            return True
+    
+    def check_service_restarts(self) -> bool:
+        """Check if key services are restart-looping."""
+        try:
+            restart_issues = []
+            
+            # Check system services
+            for service in ["internal-tools", "ccproxy"]:
+                try:
+                    result = subprocess.run(
+                        ["systemctl", "show", service, "--property=NRestarts,ActiveState"],
+                        capture_output=True,
+                        text=True,
+                        timeout=5
+                    )
+                    
+                    restarts = 0
+                    active = False
+                    for line in result.stdout.split("\n"):
+                        if line.startswith("NRestarts="):
+                            restarts = int(line.split("=")[1])
+                        elif line.startswith("ActiveState="):
+                            active = line.split("=")[1] == "active"
+                    
+                    if restarts > 3:
+                        restart_issues.append(f"{service}: {restarts} restarts")
+                except:
+                    pass  # Service may not exist
+            
+            if restart_issues:
+                details = "Restart loops: " + ", ".join(restart_issues)
+                self.add_result("Service Restarts", False, details)
+                return False
+            else:
+                self.add_result("Service Restarts", True, "No restart loops")
+                return True
+        except Exception as e:
+            self.add_result("Service Restarts", True, f"Check skipped: {e}")
+            return True
+    
     def check_memory(self) -> bool:
         """Check if memory is adequate."""
         try:
@@ -208,8 +306,17 @@ class HealthCheck:
         self.check_gateway()
         self.check_ccproxy()
         self.check_disk_space()
+        self.check_inodes()
         self.check_memory()
-        self.check_mission_control()
+        self.check_swap()
+        self.check_service_restarts()
+        
+        # Skip MC check when called from API (avoids circular dependency)
+        if os.environ.get("SKIP_MC_CHECK") != "1":
+            self.check_mission_control()
+        else:
+            self.add_result("Mission Control API", True, "Skipped (called from API)")
+        
         self.check_cron_jobs()
         
         return len(self.failures) == 0

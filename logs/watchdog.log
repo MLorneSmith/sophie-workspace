@@ -468,3 +468,13 @@
 2026-02-26T04:33:20Z VERIFY: ZAI API responds OK; treating gateway billing/cooldown as false-positive → restart
 2026-02-26T04:33:21Z RESTART: initiating gateway restart. reason=false_billing_cooldown
 2026-02-26T04:34:40Z RESTART: gateway appears healthy (active + logs flowing).
+2026-02-26T17:14:09Z DETECT: gateway not running
+2026-02-26T17:14:09Z RESTART: initiating gateway restart. reason=process_not_running
+2026-02-26T17:14:13Z RESTART: gateway appears healthy (active + logs flowing).
+2026-02-26T17:17:13Z DETECT: gateway not running
+2026-02-26T17:17:13Z RESTART: initiating gateway restart. reason=process_not_running
+2026-02-26T17:17:14Z RESTART: gateway appears healthy (active + logs flowing).
+2026-02-26T20:06:20Z DETECT: gateway logs matched billing/cooldown pattern; verifying ZAI after 30s
+2026-02-26T20:06:51Z VERIFY: ZAI API responds OK; treating gateway billing/cooldown as false-positive → restart
+2026-02-26T20:06:51Z RESTART: initiating gateway restart. reason=false_billing_cooldown
+2026-02-26T20:07:48Z RESTART: gateway appears healthy (active + logs flowing).

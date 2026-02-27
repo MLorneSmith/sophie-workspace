@@ -3610,6 +3610,30 @@
         "threshold": 3.5,
         "evaluated_at": "2026-02-25T08:03:20.790812+00:00"
       }
+    },
+    {
+      "id": "3030400005b7",
+      "firm": "ey_parthenon",
+      "title": "Accelerating Value Creation to Realize Strategic Growth",
+      "url": "https://www.ey.com/content/dam/ey-unified-site/ey-com/el-gr/insights/strategy/documents/ey-parthenon-report-2024-fn.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/ey_parthenon/ey_parthenon-Accelerating Value Creation to Realize Strategic Growth.pdf"
+    },
+    {
+      "id": "0c6e2d6bdbdb",
+      "firm": "ey_parthenon",
+      "title": "Mind the (Investment) Gap: Funding and Delivering Capital Projects",
+      "url": "https://www.ey.com/content/dam/ey-unified-site/ey-com/en-uk/services/strategy-transactions/documents/ey-parthenon-mind-the-investment-gap-27-sep-2024.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/ey_parthenon/ey_parthenon-Mind the _Investment_ Gap_ Funding and Delivering Capital Projects.pdf"
+    },
+    {
+      "id": "cf7de248863c",
+      "firm": "ey_parthenon",
+      "title": "EY-Parthenon Transitions in Higher Education",
+      "url": "https://www.mass.edu/strategic/documents/EY-Parthenon%20Transitions%20in%20Higher%20Ed.pdf",
+      "status": "uploaded",
+      "r2_key": "to-be-evaluated/ey_parthenon/ey_parthenon-EY-Parthenon Transitions in Higher Education.pdf"
     }
   ]
 }

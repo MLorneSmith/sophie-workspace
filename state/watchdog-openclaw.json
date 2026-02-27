@@ -1,7 +1,7 @@
 {
-  "journalCursor": "s=04578706935a49dc8583de2578589884;i=1d8438;b=a235427a38744f38b548dd4b8a0bfef9;m=798cf3297f;t=64bbc18bf973f;x=8ffa8146eb694cc1",
-  "lastGatewayLogEpoch": 1772121366,
+  "journalCursor": "s=04578706935a49dc8583de2578589884;i=1dcc21;b=a235427a38744f38b548dd4b8a0bfef9;m=8882e3bcb4;t=64bcb0eb02a74;x=4dbe2c4197f41a0d",
+  "lastGatewayLogEpoch": 1772186365,
   "restarts": [
-    1772080401
+    1772136411
   ]
 }

@@ -1,0 +1,87 @@
+Failed to post to MC: <urlopen error [Errno 111] Connection refused>
+Failed to post to Mission Control
+Health Check: 5/6 passed
+
+✅ OpenClaw Gateway: Gateway responding
+✅ ccproxy: ccproxy responding
+✅ Disk Space: 21GB available (65% used)
+✅ Memory: 66.9% available (2549MB)
+❌ Mission Control API: MC API not responding
+✅ Cron Jobs: Could not check cron status (skipped)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/openclaw-healthcheck.py", line 315, in <module>
+    main()
+  File "/home/ubuntu/clawd/scripts/openclaw-healthcheck.py", line 307, in main
+    notify_discord(message)
+  File "/home/ubuntu/clawd/scripts/openclaw-healthcheck.py", line 244, in notify_discord
+    result = subprocess.run(
+             ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'openclaw'
+Health Check: 6/6 passed
+
+✅ OpenClaw Gateway: Gateway responding
+✅ ccproxy: ccproxy responding
+✅ Disk Space: 21GB available (64% used)
+✅ Memory: 60.2% available (2296MB)
+✅ Mission Control API: MC API responding
+✅ Cron Jobs: Could not check cron status (skipped)
+Posted to Mission Control
+Health Check: 8/9 passed
+
+✅ OpenClaw Gateway: Gateway responding
+✅ ccproxy: ccproxy responding
+✅ Disk Space: 21GB available (64% used)
+✅ Inodes: 14% inodes used
+✅ Memory: 62.1% available (2370MB)
+✅ Swap: 20% swap used (831MB/4095MB)
+❌ Service Restarts: Restart loops: internal-tools: 284 restarts
+✅ Mission Control API: MC API responding
+✅ Cron Jobs: Could not check cron status (skipped)
+Posted to Mission Control
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/openclaw-healthcheck.py", line 422, in <module>
+    main()
+  File "/home/ubuntu/clawd/scripts/openclaw-healthcheck.py", line 414, in main
+    notify_discord(message)
+  File "/home/ubuntu/clawd/scripts/openclaw-healthcheck.py", line 351, in notify_discord
+    result = subprocess.run(
+             ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'openclaw'
+Health Check: 9/9 passed
+
+✅ OpenClaw Gateway: Gateway responding
+✅ ccproxy: ccproxy responding
+✅ Disk Space: 21GB available (64% used)
+✅ Inodes: 14% inodes used
+✅ Memory: 61.4% available (2342MB)
+✅ Swap: 20% swap used (814MB/4095MB)
+✅ Service Restarts: No restart loops
+✅ Mission Control API: MC API responding
+✅ Cron Jobs: Could not check cron status (skipped)
+Posted to Mission Control
+Health Check: 9/9 passed
+
+✅ OpenClaw Gateway: Gateway responding
+✅ ccproxy: ccproxy responding
+✅ Disk Space: 21GB available (64% used)
+✅ Inodes: 14% inodes used
+✅ Memory: 57.9% available (2208MB)
+✅ Swap: 24% swap used (971MB/4095MB)
+✅ Service Restarts: No restart loops
+✅ Mission Control API: MC API responding
+✅ Cron Jobs: Could not check cron status (skipped)
+Posted to Mission Control

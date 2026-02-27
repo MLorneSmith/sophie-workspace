@@ -127,6 +127,56 @@
       "status": "uploaded",
       "r2Key": "to-be-evaluated/ey_parthenon/ey_parthenon-EY-Parthenon-European-Wireless-Infrastructure-Report-2024.pdf",
       "date": "2026-02-25"
+    },
+    "https://www.ey.com/content/dam/ey-unified-site/ey-com/el-gr/insights/strategy/documents/ey-parthenon-report-2024-fn.pdf": {
+      "status": "uploaded",
+      "date": "2026-02-27",
+      "r2Key": "to-be-evaluated/ey_parthenon/ey_parthenon-Accelerating Value Creation to Realize Strategic Growth.pdf"
+    },
+    "https://cdn.ey.com/parthenon/pdf/perspectives/New-Frontiers-in-Precision-Medicine_Key-Themes.pdf": {
+      "status": "failed",
+      "date": "2026-02-27",
+      "reason": "HTTP 000"
+    },
+    "https://www.ey.com/content/dam/ey-unified-site/ey-com/en-uk/services/strategy-transactions/documents/ey-parthenon-mind-the-investment-gap-27-sep-2024.pdf": {
+      "status": "uploaded",
+      "date": "2026-02-27",
+      "r2Key": "to-be-evaluated/ey_parthenon/ey_parthenon-Mind the _Investment_ Gap_ Funding and Delivering Capital Projects.pdf"
+    },
+    "https://www.mass.edu/strategic/documents/EY-Parthenon%20Transitions%20in%20Higher%20Ed.pdf": {
+      "status": "uploaded",
+      "date": "2026-02-27",
+      "r2Key": "to-be-evaluated/ey_parthenon/ey_parthenon-EY-Parthenon Transitions in Higher Education.pdf"
+    },
+    "https://www3.weforum.org/docs/WEF_Future_of_Growth_Report_2024.pdf": {
+      "status": "failed",
+      "date": "2026-02-27",
+      "reason": "HTTP 504"
+    },
+    "https://www3.weforum.org/docs/WEF_GGGR_2024.pdf": {
+      "status": "failed",
+      "date": "2026-02-27",
+      "reason": "HTTP 504"
+    },
+    "https://reports.weforum.org/docs/WEF_Annual_Report_2024_2025.pdf": {
+      "status": "failed",
+      "date": "2026-02-27",
+      "reason": "HTTP 504"
+    },
+    "https://reports.weforum.org/docs/WEF_Future_of_Jobs_Report_2025.pdf": {
+      "status": "failed",
+      "date": "2026-02-27",
+      "reason": "HTTP 504"
+    },
+    "https://reports.weforum.org/docs/WEF_Global_Economic_Futures_Competitiveness_in_2030_2025.pdf": {
+      "status": "failed",
+      "date": "2026-02-27",
+      "reason": "HTTP 504"
+    },
+    "https://reports.weforum.org/docs/WEF_Chief_Economists_Outlook_May_2025.pdf": {
+      "status": "failed",
+      "date": "2026-02-27",
+      "reason": "HTTP 504"
     }
   }
 }

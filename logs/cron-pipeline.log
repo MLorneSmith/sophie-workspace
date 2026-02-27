@@ -1,0 +1,90 @@
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 463, in <module>
+    main()
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 421, in main
+    s3_client = get_s3_client()
+                ^^^^^^^^^^^^^^^
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 129, in get_s3_client
+    raise ValueError("Missing R2 environment variables")
+ValueError: Missing R2 environment variables
+
+=== Nightly Presentation Pipeline ===
+Started at: 2026-02-27 03:00:01
+Limit: 10 | Threshold: 3.5/5
+
+== PHASE 1: Download & Upload to R2 ==
+Unprocessed: 10 selected for download
+
+--- [1/10] Accelerating Value Creation to Realize Strategic Growth ---
+    Source: ey_parthenon
+    Downloading...
+    Downloaded: 10122 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/ey_parthenon/ey_parthenon-Accelerating Value Creation to Realize Strategic Growth.pdf
+    UPLOADED: to-be-evaluated/ey_parthenon/ey_parthenon-Accelerating Value Creation to Realize Strategic Growth.pdf
+
+--- [2/10] New Frontiers in Precision Medicine ---
+    Source: ey_parthenon
+    Downloading...
+    FAILED: HTTP 000
+
+--- [3/10] Mind the (Investment) Gap: Funding and Delivering Capital Projects ---
+    Source: ey_parthenon
+    Downloading...
+    Downloaded: 3847 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/ey_parthenon/ey_parthenon-Mind the _Investment_ Gap_ Funding and Delivering Capital Projects.pdf
+    UPLOADED: to-be-evaluated/ey_parthenon/ey_parthenon-Mind the _Investment_ Gap_ Funding and Delivering Capital Projects.pdf
+
+--- [4/10] EY-Parthenon Transitions in Higher Education ---
+    Source: ey_parthenon
+    Downloading...
+    Downloaded: 4674 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/ey_parthenon/ey_parthenon-EY-Parthenon Transitions in Higher Education.pdf
+    UPLOADED: to-be-evaluated/ey_parthenon/ey_parthenon-EY-Parthenon Transitions in Higher Education.pdf
+
+--- [5/10] WEF The Future of Growth Report 2024 ---
+    Source: wef
+    Downloading...
+    FAILED: HTTP 504
+
+--- [6/10] WEF Global Gender Gap Report 2024 ---
+    Source: wef
+    Downloading...
+    FAILED: HTTP 504
+
+--- [7/10] WEF Annual Report 2024-2025 ---
+    Source: wef
+    Downloading...
+    FAILED: HTTP 504
+
+--- [8/10] WEF Future of Jobs Report 2025 ---
+    Source: wef
+    Downloading...
+    FAILED: HTTP 504
+
+--- [9/10] WEF Global Economic Futures: Competitiveness in 2030 ---
+    Source: wef
+    Downloading...
+    FAILED: HTTP 504
+
+--- [10/10] WEF Chief Economists Outlook May 2025 ---
+    Source: wef
+    Downloading...
+    FAILED: HTTP 504
+
+Phase 1 complete: Downloaded=3 Uploaded=3 Failed=7
+
+== PHASE 2: AI Evaluation ==
+Available for evaluation: 3
+Evaluating 3 presentations (threshold: 3.5/5)
+Manifest: 145 total, 3 ready to evaluate
+Connecting to R2...
+
+
+Total kept: 10 | Total deleted: 83
+
+Syncing kept presentations to Mission Control...
+Stored pipeline results in Mission Control
+
+=== Pipeline Complete ===
+Downloaded=3 Uploaded=3 Failed=7
+Evaluated=93 Kept=10 Deleted=83 MC Synced=0

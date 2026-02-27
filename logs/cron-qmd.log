@@ -1,0 +1,313 @@
+=== qmd Index Refresh ===
+Started at: 2026-02-27 04:00:01
+
+Ensuring swap is active...
+Killing stale qmd processes...
+Running qmd update...
+Updating 18 collection(s)...
+
+[1/18] clawd (**/*.md)
+Collection: /home/ubuntu/clawd (**/*.md)
+]9;4;3]9;4;1;0
+Indexing: 1/524        ]9;4;1;0
+Indexing: 2/524        ]9;4;1;1
+Indexing: 3/524 ETA: 1s        ]9;4;1;1
+Indexing: 4/524 ETA: 1s        ]9;4;1;1
+Indexing: 5/524 ETA: 1s        ]9;4;1;1
+Indexing: 6/524 ETA: 3s        ]9;4;1;1
+Indexing: 7/524 ETA: 2s        ]9;4;1;2
+Indexing: 8/524 ETA: 2s        ]9;4;1;2
+Indexing: 9/524 ETA: 2s        ]9;4;1;2
+Indexing: 10/524 ETA: 2s        ]9;4;1;2
+Indexing: 11/524 ETA: 1s        ]9;4;1;2
+Indexing: 12/524 ETA: 1s        ]9;4;1;2
+Indexing: 13/524 ETA: 1s        ]9;4;1;3
+Indexing: 14/524 ETA: 2s        ]9;4;1;3
+Indexing: 15/524 ETA: 2s        ]9;4;1;3
+Indexing: 16/524 ETA: 2s        ]9;4;1;3
+Indexing: 17/524 ETA: 2s        ]9;4;1;3
+Indexing: 18/524 ETA: 2s        ]9;4;1;4
+Indexing: 19/524 ETA: 2s        ]9;4;1;4
+Indexing: 20/524 ETA: 2s        ]9;4;1;4
+Indexing: 21/524 ETA: 2s        ]9;4;1;4
+Indexing: 22/524 ETA: 2s        ]9;4;1;4
+Indexing: 23/524 ETA: 1s        ]9;4;1;5
+Indexing: 24/524 ETA: 2s        ]9;4;1;5
+Indexing: 25/524 ETA: 2s        ]9;4;1;5
+Indexing: 26/524 ETA: 2s        ]9;4;1;5
+Indexing: 27/524 ETA: 2s        ]9;4;1;5
+Indexing: 28/524 ETA: 2s        ]9;4;1;6
+Indexing: 29/524 ETA: 2s        ]9;4;1;6
+Indexing: 30/524 ETA: 2s        ]9;4;1;6
+Indexing: 31/524 ETA: 1s        ]9;4;1;6
+Indexing: 32/524 ETA: 1s        ]9;4;1;6
+Indexing: 33/524 ETA: 1s        ]9;4;1;6
+Indexing: 34/524 ETA: 1s        ]9;4;1;7
+Indexing: 35/524 ETA: 1s        ]9;4;1;7
+Indexing: 36/524 ETA: 1s        ]9;4;1;7
+Indexing: 37/524 ETA: 1s        ]9;4;1;7
+Indexing: 38/524 ETA: 1s        ]9;4;1;7
+Indexing: 39/524 ETA: 1s        ]9;4;1;8
+Indexing: 40/524 ETA: 1s        ]9;4;1;8
+Indexing: 41/524 ETA: 1s        ]9;4;1;8
+Indexing: 42/524 ETA: 1s        ]9;4;1;8
+Indexing: 43/524 ETA: 1s        ]9;4;1;8
+Indexing: 44/524 ETA: 1s        ]9;4;1;9
+Indexing: 45/524 ETA: 1s        ]9;4;1;9
+Indexing: 46/524 ETA: 1s        ]9;4;1;9
+Indexing: 47/524 ETA: 1s        ]9;4;1;9
+Indexing: 48/524 ETA: 1s        ]9;4;1;9
+Indexing: 49/524 ETA: 1s        ]9;4;1;10
+Indexing: 50/524 ETA: 1s        ]9;4;1;10
+Indexing: 51/524 ETA: 1s        ]9;4;1;10
+Indexing: 52/524 ETA: 1s        ]9;4;1;10
+Indexing: 53/524 ETA: 1s        ]9;4;1;10
+Indexing: 54/524 ETA: 1s        ]9;4;1;10
+Indexing: 55/524 ETA: 1s        ]9;4;1;11
+Indexing: 56/524 ETA: 1s        ]9;4;1;11
+Indexing: 57/524 ETA: 1s        ]9;4;1;11
+Indexing: 58/524 ETA: 1s        ]9;4;1;11
+Indexing: 59/524 ETA: 1s        ]9;4;1;11
+Indexing: 60/524 ETA: 1s        ]9;4;1;12
+Indexing: 61/524 ETA: 1s        ]9;4;1;12
+Indexing: 62/524 ETA: 1s        ]9;4;1;12
+Indexing: 63/524 ETA: 1s        ]9;4;1;12
+Indexing: 64/524 ETA: 1s        ]9;4;1;12
+Indexing: 65/524 ETA: 1s        ]9;4;1;13
+Indexing: 66/524 ETA: 1s        ]9;4;1;13
+Indexing: 67/524 ETA: 1s        ]9;4;1;13
+Indexing: 68/524 ETA: 1s        ]9;4;1;13
+Indexing: 69/524 ETA: 1s        ]9;4;1;13
+Indexing: 70/524 ETA: 1s        ]9;4;1;14
+Indexing: 71/524 ETA: 1s        ]9;4;1;14
+Indexing: 72/524 ETA: 1s        ]9;4;1;14
+Indexing: 73/524 ETA: 1s        ]9;4;1;14
+Indexing: 74/524 ETA: 1s        ]9;4;1;14
+Indexing: 75/524 ETA: 1s        ]9;4;1;15
+Indexing: 76/524 ETA: 1s        ]9;4;1;15
+Indexing: 77/524 ETA: 1s        ]9;4;1;15
+Indexing: 78/524 ETA: 1s        ]9;4;1;15
+Indexing: 79/524 ETA: 1s        ]9;4;1;15
+Indexing: 80/524 ETA: 1s        ]9;4;1;15
+Indexing: 81/524 ETA: 1s        ]9;4;1;16
+Indexing: 82/524 ETA: 1s        ]9;4;1;16
+Indexing: 83/524 ETA: 1s        ]9;4;1;16
+Indexing: 84/524 ETA: 1s        ]9;4;1;16
+Indexing: 85/524 ETA: 1s        ]9;4;1;16
+Indexing: 86/524 ETA: 1s        ]9;4;1;17
+Indexing: 87/524 ETA: 1s        ]9;4;1;17
+Indexing: 88/524 ETA: 1s        ]9;4;1;17
+Indexing: 89/524 ETA: 1s        ]9;4;1;17
+Indexing: 90/524 ETA: 1s        ]9;4;1;17
+Indexing: 91/524 ETA: 1s        ]9;4;1;18
+Indexing: 92/524 ETA: 1s        ]9;4;1;18
+Indexing: 93/524 ETA: 1s        ]9;4;1;18
+Indexing: 94/524 ETA: 1s        ]9;4;1;18
+Indexing: 95/524 ETA: 1s        ]9;4;1;18
+Indexing: 96/524 ETA: 1s        ]9;4;1;19
+Indexing: 97/524 ETA: 1s        ]9;4;1;19
+Indexing: 98/524 ETA: 1s        ]9;4;1;19
+Indexing: 99/524 ETA: 1s        ]9;4;1;19
+Indexing: 100/524 ETA: 1s        ]9;4;1;19
+Indexing: 101/524 ETA: 1s        ]9;4;1;19
+Indexing: 102/524 ETA: 1s        ]9;4;1;20
+Indexing: 103/524 ETA: 1s        ]9;4;1;20
+Indexing: 104/524 ETA: 1s        ]9;4;1;20
+Indexing: 105/524 ETA: 1s        ]9;4;1;20
+Indexing: 106/524 ETA: 1s        ]9;4;1;20
+Indexing: 107/524 ETA: 1s        ]9;4;1;21
+Indexing: 108/524 ETA: 1s        ]9;4;1;21
+Indexing: 109/524 ETA: 1s        ]9;4;1;21
+Indexing: 110/524 ETA: 1s        ]9;4;1;21
+Indexing: 111/524 ETA: 1s        ]9;4;1;21
+Indexing: 112/524 ETA: 1s        ]9;4;1;22
+Indexing: 113/524 ETA: 1s        ]9;4;1;22
+Indexing: 114/524 ETA: 1s        ]9;4;1;22
+Indexing: 115/524 ETA: 1s        ]9;4;1;22
+Indexing: 116/524 ETA: 1s        ]9;4;1;22
+Indexing: 117/524 ETA: 1s        ]9;4;1;23
+Indexing: 118/524 ETA: 1s        ]9;4;1;23
+Indexing: 119/524 ETA: 1s        ]9;4;1;23
+Indexing: 120/524 ETA: 1s        ]9;4;1;23
+Indexing: 121/524 ETA: 1s        ]9;4;1;23
+Indexing: 122/524 ETA: 1s        ]9;4;1;23
+Indexing: 123/524 ETA: 1s        ]9;4;1;24
+Indexing: 124/524 ETA: 1s        ]9;4;1;24
+Indexing: 125/524 ETA: 1s        ]9;4;1;24
+Indexing: 126/524 ETA: 1s        ]9;4;1;24
+Indexing: 127/524 ETA: 1s        ]9;4;1;24
+Indexing: 128/524 ETA: 1s        ]9;4;1;25
+Indexing: 129/524 ETA: 1s        ]9;4;1;25
+Indexing: 130/524 ETA: 1s        ]9;4;1;25
+Indexing: 131/524 ETA: 1s        ]9;4;1;25
+Indexing: 132/524 ETA: 1s        ]9;4;1;25
+Indexing: 133/524 ETA: 1s        ]9;4;1;26
+Indexing: 134/524 ETA: 1s        ]9;4;1;26
+Indexing: 135/524 ETA: 1s        ]9;4;1;26
+Indexing: 136/524 ETA: 1s        ]9;4;1;26
+Indexing: 137/524 ETA: 1s        ]9;4;1;26
+Indexing: 138/524 ETA: 1s        ]9;4;1;27
+Indexing: 139/524 ETA: 1s        ]9;4;1;27
+Indexing: 140/524 ETA: 1s        ]9;4;1;27
+Indexing: 141/524 ETA: 1s        ]9;4;1;27
+Indexing: 142/524 ETA: 1s        ]9;4;1;27
+Indexing: 143/524 ETA: 1s        ]9;4;1;27
+Indexing: 144/524 ETA: 0s        ]9;4;1;28
+Indexing: 145/524 ETA: 0s        ]9;4;1;28
+Indexing: 146/524 ETA: 0s        ]9;4;1;28
+Indexing: 147/524 ETA: 0s        ]9;4;1;28
+Indexing: 148/524 ETA: 0s        ]9;4;1;28
+Indexing: 149/524 ETA: 0s        ]9;4;1;29
+Indexing: 150/524 ETA: 0s        ]9;4;1;29
+Indexing: 151/524 ETA: 0s        ]9;4;1;29
+Indexing: 152/524 ETA: 0s        ]9;4;1;29
+Indexing: 153/524 ETA: 0s        ]9;4;1;29
+Indexing: 154/524 ETA: 0s        ]9;4;1;30
+Indexing: 155/524 ETA: 0s        ]9;4;1;30
+Indexing: 156/524 ETA: 0s        ]9;4;1;30
+Indexing: 157/524 ETA: 0s        ]9;4;1;30
+Indexing: 158/524 ETA: 0s        ]9;4;1;30
+Indexing: 159/524 ETA: 0s        ]9;4;1;31
+Indexing: 160/524 ETA: 0s        ]9;4;1;31
+Indexing: 161/524 ETA: 0s        ]9;4;1;31
+Indexing: 162/524 ETA: 0s        ]9;4;1;31
+Indexing: 163/524 ETA: 0s        ]9;4;1;31
+Indexing: 164/524 ETA: 0s        ]9;4;1;31
+Indexing: 165/524 ETA: 0s        ]9;4;1;32
+Indexing: 166/524 ETA: 0s        ]9;4;1;32
+Indexing: 167/524 ETA: 0s        ]9;4;1;32
+Indexing: 168/524 ETA: 0s        ]9;4;1;32
+Indexing: 169/524 ETA: 0s        ]9;4;1;32
+Indexing: 170/524 ETA: 0s        ]9;4;1;33
+Indexing: 171/524 ETA: 0s        ]9;4;1;33
+Indexing: 172/524 ETA: 0s        ]9;4;1;33
+Indexing: 173/524 ETA: 0s        ]9;4;1;33
+Indexing: 174/524 ETA: 0s        ]9;4;1;33
+Indexing: 175/524 ETA: 0s        ]9;4;1;34
+Indexing: 176/524 ETA: 0s        ]9;4;1;34
+Indexing: 177/524 ETA: 0s        ]9;4;1;34
+Indexing: 178/524 ETA: 0s        ]9;4;1;34
+Indexing: 179/524 ETA: 0s        ]9;4;1;34
+Indexing: 180/524 ETA: 0s        ]9;4;1;35
+Indexing: 181/524 ETA: 0s        ]9;4;1;35
+Indexing: 182/524 ETA: 0s        ]9;4;1;35
+Indexing: 183/524 ETA: 0s        ]9;4;1;35
+Indexing: 184/524 ETA: 0s        ]9;4;1;35
+Indexing: 185/524 ETA: 0s        1096 |   modifiedAt: string
+1097 | ): void {
+1098 |   db.prepare(`
+1099 |     INSERT INTO documents (collection, path, title, hash, created_at, modified_at, active)
+1100 |     VALUES (?, ?, ?, ?, ?, ?, 1)
+1101 |   `).run(collectionName, path, title, hash, createdAt, modifiedAt);
+            ^
+SQLiteError: UNIQUE constraint failed: documents.collection, documents.path
+      errno: 2067,
+ byteOffset: -1,
+       code: "SQLITE_CONSTRAINT_UNIQUE"
+
+      at #run (bun:sqlite:185:20)
+      at insertDocument (/home/ubuntu/.bun/install/global/node_modules/qmd/src/store.ts:1101:6)
+      at indexFiles (/home/ubuntu/.bun/install/global/node_modules/qmd/src/qmd.ts:1440:7)
+      at async updateCollections (/home/ubuntu/.bun/install/global/node_modules/qmd/src/qmd.ts:428:11)
+
+Bun v1.3.8 (Linux x64)
+
+Running qmd embed (this takes 4-8 min)...
+Embedding 6 documents (18 chunks, 34.3 KB)
+5 documents split into multiple chunks
+Model: embeddinggemma
+
+
+██████████████████████████████ 100%                                    
+
+✓ Done! Embedded 18 chunks from 6 documents in 1m 39s (355.3504675264155 B/s)
+Chunking 6 documents by token count...
+[node-llama-cpp] The prebuilt binary for platform "linux" "x64" with Vulkan support is not compatible with the current system, falling back to using no GPU
+[?25l]9;4;3]9;4;1;100
+██████████████████████████████ 100% 18/18 355.35406747036774 B/s ETA 0s   ]9;4;0[?25h
+Running qmd status...
+QMD Status
+
+Index: /home/ubuntu/.cache/qmd/index.sqlite
+Size:  17.7 MB
+
+Documents
+  Total:    371 files indexed
+  Vectors:  2061 embedded
+  Updated:  4h ago
+
+Collections
+  clawd (qmd://clawd/)
+    Pattern:  **/*.md
+    Files:    355 (updated 4h ago)
+    Contexts: 1
+      /: Sophie's workspace - personal memory files, daily notes, ...
+  clawdbot-docs (qmd://clawdbot-docs/)
+    Pattern:  **/*.md
+    Files:    16 (updated 8d ago)
+    Contexts: 1
+      /: Clawdbot technical documentation - configuration, skills,...
+  memory-root-main (qmd://memory-root-main/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-main (qmd://memory-alt-main/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-main (qmd://memory-dir-main/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  learnings-main (qmd://learnings-main/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-data-pipeline (qmd://memory-root-data-pipeline/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-data-pipeline (qmd://memory-alt-data-pipeline/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-data-pipeline (qmd://memory-dir-data-pipeline/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-devops (qmd://memory-root-devops/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-devops (qmd://memory-alt-devops/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-devops (qmd://memory-dir-devops/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-coder (qmd://memory-root-coder/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-coder (qmd://memory-alt-coder/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-coder (qmd://memory-dir-coder/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-research (qmd://memory-root-research/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-research (qmd://memory-alt-research/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-research (qmd://memory-dir-research/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+
+Examples
+  # List files in a collection
+  qmd ls clawd
+  # Get a document
+  qmd get qmd://clawd/path/to/file.md
+  # Search within a collection
+  qmd search "query" -c clawd
+
+
+=== Summary ===
+Files updated: 0
+Chunks embedded: 18
+Errors: 2
+  - qmd update failed
+  - SQLiteError: UNIQUE constraint failed: documents.collection, documents.path
