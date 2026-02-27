@@ -133,7 +133,8 @@
 		"./background-boxes": "./src/aceternity/background-boxes.tsx",
 		"./blog-post-card": "./src/aceternity/blog-post-card.tsx",
 		"./card-spotlight": "./src/aceternity/card-spotlight.tsx",
-		"./card-hover-effect": "./src/aceternity/card-hover-effect.tsx"
+		"./card-hover-effect": "./src/aceternity/card-hover-effect.tsx",
+		"./use-platform": "./src/hooks/use-platform.tsx"
 	},
 	"typesVersions": {
 		"*": {
