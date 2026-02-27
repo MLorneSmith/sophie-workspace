@@ -16,9 +16,8 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@kit/ui/tooltip";
-import { usePlatform } from "@kit/ui/use-platform";
 import { Trans } from "@kit/ui/trans";
-import { useTranslation } from "react-i18next";
+import { usePlatform } from "@kit/ui/use-platform";
 import { cn } from "@kit/ui/utils";
 import Bold from "@tiptap/extension-bold";
 import BulletList from "@tiptap/extension-bullet-list";
@@ -42,6 +41,7 @@ import {
 	Underline as UnderlineIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import type {
 	SlideLayout,
