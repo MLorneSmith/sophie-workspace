@@ -10,6 +10,13 @@ import {
 	SelectValue,
 } from "@kit/ui/select";
 import { Textarea } from "@kit/ui/textarea";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@kit/ui/tooltip";
+import { usePlatform } from "@kit/ui/use-platform";
 import { cn } from "@kit/ui/utils";
 import Bold from "@tiptap/extension-bold";
 import BulletList from "@tiptap/extension-bullet-list";
@@ -48,72 +55,114 @@ interface SlideEditorProps {
 }
 
 function NotesToolbar({ editor }: { editor: Editor | null }) {
+	const { formatShortcut } = usePlatform();
+
 	if (!editor) return null;
 
 	return (
-		<div className="flex items-center gap-0.5 border-b border-white/10 px-1 py-0.5">
-			<Button
-				variant="ghost"
-				size="sm"
-				onClick={() => editor.chain().focus().toggleBold().run()}
-				className={cn(
-					"h-6 w-6 p-0",
-					editor.isActive("bold") && "bg-accent text-accent-foreground",
-				)}
-				aria-label="Bold"
-			>
-				<BoldIcon className="h-3 w-3" />
-			</Button>
-			<Button
-				variant="ghost"
-				size="sm"
-				onClick={() => editor.chain().focus().toggleItalic().run()}
-				className={cn(
-					"h-6 w-6 p-0",
-					editor.isActive("italic") && "bg-accent text-accent-foreground",
-				)}
-				aria-label="Italic"
-			>
-				<ItalicIcon className="h-3 w-3" />
-			</Button>
-			<Button
-				variant="ghost"
-				size="sm"
-				onClick={() => editor.chain().focus().toggleUnderline().run()}
-				className={cn(
-					"h-6 w-6 p-0",
-					editor.isActive("underline") && "bg-accent text-accent-foreground",
-				)}
-				aria-label="Underline"
-			>
-				<UnderlineIcon className="h-3 w-3" />
-			</Button>
-			<div className="mx-0.5 h-3 w-px bg-white/10" />
-			<Button
-				variant="ghost"
-				size="sm"
-				onClick={() => editor.chain().focus().toggleBulletList().run()}
-				className={cn(
-					"h-6 w-6 p-0",
-					editor.isActive("bulletList") && "bg-accent text-accent-foreground",
-				)}
-				aria-label="Bullet List"
-			>
-				<List className="h-3 w-3" />
-			</Button>
-			<Button
-				variant="ghost"
-				size="sm"
-				onClick={() => editor.chain().focus().toggleOrderedList().run()}
-				className={cn(
-					"h-6 w-6 p-0",
-					editor.isActive("orderedList") && "bg-accent text-accent-foreground",
-				)}
-				aria-label="Ordered List"
-			>
-				<ListOrdered className="h-3 w-3" />
-			</Button>
-		</div>
+		<TooltipProvider delayDuration={500}>
+			<div className="flex items-center gap-0.5 border-b border-white/10 px-1 py-0.5">
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => editor.chain().focus().toggleBold().run()}
+							className={cn(
+								"h-6 w-6 p-0",
+								editor.isActive("bold") && "bg-accent text-accent-foreground",
+							)}
+							aria-label="Bold"
+						>
+							<BoldIcon className="h-3 w-3" />
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent>
+						<p>Bold {formatShortcut("Ctrl+B")}</p>
+					</TooltipContent>
+				</Tooltip>
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => editor.chain().focus().toggleItalic().run()}
+							className={cn(
+								"h-6 w-6 p-0",
+								editor.isActive("italic") && "bg-accent text-accent-foreground",
+							)}
+							aria-label="Italic"
+						>
+							<ItalicIcon className="h-3 w-3" />
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent>
+						<p>Italic {formatShortcut("Ctrl+I")}</p>
+					</TooltipContent>
+				</Tooltip>
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => editor.chain().focus().toggleUnderline().run()}
+							className={cn(
+								"h-6 w-6 p-0",
+								editor.isActive("underline") &&
+									"bg-accent text-accent-foreground",
+							)}
+							aria-label="Underline"
+						>
+							<UnderlineIcon className="h-3 w-3" />
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent>
+						<p>Underline {formatShortcut("Ctrl+U")}</p>
+					</TooltipContent>
+				</Tooltip>
+				<div className="mx-0.5 h-3 w-px bg-white/10" />
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => editor.chain().focus().toggleBulletList().run()}
+							className={cn(
+								"h-6 w-6 p-0",
+								editor.isActive("bulletList") &&
+									"bg-accent text-accent-foreground",
+							)}
+							aria-label="Bullet List"
+						>
+							<List className="h-3 w-3" />
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent>
+						<p>Bullet List {formatShortcut("Ctrl+Shift+8")}</p>
+					</TooltipContent>
+				</Tooltip>
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => editor.chain().focus().toggleOrderedList().run()}
+							className={cn(
+								"h-6 w-6 p-0",
+								editor.isActive("orderedList") &&
+									"bg-accent text-accent-foreground",
+							)}
+							aria-label="Ordered List"
+						>
+							<ListOrdered className="h-3 w-3" />
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent>
+						<p>Ordered List {formatShortcut("Ctrl+Shift+7")}</p>
+					</TooltipContent>
+				</Tooltip>
+			</div>
+		</TooltipProvider>
 	);
 }
 
@@ -241,31 +290,47 @@ export function SlideEditor({
 						<SelectItem value="blank">Blank</SelectItem>
 					</SelectContent>
 				</Select>
-				{onRegenerate && (
-					<Button
-						variant="ghost"
-						size="sm"
-						onClick={() => onRegenerate(slide.id)}
-						disabled={isRegenerating}
-						className="text-muted-foreground hover:text-foreground h-8 w-8 shrink-0 p-0"
-						aria-label="Regenerate slide"
-					>
-						{isRegenerating ? (
-							<Loader2 className="h-3.5 w-3.5 animate-spin" />
-						) : (
-							<RefreshCw className="h-3.5 w-3.5" />
-						)}
-					</Button>
-				)}
-				<Button
-					variant="ghost"
-					size="sm"
-					onClick={() => onDelete(slide.id)}
-					className="text-muted-foreground hover:text-destructive h-8 w-8 shrink-0 p-0"
-					aria-label="Delete slide"
-				>
-					<Trash2 className="h-3.5 w-3.5" />
-				</Button>
+				<TooltipProvider delayDuration={500}>
+					{onRegenerate && (
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={() => onRegenerate(slide.id)}
+									disabled={isRegenerating}
+									className="text-muted-foreground hover:text-foreground h-8 w-8 shrink-0 p-0"
+									aria-label="Regenerate slide"
+								>
+									{isRegenerating ? (
+										<Loader2 className="h-3.5 w-3.5 animate-spin" />
+									) : (
+										<RefreshCw className="h-3.5 w-3.5" />
+									)}
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>Regenerate Slide</p>
+							</TooltipContent>
+						</Tooltip>
+					)}
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => onDelete(slide.id)}
+								className="text-muted-foreground hover:text-destructive h-8 w-8 shrink-0 p-0"
+								aria-label="Delete slide"
+							>
+								<Trash2 className="h-3.5 w-3.5" />
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>Delete Slide</p>
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
 			</div>
 
 			<div className="space-y-4 p-4">
