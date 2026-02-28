@@ -88,3 +88,101 @@ Stored pipeline results in Mission Control
 === Pipeline Complete ===
 Downloaded=3 Uploaded=3 Failed=7
 Evaluated=93 Kept=10 Deleted=83 MC Synced=0
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 463, in <module>
+    main()
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 421, in main
+    s3_client = get_s3_client()
+                ^^^^^^^^^^^^^^^
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 129, in get_s3_client
+    raise ValueError("Missing R2 environment variables")
+ValueError: Missing R2 environment variables
+
+=== Nightly Presentation Pipeline ===
+Started at: 2026-02-28 03:00:01
+Limit: 10 | Threshold: 3.5/5
+
+== PHASE 1: Download & Upload to R2 ==
+Unprocessed: 10 selected for download
+
+--- [1/10] Infosys Investor Presentation ---
+    Source: infosys
+    Downloading...
+    FAILED: HTTP 403
+
+--- [2/10] Infosys GEN AI Highlights Q1 FY26 ---
+    Source: infosys
+    Downloading...
+    FAILED: HTTP 403
+
+--- [3/10] Infosys Integrated Annual Report 2024-25 ---
+    Source: infosys
+    Downloading...
+    FAILED: HTTP 403
+
+--- [4/10] Wipro Investor Presentation Q1 FY25 ---
+    Source: wipro
+    Downloading...
+    Downloaded: 1229 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/wipro/wipro-Wipro Investor Presentation Q1 FY25.pdf
+    UPLOADED: to-be-evaluated/wipro/wipro-Wipro Investor Presentation Q1 FY25.pdf
+
+--- [5/10] Wipro Investor Presentation Q4 FY24 ---
+    Source: wipro
+    Downloading...
+    Downloaded: 4605 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/wipro/wipro-Wipro Investor Presentation Q4 FY24.pdf
+    UPLOADED: to-be-evaluated/wipro/wipro-Wipro Investor Presentation Q4 FY24.pdf
+
+--- [6/10] Wipro Investor Presentation Q3 FY25 ---
+    Source: wipro
+    Downloading...
+    Downloaded: 1274 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/wipro/wipro-Wipro Investor Presentation Q3 FY25.pdf
+    UPLOADED: to-be-evaluated/wipro/wipro-Wipro Investor Presentation Q3 FY25.pdf
+
+--- [7/10] TCS Investor Relations Presentation January 2024 ---
+    Source: tcs
+    Downloading...
+    Downloaded: 8507 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/tcs/tcs-TCS Investor Relations Presentation January 2024.pdf
+    UPLOADED: to-be-evaluated/tcs/tcs-TCS Investor Relations Presentation January 2024.pdf
+
+--- [8/10] TCS Investor Presentation August 2024 ---
+    Source: tcs
+    Downloading...
+    Downloaded: 2711 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/tcs/tcs-TCS Investor Presentation August 2024.pdf
+    UPLOADED: to-be-evaluated/tcs/tcs-TCS Investor Presentation August 2024.pdf
+
+--- [9/10] TCS Financial Results Q1 2024-25 Fact Sheet ---
+    Source: tcs
+    Downloading...
+    Downloaded: 427 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/tcs/tcs-TCS Financial Results Q1 2024-25 Fact Sheet.pdf
+    UPLOADED: to-be-evaluated/tcs/tcs-TCS Financial Results Q1 2024-25 Fact Sheet.pdf
+
+--- [10/10] Roland Berger Foresight 2024 China Annual Trends Report ---
+    Source: roland_berger
+    Downloading...
+    Downloaded: 6109 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/roland_berger/roland_berger-Roland Berger Foresight 2024 China Annual Trends Report.pdf
+    UPLOADED: to-be-evaluated/roland_berger/roland_berger-Roland Berger Foresight 2024 China Annual Trends Report.pdf
+
+Phase 1 complete: Downloaded=7 Uploaded=7 Failed=3
+
+== PHASE 2: AI Evaluation ==
+Available for evaluation: 10
+Evaluating 10 presentations (threshold: 3.5/5)
+Manifest: 152 total, 10 ready to evaluate
+Connecting to R2...
+
+
+Total kept: 10 | Total deleted: 83
+
+Syncing kept presentations to Mission Control...
+Stored pipeline results in Mission Control
+
+=== Pipeline Complete ===
+Downloaded=7 Uploaded=7 Failed=3
+Evaluated=93 Kept=10 Deleted=83 MC Synced=0

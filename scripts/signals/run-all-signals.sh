@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-source ~/.clawdbot/.env 2>/dev/null || true
+source ~/.openclaw/.secrets.env 2>/dev/null || true
 export GOOGLE_APPLICATION_CREDENTIALS
 
 FORMAT="pretty"

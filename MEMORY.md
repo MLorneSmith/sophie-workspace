@@ -38,13 +38,16 @@ Check `openclaw.json` → `models.providers.zai.baseUrl` if GLM fails.
 
 ## Agent Fleet
 
-| Agent | Model | Role |
-|-------|-------|------|
-| 🦁 Sophie | Opus 4.6 | Orchestration, conversation |
-| 🧑‍💻 Coder | GLM-5 | Implementation, PRs |
-| 🔍 Research | GLM-5 | Competitive intel, research |
-| 🛠️ DevOps | GLM-5 | Infrastructure, health checks |
-| 🔄 Pipeline | GLM-5 | Data syncs, ETL |
+| Agent | Model (Primary) | Fallback | Role |
+|-------|----------------|----------|------|
+| 🦁 Sophie | Opus 4.6 | MiniMax M2.5 → GLM-5 → OpenRouter | Orchestration, conversation |
+| 🧑‍💻 Neo (The Coder) | MiniMax M2.5* | GLM-5 | Implementation, PRs |
+| 🔍 Kvoth (The Researcher) | MiniMax M2.5 | GLM-5 | Competitive intel, research |
+| 🎨 Michelangelo (The Artist) | MiniMax M2.5 | GLM-5 | Image generation (nano-banana-pro skill) |
+| ✍️ Hemingway (The Writer) | Opus 4.6 | MiniMax M2.5 | Blog posts, emails, LinkedIn, copy |
+| 🚀 Viral (The GTM Engineer) | MiniMax M2.5 | GLM-5 | SEO, growth, competitive analysis |
+
+*Neo switches to GPT-5.2-Codex primary on Monday March 2.
 
 **Details:** `memory/archive/agent-fleet.md`
 
@@ -52,17 +55,16 @@ Check `openclaw.json` → `models.providers.zai.baseUrl` if GLM fails.
 
 ## Model Dispatch
 
-**Source of truth:** `~/clawd/config/model-dispatch.json`
-
 | Role | Model | Use case |
 |------|-------|----------|
-| `code` | `zai/glm-5` | Implementation, PRs, bug fixes |
-| `research` | `zai/glm-5` | Web search, competitive analysis |
-| `default` | `anthropic/claude-opus-4-6` | Conversation, planning |
+| `code` (Neo) | `minimax/MiniMax-M2.5-highspeed` | Implementation, PRs, bug fixes |
+| `research` (Kvoth) | `minimax/MiniMax-M2.5-highspeed` | Web search, competitive analysis |
+| `writing` (Hemingway) | `anthropic/claude-opus-4-6` | Content creation, copy |
+| `art` (Michelangelo) | `minimax/MiniMax-M2.5-highspeed` | Image generation via nano-banana-pro |
+| `gtm` (Viral) | `minimax/MiniMax-M2.5-highspeed` | SEO, growth, GTM strategy |
+| `default` (Sophie) | `anthropic/claude-opus-4-6` | Conversation, planning, orchestration |
 
-**Fallback:** ccproxy/GPT-5.2 → GLM → Opus
-
-**Note:** GPT-5.2 via ccproxy has "thinking loop" issues. Use GLM-5 for coding sub-agents until fixed.
+**Fallback chain:** MiniMax M2.5 → GLM-5 → OpenRouter auto
 
 ---
 
@@ -72,7 +74,7 @@ Check `openclaw.json` → `models.providers.zai.baseUrl` if GLM fails.
 |----------|--------|-------|
 | CRM | Attio | Initial setup done |
 | Email | Loops | Migrating from ActiveCampaign |
-| YouTube transcripts | Supadata | API key in `~/.clawdbot/.env` |
+| YouTube transcripts | Supadata | API key in `~/.openclaw/.secrets.env` |
 | AWS | c7i-flex.large | us-east-2, ~$2.65/day |
 
 ---

@@ -47,18 +47,18 @@ Optional:
 ### Run orchestrator
 
 ```bash
-~/.clawdbot/skills/alpha-orchestrator/scripts/run-spec.sh <spec-id> [-- <extra spec-orchestrator args>]
+~/.openclaw/skills/alpha-orchestrator/scripts/run-spec.sh <spec-id> [-- <extra spec-orchestrator args>]
 
 # Examples:
-~/.clawdbot/skills/alpha-orchestrator/scripts/run-spec.sh 1362
-~/.clawdbot/skills/alpha-orchestrator/scripts/run-spec.sh 1362 -- -s 2
-~/.clawdbot/skills/alpha-orchestrator/scripts/run-spec.sh 1362 -- --dry-run
+~/.openclaw/skills/alpha-orchestrator/scripts/run-spec.sh 1362
+~/.openclaw/skills/alpha-orchestrator/scripts/run-spec.sh 1362 -- -s 2
+~/.openclaw/skills/alpha-orchestrator/scripts/run-spec.sh 1362 -- --dry-run
 ```
 
 ### Open PR to upstream dev
 
 ```bash
-~/.clawdbot/skills/alpha-orchestrator/scripts/open-pr.sh <spec-id>
+~/.openclaw/skills/alpha-orchestrator/scripts/open-pr.sh <spec-id>
 ```
 
 ## Notes / Implementation details

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Morning Brief — {{DATE_LONG}}</title>
+  <style>
+    /* Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.5;
+      color: #1e293b;
+      background: #ffffff;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    /* ── Header — dark, editorial, SlideHeroes brand ── */
+    .header {
+      background: #0a0a0f;
+      color: #f5f5f7;
+      padding: 36px 28px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(36,169,224,0.12) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: 30%;
+      width: 160px; height: 160px;
+      background: radial-gradient(circle, rgba(36,169,224,0.06) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .header-greeting {
+      font-size: 13px;
+      color: #64748b;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 500;
+      letter-spacing: -0.3px;
+      color: #f5f5f7;
+      position: relative;
+    }
+    .header .date {
+      font-size: 14px;
+      color: #64748b;
+      margin-top: 4px;
+      position: relative;
+    }
+    .header .accent-bar {
+      width: 40px;
+      height: 3px;
+      background: #24a9e0;
+      border-radius: 2px;
+      margin-top: 16px;
+      position: relative;
+    }
+
+    /* ── Content ── */
+    .content { padding: 4px 0; }
+
+    /* ── Section ── */
+    .section {
+      padding: 20px 28px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .section:last-child { border-bottom: none; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .section-icon {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #334155;
+    }
+
+    /* Icon backgrounds — accent spectrum at 12% opacity */
+    .icon-0 { background: rgba(36, 49, 224, 0.12); }   /* Deep Blue */
+    .icon-1 { background: rgba(36, 108, 224, 0.12); }  /* Medium Blue */
+    .icon-2 { background: rgba(36, 169, 224, 0.12); }  /* Brand Cyan */
+    .icon-3 { background: rgba(36, 224, 221, 0.12); }  /* Cyan-Teal */
+    .icon-4 { background: rgba(36, 224, 157, 0.12); }  /* Teal-Green */
+
+    /* ── Weather ── */
+    .weather-row {
+      display: flex;
+      gap: 12px;
+    }
+    .weather-card {
+      flex: 1;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #e2e8f0;
+    }
+    .weather-label {
+      font-size: 11px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .weather-temp {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0a0a0f;
+      letter-spacing: -0.5px;
+    }
+    .weather-desc {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 3px;
+    }
+
+    /* ── Quote ── */
+    .quote-block {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 18px 22px;
+      border-left: 3px solid #24a9e0;
+    }
+    .quote-text {
+      font-size: 15px;
+      font-style: italic;
+      color: #334155;
+      line-height: 1.65;
+    }
+    .quote-author {
+      font-size: 13px;
+      color: #24a9e0;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    /* ── Calendar ── */
+    .cal-item {
+      display: flex;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .cal-item:last-child { border-bottom: none; }
+    .cal-time {
+      font-size: 13px;
+      font-weight: 600;
+      color: #24a9e0;
+      width: 64px;
+      flex-shrink: 0;
+    }
+    .cal-name {
+      font-size: 14px;
+      color: #334155;
+    }
+    .cal-empty {
+      font-size: 14px;
+      color: #64748b;
+      font-style: italic;
+    }
+
+    /* ── Feed ── */
+    .feed-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #0a0a0f;
+      text-decoration: none;
+      line-height: 1.4;
+    }
+    .feed-title:hover { color: #24a9e0; }
+    .feed-meta {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 3px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .feed-snippet {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+    .feed-actions {
+      margin-top: 8px;
+      font-size: 12px;
+      display: flex;
+      gap: 8px;
+    }
+    .feed-actions a {
+      text-decoration: none;
+      padding: 4px 14px;
+      border-radius: 8px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+    }
+    .btn-up {
+      background: rgba(34, 197, 94, 0.1);
+      color: #166534;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    .btn-down {
+      background: rgba(239, 68, 68, 0.08);
+      color: #991b1b;
+      border: 1px solid rgba(239, 68, 68, 0.15);
+    }
+    .feed-actions a:hover { opacity: 0.8; }
+
+    /* ── Stats grid ── */
+    .stats-row {
+      display: flex;
+      gap: 12px;
+    }
+    .stat-box {
+      flex: 1;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      border: 1px solid #e2e8f0;
+    }
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0a0a0f;
+      letter-spacing: -0.5px;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* ── Usage bars ── */
+    .usage-item { margin-bottom: 10px; }
+    .usage-item:last-child { margin-bottom: 0; }
+    .usage-label {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .usage-label span:first-child { font-weight: 500; color: #334155; }
+    .usage-bar-bg {
+      background: #f0f0f2;
+      border-radius: 4px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .usage-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #24a9e0, #246CE0);
+    }
+
+    /* ── Status pills ── */
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+    }
+    .status:last-child { margin-bottom: 0; }
+    .status-ok { background: rgba(34, 197, 94, 0.08); color: #166534; border: 1px solid rgba(34, 197, 94, 0.15); }
+    .status-warn { background: rgba(245, 158, 11, 0.08); color: #92400e; border: 1px solid rgba(245, 158, 11, 0.15); }
+    .status-error { background: rgba(239, 68, 68, 0.08); color: #991b1b; border: 1px solid rgba(239, 68, 68, 0.15); }
+
+    /* ── Task list ── */
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+    }
+    .task-item:last-child { margin-bottom: 0; }
+    .task-bullet {
+      color: #24a9e0;
+      font-weight: 600;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .task-high { border-left: 3px solid #ef4444; }
+    .task-medium { border-left: 3px solid #f59e0b; }
+
+    /* ── Footer ── */
+    .footer {
+      background: #0a0a0f;
+      padding: 16px 28px;
+      text-align: center;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .footer a {
+      color: #24a9e0;
+      text-decoration: none;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      body { padding: 8px; }
+      .header { padding: 28px 20px 24px; }
+      .section { padding: 16px 20px; }
+      .weather-row, .stats-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body bgcolor="#ffffff" style="background-color:#ffffff !important; margin:0; padding:0;">
+  <!--[if mso]><table role="presentation" width="100%" bgcolor="#ffffff"><tr><td><![endif]-->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="background-color:#ffffff;">
+    <tr><td align="center" style="padding:16px;">
+  <div class="container">
+    <div class="header">
+      <div class="header-greeting">Good morning, Mike</div>
+      <h1>{{DATE_LONG}}</h1>
+      <div class="date">{{DAY_OF_WEEK}} · Toronto</div>
+      <div class="accent-bar"></div>
+    </div>
+
+    <div class="content">
+
+      <!-- Weather -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-2">🌡️</div>
+          <div class="section-title">Toronto Weather</div>
+        </div>
+        <div class="weather-row">
+          <div class="weather-card">
+            <div class="weather-label">Now</div>
+            <div class="weather-temp">{{WEATHER_TEMP}}</div>
+            <div class="weather-desc">{{WEATHER_CONDITION}} · Feels {{WEATHER_FEELS}}</div>
+          </div>
+          <div class="weather-card">
+            <div class="weather-label">Wind / Humidity</div>
+            <div class="weather-temp">{{WEATHER_WIND}}</div>
+            <div class="weather-desc">Humidity {{WEATHER_HUMIDITY}}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quote -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-1">💬</div>
+          <div class="section-title">Quote of the Day</div>
+        </div>
+        <div class="quote-block">
+          <div class="quote-text">"{{QUOTE_TEXT}}"</div>
+          <div class="quote-author">— {{QUOTE_AUTHOR}}</div>
+        </div>
+      </div>
+
+      <!-- Today's Meetings -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-4">📅</div>
+          <div class="section-title">Today's Meetings</div>
+        </div>
+        {{CALENDAR_TODAY}}
+      </div>
+
+      <!-- Tomorrow's Meetings -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-4">📅</div>
+          <div class="section-title">Tomorrow's Meetings</div>
+        </div>
+        {{CALENDAR_TOMORROW}}
+      </div>
+
+      <!-- Feed Monitor -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-0">📡</div>
+          <div class="section-title">Feed Monitor Picks</div>
+        </div>
+        {{FEED_ITEMS}}
+      </div>
+
+      <!-- Model Usage -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-1">📊</div>
+          <div class="section-title">Model Usage (Yesterday)</div>
+        </div>
+        {{MODEL_USAGE}}
+      </div>
+
+      <!-- Activity & Costs -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-3">💰</div>
+          <div class="section-title">Activity & Costs</div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="stat-value">{{CAPTURE_COUNT}}</div>
+            <div class="stat-label">Captures Yesterday</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value">{{AWS_DAILY}}</div>
+            <div class="stat-label">AWS Yesterday</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value">{{AWS_MTD}}</div>
+            <div class="stat-label">AWS MTD</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Status -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-4">🏥</div>
+          <div class="section-title">System Status</div>
+        </div>
+        {{SYSTEM_STATUS}}
+      </div>
+
+      <!-- Overnight Work -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-0">🌙</div>
+          <div class="section-title">Overnight Work</div>
+        </div>
+        {{OVERNIGHT_WORK}}
+      </div>
+
+      <!-- Sophie Can Do Today -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-2">🦁</div>
+          <div class="section-title">Sophie Can Do Today</div>
+        </div>
+        {{SOPHIE_TASKS}}
+      </div>
+
+      <!-- Mike's Agenda -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-3">📋</div>
+          <div class="section-title">Mike's Agenda</div>
+        </div>
+        {{MIKE_TASKS}}
+      </div>
+
+    </div>
+
+    <div class="footer">
+      Generated by Sophie · {{TIMESTAMP}}
+    </div>
+  </div>
+    </td></tr>
+  </table>
+  <!--[if mso]></td></tr></table><![endif]-->
+</body>
+</html>

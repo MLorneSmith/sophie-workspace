@@ -23,7 +23,7 @@ Copy to your Clawdbot skills location:
 
 ```bash
 # Default location
-cp -r email-marketing ~/.clawdbot/skills/
+cp -r email-marketing ~/.openclaw/skills/
 ```
 
 The skill includes:
@@ -39,7 +39,7 @@ The skill includes:
 ### Check Files
 
 ```bash
-cd ~/.clawdbot/skills/email-marketing
+cd ~/.openclaw/skills/email-marketing
 
 # Count corpus files (should be 100+)
 find corpus -name "*.yaml" -type f | wc -l
@@ -93,7 +93,7 @@ pip3 install pyyaml
 ### 3.2 Build the Tool
 
 ```bash
-cd ~/.clawdbot/skills/email-marketing/tools
+cd ~/.openclaw/skills/email-marketing/tools
 npm install
 npm run build
 ```
@@ -156,7 +156,7 @@ Then write individual emails:
 
 | Item | Location |
 |------|----------|
-| Skill root | `~/.clawdbot/skills/email-marketing/` |
+| Skill root | `~/.openclaw/skills/email-marketing/` |
 | Email corpus | `corpus/by-type/` and `corpus/campaigns/` |
 | Core methodology | `core/` |
 | Scripts | `scripts/` |

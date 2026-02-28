@@ -1,0 +1,30 @@
+=== OpenClaw Daily Backup ===
+Started at: 2026-02-27 07:00:01
+
+
+=== Results ===
+  • Config: openclaw-config-2026-02-27.tar.gz
+  • dev.db: 6640KB
+  • first_party_sets.db: 48KB
+  • heavy_ad_intervention_opt_out.db: 16KB
+  • dev.db: 388KB
+  • heavy_ad_intervention_opt_out.db: 16KB
+  • dev.db: 0KB
+  • first_party_sets.db: 48KB
+  • Workspace: workspace-2026-02-27.tar.gz (8KB)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/backup-openclaw.py", line 208, in <module>
+    main()
+  File "/home/ubuntu/clawd/scripts/backup-openclaw.py", line 194, in main
+    notify_discord(msg)
+  File "/home/ubuntu/clawd/scripts/backup-openclaw.py", line 138, in notify_discord
+    result = subprocess.run(
+             ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'openclaw'

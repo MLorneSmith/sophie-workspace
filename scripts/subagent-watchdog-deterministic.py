@@ -179,6 +179,7 @@ def main():
     
     if not subagents:
         # No active subagents = nothing to do
+        print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] watchdog: no active subagents")
         sys.exit(0)
     
     now = int(time.time())

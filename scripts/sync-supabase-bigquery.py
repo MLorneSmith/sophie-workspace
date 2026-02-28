@@ -24,7 +24,7 @@ import psycopg2.extras
 from google.cloud import bigquery
 
 # Config
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/ubuntu/.clawdbot/gcp-service-account.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/ubuntu/.openclaw/gcp-service-account.json'
 BQ_PROJECT = 'slideheroes-data-platform'
 BQ_DATASET = 'staging'  # Raw data goes to staging; dbt transforms to core
 
@@ -51,7 +51,7 @@ PG_TO_BQ = {
 
 def read_env():
     env = {}
-    with open('/home/ubuntu/.clawdbot/.env') as f:
+    with open('/home/ubuntu/.openclaw/.secrets.env') as f:
         for line in f:
             line = line.strip()
             if '=' in line and not line.startswith('#'):

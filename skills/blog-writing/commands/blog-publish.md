@@ -107,17 +107,17 @@ If you need full-fidelity rich text (headings, links, lists), you’ll likely ne
 This command is implemented by:
 
 ```
-/home/ubuntu/.clawdbot/skills/blog-writing/scripts/publish_to_payload.py
+/home/ubuntu/.openclaw/skills/blog-writing/scripts/publish_to_payload.py
 ```
 
 Suggested invocation (from shell):
 
 ```bash
-python3 /home/ubuntu/.clawdbot/skills/blog-writing/scripts/publish_to_payload.py \
+python3 /home/ubuntu/.openclaw/skills/blog-writing/scripts/publish_to_payload.py \
   --slug "[slug]" \
   --status draft
 
-python3 /home/ubuntu/.clawdbot/skills/blog-writing/scripts/publish_to_payload.py \
+python3 /home/ubuntu/.openclaw/skills/blog-writing/scripts/publish_to_payload.py \
   --slug "[slug]" \
   --status published \
   --task-id "[task_id]"

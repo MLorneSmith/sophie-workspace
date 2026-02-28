@@ -60,7 +60,7 @@ except Exception as e:  # pragma: no cover
 
 LOOPS_HOST = "https://app.loops.so/api/v1"
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/ubuntu/.clawdbot/gcp-service-account.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/ubuntu/.openclaw/gcp-service-account.json"
 BQ_PROJECT = "slideheroes-data-platform"
 BQ_DATASET = "staging"
 
@@ -88,7 +88,7 @@ TABLES = {
 def read_env() -> dict:
     env: dict = {}
     try:
-        with open("/home/ubuntu/.clawdbot/.env") as f:
+        with open("/home/ubuntu/.openclaw/.secrets.env") as f:
             for line in f:
                 line = line.strip()
                 if "=" in line and not line.startswith("#"):

@@ -96,7 +96,7 @@ All config is at the top of `scripts/watchdog.sh`:
 | `ZAI_ENDPOINT` | `https://api.z.ai/api/coding/paas/v4/chat/completions` | ZAI coding plan endpoint |
 | `ZAI_TEST_MODEL` | `glm-4.7` | Model used for ZAI health check |
 
-ZAI API key is read from `~/.clawdbot/.env` (`ZAI_API_KEY`).
+ZAI API key is read from `~/.openclaw/.secrets.env` (`ZAI_API_KEY`).
 
 ---
 
@@ -112,7 +112,7 @@ ZAI API key is read from `~/.clawdbot/.env` (`ZAI_API_KEY`).
 - Can manually restart gateway: `systemctl --user restart openclaw-gateway.service`
 
 **ZAI verification failing but API is fine:**
-- Check `ZAI_API_KEY` in `~/.clawdbot/.env` is current
+- Check `ZAI_API_KEY` in `~/.openclaw/.secrets.env` is current
 - Test manually: `curl -H "Authorization: Bearer $ZAI_API_KEY" https://api.z.ai/api/coding/paas/v4/chat/completions -d '{"model":"glm-4.7","messages":[{"role":"user","content":"ping"}],"max_tokens":1}'`
 - Remember: coding plan endpoint, NOT regular endpoint
 

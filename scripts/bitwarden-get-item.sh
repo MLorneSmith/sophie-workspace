@@ -29,7 +29,7 @@ Environment:
   BW_PASSWORD       If BW_SESSION is missing/expired, used to unlock via: bw unlock --passwordenv BW_PASSWORD
 
 Examples:
-  source ~/.clawdbot/.env
+  source ~/.openclaw/.secrets.env
   export BW_SESSION="$(bw unlock --passwordenv BW_PASSWORD --raw)"
   bitwarden-get-item.sh --name "GitHub" --field username
   bitwarden-get-item.sh --name "GitHub" --password | pbcopy

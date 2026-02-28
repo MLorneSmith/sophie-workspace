@@ -5,7 +5,7 @@
 set -euo pipefail
 
 # Load environment (quietly)
-source ~/.clawdbot/.env 2>/dev/null || true
+source ~/.openclaw/.secrets.env 2>/dev/null || true
 
 PROJECT="${GCP_PROJECT_ID:-slideheroes-data-platform}"
 DATASET="${BQ_STAGING_DATASET:-staging}"

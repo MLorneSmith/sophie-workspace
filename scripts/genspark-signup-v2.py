@@ -14,7 +14,7 @@ def read_captcha_with_vision(image_path):
     
     # Load API key
     env = {}
-    with open(os.path.expanduser('~/.clawdbot/.env')) as f:
+    with open(os.path.expanduser('~/.openclaw/.secrets.env')) as f:
         for line in f:
             line = line.strip()
             if '=' in line and not line.startswith('#'):
@@ -52,7 +52,7 @@ def read_captcha_with_vision(image_path):
 def check_email_for_code():
     """Check Sophie's email for Genspark verification code."""
     result = subprocess.run(
-        ['bash', '-c', 'source ~/.clawdbot/.env && gog gmail read --unread --query "verification" --limit 1'],
+        ['bash', '-c', 'source ~/.openclaw/.secrets.env && gog gmail read --unread --query "verification" --limit 1'],
         capture_output=True, text=True, timeout=30
     )
     output = result.stdout + result.stderr
@@ -60,7 +60,7 @@ def check_email_for_code():
     
     # Also try listing
     result2 = subprocess.run(
-        ['bash', '-c', 'source ~/.clawdbot/.env && gog gmail list --unread --limit 5'],
+        ['bash', '-c', 'source ~/.openclaw/.secrets.env && gog gmail list --unread --limit 5'],
         capture_output=True, text=True, timeout=30
     )
     print(f"  Email list: {result2.stdout[:500]}")

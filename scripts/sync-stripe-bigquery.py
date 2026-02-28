@@ -32,7 +32,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 from google.cloud import bigquery
 
 # Config
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/ubuntu/.clawdbot/gcp-service-account.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/ubuntu/.openclaw/gcp-service-account.json"
 BQ_PROJECT = "slideheroes-data-platform"
 BQ_DATASET = "staging"
 
@@ -51,7 +51,7 @@ SUPPORTED_OBJECTS = [
 
 def read_env() -> dict:
     env: dict = {}
-    with open("/home/ubuntu/.clawdbot/.env") as f:
+    with open("/home/ubuntu/.openclaw/.secrets.env") as f:
         for line in f:
             line = line.strip()
             if "=" in line and not line.startswith("#"):

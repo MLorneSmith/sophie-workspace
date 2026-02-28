@@ -42,7 +42,7 @@ Load these contexts **before** doing any strategy work:
 
 ### Skill-Specific Resources (load from the skill directory)
 
-Read these files from `~/.clawdbot/skills/email-marketing/`:
+Read these files from `~/.openclaw/skills/email-marketing/`:
 
 - `context/slideheroes-product.yaml`
 - `context/presentation-povs.yaml`

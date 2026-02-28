@@ -16,7 +16,7 @@ tar czf "$BACKUP_DIR/openclaw-$DATE.tar.gz" \
   ~/clawd/config/ \
   ~/clawd/.ai/agents/ \
   ~/clawd/.ai/contexts/ \
-  ~/.clawdbot/.env \
+  ~/.openclaw/.secrets.env \
   2>/dev/null
 
 # Keep 7 days of backups

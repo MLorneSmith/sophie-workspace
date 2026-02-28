@@ -177,6 +177,56 @@
       "status": "failed",
       "date": "2026-02-27",
       "reason": "HTTP 504"
+    },
+    "https://www.infosys.com/investors/investorpresentation/ir-presentation.pdf": {
+      "status": "failed",
+      "date": "2026-02-28",
+      "reason": "HTTP 403"
+    },
+    "https://www.infosys.com/investors/news-events/quarterly-newsletter/gen-ai-highlights-q1fy26.pdf": {
+      "status": "failed",
+      "date": "2026-02-28",
+      "reason": "HTTP 403"
+    },
+    "https://www.infosys.com/investors/reports-filings/annual-report/annual/documents/infosys-ar-25.pdf": {
+      "status": "failed",
+      "date": "2026-02-28",
+      "reason": "HTTP 403"
+    },
+    "https://www.wipro.com/content/dam/nexus/en/investor/quarterly-results/2024-2025/q1fy25/wipro-investor-ppt-q1fy25.pdf": {
+      "status": "uploaded",
+      "date": "2026-02-28",
+      "r2Key": "to-be-evaluated/wipro/wipro-Wipro Investor Presentation Q1 FY25.pdf"
+    },
+    "https://www.wipro.com/content/dam/nexus/en/investor/quarterly-results/2023-2024/q4fy24/wipro-investor-ppt-q4fy24.pdf": {
+      "status": "uploaded",
+      "date": "2026-02-28",
+      "r2Key": "to-be-evaluated/wipro/wipro-Wipro Investor Presentation Q4 FY24.pdf"
+    },
+    "https://www.wipro.com/content/dam/nexus/en/investor/quarterly-results/2024-2025/q3fy25/wipro-investor-ppt-q3fy25.pdf": {
+      "status": "uploaded",
+      "date": "2026-02-28",
+      "r2Key": "to-be-evaluated/wipro/wipro-Wipro Investor Presentation Q3 FY25.pdf"
+    },
+    "https://www.tcs.com/content/dam/tcs/pdf/discover-tcs/investor-relations/management-commentary/ir_presentations/tcs-investor-relations-presentation-4q24.pdf": {
+      "status": "uploaded",
+      "date": "2026-02-28",
+      "r2Key": "to-be-evaluated/tcs/tcs-TCS Investor Relations Presentation January 2024.pdf"
+    },
+    "https://www.tcs.com/content/dam/tcs/pdf/discover-tcs/investor-relations/management-commentary/ir_presentations/tcs-investor-relations-presentation-2q25.pdf": {
+      "status": "uploaded",
+      "date": "2026-02-28",
+      "r2Key": "to-be-evaluated/tcs/tcs-TCS Investor Presentation August 2024.pdf"
+    },
+    "https://www.tcs.com/content/dam/tcs/investor-relations/financial-statements/2024-25/q1/Presentations/Q1%202024-25%20Fact%20Sheet.pdf": {
+      "status": "uploaded",
+      "date": "2026-02-28",
+      "r2Key": "to-be-evaluated/tcs/tcs-TCS Financial Results Q1 2024-25 Fact Sheet.pdf"
+    },
+    "https://www.rolandberger.com/publications/publication_pdf/ROLAND-BERGER_FORESIGHT-2024_EN_SC.pdf": {
+      "status": "uploaded",
+      "date": "2026-02-28",
+      "r2Key": "to-be-evaluated/roland_berger/roland_berger-Roland Berger Foresight 2024 China Annual Trends Report.pdf"
     }
   }
 }

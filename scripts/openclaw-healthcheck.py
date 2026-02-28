@@ -186,8 +186,27 @@ class HealthCheck:
         try:
             restart_issues = []
             
-            # Check system services
-            for service in ["internal-tools", "ccproxy"]:
+            # Check PM2-managed services
+            for service in ["internal-tools"]:
+                try:
+                    result = subprocess.run(
+                        ["pm2", "jlist"],
+                        capture_output=True,
+                        text=True,
+                        timeout=5
+                    )
+                    import json as _json
+                    for proc in _json.loads(result.stdout):
+                        if proc.get("name") == service:
+                            restarts = proc.get("pm2_env", {}).get("restart_time", 0)
+                            status = proc.get("pm2_env", {}).get("status", "unknown")
+                            if restarts > 3:
+                                restart_issues.append(f"{service}: {restarts} restarts (pm2, {status})")
+                except:
+                    pass
+            
+            # Check systemd services
+            for service in ["ccproxy"]:
                 try:
                     result = subprocess.run(
                         ["systemctl", "show", service, "--property=NRestarts,ActiveState"],
@@ -197,15 +216,12 @@ class HealthCheck:
                     )
                     
                     restarts = 0
-                    active = False
                     for line in result.stdout.split("\n"):
                         if line.startswith("NRestarts="):
                             restarts = int(line.split("=")[1])
-                        elif line.startswith("ActiveState="):
-                            active = line.split("=")[1] == "active"
                     
                     if restarts > 3:
-                        restart_issues.append(f"{service}: {restarts} restarts")
+                        restart_issues.append(f"{service}: {restarts} restarts (systemd)")
                 except:
                     pass  # Service may not exist
             

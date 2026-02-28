@@ -19,7 +19,7 @@ from pathlib import Path
 
 LOG_FILE = Path.home() / "clawd" / "logs" / "cron-openclaw-update.log"
 STATE_FILE = Path.home() / "clawd" / "state" / "openclaw-update.md"
-DISCORD_WEBHOOK_FILE = Path.home() / ".clawdbot" / "discord-webhook.txt"
+DISCORD_WEBHOOK_FILE = Path.home() / ".openclaw" / "discord-webhook.txt"
 
 
 def log(message: str) -> None:

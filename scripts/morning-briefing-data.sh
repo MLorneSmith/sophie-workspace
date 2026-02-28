@@ -85,7 +85,7 @@ EMAIL_COUNT=$(echo "$EMAILS" | jq 'if type == "array" then length else 0 end' 2>
 FEED_RAW=$(curl -sf http://localhost:3001/api/feed-monitor/use-cases 2>/dev/null || echo '{"useCases":[]}')
 
 # ─── Generate Feedback URLs ──────────────────────────────────
-FEEDBACK_SECRET=$(grep '^FEEDBACK_SECRET=' ~/.clawdbot/.env 2>/dev/null | cut -d '=' -f2- | tr -d '\r\n')
+FEEDBACK_SECRET=$(grep '^FEEDBACK_SECRET=' ~/.openclaw/.secrets.env 2>/dev/null | cut -d '=' -f2- | tr -d '\r\n')
 FEEDBACK_BASE_URL="https://slideheroes-feedback.slideheroes.workers.dev"
 
 generate_sig() {

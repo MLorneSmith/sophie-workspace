@@ -52,21 +52,21 @@ try:
     
     print("7. Checking Sophie's email for verification code...")
     result = subprocess.run(
-        ['bash', '-c', 'source ~/.clawdbot/.env && gog gmail list --unread --query "from:genspark OR from:mainfunc OR from:microsoft OR subject:verification" --limit 5'],
+        ['bash', '-c', 'source ~/.openclaw/.secrets.env && gog gmail list --unread --query "from:genspark OR from:mainfunc OR from:microsoft OR subject:verification" --limit 5'],
         capture_output=True, text=True, timeout=30
     )
     print(f"Email search: {result.stdout[:500]}")
     
     # Try to get the most recent email with verification code
     result2 = subprocess.run(
-        ['bash', '-c', 'source ~/.clawdbot/.env && gog gmail list --unread --limit 3'],
+        ['bash', '-c', 'source ~/.openclaw/.secrets.env && gog gmail list --unread --limit 3'],
         capture_output=True, text=True, timeout=30
     )
     print(f"Recent emails: {result2.stdout[:500]}")
     
     # Read the verification email
     result3 = subprocess.run(
-        ['bash', '-c', 'source ~/.clawdbot/.env && gog gmail list --unread --query "verification code" --limit 1 --body'],
+        ['bash', '-c', 'source ~/.openclaw/.secrets.env && gog gmail list --unread --query "verification code" --limit 1 --body'],
         capture_output=True, text=True, timeout=30
     )
     print(f"Verification email body: {result3.stdout[:1000]}")

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-TOKEN=$(grep -m1 '^NOTION_TOKEN=' ~/.clawdbot/.env | cut -d= -f2- | tr -d '\r\n')
+TOKEN=$(grep -m1 '^NOTION_TOKEN=' ~/.openclaw/.secrets.env | cut -d= -f2- | tr -d '\r\n')
 NOTION_VERSION=2022-06-28
 
 notion() {

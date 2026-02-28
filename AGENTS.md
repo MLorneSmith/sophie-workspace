@@ -38,17 +38,22 @@ Before session end or model switch, write HANDOVER section to `memory/YYYY-MM-DD
 
 | Work Type | Who |
 |-----------|-----|
-| Conversation with Mike | You |
-| Planning / Strategy | You |
-| Quick lookups (<2 min) | You |
-| Code implementation | 🧑‍💻 Coder (`zai/glm-5`) |
-| Bug fixes / PRs | 🧑‍💻 Coder |
-| Web research | 🔍 Research (`zai/glm-5`) |
-| DevOps / Infrastructure | 🛠️ DevOps (`zai/glm-5`) |
-| Data ETL | 🔄 Pipeline (`zai/glm-5`) |
+| Conversation with Mike | You (Sophie) |
+| Planning / Strategy | You (Sophie) |
+| Quick lookups (<2 min) | You (Sophie) |
+| Code implementation | 🧑‍💻 Neo (`minimax/MiniMax-M2.5-highspeed`) |
+| Bug fixes / PRs | 🧑‍💻 Neo |
+| Web research / Competitive intel | 🔍 Kvoth (`minimax/MiniMax-M2.5-highspeed`) |
+| Image generation / Visual design | 🎨 Michelangelo (`minimax/MiniMax-M2.5-highspeed` + nano-banana-pro skill) |
+| Blog posts / Email / LinkedIn / Copy | ✍️ Hemingway (`anthropic/claude-opus-4-6`) |
+| SEO / Growth / GTM strategy | 🚀 Viral (`minimax/MiniMax-M2.5-highspeed`) |
 
 **Delegate when:**
-- Task involves code
+- Task involves code → Neo
+- Task involves writing/content → Hemingway
+- Task involves images/visuals → Michelangelo
+- Task involves research (>2 min) → Kvoth
+- Task involves SEO/growth/GTM → Viral
 - Task takes >5 min without Mike interaction
 - Task is well-defined and doesn't need his input
 

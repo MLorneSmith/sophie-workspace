@@ -69,10 +69,10 @@ die() {
   exit 1
 }
 
-# Read an env var from ~/.clawdbot/.env without echoing secrets.
+# Read an env var from ~/.openclaw/.secrets.env without echoing secrets.
 read_env_var() {
   local key="$1"
-  local env_file="/home/ubuntu/.clawdbot/.env"
+  local env_file="/home/ubuntu/.openclaw/.secrets.env"
   [[ -f "${env_file}" ]] || return 1
   # Supports lines like: KEY=value OR export KEY=value
   # Strips surrounding quotes and CRLF.
@@ -185,7 +185,7 @@ zai_api_works() {
   local api_key
   api_key="$(read_env_var 'ZAI_API_KEY' || true)"
   [[ -n "${api_key}" ]] || {
-    log "WARN: ZAI_API_KEY not found in /home/ubuntu/.clawdbot/.env; skipping ZAI verification"
+    log "WARN: ZAI_API_KEY not found in /home/ubuntu/.openclaw/.secrets.env; skipping ZAI verification"
     return 2
   }
 

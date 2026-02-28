@@ -1,0 +1,16 @@
+Analyzing token usage for last 7 days...
+API error: 500 Server Error: Internal Server Error for url: http://localhost:3001/api/v1/token-history?days=7, trying database directly
+Found 2 days of data
+
+=== Analysis Results ===
+High usage days: 0
+Expensive model instances: 0
+No Discord webhook configured
+
+{
+  "high_usage_days": [],
+  "expensive_model_usage": [],
+  "zombie_sessions": 0,
+  "ttl_kills": 0,
+  "recommendations": []
+}

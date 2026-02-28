@@ -219,14 +219,14 @@ MVL defines the bar a prospect must clear before being worth pursuing. Built on 
 ### Manual Re-run Commands
 ```bash
 # Re-run a single sync
-source ~/.clawdbot/.env
-export GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/.clawdbot/gcp-service-account.json
+source ~/.openclaw/.secrets.env
+export GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/.openclaw/gcp-service-account.json
 python3 ~/clawd/scripts/sync-stripe-bigquery.py
 
 # Re-run dbt
 cd ~/clawd/dbt
 source ~/clawd/.venv-dbt/bin/activate
-export GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/.clawdbot/gcp-service-account.json
+export GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/.openclaw/gcp-service-account.json
 dbt run
 
 # Run a specific model

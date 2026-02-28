@@ -42,3 +42,8 @@
 ## Cloudflare & Web
 - [2026-02-22] For Cloudflare Turnstile-protected sites: `undetected-chromedriver` + `xvfb-run` works. Headless mode, cloudscraper, and plain agent-browser all fail.
 - [2026-02-22] GPT-4o refuses CAPTCHA reads (safety filter). Claude's image tool works.
+- [2026-02-27] Email HTML: use `<table bgcolor="#ffffff">` wrapper for background colors. CSS `background-color` on `<body>` is ignored by Superhuman and many email clients.
+- [2026-02-27] `openclaw cron list` only returns enabled jobs by default. Use `--all` flag to include disabled jobs.
+- [2026-02-27] Mission Control (internal-tools) doesn't auto-rebuild on push. Must run `npx next build` + restart after commits. Build timestamp != commit timestamp.
+- [2026-02-27] MC task API status values: `backlog`, `in_progress`, `mike_review`, `sophie_review`, `done`. NOT `in_review`.
+- [2026-02-27] wttr.in simple format (`?format=...`) times out from AWS servers. Use Open-Meteo API (free, instant) or wttr.in JSON format (`?format=j1`) instead.

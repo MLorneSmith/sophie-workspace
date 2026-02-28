@@ -133,7 +133,7 @@ Save to:
 
 Use the structure from:
 
-- `~/.clawdbot/skills/blog-writing/core/outline-template.yaml`
+- `~/.openclaw/skills/blog-writing/core/outline-template.yaml`
 
 Populate at least:
 - `mission_control.task_id`

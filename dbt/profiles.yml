@@ -6,6 +6,6 @@ slideheroes_data:
       method: service-account
       project: slideheroes-data-platform
       dataset: core
-      keyfile: /home/ubuntu/.clawdbot/gcp-service-account.json
+      keyfile: /home/ubuntu/.openclaw/gcp-service-account.json
       location: us-east1
       threads: 4

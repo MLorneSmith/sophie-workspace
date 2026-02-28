@@ -85,3 +85,75 @@ Health Check: 9/9 passed
 ✅ Mission Control API: MC API responding
 ✅ Cron Jobs: Could not check cron status (skipped)
 Posted to Mission Control
+Health Check: 9/9 passed
+
+✅ OpenClaw Gateway: Gateway responding
+✅ ccproxy: ccproxy responding
+✅ Disk Space: 20GB available (67% used)
+✅ Inodes: 14% inodes used
+✅ Memory: 52.6% available (2008MB)
+✅ Swap: 28% swap used (1134MB/4095MB)
+✅ Service Restarts: No restart loops
+✅ Mission Control API: MC API responding
+✅ Cron Jobs: Could not check cron status (skipped)
+Posted to Mission Control
+Health Check: 9/9 passed
+
+✅ OpenClaw Gateway: Gateway responding
+✅ ccproxy: ccproxy responding
+✅ Disk Space: 20GB available (67% used)
+✅ Inodes: 14% inodes used
+✅ Memory: 47.2% available (1798MB)
+✅ Swap: 26% swap used (1062MB/4095MB)
+✅ Service Restarts: No restart loops
+✅ Mission Control API: MC API responding
+✅ Cron Jobs: Could not check cron status (skipped)
+Posted to Mission Control
+Health Check: 9/9 passed
+
+✅ OpenClaw Gateway: Gateway responding
+✅ ccproxy: ccproxy responding
+✅ Disk Space: 25GB available (57% used)
+✅ Inodes: 12% inodes used
+✅ Memory: 21.9% available (834MB)
+✅ Swap: 34% swap used (1410MB/4095MB)
+✅ Service Restarts: No restart loops
+✅ Mission Control API: MC API responding
+✅ Cron Jobs: Could not check cron status (skipped)
+Posted to Mission Control
+Health Check: 9/9 passed
+
+✅ OpenClaw Gateway: Gateway responding
+✅ ccproxy: ccproxy responding
+✅ Disk Space: 25GB available (58% used)
+✅ Inodes: 12% inodes used
+✅ Memory: 58.5% available (2231MB)
+✅ Swap: 47% swap used (1912MB/4095MB)
+✅ Service Restarts: No restart loops
+✅ Mission Control API: MC API responding
+✅ Cron Jobs: Could not check cron status (skipped)
+Posted to Mission Control
+Health Check: 9/9 passed
+
+✅ OpenClaw Gateway: Gateway responding
+✅ ccproxy: ccproxy responding
+✅ Disk Space: 25GB available (58% used)
+✅ Inodes: 12% inodes used
+✅ Memory: 57.8% available (2204MB)
+✅ Swap: 49% swap used (2015MB/4095MB)
+✅ Service Restarts: No restart loops
+✅ Mission Control API: MC API responding
+✅ Cron Jobs: Could not check cron status (skipped)
+Posted to Mission Control
+Health Check: 9/9 passed
+
+✅ OpenClaw Gateway: Gateway responding
+✅ ccproxy: ccproxy responding
+✅ Disk Space: 25GB available (58% used)
+✅ Inodes: 12% inodes used
+✅ Memory: 60.1% available (2293MB)
+✅ Swap: 49% swap used (2008MB/4095MB)
+✅ Service Restarts: No restart loops
+✅ Mission Control API: MC API responding
+✅ Cron Jobs: Could not check cron status (skipped)
+Posted to Mission Control

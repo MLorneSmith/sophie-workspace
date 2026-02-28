@@ -1,0 +1,8 @@
+{
+  "agent": "neo",
+  "task": "Apollo.io enrichment API integration for WOW#1 audience profiling (#588)",
+  "status": "done",
+  "result": "Implemented Apollo.io Company Enrichment API integration for audience profiling pipeline. Created apollo-enrichment.service.ts, wired it into research-audience.action.ts to call in parallel with Netrows, updated company-brief-synthesis.service.ts to include Apollo data in LLM prompts, and added APOLLO_API_KEY to .env.example. PR opened: https://github.com/slideheroes/2025slideheroes/pull/2194",
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "runtime_seconds": 300
+}

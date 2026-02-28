@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ENV_FILE="$HOME/.clawdbot/.env"
+ENV_FILE="$HOME/.openclaw/.secrets.env"
 LOG_DIR="$HOME/clawd/logs"
 LOG_FILE="$LOG_DIR/supabase-sync.log"
 SCRIPT="$HOME/clawd/scripts/sync-supabase-bigquery.py"

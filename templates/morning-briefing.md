@@ -53,7 +53,7 @@
    [👍](upvoteUrl) · [👎](downvoteUrl)
 
    ⚠️ NEVER use localhost URLs for feedback links!
-   Generate signed Cloudflare Worker URLs using FEEDBACK_SECRET from ~/.clawdbot/.env:
+   Generate signed Cloudflare Worker URLs using FEEDBACK_SECRET from ~/.openclaw/.secrets.env:
    Base: https://slideheroes-feedback.slideheroes.workers.dev/rate?item=<ID>&r=<1|-1>&sig=<HMAC>
    See ~/clawd/scripts/generate-feedback-urls.sh for the signing process.
 -->

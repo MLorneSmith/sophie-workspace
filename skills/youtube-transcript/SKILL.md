@@ -7,13 +7,13 @@ Extract transcripts from YouTube videos. Use when the user asks for a transcript
 Run the script with a YouTube URL or video ID:
 
 ```bash
-~/.local/bin/uv run ~/.clawdbot/skills/youtube-transcript/scripts/get_transcript.py "VIDEO_URL_OR_ID"
+~/.local/bin/uv run ~/.openclaw/skills/youtube-transcript/scripts/get_transcript.py "VIDEO_URL_OR_ID"
 ```
 
 With timestamps:
 
 ```bash
-~/.local/bin/uv run ~/.clawdbot/skills/youtube-transcript/scripts/get_transcript.py "VIDEO_URL_OR_ID" --timestamps
+~/.local/bin/uv run ~/.openclaw/skills/youtube-transcript/scripts/get_transcript.py "VIDEO_URL_OR_ID" --timestamps
 ```
 
 ## Supported URL Formats

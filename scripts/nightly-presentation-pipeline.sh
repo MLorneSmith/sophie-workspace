@@ -33,8 +33,8 @@ R2_BUCKET="top-presentations-collection-sophie"
 R2_ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
 
 # Load API keys
-if [[ -f "$HOME/.clawdbot/.env" ]]; then
-  export OPENAI_API_KEY="$(grep OPENAI_API_KEY "$HOME/.clawdbot/.env" | cut -d= -f2 | tr -d '\r\n')"
+if [[ -f "$HOME/.openclaw/.secrets.env" ]]; then
+  export OPENAI_API_KEY="$(grep OPENAI_API_KEY "$HOME/.openclaw/.secrets.env" | cut -d= -f2 | tr -d '\r\n')"
 fi
 export R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY
 export R2_BUCKET_NAME="$R2_BUCKET"

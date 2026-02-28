@@ -15,7 +15,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 import urllib.request
 
 LISTEN_PORT = 8790
-OPENCLAW_HOOK_URL = "http://127.0.0.1:18789/hooks/github-pr"
+OPENCLAW_HOOK_BASE = "http://127.0.0.1:18789/hooks"
 
 # Read secrets from environment or files
 WEBHOOK_SECRET = os.environ.get("GITHUB_WEBHOOK_SECRET", "").strip()
@@ -99,12 +99,19 @@ class WebhookHandler(BaseHTTPRequestHandler):
             self.wfile.write(b"Skipped")
             return
         
+        # Determine hook path based on event type
+        if event == "issue_comment" and "pull_request" not in data.get("issue", {}):
+            hook_path = "github-plan"
+        else:
+            hook_path = "github-pr"
+        hook_url = f"{OPENCLAW_HOOK_BASE}/{hook_path}"
+
         # Forward to OpenClaw
-        print(f"[webhook] FORWARDING to OpenClaw...")
+        print(f"[webhook] FORWARDING to OpenClaw ({hook_path})...")
         sys.stdout.flush()
         try:
             req = urllib.request.Request(
-                OPENCLAW_HOOK_URL,
+                hook_url,
                 data=payload,
                 headers={
                     "Content-Type": "application/json",
@@ -135,7 +142,7 @@ class WebhookHandler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     print(f"GitHub webhook proxy starting on port {LISTEN_PORT}")
-    print(f"Forwarding CodeRabbit reviews to {OPENCLAW_HOOK_URL}")
+    print(f"Forwarding CodeRabbit events to {OPENCLAW_HOOK_BASE}/github-{{pr,plan}}")
     print(f"Webhook secret: {'configured' if WEBHOOK_SECRET else 'NOT SET'}")
     print(f"OpenClaw token: {'configured' if OPENCLAW_TOKEN else 'NOT SET'}")
     sys.stdout.flush()

@@ -138,9 +138,9 @@ mutation CreatePR {
 
 ## Cloudflare Workers
 
-- **Wrangler auth:** Set `CLOUDFLARE_API_TOKEN` env var (from `~/.clawdbot/.env`)
+- **Wrangler auth:** Set `CLOUDFLARE_API_TOKEN` env var (from `~/.openclaw/.secrets.env`)
 - **Feedback Worker:** `slideheroes-feedback.slideheroes.workers.dev` — HMAC-signed feedback URLs for morning briefing
-- **Feedback secret:** `FEEDBACK_SECRET` in `~/.clawdbot/.env` — used by `generate-feedback-urls.sh` and the worker
+- **Feedback secret:** `FEEDBACK_SECRET` in `~/.openclaw/.secrets.env` — used by `generate-feedback-urls.sh` and the worker
 - **⚠️ .env parsing:** Always use `tr -d '\r\n'` when reading from `.env` files — carriage returns break auth tokens
 
 ---

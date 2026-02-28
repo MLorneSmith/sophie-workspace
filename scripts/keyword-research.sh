@@ -11,12 +11,12 @@
 set -uo pipefail
 
 # Load credentials
-source ~/.clawdbot/.env 2>/dev/null
+source ~/.openclaw/.secrets.env 2>/dev/null
 LOGIN=$(echo "$DATAFORSEO_LOGIN" | tr -d '\r\n')
 PASS=$(echo "$DATAFORSEO_PASSWORD" | tr -d '\r\n')
 
 if [[ -z "$LOGIN" || -z "$PASS" ]]; then
-  echo '{"error": "DATAFORSEO_LOGIN and DATAFORSEO_PASSWORD must be set in ~/.clawdbot/.env"}' >&2
+  echo '{"error": "DATAFORSEO_LOGIN and DATAFORSEO_PASSWORD must be set in ~/.openclaw/.secrets.env"}' >&2
   exit 1
 fi
 
