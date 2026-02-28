@@ -238,13 +238,7 @@ export function extractDomain(
 			: `https://${websiteUrl}`;
 
 		const parsed = new URL(urlStr);
-		let hostname = parsed.hostname.replace(/^www\./, "");
-
-		// Strip port if present (e.g., "example.com:8080" -> "example.com")
-		const portIndex = hostname.indexOf(":");
-		if (portIndex !== -1) {
-			hostname = hostname.slice(0, portIndex);
-		}
+		const hostname = parsed.hostname.replace(/^www\./, "");
 
 		// Basic validation: must have a TLD (at least one dot)
 		if (!hostname || !hostname.includes(".")) {
