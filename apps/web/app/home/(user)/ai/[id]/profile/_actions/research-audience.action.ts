@@ -496,6 +496,29 @@ export const researchAudienceAction = enhanceAction(
 		}
 
 		// Step 4: Save to audience_profiles
+		// Only store allowed non-PII fields from Apollo enrichment
+		const sanitizedApolloData = apolloEnrichment?.organization
+			? {
+					configured: apolloEnrichment.configured,
+					success: apolloEnrichment.success,
+					organization: {
+						revenueRange: apolloEnrichment.organization.estimated_revenue_range,
+						employeeRange: apolloEnrichment.organization.employee_count_range,
+						fundingStage: apolloEnrichment.organization.funding_stage,
+						techStack: apolloEnrichment.organization.technology_names,
+						// Only store names and titles, omit emails/phones/PII
+						keyExecutives:
+							apolloEnrichment.organization.people
+								?.slice(0, 5)
+								.map((p) => ({
+									name: p.name,
+									title: p.title,
+								}))
+								.filter((p) => p.name && p.title) ?? [],
+					},
+				}
+			: null;
+
 		const enrichmentData = {
 			netrows: {
 				personProfile: enrichment.personProfile,
@@ -503,22 +526,7 @@ export const researchAudienceAction = enhanceAction(
 				personSearchResults: enrichment.personSearchResults,
 				companySearchResults: enrichment.companySearchResults,
 			},
-			apollo: apolloEnrichment?.organization
-				? {
-						...apolloEnrichment,
-						organization: {
-							...apolloEnrichment.organization,
-							// Redact PII from stored enrichment data
-							people: apolloEnrichment.organization.people?.map((p) => ({
-								id: p.id,
-								name: p.name,
-								title: p.title,
-								linkedin_url: p.linkedin_url,
-								// Omit email to prevent PII persistence
-							})),
-						},
-					}
-				: (apolloEnrichment ?? null),
+			apollo: sanitizedApolloData,
 			companyBrief: companyBrief ?? null,
 			researchedAt: new Date().toISOString(),
 		};
