@@ -26,6 +26,11 @@ import {
 } from "../../../_lib/server/company-brief-synthesis.service";
 import { researchCompany } from "../../../_lib/server/company-research.service";
 import {
+	enrichCompany,
+	extractDomain,
+	type ApolloEnrichmentResult,
+} from "../../../_lib/server/apollo-enrichment.service";
+import {
 	getCompanyDetails,
 	getPersonProfile,
 	type NetrowsEnrichmentResult,
@@ -273,6 +278,36 @@ export const researchAudienceAction = enhanceAction(
 			};
 		}
 
+		// Step 1.5: Apollo company enrichment (parallel with Step 2)
+		// Extract domain from Netrows company data
+		const companyDomain = enrichment.companyDetails?.website
+			? extractDomain(enrichment.companyDetails.website)
+			: null;
+
+		let apolloEnrichment: ApolloEnrichmentResult | null = null;
+		if (companyDomain) {
+			try {
+				logger.info(ctx, "Enriching company via Apollo: %s", companyDomain);
+				apolloEnrichment = await enrichCompany(companyDomain);
+				if (apolloEnrichment.success && apolloEnrichment.organization) {
+					logger.info(
+						ctx,
+						"Apollo enrichment success: revenue=%s, employees=%s",
+						apolloEnrichment.organization.annual_revenue_printed,
+						apolloEnrichment.organization.employee_count_range,
+					);
+				}
+			} catch (apolloErr) {
+				logger.warn(
+					ctx,
+					"Apollo enrichment failed (non-blocking): %o",
+					apolloErr,
+				);
+			}
+		} else {
+			logger.info(ctx, "No company domain available for Apollo enrichment");
+		}
+
 		// Step 2: Company web research + brief synthesis (parallel with step 1)
 		// Uses Brave Search API + LLM to build a structured CompanyBrief
 		let companyBrief: CompanyBrief | null = null;
@@ -314,6 +349,38 @@ export const researchAudienceAction = enhanceAction(
 				const synthesisInput: CompanyResearchInput = {
 					companyName: data.company,
 					industry,
+					apolloData: apolloEnrichment?.organization
+						? {
+								estimatedRevenue:
+									apolloEnrichment.organization.annual_revenue_printed ??
+									apolloEnrichment.organization.estimated_revenue_range ??
+									undefined,
+								employeeCount:
+									apolloEnrichment.organization.employee_count_range ??
+									undefined,
+								employeeGrowth:
+									apolloEnrichment.organization.employee_growth_rate ??
+									undefined,
+								fundingStage:
+									apolloEnrichment.organization.funding_stage ?? undefined,
+								fundingTotal:
+									apolloEnrichment.organization.total_funding ?? undefined,
+								techStack:
+									apolloEnrichment.organization.technology_names ?? undefined,
+								keyIndustries:
+									apolloEnrichment.organization.industries ?? undefined,
+								keyExecutives:
+									apolloEnrichment.organization.people
+										?.slice(0, 5)
+										.map((p: { name: string; title: string }) => ({
+											name: p.name,
+											title: p.title,
+										}))
+										.filter(
+											(p: { name: string; title: string }) => p.name && p.title,
+										) ?? undefined,
+							}
+						: undefined,
 					netrowsData: enrichment.companyDetails
 						? {
 								description: enrichment.companyDetails.description ?? undefined,
@@ -419,6 +486,7 @@ export const researchAudienceAction = enhanceAction(
 				personSearchResults: enrichment.personSearchResults,
 				companySearchResults: enrichment.companySearchResults,
 			},
+			apollo: apolloEnrichment ?? null,
 			companyBrief: companyBrief ?? null,
 			researchedAt: new Date().toISOString(),
 		};
