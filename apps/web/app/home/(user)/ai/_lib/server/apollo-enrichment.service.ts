@@ -110,6 +110,7 @@ async function apolloFetch<T>(
 			},
 			body: JSON.stringify(body),
 			signal: controller.signal,
+			cache: "no-store" as RequestCache,
 		});
 
 		// Handle rate limiting (HTTP 429)
@@ -131,7 +132,10 @@ async function apolloFetch<T>(
 		return { kind: "success", data: data as T };
 	} catch (err) {
 		if (err instanceof DOMException && err.name === "AbortError") {
-			return { kind: "error", message: `Apollo API request timed out: ${path}` };
+			return {
+				kind: "error",
+				message: `Apollo API request timed out: ${path}`,
+			};
 		}
 		throw err;
 	} finally {
@@ -203,7 +207,9 @@ export async function enrichCompany(
  * Extract domain from a company website URL.
  * Handles various formats like "https://stripe.com", "stripe.com", "www.stripe.com"
  */
-export function extractDomain(websiteUrl: string | null | undefined): string | null {
+export function extractDomain(
+	websiteUrl: string | null | undefined,
+): string | null {
 	if (!websiteUrl) return null;
 
 	try {
@@ -226,7 +232,7 @@ export function extractDomain(websiteUrl: string | null | undefined): string | n
 		const domain = websiteUrl
 			.replace(/^https?:\/\//i, "")
 			.replace(/^www\./i, "")
-			.replace(/[\/?#:].*$/, "");
+			.replace(/[/?#:].*$/, "");
 
 		if (!domain || !domain.includes(".")) {
 			return null;
