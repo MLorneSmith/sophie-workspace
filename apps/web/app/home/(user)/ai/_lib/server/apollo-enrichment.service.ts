@@ -163,7 +163,7 @@ export async function enrichCompany(
 ): Promise<ApolloEnrichmentResult> {
 	// Normalize domain using extractDomain (handles URLs, www, etc.)
 	const normalizedDomain = extractDomain(domain);
-	
+
 	// Validate domain format
 	if (!normalizedDomain) {
 		return {
@@ -224,6 +224,7 @@ export async function enrichCompany(
 /**
  * Extract domain from a company website URL.
  * Handles various formats like "https://stripe.com", "stripe.com", "www.stripe.com"
+ * Also handles ports, query strings, and hash fragments.
  */
 export function extractDomain(
 	websiteUrl: string | null | undefined,
@@ -237,23 +238,36 @@ export function extractDomain(
 			: `https://${websiteUrl}`;
 
 		const parsed = new URL(urlStr);
-		const hostname = parsed.hostname.replace(/^www\./, "");
+		let hostname = parsed.hostname.replace(/^www\./, "");
 
-		// Basic validation
+		// Strip port if present (e.g., "example.com:8080" -> "example.com")
+		const portIndex = hostname.indexOf(":");
+		if (portIndex !== -1) {
+			hostname = hostname.slice(0, portIndex);
+		}
+
+		// Basic validation: must have a TLD (at least one dot)
 		if (!hostname || !hostname.includes(".")) {
 			return null;
 		}
 
 		return hostname;
 	} catch {
-		// Fallback: strip protocol, www, path/query/hash via regex
+		// Fallback: strip protocol, www, port, path/query/hash via regex
 		const domain = websiteUrl
 			.replace(/^https?:\/\//i, "")
 			.replace(/^www\./i, "")
-			.replace(/[/?#:].*$/, "");
+			.replace(/:\d+$/, "") // strip port
+			.replace(/[/?#].*$/, ""); // strip path/query/hash
 
-		// Validate: reject strings with spaces, no TLD, or invalid characters
-		if (!domain || domain.includes(' ') || !domain.includes('.')) {
+		// Validate: must be a valid hostname format using strict regex
+		// - no spaces
+		// - must have a TLD (at least one dot)
+		// - only allowed characters: letters, numbers, dots, hyphens
+		// - cannot start or end with hyphen
+		const hostnameRegex =
+			/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)+$/;
+		if (!domain || !hostnameRegex.test(domain)) {
 			return null;
 		}
 
