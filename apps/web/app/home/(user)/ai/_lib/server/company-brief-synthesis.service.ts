@@ -84,9 +84,9 @@ function buildCompanyBriefPrompt(input: CompanyResearchInput): ChatMessage[] {
 ## Company Data (Apollo.io)
 - Estimated Revenue: ${input.apolloData.estimatedRevenue ?? "N/A"}
 - Employee Count: ${input.apolloData.employeeCount ?? "N/A"}
-- Employee Growth: ${input.apolloData.employeeGrowth ? `${input.apolloData.employeeGrowth}%` : "N/A"}
+- Employee Growth: ${input.apolloData.employeeGrowth != null ? `${input.apolloData.employeeGrowth}%` : "N/A"}
 - Funding Stage: ${input.apolloData.fundingStage ?? "N/A"}
-- Total Funding: ${input.apolloData.fundingTotal ? `$${input.apolloData.fundingTotal.toLocaleString()}` : "N/A"}
+- Total Funding: ${input.apolloData.fundingTotal != null ? `$${input.apolloData.fundingTotal.toLocaleString()}` : "N/A"}
 - Tech Stack: ${input.apolloData.techStack?.slice(0, 15).join(", ") ?? "N/A"}
 - Industries: ${input.apolloData.keyIndustries?.join(", ") ?? "N/A"}
 - Key Executives: ${input.apolloData.keyExecutives?.map((e) => `${e.name} (${e.title})`).join("; ") ?? "N/A"}`

@@ -79,15 +79,21 @@ export interface ApolloEnrichmentResult {
 // Internal fetch helper
 // ---------------------------------------------------------------------------
 
+/** Discriminated result from apolloFetch */
+type ApolloFetchResult<T> =
+	| { kind: "no-key" }
+	| { kind: "success"; data: T }
+	| { kind: "error"; message: string };
+
 async function apolloFetch<T>(
 	path: string,
 	body: Record<string, unknown>,
-): Promise<T | null> {
+): Promise<ApolloFetchResult<T>> {
 	const apiKey = getApiKey();
 
-	// If no API key, return null gracefully (Apollo is optional)
+	// If no API key, return distinct result (Apollo is optional)
 	if (!apiKey) {
-		return null;
+		return { kind: "no-key" };
 	}
 
 	const url = new URL(path, BASE_URL);
@@ -106,30 +112,26 @@ async function apolloFetch<T>(
 			signal: controller.signal,
 		});
 
-		const data = (await res.json()) as Record<string, unknown>;
-
-		// Apollo returns { organization: null } for missing domains
-		if (data.organization === null) {
-			return null;
-		}
-
 		// Handle rate limiting (HTTP 429)
 		if (res.status === 429) {
-			throw new Error("Apollo API rate limit exceeded");
+			return { kind: "error", message: "Apollo API rate limit exceeded" };
 		}
+
+		const data = (await res.json()) as Record<string, unknown>;
 
 		if (!res.ok) {
 			const msg =
 				typeof data.error === "string"
 					? data.error
 					: `Apollo API error ${res.status}`;
-			throw new Error(msg);
+			return { kind: "error", message: msg };
 		}
 
-		return data as T;
+		// Return the full response - { organization: null } is a valid "not found"
+		return { kind: "success", data: data as T };
 	} catch (err) {
 		if (err instanceof DOMException && err.name === "AbortError") {
-			throw new Error(`Apollo API request timed out: ${path}`);
+			return { kind: "error", message: `Apollo API request timed out: ${path}` };
 		}
 		throw err;
 	} finally {
@@ -161,28 +163,31 @@ export async function enrichCompany(
 	}
 
 	try {
-		const response = await apolloFetch<ApolloEnrichResponse>(
+		const result = await apolloFetch<ApolloEnrichResponse>(
 			"/api/v1/organizations/enrich",
-			{
-				domain,
-				// Request specific fields to reduce response size
-				// If you need more fields, remove this or add to the array
-			},
+			{ domain },
 		);
 
-		if (!response) {
-			// No API key configured
-			return {
-				organization: null,
-				success: true,
-				error: "Apollo API key not configured",
-			};
+		switch (result.kind) {
+			case "no-key":
+				return {
+					organization: null,
+					success: true,
+					error: "Apollo API key not configured",
+				};
+			case "error":
+				return {
+					organization: null,
+					success: false,
+					error: result.message,
+				};
+			case "success":
+				// organization: null is a valid "not found" from Apollo
+				return {
+					organization: result.data.organization ?? null,
+					success: true,
+				};
 		}
-
-		return {
-			organization: response.organization ?? null,
-			success: true,
-		};
 	} catch (err) {
 		const message =
 			err instanceof Error ? err.message : "Unknown Apollo API error";
@@ -201,16 +206,32 @@ export async function enrichCompany(
 export function extractDomain(websiteUrl: string | null | undefined): string | null {
 	if (!websiteUrl) return null;
 
-	// Remove protocol and www prefix
-	let domain = websiteUrl
-		.replace(/^https?:\/\//, "")
-		.replace(/^www\./, "")
-		.replace(/\/.*$/, "");
+	try {
+		// Add scheme if missing so URL constructor can parse it
+		const urlStr = /^https?:\/\//i.test(websiteUrl)
+			? websiteUrl
+			: `https://${websiteUrl}`;
 
-	// Basic validation
-	if (!domain || !domain.includes(".")) {
-		return null;
+		const parsed = new URL(urlStr);
+		const hostname = parsed.hostname.replace(/^www\./, "");
+
+		// Basic validation
+		if (!hostname || !hostname.includes(".")) {
+			return null;
+		}
+
+		return hostname;
+	} catch {
+		// Fallback: strip protocol, www, path/query/hash via regex
+		const domain = websiteUrl
+			.replace(/^https?:\/\//i, "")
+			.replace(/^www\./i, "")
+			.replace(/[\/?#:].*$/, "");
+
+		if (!domain || !domain.includes(".")) {
+			return null;
+		}
+
+		return domain;
 	}
-
-	return domain;
 }

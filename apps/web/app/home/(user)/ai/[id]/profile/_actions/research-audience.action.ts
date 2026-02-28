@@ -278,35 +278,18 @@ export const researchAudienceAction = enhanceAction(
 			};
 		}
 
-		// Step 1.5: Apollo company enrichment (parallel with Step 2)
-		// Extract domain from Netrows company data
+		// Step 1.5: Start Apollo company enrichment (non-blocking, runs parallel with Step 2)
 		const companyDomain = enrichment.companyDetails?.website
 			? extractDomain(enrichment.companyDetails.website)
 			: null;
 
 		let apolloEnrichment: ApolloEnrichmentResult | null = null;
-		if (companyDomain) {
-			try {
-				logger.info(ctx, "Enriching company via Apollo: %s", companyDomain);
-				apolloEnrichment = await enrichCompany(companyDomain);
-				if (apolloEnrichment.success && apolloEnrichment.organization) {
-					logger.info(
-						ctx,
-						"Apollo enrichment success: revenue=%s, employees=%s",
-						apolloEnrichment.organization.annual_revenue_printed,
-						apolloEnrichment.organization.employee_count_range,
-					);
-				}
-			} catch (apolloErr) {
-				logger.warn(
-					ctx,
-					"Apollo enrichment failed (non-blocking): %o",
-					apolloErr,
-				);
-			}
-		} else {
-			logger.info(ctx, "No company domain available for Apollo enrichment");
-		}
+		const apolloPromise: Promise<ApolloEnrichmentResult | null> = companyDomain
+			? (async () => {
+					logger.info(ctx, "Enriching company via Apollo: %s", companyDomain);
+					return enrichCompany(companyDomain);
+				})()
+			: Promise.resolve(null);
 
 		// Step 2: Company web research + brief synthesis (parallel with step 1)
 		// Uses Brave Search API + LLM to build a structured CompanyBrief
@@ -344,6 +327,25 @@ export const researchAudienceAction = enhanceAction(
 					15_000,
 					"Company web research",
 				);
+
+				// Await Apollo enrichment (started in parallel earlier)
+				try {
+					apolloEnrichment = await apolloPromise;
+					if (apolloEnrichment?.success && apolloEnrichment.organization) {
+						logger.info(
+							ctx,
+							"Apollo enrichment success: revenue=%s, employees=%s",
+							apolloEnrichment.organization.annual_revenue_printed,
+							apolloEnrichment.organization.employee_count_range,
+						);
+					}
+				} catch (apolloErr) {
+					logger.warn(
+						ctx,
+						"Apollo enrichment failed (non-blocking): %o",
+						apolloErr,
+					);
+				}
 
 				// Synthesize into CompanyBrief via LLM
 				const synthesisInput: CompanyResearchInput = {
@@ -478,6 +480,19 @@ export const researchAudienceAction = enhanceAction(
 				: "";
 		}
 
+		// Ensure Apollo promise is settled (may already be awaited in synthesis path)
+		if (!apolloEnrichment) {
+			try {
+				apolloEnrichment = await apolloPromise;
+			} catch (apolloErr) {
+				logger.warn(
+					ctx,
+					"Apollo enrichment failed (non-blocking): %o",
+					apolloErr,
+				);
+			}
+		}
+
 		// Step 4: Save to audience_profiles
 		const enrichmentData = {
 			netrows: {
@@ -486,7 +501,22 @@ export const researchAudienceAction = enhanceAction(
 				personSearchResults: enrichment.personSearchResults,
 				companySearchResults: enrichment.companySearchResults,
 			},
-			apollo: apolloEnrichment ?? null,
+			apollo: apolloEnrichment?.organization
+				? {
+						...apolloEnrichment,
+						organization: {
+							...apolloEnrichment.organization,
+							// Redact PII from stored enrichment data
+							people: apolloEnrichment.organization.people?.map((p) => ({
+								id: p.id,
+								name: p.name,
+								title: p.title,
+								linkedin_url: p.linkedin_url,
+								// Omit email to prevent PII persistence
+							})),
+						},
+					}
+				: (apolloEnrichment ?? null),
 			companyBrief: companyBrief ?? null,
 			researchedAt: new Date().toISOString(),
 		};
