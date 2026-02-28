@@ -322,28 +322,30 @@ export const researchAudienceAction = enhanceAction(
 						?.replace(/^https?:\/\//, "")
 						.replace(/\/.*$/, "") ?? undefined;
 
-				const webResearch = await withTimeout(
-					researchCompany(data.company, industry, domain),
-					15_000,
-					"Company web research",
-				);
-
-				// Await Apollo enrichment (started in parallel earlier)
-				try {
-					apolloEnrichment = await apolloPromise;
-					if (apolloEnrichment?.success && apolloEnrichment.organization) {
-						logger.info(
+				// Run web research AND Apollo enrichment in parallel
+				const [webResearch, apolloResult] = await Promise.all([
+					withTimeout(
+						researchCompany(data.company, industry, domain),
+						15_000,
+						"Company web research",
+					),
+					apolloPromise.catch((apolloErr) => {
+						logger.warn(
 							ctx,
-							"Apollo enrichment success: revenue=%s, employees=%s",
-							apolloEnrichment.organization.annual_revenue_printed,
-							apolloEnrichment.organization.employee_count_range,
+							"Apollo enrichment failed (non-blocking): %o",
+							apolloErr,
 						);
-					}
-				} catch (apolloErr) {
-					logger.warn(
+						return null;
+					}),
+				]);
+
+				apolloEnrichment = apolloResult;
+				if (apolloEnrichment?.success && apolloEnrichment.organization) {
+					logger.info(
 						ctx,
-						"Apollo enrichment failed (non-blocking): %o",
-						apolloErr,
+						"Apollo enrichment success: revenue=%s, employees=%s",
+						apolloEnrichment.organization.annual_revenue_printed,
+						apolloEnrichment.organization.employee_count_range,
 					);
 				}
 

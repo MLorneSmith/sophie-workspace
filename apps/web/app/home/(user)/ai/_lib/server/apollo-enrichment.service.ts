@@ -1,5 +1,7 @@
 import "server-only";
 
+import { getLogger } from "@kit/shared/logger";
+
 // ---------------------------------------------------------------------------
 // Apollo.io API – server-only service for company enrichment
 // https://apollo.io/api/v1/organizations/enrich
@@ -70,6 +72,8 @@ interface ApolloEnrichResponse {
 
 /** Combined enrichment result returned by enrichCompany */
 export interface ApolloEnrichmentResult {
+	/** Whether Apollo API is configured (true if key exists, false if missing) */
+	configured: boolean;
 	organization: ApolloOrganization | null;
 	success: boolean;
 	error?: string;
@@ -157,11 +161,15 @@ async function apolloFetch<T>(
 export async function enrichCompany(
 	domain: string,
 ): Promise<ApolloEnrichmentResult> {
+	// Normalize domain using extractDomain (handles URLs, www, etc.)
+	const normalizedDomain = extractDomain(domain);
+	
 	// Validate domain format
-	if (!domain || !domain.includes(".")) {
+	if (!normalizedDomain) {
 		return {
 			organization: null,
 			success: false,
+			configured: true,
 			error: "Invalid domain format",
 		};
 	}
@@ -169,7 +177,7 @@ export async function enrichCompany(
 	try {
 		const result = await apolloFetch<ApolloEnrichResponse>(
 			"/api/v1/organizations/enrich",
-			{ domain },
+			{ domain: normalizedDomain },
 		);
 
 		switch (result.kind) {
@@ -177,12 +185,14 @@ export async function enrichCompany(
 				return {
 					organization: null,
 					success: true,
+					configured: false,
 					error: "Apollo API key not configured",
 				};
 			case "error":
 				return {
 					organization: null,
 					success: false,
+					configured: true,
 					error: result.message,
 				};
 			case "success":
@@ -190,14 +200,22 @@ export async function enrichCompany(
 				return {
 					organization: result.data.organization ?? null,
 					success: true,
+					configured: true,
 				};
 		}
 	} catch (err) {
+		const logger = await getLogger();
 		const message =
 			err instanceof Error ? err.message : "Unknown Apollo API error";
+		logger.error(
+			{ domain: normalizedDomain, error: err },
+			"Apollo enrichment failed: %s",
+			message,
+		);
 		return {
 			organization: null,
 			success: false,
+			configured: true,
 			error: message,
 		};
 	}
@@ -234,7 +252,8 @@ export function extractDomain(
 			.replace(/^www\./i, "")
 			.replace(/[/?#:].*$/, "");
 
-		if (!domain || !domain.includes(".")) {
+		// Validate: reject strings with spaces, no TLD, or invalid characters
+		if (!domain || domain.includes(' ') || !domain.includes('.')) {
 			return null;
 		}
 
