@@ -24,7 +24,11 @@ export function PowerPointExporter() {
 
 		try {
 			// Call the server action to generate PowerPoint
-			const result = await generatePowerPointAction(storyboard);
+			// Pass storyboard with optional templateConfig (currently undefined, can be extended)
+			const result = await generatePowerPointAction({
+				storyboard,
+				templateConfig: undefined,
+			});
 
 			if (!result.success) {
 				throw new Error(result.error || "Failed to generate PowerPoint");
