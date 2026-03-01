@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)

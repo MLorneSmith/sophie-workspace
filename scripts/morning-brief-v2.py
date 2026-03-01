@@ -55,12 +55,22 @@ def log(msg):
 
 def run_cmd(cmd, timeout=15):
     """Run a shell command with timeout. Returns stdout or None on failure."""
+    env = os.environ.copy()
+    # Ensure cron has full PATH for gog, openclaw, etc.
+    extra_paths = ["/usr/local/bin", "/home/ubuntu/.npm-global/bin", "/usr/bin", "/bin"]
+    existing = env.get("PATH", "")
+    for p in extra_paths:
+        if p not in existing:
+            existing = p + ":" + existing
+    env["PATH"] = existing
     try:
-        r = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=timeout)
+        r = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=timeout, env=env)
         if r.returncode == 0:
             return r.stdout.strip()
+        log(f"  cmd failed (rc={r.returncode}): {r.stderr.strip()[:200]}")
         return None
-    except (subprocess.TimeoutExpired, Exception):
+    except (subprocess.TimeoutExpired, Exception) as e:
+        log(f"  cmd exception: {e}")
         return None
 
 

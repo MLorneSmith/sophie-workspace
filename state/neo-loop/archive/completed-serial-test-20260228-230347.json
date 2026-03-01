@@ -1,0 +1,10 @@
+{
+  "task": "Create /tmp/serial-test.txt with 'Serial spawning works!' and report done.",
+  "label": "serial-test",
+  "pr_number": 0,
+  "task_type": "test",
+  "requested_at": "2026-02-28T23:00:00Z",
+  "timeout_seconds": 120,
+  "result": "success",
+  "completed_at": "2026-02-28T23:03:47.631390+00:00"
+}

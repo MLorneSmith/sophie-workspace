@@ -227,6 +227,56 @@
       "status": "uploaded",
       "date": "2026-02-28",
       "r2Key": "to-be-evaluated/roland_berger/roland_berger-Roland Berger Foresight 2024 China Annual Trends Report.pdf"
+    },
+    "https://reports.weforum.org/docs/WEF_Global_Risks_Report_2025.pdf": {
+      "status": "failed",
+      "date": "2026-03-01",
+      "reason": "HTTP 504"
+    },
+    "https://reports.weforum.org/docs/WEF_Scaling_the_Industrial_Transition_2025.pdf": {
+      "status": "failed",
+      "date": "2026-03-01",
+      "reason": "HTTP 504"
+    },
+    "https://reports.weforum.org/docs/WEF_Fostering_Effective_Energy_Transition_2025.pdf": {
+      "status": "failed",
+      "date": "2026-03-01",
+      "reason": "HTTP 504"
+    },
+    "https://reports.weforum.org/docs/WEF_Jobs_of_Tomorrow_Technology_and_the_Future_of_the_Worlds_Largest_Workforces_2025.pdf": {
+      "status": "failed",
+      "date": "2026-03-01",
+      "reason": "HTTP 504"
+    },
+    "https://www3.weforum.org/docs/WEF_Future_Focus_2025.pdf": {
+      "status": "failed",
+      "date": "2026-03-01",
+      "reason": "HTTP 504"
+    },
+    "https://reports.weforum.org/docs/GFC_Network_End_of_Year_Insights_Summary_2025.pdf": {
+      "status": "failed",
+      "date": "2026-03-01",
+      "reason": "HTTP 504"
+    },
+    "https://reports.weforum.org/docs/WEF_AI_in_Strategic_Foresight_2025.pdf": {
+      "status": "failed",
+      "date": "2026-03-01",
+      "reason": "HTTP 504"
+    },
+    "https://www.rolandberger.com/publications/publication_pdf/roland_berger_quarterly_reigniting_european_growth.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-01",
+      "r2Key": "to-be-evaluated/roland_berger/roland_berger-Europe Must Tackle Its Growth Problem.pdf"
+    },
+    "https://www.rolandberger.com/publications/publication_pdf/Roland-Berger_Report-24-2589_Commercial-Improvement-Airports_November-2024_DEF.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-01",
+      "r2Key": "to-be-evaluated/roland_berger/roland_berger-Roland Berger Commercial Effectiveness at Modern Airports.pdf"
+    },
+    "https://www.rolandberger.com/publications/publication_pdf/Roland_Berger_IT-study-2024_Part-2.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-01",
+      "r2Key": "to-be-evaluated/roland_berger/roland_berger-Roland Berger IT Study 2024 Part 2_ Less Costs More Value.pdf"
     }
   }
 }

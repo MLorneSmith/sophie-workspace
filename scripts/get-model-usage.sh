@@ -6,7 +6,17 @@
 # 1. All session messages (main + isolated/sub-agent sessions)
 # 2. Heartbeat usage (estimated from config, since HEARTBEAT_OK responses are discarded before logging)
 
-YESTERDAY="${YESTERDAY:-$(date -d "yesterday" +%Y-%m-%d)}"
+# Use ET (America/Toronto) with 6am cutoff for day boundaries.
+# A "day" runs from 6:00 AM ET to 5:59 AM ET the next day.
+# This means nightly work (11pm-2am) belongs to the same "day" it started.
+YESTERDAY="${YESTERDAY:-$(TZ=America/Toronto date -d "yesterday" +%Y-%m-%d)}"
+
+# Day boundaries: yesterday 6:00 AM ET → today 6:00 AM ET
+DAY_START_ET="${YESTERDAY}T06:00:00"
+DAY_END_ET="$(TZ=America/Toronto date -d "$YESTERDAY + 1 day" +%Y-%m-%d)T06:00:00"
+# Convert to UTC ISO timestamps
+DAY_START_UTC=$(TZ=America/Toronto date -d "$DAY_START_ET" -u +%Y-%m-%dT%H:%M:%S)
+DAY_END_UTC=$(TZ=America/Toronto date -d "$DAY_END_ET" -u +%Y-%m-%dT%H:%M:%S)
 SESSION_DIR="/home/ubuntu/.openclaw/agents/main/sessions"
 CONFIG_FILE="/home/ubuntu/.openclaw/openclaw.json"
 
@@ -23,7 +33,7 @@ SESSION_DATA=$({
   for f in "$SESSION_DIR"/*.jsonl "$SESSION_DIR"/*.jsonl.deleted.*; do
     [ -f "$f" ] || continue
     jq -r '
-      select(.timestamp and (.timestamp | startswith("'"$YESTERDAY"'")) and .type == "message" and .message.role == "assistant" and .message.model and (.message.model != "delivery-mirror")) |
+      select(.timestamp and (.timestamp >= "'"$DAY_START_UTC"'" and .timestamp < "'"$DAY_END_UTC"'") and .type == "message" and .message.role == "assistant" and .message.model and (.message.model != "delivery-mirror")) |
       "\(.message.provider // "unknown")/\(.message.model)|1|\((.message.usage.input // 0) + (.message.usage.output // 0))|\(.message.usage.input // 0)|\(.message.usage.output // 0)"
     ' "$f" 2>/dev/null
   done
@@ -54,44 +64,11 @@ else
   SESSION_USAGE="[]"
 fi
 
-# ─── 2. Heartbeat model usage (estimated) ────────────────────
-# OpenClaw discards HEARTBEAT_OK responses before writing to session files,
-# so heartbeat model usage is invisible in the logs.
-# Estimate tokens based on typical heartbeat exchange (~500 input, ~100 output)
-
-HEARTBEAT_MODEL=""
-if [ -f "$CONFIG_FILE" ]; then
-  HEARTBEAT_MODEL=$(jq -r '.agents.defaults.heartbeat.model // empty' "$CONFIG_FILE" 2>/dev/null)
-fi
-
-if [ -n "$HEARTBEAT_MODEL" ]; then
-  # Count heartbeat poll messages
-  HB_COUNT=$(cat "$SESSION_DIR"/*.jsonl 2>/dev/null | \
-    jq -r "select(.timestamp and (.timestamp | startswith(\"$YESTERDAY\")) and .type == \"message\" and .message.role == \"user\" and (.message.content // \"\" | tostring | test(\"HEARTBEAT\\\\.md|heartbeat\";\"i\")))" 2>/dev/null | wc -l)
-  
-  # Default estimate: ~36 heartbeats/day, ~600 tokens each
-  if [ "$HB_COUNT" -eq 0 ]; then
-    HB_COUNT=36
-    HB_NOTE="estimated"
-  else
-    HB_NOTE="counted"
-  fi
-  
-  # Estimate: 500 input + 100 output = 600 tokens per heartbeat
-  HB_TOKENS=$((HB_COUNT * 600))
-  HB_INPUT=$((HB_COUNT * 500))
-  HB_OUTPUT=$((HB_COUNT * 100))
-  
-  # Merge heartbeat into results
-  SESSION_USAGE=$(echo "$SESSION_USAGE" | jq \
-    --arg model "$HEARTBEAT_MODEL" \
-    --argjson messages "$HB_COUNT" \
-    --argjson tokens "$HB_TOKENS" \
-    --argjson input "$HB_INPUT" \
-    --argjson output "$HB_OUTPUT" \
-    --arg note "$HB_NOTE" \
-    '. + [{"model": $model, "messages": $messages, "tokens": $tokens, "inputTokens": $input, "outputTokens": $output, "source": ("heartbeat-" + $note)}]')
-fi
+# ─── 2. Heartbeat model usage ─────────────────────────────────
+# Heartbeat responses are partially logged in session files (some HEARTBEAT_OK
+# responses are captured, some are discarded). Rather than estimate with bad
+# assumptions, we rely solely on the session data above. The heartbeat model's
+# actual usage is already included in the session scan.
 
 # ─── 3. Merge and sort ───────────────────────────────────────
 # Group by model, sum all metrics, sort by tokens descending

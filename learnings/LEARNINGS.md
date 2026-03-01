@@ -47,3 +47,8 @@
 - [2026-02-27] Mission Control (internal-tools) doesn't auto-rebuild on push. Must run `npx next build` + restart after commits. Build timestamp != commit timestamp.
 - [2026-02-27] MC task API status values: `backlog`, `in_progress`, `mike_review`, `sophie_review`, `done`. NOT `in_review`.
 - [2026-02-27] wttr.in simple format (`?format=...`) times out from AWS servers. Use Open-Meteo API (free, instant) or wttr.in JSON format (`?format=j1`) instead.
+- [2026-02-28] SophieLegerPA PAT (Triage role) gets 403 on `check-runs` and `commits/{sha}/status` APIs. Use `actions/runs?branch=` instead for CI status detection.
+- [2026-02-28] OpenClaw CLI `message send` uses `--target`, not `--to`. The tool API uses `to`.
+- [2026-02-28] `claude-agent-acp` v0.19.2 crashes on `session/load` when acpx session ID doesn't exist in Claude Code's store (`~/.claude/projects/`). Patched `loadSession()` to check `listSessions()` first. Patch location: `~/.npm-global/lib/node_modules/@zed-industries/claude-agent-acp/dist/acp-agent.js` (backup at `.bak`). **Will be overwritten on update.**
+- [2026-02-28] ACP sessions hang silently when Claude Code is installed as a static binary (ELF). `claude-agent-acp` can't find the binary and spawns bare `claude` in interactive mode. **Fix:** Set `CLAUDE_CODE_EXECUTABLE=/home/ubuntu/.local/bin/claude` in AWS SSM (`/openclaw/CLAUDE_CODE_EXECUTABLE`).
+- [2026-02-28] Manual edits to `~/.openclaw/.secrets.env` get WIPED on gateway restart — `fetch-secrets-env.sh` regenerates from SSM. Always add secrets to SSM via `aws ssm put-parameter`, never edit the file directly.

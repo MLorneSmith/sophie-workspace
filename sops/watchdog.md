@@ -122,3 +122,4 @@ ZAI API key is read from `~/.openclaw/.secrets.env` (`ZAI_API_KEY`).
 
 - **2026-02-14:** Created and installed. Triggered by 4th occurrence of ZAI false billing cooldown in one day.
 - **2026-02-14:** Fixed `gateway_is_active()` grep pattern (leading whitespace in systemd output).
+- **2026-02-28:** Fixed pgrep/pkill bug - changed from `-x` (exact process name) to `-f` (full command line match). Linux truncates process names at 15 characters, so `pgrep -x openclaw-gateway` always failed (process name is 16 chars).

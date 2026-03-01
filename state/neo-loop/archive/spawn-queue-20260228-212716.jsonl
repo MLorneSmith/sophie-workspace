@@ -1,0 +1,1 @@
+{"task":"Create a file /tmp/neo-loop-e2e-test.txt with 'Neo Loop works end-to-end!' and report what you did.","label":"test-e2e","pr_number":9999,"task_type":"test","requested_at":"2026-02-28T21:30:00Z","timeout_seconds":120}

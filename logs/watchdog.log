@@ -539,3 +539,24 @@
 2026-02-27T22:44:02Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
 2026-02-27T22:45:02Z DETECT: gateway not running
 2026-02-27T22:45:02Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-02-28T19:28:16Z DETECT: gateway logs matched billing/cooldown pattern; verifying ZAI after 30s
+2026-02-28T19:28:46Z WARN: ZAI_API_KEY not found in /home/ubuntu/.clawdbot/.env; skipping ZAI verification
+2026-02-28T19:28:46Z VERIFY: skipped ZAI API verification (missing key); not restarting
+2026-02-28T22:18:23Z DETECT: gateway not running
+2026-02-28T22:18:27Z RESTART: initiating gateway restart. reason=process_not_running
+2026-02-28T22:20:11Z RESTART: gateway did not become healthy within 90s
+2026-02-28T22:21:13Z DETECT: gateway not running
+2026-02-28T22:21:14Z RESTART: initiating gateway restart. reason=process_not_running
+2026-02-28T22:21:25Z RESTART: gateway appears healthy (active + logs flowing).
+2026-02-28T22:39:35Z watchdog starting (loop=60s stuck=600s maxRestartsPerHour=3)
+2026-02-28T22:39:35Z DETECT: gateway not running
+2026-02-28T22:39:35Z RESTART: initiating gateway restart. reason=process_not_running
+2026-02-28T22:39:42Z RESTART: gateway appears healthy (active + logs flowing).
+2026-02-28T22:45:45Z watchdog starting (loop=60s stuck=600s maxRestartsPerHour=3)
+2026-02-28T22:45:45Z DETECT: gateway not running
+2026-02-28T22:45:45Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-02-28T23:48:35Z watchdog starting (loop=60s stuck=600s maxRestartsPerHour=3)
+2026-02-28T23:48:35Z DETECT: gateway not running
+2026-02-28T23:48:35Z RESTART: initiating gateway restart. reason=process_not_running
+2026-02-28T23:48:42Z RESTART: gateway appears healthy (active + logs flowing).
+2026-03-01T04:02:58Z watchdog starting (loop=60s stuck=600s maxRestartsPerHour=3)

@@ -46,16 +46,38 @@ def get_our_open_prs():
     return enriched
 
 
-def get_check_runs(head_sha: str) -> list[dict]:
-    """Get check run results for a commit."""
-    if not head_sha:
+def get_check_runs(head_sha: str, branch: str = None) -> list[dict]:
+    """Get CI status for a commit via GitHub Actions API.
+    
+    Falls back to actions/runs by branch since SophieLegerPA's PAT
+    doesn't have checks:read scope (403 on check-runs endpoint).
+    """
+    if not head_sha and not branch:
         return []
-    result = gh(
-        "api",
-        f"repos/{REPO}/commits/{head_sha}/check-runs",
-        "--jq", ".check_runs",
-    )
-    return result if isinstance(result, list) else []
+
+    # Use actions/runs API (works with Triage role)
+    endpoint = f"repos/{REPO}/actions/runs?per_page=5"
+    if branch:
+        endpoint += f"&branch={branch}"
+    elif head_sha:
+        endpoint += f"&head_sha={head_sha}"
+
+    result = gh("api", endpoint, "--jq", ".workflow_runs")
+    if not result or not isinstance(result, list):
+        return []
+
+    # Convert to check-run-like format for compatibility
+    checks = []
+    for run in result:
+        checks.append({
+            "name": run.get("name", "unknown"),
+            "conclusion": run.get("conclusion"),
+            "status": run.get("status"),
+            "details_url": run.get("html_url", ""),
+            "app": {"slug": "github-actions"},
+            "run_id": run.get("id"),
+        })
+    return checks
 
 
 def get_failed_run_logs(run_id: int) -> str:
@@ -93,11 +115,13 @@ def get_failed_run_logs(run_id: int) -> str:
 def get_actions_run_id_from_checks(checks: list[dict]) -> int | None:
     """Extract the GitHub Actions run ID from check runs."""
     for check in checks:
+        # Direct run_id (from our actions/runs API conversion)
+        if check.get("conclusion") == "failure" and check.get("run_id"):
+            return check["run_id"]
+        # Fallback: parse from details_url
         app = check.get("app", {}).get("slug", "")
         if app == "github-actions" and check.get("conclusion") == "failure":
-            # The details_url contains the run ID
             url = check.get("details_url", "")
-            # Format: https://github.com/owner/repo/actions/runs/12345/job/67890
             parts = url.split("/actions/runs/")
             if len(parts) == 2:
                 run_id = parts[1].split("/")[0]
@@ -164,7 +188,7 @@ def main():
             log(f"  PR #{num}: SHA {sha[:8]} already attempted fix, skipping")
             continue
 
-        checks = get_check_runs(sha)
+        checks = get_check_runs(sha, branch=branch)
         if not checks:
             log(f"  PR #{num}: no check runs yet")
             continue

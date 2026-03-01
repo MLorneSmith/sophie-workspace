@@ -208,21 +208,87 @@ def queue_spawn(task: str, label: str, pr_number: int, task_type: str):
 
     log(f"Queued spawn: {label} (PR #{pr_number})")
 
-    # Try to wake Sophie
-    wake_sophie(f"🤖 Neo Loop: {label} — spawn Neo for PR #{pr_number}")
+    # Notify #neo channel
+    notify_neo_channel(f"🧑‍💻 **Neo queued:** {label} (PR #{pr_number})")
+
+    # Trigger the spawn queue processor in background (non-blocking)
+    # It will pick up ONE task at a time (serial execution to avoid OOM)
+    try:
+        subprocess.Popen(
+            [sys.executable, str(SPAWN_QUEUE_SCRIPT)],
+            stdout=open(STATE_DIR / "spawn-queue-runner.log", "a"),
+            stderr=subprocess.STDOUT,
+            env={**os.environ,
+                 "PATH": "/usr/local/bin:/home/ubuntu/.npm-global/bin:/usr/bin:/bin:" + os.environ.get("PATH", "")},
+        )
+        log(f"Spawn queue processor triggered")
+    except Exception as e:
+        log(f"Failed to trigger spawn queue: {e}")
+        # Fallback: wake Sophie
+        wake_sophie(f"🤖 Neo Loop: {label} — spawn Neo for PR #{pr_number}")
 
     return True
+
+
+NEO_CHANNEL = "channel:1477061196795478199"  # #neo Discord channel
+
+SPAWN_QUEUE_SCRIPT = Path(__file__).parent / "process-spawn-queue.py"
+
+
+def run_spawn_queue() -> bool:
+    """Run process-spawn-queue.py to spawn ACP sessions for queued tasks."""
+    try:
+        result = subprocess.run(
+            [sys.executable, str(SPAWN_QUEUE_SCRIPT)],
+            capture_output=True,
+            text=True,
+            timeout=60,
+            env={**os.environ,
+                 "PATH": "/usr/local/bin:/home/ubuntu/.npm-global/bin:/usr/bin:/bin:" + os.environ.get("PATH", "")},
+        )
+        if result.returncode == 0:
+            log(f"Spawn queue processed: {result.stdout.strip()[-200:]}")
+            return True
+        else:
+            log(f"Spawn queue failed: {result.stderr.strip()}")
+            return False
+    except Exception as e:
+        log(f"Spawn queue exception: {e}")
+        return False
+
+
+def notify_neo_channel(message: str):
+    """Post a message to Neo's dedicated Discord channel."""
+    try:
+        result = subprocess.run(
+            ["openclaw", "message", "send",
+             "--channel", "discord",
+             "--target", NEO_CHANNEL,
+             "--message", message],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            env={**os.environ,
+                 "PATH": "/usr/local/bin:/home/ubuntu/.npm-global/bin:/usr/bin:/bin:" + os.environ.get("PATH", "")},
+        )
+        if result.returncode == 0:
+            log(f"Posted to #neo: {message[:80]}")
+        else:
+            log(f"#neo post failed: {result.stderr.strip()}")
+    except Exception as e:
+        log(f"#neo post exception: {e}")
 
 
 def wake_sophie(message: str):
     """Send a cron wake event to Sophie's main session."""
     try:
-        # Use openclaw CLI to send wake event
         result = subprocess.run(
             ["openclaw", "cron", "wake", "--text", message, "--mode", "now"],
             capture_output=True,
             text=True,
             timeout=10,
+            env={**os.environ,
+                 "PATH": "/usr/local/bin:/home/ubuntu/.npm-global/bin:/usr/bin:/bin:" + os.environ.get("PATH", "")},
         )
         if result.returncode == 0:
             log(f"Wake sent: {message[:80]}")

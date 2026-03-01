@@ -2,8 +2,8 @@
   "metadata": {
     "source": "Analyst Academy + SEC.gov",
     "extracted_at": "2026-02-05T22:03:03.343932",
-    "updated_at": "2026-02-10T04:30:00.000000",
-    "total_presentations": 198,
+    "updated_at": "2026-03-01T02:05:55.462971",
+    "total_presentations": 224,
     "sources": "Analyst Academy + SEC.gov + Slideworks.io + Plus AI + Additional Research 2026-02-10"
   },
   "presentations": {
@@ -787,6 +787,41 @@
         "title": "WEF Chief Economists Outlook May 2025",
         "url": "https://reports.weforum.org/docs/WEF_Chief_Economists_Outlook_May_2025.pdf",
         "type": "thought leadership"
+      },
+      {
+        "title": "WEF Global Risks Report 2025 (20th Edition)",
+        "url": "https://reports.weforum.org/docs/WEF_Global_Risks_Report_2025.pdf",
+        "pages": 104
+      },
+      {
+        "title": "WEF Scaling the Industrial Transition 2025",
+        "url": "https://reports.weforum.org/docs/WEF_Scaling_the_Industrial_Transition_2025.pdf",
+        "pages": 35
+      },
+      {
+        "title": "WEF Fostering Effective Energy Transition 2025",
+        "url": "https://reports.weforum.org/docs/WEF_Fostering_Effective_Energy_Transition_2025.pdf",
+        "pages": 71
+      },
+      {
+        "title": "WEF Jobs of Tomorrow: Technology and Future of Workforces 2025",
+        "url": "https://reports.weforum.org/docs/WEF_Jobs_of_Tomorrow_Technology_and_the_Future_of_the_Worlds_Largest_Workforces_2025.pdf",
+        "pages": 17
+      },
+      {
+        "title": "WEF Future Focus 2025: Pathways for Progress",
+        "url": "https://www3.weforum.org/docs/WEF_Future_Focus_2025.pdf",
+        "pages": 134
+      },
+      {
+        "title": "WEF Global Future Councils Insights Summary 2025",
+        "url": "https://reports.weforum.org/docs/GFC_Network_End_of_Year_Insights_Summary_2025.pdf",
+        "pages": 26
+      },
+      {
+        "title": "WEF AI in Strategic Foresight 2025",
+        "url": "https://reports.weforum.org/docs/WEF_AI_in_Strategic_Foresight_2025.pdf",
+        "pages": 22
       }
     ],
     "infosys": [
@@ -1005,6 +1040,144 @@
         "title": "INSEAD Family Business at INSEAD",
         "url": "https://www.insead.edu/sites/default/files/assets/dept/centres/wicfe/docs/family-business-at-insead.pdf",
         "type": "case study"
+      }
+    ],
+    "nestle": [
+      {
+        "title": "Nestle Full-Year Results 2025 Investor Presentation",
+        "url": "https://www.nestle.com/sites/default/files/2026-02/full-year-results-investor-presentation-2025.pdf",
+        "pages": 79
+      }
+    ],
+    "teck": [
+      {
+        "title": "Teck Investor Presentation (Oct 2025)",
+        "url": "https://www.teck.com/media/Investor-Presentation.pdf",
+        "pages": 37
+      }
+    ],
+    "annaly": [
+      {
+        "title": "Annaly Q4 2025 Investor Presentation",
+        "url": "https://www.annaly.com/~/media/Files/A/Annaly-V3/documents/q4-2025-investor-presentation.pdf",
+        "pages": 28
+      }
+    ],
+    "workday": [
+      {
+        "title": "Workday Q4 FY2025 Investor Presentation",
+        "url": "https://www.workday.com/content/dam/web/en-us/documents/investor/workday-fiscal-2025-fourth-quarter-investor-presentation.pdf",
+        "pages": 25
+      }
+    ],
+    "pershing_square": [
+      {
+        "title": "Pershing Square Annual Investor Presentation (Feb 2026)",
+        "url": "https://assets.pershingsquareholdings.com/wp-content/uploads/2026/02/11144917/2026-Annual-Investor-Presentation.pdf",
+        "pages": 85
+      }
+    ],
+    "marsh_mclennan": [
+      {
+        "title": "Marsh & McLennan Q4 2025 Investor Presentation",
+        "url": "https://www.corporate.marsh.com/content/dam/mmc-web/files-for-download/investors/2026/pdf-2025-marsh-4q-investor-presentation.pdf",
+        "pages": 32
+      }
+    ],
+    "apollo": [
+      {
+        "title": "Apollo Commercial Real Estate Finance Investor Presentation (Dec 2025)",
+        "url": "https://www.apollocref.com/content/dam/apolloaem/documents/fund-documents/public-funds/apollo-commercial-real-estate-finance/presentations/investor-presentation-december-2025.pdf",
+        "pages": 22
+      }
+    ],
+    "vfcorp": [
+      {
+        "title": "VF Corp 2025 Investor Day Presentation",
+        "url": "https://s206.q4cdn.com/752775519/files/doc_downloads/2025/12/2025-Investor-Day-Presentation.pdf",
+        "pages": 102
+      },
+      {
+        "title": "VF Corp Q4 2025 Quarterly Earnings Deck",
+        "url": "https://d1io3yog0oux5.cloudfront.net/_c4145dd8c657c4e34fc792f6764a215f/vfc/db/409/131734/earnings_presentation/Q4+2025+Quarterly+Earnings+Deck+(FINAL).pdf",
+        "pages": 33
+      }
+    ],
+    "aptiv": [
+      {
+        "title": "Aptiv 2025 Investor Day Presentation",
+        "url": "https://s21.q4cdn.com/440699111/files/doc_presentations/2025/11/Aptiv-2025-Investor-Day-Presentation.pdf",
+        "pages": 127
+      }
+    ],
+    "blackrock": [
+      {
+        "title": "BlackRock Investor Day 2025",
+        "url": "https://s24.q4cdn.com/856567660/files/doc_presentations/2025/BLK-Investor-Day-2025-WEB.pdf",
+        "pages": 147
+      }
+    ],
+    "jpmorgan": [
+      {
+        "title": "JPMorgan Chase 2025 Investor Day Full Presentation",
+        "url": "https://www.jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/events/2025/jpmc-2025-investor-day/full-presentation.pdf",
+        "pages": 153
+      }
+    ],
+    "cognizant": [
+      {
+        "title": "Cognizant Investor Day 2025",
+        "url": "https://cognizant.q4cdn.com/123993165/files/doc_downloads/2025/Investor-Day-2025_Master_Final.pdf",
+        "pages": 112
+      }
+    ],
+    "cloudflare": [
+      {
+        "title": "Cloudflare 2025 Investor Day Presentation",
+        "url": "https://www.cloudflare.net/files/doc_downloads/Presentations/2025/03/Cloudflare-2025-Investor-Day-Presentation.pdf",
+        "pages": 117
+      }
+    ],
+    "arcbest": [
+      {
+        "title": "ArcBest 2025 Investor Day Presentation",
+        "url": "https://s203.q4cdn.com/716791110/files/doc_presentations/2025/09/ArcBest-2025-Investor-Day-Presentation.pdf",
+        "pages": 84
+      }
+    ],
+    "weyerhaeuser": [
+      {
+        "title": "Weyerhaeuser 2025 Investor Day Presentation",
+        "url": "https://investor.weyerhaeuser.com/download/WY+2025+Investor+Day+Presentation.pdf",
+        "pages": 114
+      }
+    ],
+    "demant": [
+      {
+        "title": "Demant Investor Presentation Annual Report 2025",
+        "url": "https://assets-we.cas.dgs.com/-/media/demant/shared/new-library-2022/investor-relations/investor-presentations/demant-investor-presentation-annual-report-2025.pdf",
+        "pages": 28
+      }
+    ],
+    "bristol_myers": [
+      {
+        "title": "Bristol-Myers Squibb Q4 2025 Results Investor Presentation",
+        "url": "https://www.bms.com/assets/bms/us/en-us/pdf/investor-info/doc_presentations/2025/BMY-2025-Q4-Results-Investor-Presentation-with-Appendix.pdf",
+        "pages": 58
+      }
+    ],
+    "northland_power": [
+      {
+        "title": "Northland Power 2025 Annual Report",
+        "url": "https://www.northlandpower.com/en/resources/Corporate%20Reports/2025-NPI-Annual-Report-Web.pdf",
+        "pages": 119
+      }
+    ],
+    "linc_limited": [
+      {
+        "title": "Linc Limited Strategy Presentation Q2 2024-25",
+        "url": "https://linclimited.com/wp-content/uploads/2024/11/Strategy_Presentation_Q2_2425_S.pdf",
+        "pages": 38
       }
     ]
   }

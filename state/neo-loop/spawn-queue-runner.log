@@ -1,0 +1,5 @@
+[2026-02-28 23:30:09 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-02-28 23:30:09 UTC]   [ci-fix] PR #2196: neo-ci-2196
+[2026-02-28 23:30:16 UTC]   Spawning acpx exec for neo-ci-2196 (sync, timeout 1800s)...
+[2026-02-28 23:30:19 UTC] ACP session already running — skipping this cycle.
+[2026-02-28 23:30:31 UTC] ACP session already running — skipping this cycle.

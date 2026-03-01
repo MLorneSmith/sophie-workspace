@@ -14,5 +14,21 @@
   "2197-issue-pickup": {
     "date": "2026-02-28",
     "attempts": 1
+  },
+  "2202-ci-fix": {
+    "date": "2026-02-28",
+    "attempts": 2
+  },
+  "2196-ci-fix": {
+    "date": "2026-02-28",
+    "attempts": 3
+  },
+  "2195-ci-fix": {
+    "date": "2026-02-28",
+    "attempts": 3
+  },
+  "2194-ci-fix": {
+    "date": "2026-02-28",
+    "attempts": 3
   }
 }

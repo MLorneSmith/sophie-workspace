@@ -1,0 +1,8 @@
+{
+  "agent": "neo",
+  "task": "Refactor PPTX generator to accept TemplateConfig",
+  "status": "done",
+  "result": "Created TemplateConfig type, DEFAULT_TEMPLATE constant, refactored PptxGenerator to accept optional templateConfig parameter, updated powerpoint-actions.ts. PR: https://github.com/slideheroes/2025slideheroes/pull/2202",
+  "timestamp": "2026-02-28T19:19:53Z",
+  "runtime_seconds": 180
+}

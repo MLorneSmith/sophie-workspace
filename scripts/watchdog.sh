@@ -90,7 +90,7 @@ gateway_is_active() {
   if have_user_systemd && systemctl --user list-units --type=service --all | grep -q "${GATEWAY_SERVICE}"; then
     systemctl --user is-active --quiet "${GATEWAY_SERVICE}"
   else
-    pgrep -x "${GATEWAY_PROCESS_NAME}" >/dev/null 2>&1
+    pgrep -f "${GATEWAY_PROCESS_NAME}" >/dev/null 2>&1
   fi
 }
 
@@ -227,7 +227,7 @@ restart_gateway() {
     systemctl --user restart "${GATEWAY_SERVICE}" || true
   else
     # Fallback: kill process and start new gateway in background (best-effort)
-    pkill -x "${GATEWAY_PROCESS_NAME}" || true
+    pkill -f "${GATEWAY_PROCESS_NAME}" || true
     (nohup openclaw gateway start >>"${LOG_DIR}/gateway.out" 2>&1 &)
   fi
 

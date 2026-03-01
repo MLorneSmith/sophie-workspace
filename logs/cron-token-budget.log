@@ -77,3 +77,54 @@ Checking token usage for 2026-02-27 (threshold: 10.0M)
 Total tokens: 17.3M
 ⚠️ Budget exceeded!
 No Discord webhook configured, skipping alert
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 1.6M
+✅ Within budget (1.6M / 10.0M)
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 1.6M
+✅ Within budget (1.6M / 10.0M)
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 1.6M
+✅ Within budget (1.6M / 10.0M)
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 3.6M
+✅ Within budget (3.6M / 10.0M)
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 3.6M
+✅ Within budget (3.6M / 10.0M)
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 3.6M
+✅ Within budget (3.6M / 10.0M)
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 3.6M
+✅ Within budget (3.6M / 10.0M)
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 3.6M
+✅ Within budget (3.6M / 10.0M)
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 3.6M
+✅ Within budget (3.6M / 10.0M)
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 3.6M
+✅ Within budget (3.6M / 10.0M)
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Error fetching token usage: HTTPConnectionPool(host='localhost', port=3001): Read timed out. (read timeout=10)
+No data available
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Error fetching token usage: HTTPConnectionPool(host='localhost', port=3001): Max retries exceeded with url: /api/v1/model-usage?date=2026-02-28 (Caused by NewConnectionError("HTTPConnection(host='localhost', port=3001): Failed to establish a new connection: [Errno 111] Connection refused"))
+No data available
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 3.5M
+✅ Within budget (3.5M / 10.0M)
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 3.5M
+✅ Within budget (3.5M / 10.0M)
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 3.5M
+✅ Within budget (3.5M / 10.0M)
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 3.5M
+✅ Within budget (3.5M / 10.0M)
+Checking token usage for 2026-02-28 (threshold: 10.0M)
+Total tokens: 3.5M
+✅ Within budget (3.5M / 10.0M)

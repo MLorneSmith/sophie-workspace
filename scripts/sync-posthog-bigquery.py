@@ -153,7 +153,19 @@ def autodetect_schema(sample_rows: List[Dict[str, Any]], *, force_timestamp_cols
 
 def ensure_bq_table(bq_client: bigquery.Client, table_ref: str, schema: List[bigquery.SchemaField]):
     table = bigquery.Table(table_ref, schema=schema)
-    bq_client.create_table(table, exists_ok=True)
+    try:
+        existing = bq_client.get_table(table_ref)
+        # Merge schemas: add any new columns from the detected schema
+        existing_names = {f.name for f in existing.schema}
+        new_fields = [f for f in schema if f.name not in existing_names]
+        if new_fields:
+            merged = list(existing.schema) + new_fields
+            existing.schema = merged
+            bq_client.update_table(existing, ["schema"])
+            print(f"  📐 Schema updated: added {[f.name for f in new_fields]} to {table_ref}")
+    except Exception:
+        # Table doesn't exist yet — create it
+        bq_client.create_table(table, exists_ok=True)
 
 
 def load_state(state_file: str) -> dict:
@@ -320,7 +332,7 @@ def sync_persons(
         return total
 
     # Schema from sample
-    schema = autodetect_schema(rows[:50], force_timestamp_cols={"created_at"})
+    schema = autodetect_schema(rows[:50], force_timestamp_cols={"created_at", "last_seen_at"})
     ensure_bq_table(bq_client, TABLES["persons"], schema)
     truncate_table(bq_client, TABLES["persons"])
 
