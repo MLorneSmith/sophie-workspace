@@ -294,7 +294,11 @@ describe("Mastra validation spike", () => {
 		expect(usage.estimatedCost).toBeGreaterThan(0);
 	});
 
+<<<<<<< HEAD
 	it("runs postProcessWorkflow with all 4 agent reviews and merges output", async () => {
+=======
+	it("runs postProcessWorkflow with partner + validator reviews and merges output", async () => {
+>>>>>>> origin/staging
 		const partnerUsage = {
 			promptTokens: 90,
 			completionTokens: 30,
@@ -305,6 +309,7 @@ describe("Mastra validation spike", () => {
 			completionTokens: 50,
 			totalTokens: 120,
 		};
+<<<<<<< HEAD
 		const whispererUsage = {
 			promptTokens: 60,
 			completionTokens: 40,
@@ -315,10 +320,13 @@ describe("Mastra validation spike", () => {
 			completionTokens: 20,
 			totalTokens: 60,
 		};
+=======
+>>>>>>> origin/staging
 
 		const postProcessWorkflow = createPostProcessWorkflow({
 			runPartnerReview: async ({ storyboard }) => ({
 				review: {
+<<<<<<< HEAD
 					overallScore: 4.1,
 					executiveSummary:
 						"Narrative is compelling but can tighten action framing.",
@@ -344,12 +352,22 @@ describe("Mastra validation spike", () => {
 							fix: "Move explicit ask to opening context slide",
 						},
 					],
+=======
+					reviewer: "partner",
+					slides: storyboard.slides.map((slide) => ({
+						slideId: slide.id,
+						narrativeStrength: "Storyline is coherent.",
+						improvement:
+							"Clarify the business impact one level deeper for executives.",
+					})),
+>>>>>>> origin/staging
 				},
 				usage: partnerUsage,
 				model: "mock/partner",
 			}),
 			runValidatorReview: async ({ storyboard }) => ({
 				review: {
+<<<<<<< HEAD
 					overallDataQuality: "adequate",
 					summary:
 						"Most claims are directionally sound but one needs explicit sourcing.",
@@ -383,10 +401,25 @@ describe("Mastra validation spike", () => {
 							severity: "high",
 						},
 					],
+=======
+					reviewer: "validator",
+					slides: storyboard.slides.map((slide, index) => ({
+						slideId: slide.id,
+						claim: slide.takeawayHeadline,
+						verdict: index === 0 ? "unsupported" : "supported",
+						confidence: index === 0 ? 0.86 : 0.74,
+						source: index === 0 ? undefined : "Internal KPI dashboard Q4",
+						suggestion:
+							index === 0
+								? "Add data evidence from an audited source for this claim."
+								: "Keep the claim but attach citation in speaker notes.",
+					})),
+>>>>>>> origin/staging
 				},
 				usage: validatorUsage,
 				model: "mock/validator",
 			}),
+<<<<<<< HEAD
 			runWhispererReview: async ({ storyboard }) => ({
 				review: {
 					totalTimeMinutes: 3,
@@ -458,6 +491,8 @@ describe("Mastra validation spike", () => {
 				usage: editorUsage,
 				model: "mock/editor",
 			}),
+=======
+>>>>>>> origin/staging
 		});
 
 		const audienceWorkflow = createAudienceProfilingWorkflow();
@@ -486,6 +521,7 @@ describe("Mastra validation spike", () => {
 
 		expect(result.steps["partner-review"]?.status).toBe("success");
 		expect(result.steps["validator-review"]?.status).toBe("success");
+<<<<<<< HEAD
 		expect(result.steps["whisperer-review"]?.status).toBe("success");
 		expect(result.steps["editor-review"]?.status).toBe("success");
 
@@ -500,10 +536,23 @@ describe("Mastra validation spike", () => {
 					slide.claims[0]?.verdict === "unsupported" ||
 					slide.claims[0]?.verdict === "unverifiable" ||
 					slide.claims[0]?.verdict === "outdated",
+=======
+
+		expect(result.result.partnerReview.reviewer).toBe("partner");
+		expect(result.result.validatorReview.reviewer).toBe("validator");
+		expect(result.result.validatorReview.slides.length).toBe(2);
+		expect(
+			result.result.validatorReview.slides.every(
+				(slide) =>
+					slide.verdict === "supported" ||
+					slide.verdict === "unsupported" ||
+					slide.verdict === "unverifiable",
+>>>>>>> origin/staging
 			),
 		).toBe(true);
 		expect(
 			result.result.validatorReview.slides.every(
+<<<<<<< HEAD
 				(slide) =>
 					(slide.claims[0]?.confidence ?? -1) >= 0 &&
 					(slide.claims[0]?.confidence ?? 2) <= 1,
@@ -517,10 +566,21 @@ describe("Mastra validation spike", () => {
 		expect(
 			result.result.suggestions.every(
 				(suggestion) => suggestion.status === "pending",
+=======
+				(slide) => slide.confidence >= 0 && slide.confidence <= 1,
+			),
+		).toBe(true);
+
+		expect(result.result.suggestions.length).toBe(4);
+		expect(
+			result.result.suggestions.some(
+				(suggestion) => suggestion.source === "partner",
+>>>>>>> origin/staging
 			),
 		).toBe(true);
 		expect(
 			result.result.suggestions.some(
+<<<<<<< HEAD
 				(suggestion) => suggestion.agentId === "partner",
 			),
 		).toBe(true);
@@ -537,13 +597,22 @@ describe("Mastra validation spike", () => {
 		expect(
 			result.result.suggestions.some(
 				(suggestion) => suggestion.agentId === "editor",
+=======
+				(suggestion) => suggestion.source === "validator",
+>>>>>>> origin/staging
 			),
 		).toBe(true);
 
 		const usage = await getRunTokenUsage(run.runId, mastra);
+<<<<<<< HEAD
 		expect(usage.promptTokens).toBe(260);
 		expect(usage.completionTokens).toBe(140);
 		expect(usage.totalTokens).toBe(400);
+=======
+		expect(usage.promptTokens).toBe(160);
+		expect(usage.completionTokens).toBe(80);
+		expect(usage.totalTokens).toBe(240);
+>>>>>>> origin/staging
 		expect(usage.estimatedCost).toBeGreaterThan(0);
 	});
 });

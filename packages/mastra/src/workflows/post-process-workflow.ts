@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { randomUUID } from "node:crypto";
 
 import { createStep, createWorkflow } from "@mastra/core/workflows";
@@ -25,14 +26,26 @@ import {
 	WhispererReviewSchema,
 	whispererAgent,
 } from "../agents/whisperer-agent";
+=======
+import { createStep, createWorkflow } from "@mastra/core/workflows";
+import { z } from "zod";
+
+import { partnerAgent } from "../agents/partner-agent";
+import { validatorAgent } from "../agents/validator-agent";
+>>>>>>> origin/staging
 import { getModelForAgent } from "../config/model-routing";
 import {
 	finalizeRunTrace,
 	recordModelUsageSpan,
 } from "../config/spike-tracing";
 import {
+<<<<<<< HEAD
 	type StoryboardContent,
 	StoryboardContentSchema,
+=======
+	StoryboardContentSchema,
+	type StoryboardContent,
+>>>>>>> origin/staging
 } from "../schemas/presentation-artifacts";
 
 const PREPARE_CONTEXT_OUTPUT_SCHEMA = z.object({
@@ -40,6 +53,7 @@ const PREPARE_CONTEXT_OUTPUT_SCHEMA = z.object({
 	agentPrompt: z.string().min(1),
 });
 
+<<<<<<< HEAD
 const PARTNER_REVIEW_OUTPUT_SCHEMA = PartnerReviewSchema;
 const VALIDATOR_REVIEW_OUTPUT_SCHEMA = ValidatorReviewSchema;
 const WHISPERER_REVIEW_OUTPUT_SCHEMA = WhispererReviewSchema;
@@ -54,21 +68,60 @@ const POST_PROCESS_SUGGESTION_SCHEMA = z.object({
 	priority: z.enum(["high", "medium", "low"]),
 	status: z.literal("pending"),
 	detail: z.record(z.string(), z.unknown()).optional(),
+=======
+const PARTNER_REVIEW_OUTPUT_SCHEMA = z.object({
+	reviewer: z.literal("partner"),
+	slides: z.array(
+		z.object({
+			slideId: z.string().min(1),
+			narrativeStrength: z.string().min(1),
+			improvement: z.string().min(1),
+		}),
+	),
+});
+
+const VALIDATOR_REVIEW_OUTPUT_SCHEMA = z.object({
+	reviewer: z.literal("validator"),
+	slides: z.array(
+		z.object({
+			slideId: z.string().min(1),
+			claim: z.string().min(1),
+			verdict: z.enum(["supported", "unsupported", "unverifiable"]),
+			confidence: z.number().min(0).max(1),
+			source: z.string().min(1).optional(),
+			suggestion: z.string().min(1),
+		}),
+	),
+});
+
+const MERGED_SUGGESTION_SCHEMA = z.object({
+	slideId: z.string().min(1),
+	source: z.enum(["partner", "validator"]),
+	summary: z.string().min(1),
+	priority: z.enum(["high", "medium", "low"]),
+>>>>>>> origin/staging
 });
 
 const PARALLEL_REVIEWS_SCHEMA = z.object({
 	"partner-review": PARTNER_REVIEW_OUTPUT_SCHEMA,
 	"validator-review": VALIDATOR_REVIEW_OUTPUT_SCHEMA,
+<<<<<<< HEAD
 	"whisperer-review": WHISPERER_REVIEW_OUTPUT_SCHEMA,
 	"editor-review": EDITOR_REVIEW_OUTPUT_SCHEMA,
+=======
+>>>>>>> origin/staging
 });
 
 const POST_PROCESS_OUTPUT_SCHEMA = z.object({
 	partnerReview: PARTNER_REVIEW_OUTPUT_SCHEMA,
 	validatorReview: VALIDATOR_REVIEW_OUTPUT_SCHEMA,
+<<<<<<< HEAD
 	whispererReview: WHISPERER_REVIEW_OUTPUT_SCHEMA,
 	editorReview: EDITOR_REVIEW_OUTPUT_SCHEMA,
 	suggestions: z.array(POST_PROCESS_SUGGESTION_SCHEMA),
+=======
+	suggestions: z.array(MERGED_SUGGESTION_SCHEMA),
+>>>>>>> origin/staging
 });
 
 type ModelUsage = {
@@ -85,6 +138,7 @@ type AgentReviewResult<TReview> = {
 	model?: string;
 };
 
+<<<<<<< HEAD
 type SuggestionPriority = z.infer<
 	typeof POST_PROCESS_SUGGESTION_SCHEMA.shape.priority
 >;
@@ -99,6 +153,10 @@ export type PostProcessSuggestion = z.infer<
 	typeof POST_PROCESS_SUGGESTION_SCHEMA
 >;
 export type PostProcessOutput = z.infer<typeof POST_PROCESS_OUTPUT_SCHEMA>;
+=======
+type PartnerReview = z.infer<typeof PARTNER_REVIEW_OUTPUT_SCHEMA>;
+type ValidatorReview = z.infer<typeof VALIDATOR_REVIEW_OUTPUT_SCHEMA>;
+>>>>>>> origin/staging
 
 export type PostProcessWorkflowDependencies = {
 	runPartnerReview?: (input: {
@@ -109,6 +167,7 @@ export type PostProcessWorkflowDependencies = {
 		storyboard: StoryboardContent;
 		agentPrompt: string;
 	}) => Promise<AgentReviewResult<ValidatorReview>>;
+<<<<<<< HEAD
 	runWhispererReview?: (input: {
 		storyboard: StoryboardContent;
 		agentPrompt: string;
@@ -117,6 +176,8 @@ export type PostProcessWorkflowDependencies = {
 		storyboard: StoryboardContent;
 		agentPrompt: string;
 	}) => Promise<AgentReviewResult<EditorReview>>;
+=======
+>>>>>>> origin/staging
 };
 
 const POST_PROCESS_WORKFLOW_ID = "post-process-workflow";
@@ -129,6 +190,7 @@ function hasLlmCredentials(): boolean {
 	);
 }
 
+<<<<<<< HEAD
 function createSuggestion(
 	suggestion: PostProcessSuggestionInput,
 ): PostProcessSuggestion {
@@ -228,10 +290,23 @@ function mockPartnerReview(storyboard: StoryboardContent): PartnerReview {
 				fix: "State the decision, expected impact, and ownership in the first two slides.",
 			},
 		],
+=======
+function mockPartnerReview(storyboard: StoryboardContent): PartnerReview {
+	return PARTNER_REVIEW_OUTPUT_SCHEMA.parse({
+		reviewer: "partner",
+		slides: storyboard.slides.map((slide) => ({
+			slideId: slide.id,
+			narrativeStrength:
+				"Clear storyline progression and executive-level framing.",
+			improvement:
+				"Lead with the business consequence earlier and make the decision ask explicit.",
+		})),
+>>>>>>> origin/staging
 	});
 }
 
 function mockValidatorReview(storyboard: StoryboardContent): ValidatorReview {
+<<<<<<< HEAD
 	const criticalFlags = storyboard.slides.slice(0, 1).map((slide) => ({
 		slideId: slide.id,
 		issue: "Primary claim lacks explicit citation and date context.",
@@ -440,6 +515,96 @@ const defaultRunEditorReview = createDefaultRunReview({
 	mockModel: "mock/editor-review",
 	agentName: "editor",
 });
+=======
+	return VALIDATOR_REVIEW_OUTPUT_SCHEMA.parse({
+		reviewer: "validator",
+		slides: storyboard.slides.map((slide, index) => ({
+			slideId: slide.id,
+			claim: slide.takeawayHeadline,
+			verdict: index % 2 === 0 ? "unverifiable" : "unsupported",
+			confidence: index % 2 === 0 ? 0.64 : 0.78,
+			suggestion:
+				index % 2 === 0
+					? "Add a cited source or internal metric to make this claim testable."
+					: "Replace the assertion with quantified evidence and a referenced data point.",
+		})),
+	});
+}
+
+async function defaultRunPartnerReview(input: {
+	storyboard: StoryboardContent;
+	agentPrompt: string;
+}): Promise<AgentReviewResult<PartnerReview>> {
+	if (!hasLlmCredentials()) {
+		return {
+			review: mockPartnerReview(input.storyboard),
+			usage: {
+				promptTokens: 180,
+				completionTokens: 110,
+				totalTokens: 290,
+			},
+			model: "mock/partner-review",
+		};
+	}
+
+	const result = await partnerAgent.generate(
+		[
+			{
+				role: "user",
+				content: input.agentPrompt,
+			},
+		],
+		{
+			structuredOutput: {
+				schema: PARTNER_REVIEW_OUTPUT_SCHEMA,
+			},
+		},
+	);
+
+	return {
+		review: PARTNER_REVIEW_OUTPUT_SCHEMA.parse(result.object),
+		usage: await result.totalUsage,
+		model: getModelForAgent("partner"),
+	};
+}
+
+async function defaultRunValidatorReview(input: {
+	storyboard: StoryboardContent;
+	agentPrompt: string;
+}): Promise<AgentReviewResult<ValidatorReview>> {
+	if (!hasLlmCredentials()) {
+		return {
+			review: mockValidatorReview(input.storyboard),
+			usage: {
+				promptTokens: 150,
+				completionTokens: 130,
+				totalTokens: 280,
+			},
+			model: "mock/validator-review",
+		};
+	}
+
+	const result = await validatorAgent.generate(
+		[
+			{
+				role: "user",
+				content: input.agentPrompt,
+			},
+		],
+		{
+			structuredOutput: {
+				schema: VALIDATOR_REVIEW_OUTPUT_SCHEMA,
+			},
+		},
+	);
+
+	return {
+		review: VALIDATOR_REVIEW_OUTPUT_SCHEMA.parse(result.object),
+		usage: await result.totalUsage,
+		model: getModelForAgent("validator"),
+	};
+}
+>>>>>>> origin/staging
 
 export function createPostProcessWorkflow(
 	deps: PostProcessWorkflowDependencies = {},
@@ -447,9 +612,12 @@ export function createPostProcessWorkflow(
 	const runPartnerReview = deps.runPartnerReview ?? defaultRunPartnerReview;
 	const runValidatorReview =
 		deps.runValidatorReview ?? defaultRunValidatorReview;
+<<<<<<< HEAD
 	const runWhispererReview =
 		deps.runWhispererReview ?? defaultRunWhispererReview;
 	const runEditorReview = deps.runEditorReview ?? defaultRunEditorReview;
+=======
+>>>>>>> origin/staging
 
 	const prepareContextStep = createStep({
 		id: "prepare-context",
@@ -523,6 +691,7 @@ export function createPostProcessWorkflow(
 		},
 	});
 
+<<<<<<< HEAD
 	const whispererReviewStep = createStep({
 		id: "whisperer-review",
 		inputSchema: PREPARE_CONTEXT_OUTPUT_SCHEMA,
@@ -573,11 +742,14 @@ export function createPostProcessWorkflow(
 		},
 	});
 
+=======
+>>>>>>> origin/staging
 	const mergeSuggestionsStep = createStep({
 		id: "merge-suggestions",
 		inputSchema: PARALLEL_REVIEWS_SCHEMA,
 		outputSchema: POST_PROCESS_OUTPUT_SCHEMA,
 		execute: async ({ inputData, mastra, runId }) => {
+<<<<<<< HEAD
 			const partnerSuggestions = inputData["partner-review"].slides.map(
 				(slide) =>
 					createSuggestion({
@@ -673,6 +845,33 @@ export function createPostProcessWorkflow(
 				...validatorFlagSuggestions,
 				...whispererSuggestions,
 				...editorSuggestions,
+=======
+			const suggestions = [
+				...inputData["partner-review"].slides.map((slide) => ({
+					slideId: slide.slideId,
+					source: "partner" as const,
+					summary: `${slide.narrativeStrength} ${slide.improvement}`,
+					priority: "medium" as const,
+				})),
+				...inputData["validator-review"].slides.map((slide) => ({
+					slideId: slide.slideId,
+					source: "validator" as const,
+					summary: [
+						`Claim: ${slide.claim}`,
+						`Verdict: ${slide.verdict} (${Math.round(slide.confidence * 100)}% confidence).`,
+						slide.source ? `Source: ${slide.source}.` : null,
+						slide.suggestion,
+					]
+						.filter(Boolean)
+						.join(" "),
+					priority:
+						slide.verdict === "unsupported"
+							? ("high" as const)
+							: slide.verdict === "unverifiable"
+								? ("medium" as const)
+								: ("low" as const),
+				})),
+>>>>>>> origin/staging
 			];
 
 			await finalizeRunTrace({
@@ -684,8 +883,11 @@ export function createPostProcessWorkflow(
 			return {
 				partnerReview: inputData["partner-review"],
 				validatorReview: inputData["validator-review"],
+<<<<<<< HEAD
 				whispererReview: inputData["whisperer-review"],
 				editorReview: inputData["editor-review"],
+=======
+>>>>>>> origin/staging
 				suggestions,
 			};
 		},
@@ -697,12 +899,16 @@ export function createPostProcessWorkflow(
 		outputSchema: POST_PROCESS_OUTPUT_SCHEMA,
 	})
 		.then(prepareContextStep)
+<<<<<<< HEAD
 		.parallel([
 			partnerReviewStep,
 			validatorReviewStep,
 			whispererReviewStep,
 			editorReviewStep,
 		])
+=======
+		.parallel([partnerReviewStep, validatorReviewStep])
+>>>>>>> origin/staging
 		.then(mergeSuggestionsStep)
 		.commit();
 }
@@ -712,9 +918,14 @@ export const postProcessWorkflow = createPostProcessWorkflow();
 export const postProcessSchemas = {
 	input: StoryboardContentSchema,
 	output: POST_PROCESS_OUTPUT_SCHEMA,
+<<<<<<< HEAD
 	suggestion: POST_PROCESS_SUGGESTION_SCHEMA,
 	partnerReview: PARTNER_REVIEW_OUTPUT_SCHEMA,
 	validatorReview: VALIDATOR_REVIEW_OUTPUT_SCHEMA,
 	whispererReview: WHISPERER_REVIEW_OUTPUT_SCHEMA,
 	editorReview: EDITOR_REVIEW_OUTPUT_SCHEMA,
+=======
+	partnerReview: PARTNER_REVIEW_OUTPUT_SCHEMA,
+	validatorReview: VALIDATOR_REVIEW_OUTPUT_SCHEMA,
+>>>>>>> origin/staging
 };

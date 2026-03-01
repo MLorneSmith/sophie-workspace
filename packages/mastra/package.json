@@ -7,9 +7,13 @@
 		".": "./src/index.ts",
 		"./agents": "./src/agents/index.ts",
 		"./config": "./src/config/index.ts",
+<<<<<<< HEAD
 		"./workflows": "./src/workflows/index.ts",
 		"./persistence": "./src/persistence/agent-results.ts",
 		"./rag": "./src/rag.ts"
+=======
+		"./workflows": "./src/workflows/index.ts"
+>>>>>>> origin/staging
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",

@@ -6,8 +6,15 @@
  */
 
 export {
+<<<<<<< HEAD
 	type AudienceBrief,
 	AudienceBriefSchema,
 	type StoryboardContent,
 	StoryboardContentSchema,
+=======
+	AudienceBriefSchema,
+	StoryboardContentSchema,
+	type AudienceBrief,
+	type StoryboardContent,
+>>>>>>> origin/staging
 } from "../../../../apps/web/app/home/(user)/ai/_lib/schemas/presentation-artifacts";
