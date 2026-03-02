@@ -26,6 +26,11 @@ import {
 } from "../../../_lib/server/company-brief-synthesis.service";
 import { researchCompany } from "../../../_lib/server/company-research.service";
 import {
+	enrichCompany,
+	extractDomain,
+	type ApolloEnrichmentResult,
+} from "../../../_lib/server/apollo-enrichment.service";
+import {
 	getCompanyDetails,
 	getPersonProfile,
 	type NetrowsEnrichmentResult,
@@ -33,21 +38,6 @@ import {
 	searchCompany,
 	searchPersonFuzzy,
 } from "../../../_lib/server/netrows.service";
-import {
-	webSearch,
-	type WebSearchResult,
-} from "../../../_lib/server/company-research.service";
-
-// ---------------------------------------------------------------------------
-// Types for tracking research sources
-// ---------------------------------------------------------------------------
-
-/** Tracks which data sources succeeded during research */
-interface ResearchSources {
-	netrows: boolean;
-	webSearch: boolean;
-	apollo: boolean;
-}
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -92,8 +82,6 @@ function buildBriefPrompt(
 	company: string,
 	context?: string,
 	companyBrief?: CompanyBrief | null,
-	personWebSearchResults?: WebSearchResult[] | null,
-	sources?: ResearchSources,
 ): ChatMessage[] {
 	const { personProfile, companyDetails } = enrichment;
 
@@ -169,7 +157,7 @@ Output valid JSON matching this exact schema:
   "briefSummary": "string — 2-3 sentence summary of the key insight about this audience"
 }
 
-Be specific and actionable. Draw inferences from their background, industry, and seniority. If data is sparse, make reasonable inferences and note them.${sources && !sources.netrows && !sources.webSearch ? "\n\nIMPORTANT: Data is very limited. Focus on what IS known. For unknown fields, provide your best inference clearly marked as [INFERRED]. Do not fabricate specific numbers or statistics." : ""}`;
+Be specific and actionable. Draw inferences from their background, industry, and seniority. If data is sparse, make reasonable inferences and note them.`;
 
 	const userPrompt = `Generate an Audience Brief for the following person:
 
@@ -250,16 +238,7 @@ export const researchAudienceAction = enhanceAction(
 			data.selectedLinkedinUrl ?? "none",
 		);
 
-		// Track which sources succeed
-		const sources: ResearchSources = {
-			netrows: false,
-			webSearch: false,
-			apollo: false,
-		};
-
 		let enrichment: NetrowsEnrichmentResult;
-		let personWebSearchResults = null;
-
 		try {
 			if (data.selectedLinkedinUrl) {
 				// User selected a specific person — fetch their profile directly
@@ -284,15 +263,9 @@ export const researchAudienceAction = enhanceAction(
 					companySearchResults,
 					companyDetails: companyDetailsResult,
 				};
-				if (personProfile || companyDetailsResult) {
-					sources.netrows = true;
-				}
 			} else {
 				// No selection — use original full search flow
 				enrichment = await researchPerson(data.personName, data.company);
-				if (enrichment.personProfile || enrichment.companyDetails) {
-					sources.netrows = true;
-				}
 			}
 		} catch (err) {
 			logger.error(ctx, "Netrows research failed: %o", err);
@@ -305,32 +278,18 @@ export const researchAudienceAction = enhanceAction(
 			};
 		}
 
-		// Person profile fallback: if Netrows person lookup failed, try web search
-		if (!enrichment.personProfile) {
-			try {
-				logger.info(
-					ctx,
-					"Attempting web search fallback for person: %s",
-					data.personName,
-				);
-				const personQuery = `${data.personName} ${data.company} ${data.context?.split("\n")[0] || ""} LinkedIn profile`;
-				personWebSearchResults = await withTimeout(
-					webSearch(personQuery, 3),
-					8_000,
-					"Person web search fallback",
-				);
-				if (personWebSearchResults && personWebSearchResults.length > 0) {
-					sources.webSearch = true;
-					logger.info(
-						ctx,
-						"Person web search found %d results",
-						personWebSearchResults.length,
-					);
-				}
-			} catch (webErr) {
-				logger.warn(ctx, "Person web search fallback failed: %o", webErr);
-			}
-		}
+		// Step 1.5: Start Apollo company enrichment (non-blocking, runs parallel with Step 2)
+		const companyDomain = enrichment.companyDetails?.website
+			? extractDomain(enrichment.companyDetails.website)
+			: null;
+
+		let apolloEnrichment: ApolloEnrichmentResult | null = null;
+		const apolloPromise: Promise<ApolloEnrichmentResult | null> = companyDomain
+			? (async () => {
+					logger.info(ctx, "Enriching company via Apollo: %s", companyDomain);
+					return enrichCompany(companyDomain);
+				})()
+			: Promise.resolve(null);
 
 		// Step 2: Company web research + brief synthesis (parallel with step 1)
 		// Uses Brave Search API + LLM to build a structured CompanyBrief
@@ -363,24 +322,69 @@ export const researchAudienceAction = enhanceAction(
 						?.replace(/^https?:\/\//, "")
 						.replace(/\/.*$/, "") ?? undefined;
 
-				const webResearch = await withTimeout(
-					researchCompany(data.company, industry, domain),
-					15_000,
-					"Company web research",
-				);
+				// Run web research AND Apollo enrichment in parallel
+				const [webResearch, apolloResult] = await Promise.all([
+					withTimeout(
+						researchCompany(data.company, industry, domain),
+						15_000,
+						"Company web research",
+					),
+					apolloPromise.catch((apolloErr) => {
+						logger.warn(
+							ctx,
+							"Apollo enrichment failed (non-blocking): %o",
+							apolloErr,
+						);
+						return null;
+					}),
+				]);
 
-				// Track web search success
-				if (
-					webResearch.newsResults.length > 0 ||
-					webResearch.industryResults.length > 0
-				) {
-					sources.webSearch = true;
+				apolloEnrichment = apolloResult;
+				if (apolloEnrichment?.success && apolloEnrichment.organization) {
+					logger.info(
+						ctx,
+						"Apollo enrichment success: revenue=%s, employees=%s",
+						apolloEnrichment.organization.annual_revenue_printed,
+						apolloEnrichment.organization.employee_count_range,
+					);
 				}
 
 				// Synthesize into CompanyBrief via LLM
 				const synthesisInput: CompanyResearchInput = {
 					companyName: data.company,
 					industry,
+					apolloData: apolloEnrichment?.organization
+						? {
+								estimatedRevenue:
+									apolloEnrichment.organization.annual_revenue_printed ??
+									apolloEnrichment.organization.estimated_revenue_range ??
+									undefined,
+								employeeCount:
+									apolloEnrichment.organization.employee_count_range ??
+									undefined,
+								employeeGrowth:
+									apolloEnrichment.organization.employee_growth_rate ??
+									undefined,
+								fundingStage:
+									apolloEnrichment.organization.funding_stage ?? undefined,
+								fundingTotal:
+									apolloEnrichment.organization.total_funding ?? undefined,
+								techStack:
+									apolloEnrichment.organization.technology_names ?? undefined,
+								keyIndustries:
+									apolloEnrichment.organization.industries ?? undefined,
+								keyExecutives:
+									apolloEnrichment.organization.people
+										?.slice(0, 5)
+										.map((p: { name: string; title: string }) => ({
+											name: p.name,
+											title: p.title,
+										}))
+										.filter(
+											(p: { name: string; title: string }) => p.name && p.title,
+										) ?? undefined,
+							}
+						: undefined,
 					netrowsData: enrichment.companyDetails
 						? {
 								description: enrichment.companyDetails.description ?? undefined,
@@ -438,8 +442,6 @@ export const researchAudienceAction = enhanceAction(
 			data.company,
 			data.context,
 			companyBrief,
-			personWebSearchResults,
-			sources,
 		);
 
 		const config = createOpenAIOnlyConfig({
@@ -480,7 +482,43 @@ export const researchAudienceAction = enhanceAction(
 				: "";
 		}
 
+		// Ensure Apollo promise is settled (may already be awaited in synthesis path)
+		if (!apolloEnrichment) {
+			try {
+				apolloEnrichment = await apolloPromise;
+			} catch (apolloErr) {
+				logger.warn(
+					ctx,
+					"Apollo enrichment failed (non-blocking): %o",
+					apolloErr,
+				);
+			}
+		}
+
 		// Step 4: Save to audience_profiles
+		// Only store allowed non-PII fields from Apollo enrichment
+		const sanitizedApolloData = apolloEnrichment?.organization
+			? {
+					configured: apolloEnrichment.configured,
+					success: apolloEnrichment.success,
+					organization: {
+						revenueRange: apolloEnrichment.organization.estimated_revenue_range,
+						employeeRange: apolloEnrichment.organization.employee_count_range,
+						fundingStage: apolloEnrichment.organization.funding_stage,
+						techStack: apolloEnrichment.organization.technology_names,
+						// Only store names and titles, omit emails/phones/PII
+						keyExecutives:
+							apolloEnrichment.organization.people
+								?.slice(0, 5)
+								.map((p) => ({
+									name: p.name,
+									title: p.title,
+								}))
+								.filter((p) => p.name && p.title) ?? [],
+					},
+				}
+			: null;
+
 		const enrichmentData = {
 			netrows: {
 				personProfile: enrichment.personProfile,
@@ -488,6 +526,7 @@ export const researchAudienceAction = enhanceAction(
 				personSearchResults: enrichment.personSearchResults,
 				companySearchResults: enrichment.companySearchResults,
 			},
+			apollo: sanitizedApolloData,
 			companyBrief: companyBrief ?? null,
 			researchedAt: new Date().toISOString(),
 		};
