@@ -4,117 +4,135 @@ import OpenAI from "openai";
 // Initialize service logger
 const { getLogger } = createServiceLogger("AI-GATEWAY");
 
-// Define the Portkey Gateway URL — falls back to direct OpenAI when Portkey is not configured
-const PORTKEY_GATEWAY_URL = "https://api.portkey.ai/v1/proxy";
+// Define the Bifrost Gateway URL
+const BIFROST_GATEWAY_URL =
+	process.env.BIFROST_GATEWAY_URL || "https://bifrost.slideheroes.com/v1";
 const OPENAI_DIRECT_URL = "https://api.openai.com/v1";
 
-function isPortkeyConfigured(): boolean {
-	return Boolean(process.env.PORTKEY_API_KEY);
+function isBifrostConfigured(): boolean {
+	return Boolean(
+		process.env.BIFROST_GATEWAY_URL &&
+			process.env.BIFROST_CF_ACCESS_CLIENT_ID &&
+			process.env.BIFROST_CF_ACCESS_CLIENT_SECRET,
+	);
 }
 
 /**
- * Determines the correct provider based on the model name
+ * Transforms a model name to Bifrost's provider-prefixed format
+ * e.g., "gpt-4o" -> "openai/gpt-4o", "claude-3.5-sonnet" -> "anthropic/claude-3.5-sonnet"
+ *
+ * @param model The model name to transform
+ * @returns The Bifrost-formatted model name with provider prefix
+ */
+function transformModelForBifrost(model: string): string {
+	// If already in Bifrost format (contains "/"), pass through unchanged
+	if (model.includes("/")) {
+		return model;
+	}
+
+	// Transform to provider-prefixed format
+	if (model.toLowerCase().startsWith("claude-")) {
+		return `anthropic/${model}`;
+	}
+	if (model.toLowerCase().startsWith("llama-")) {
+		return `groq/${model}`;
+	}
+	if (model.toLowerCase().startsWith("gemini-")) {
+		return `google/${model}`;
+	}
+
+	// Default to openai for gpt models and unknown models
+	return `openai/${model}`;
+}
+
+/**
+ * Determines the correct provider based on the model name (for tracking purposes)
  *
  * @param model The model name to use
  * @returns The appropriate provider for the model
  */
-async function getProviderForModel(model: string): Promise<string> {
-	// Add additional model mappings as needed
-	if (model.toLowerCase().startsWith("llama-")) {
-		(await getLogger()).info(`Using provider 'groq' for model: ${model}`);
-		return "groq";
-	}
-	if (model.toLowerCase().startsWith("claude-")) {
-		(await getLogger()).info(`Using provider 'anthropic' for model: ${model}`);
-		return "anthropic";
-	}
-	(await getLogger()).info(`Using provider 'openai' for model: ${model}`);
-	return "openai"; // Default for gpt models
+async function getProviderForModel(
+	model: string,
+): Promise<{ provider: string; bifrostModel: string }> {
+	// Get the Bifrost-formatted model name
+	const bifrostModel = transformModelForBifrost(model);
+
+	// Extract provider from the Bifrost format for tracking
+	const provider = bifrostModel.split("/")[0] || "openai";
+
+	(await getLogger()).info(`Using provider '${provider}' for model: ${model}`, {
+		bifrostModel,
+	});
+
+	return { provider, bifrostModel };
 }
 
 /**
- * Creates headers for the Portkey API with tracking metadata and config
+ * Creates headers for the Bifrost API with tracking metadata
  *
- * @param options Portkey configuration options
+ * @param options Bifrost configuration options
  * @returns Record<string, string> Headers object
  */
-async function _createPortkeyConfigHeaders(options: {
-	provider: string;
-	apiKey: string;
-	config?: string | Record<string, unknown>;
-}) {
-	const { provider, apiKey, config } = options;
-
-	const headers: Record<string, string> = {
-		"x-portkey-api-key": apiKey,
-		"x-portkey-virtual-key": process.env.PORTKEY_VIRTUAL_KEY || "",
-		"x-portkey-provider": provider,
-	};
-
-	// Add config as a header if provided
-	if (config) {
-		try {
-			headers["x-portkey-config"] =
-				typeof config === "string" ? config : JSON.stringify(config);
-
-			// Add debugging information about the configuration
-			(await getLogger()).info("Portkey config structure:", {
-				data: JSON.stringify(config, null, 2),
-			});
-			(await getLogger()).info("Portkey config header value:", {
-				data: headers["x-portkey-config"],
-			});
-		} catch (error) {
-			(await getLogger()).error("Error serializing Portkey config:", {
-				data: error,
-			});
-			// If serialization fails, provide a minimal valid config
-			headers["x-portkey-config"] = JSON.stringify({
-				strategy: { mode: "single" },
-				targets: [{ provider: provider }],
-			});
-		}
-	}
-
-	return headers;
-}
-
-interface PortkeyClientOptions {
+async function _createBifrostHeaders(options: {
 	userId?: string;
 	teamId?: string;
 	feature?: string;
 	sessionId?: string;
-	config?: string | Record<string, unknown>; // The config object or ID
+}) {
+	const { userId, teamId, feature, sessionId } = options;
+
+	const headers: Record<string, string> = {
+		"CF-Access-Client-Id": process.env.BIFROST_CF_ACCESS_CLIENT_ID || "",
+		"CF-Access-Client-Secret":
+			process.env.BIFROST_CF_ACCESS_CLIENT_SECRET || "",
+	};
+
+	// Add tracking metadata as custom headers (for local tracking, not sent to Bifrost)
+	// Note: Bifrost may not forward these headers, so we store them for local usage tracking
+	if (userId) headers["x-bifrost-user-id"] = userId;
+	if (teamId) headers["x-bifrost-team-id"] = teamId;
+	if (feature) headers["x-bifrost-feature"] = feature;
+	if (sessionId) headers["x-bifrost-session-id"] = sessionId;
+
+	return headers;
+}
+
+interface BifrostClientOptions {
+	userId?: string;
+	teamId?: string;
+	feature?: string;
+	sessionId?: string;
+	config?: string | Record<string, unknown>; // Kept for backward compatibility but not used
 	model?: string; // Added model parameter to determine provider
 }
 
 /**
- * Creates an OpenAI client configured to use Portkey with tracking metadata
+ * Creates an OpenAI client configured to use Bifrost with tracking metadata
  *
  * @param options Tracking metadata and config options
  * @returns OpenAI Configured OpenAI client
  */
-export async function _createGatewayClient(options: PortkeyClientOptions = {}) {
+export async function _createGatewayClient(options: BifrostClientOptions = {}) {
 	const {
 		userId,
 		teamId,
 		feature,
 		sessionId,
-		config,
 		model = "gpt-3.5-turbo",
 	} = options;
 
-	// Determine the correct provider based on the model
-	const provider = await getProviderForModel(model);
+	// Determine the correct provider based on the model and get Bifrost-formatted model
+	const { provider, bifrostModel } = await getProviderForModel(model);
 
 	(await getLogger()).info(`Creating gateway client for model: ${model}`, {
 		provider,
+		bifrostModel,
 	});
 
-	// When Portkey is not configured, call providers directly
-	if (!isPortkeyConfigured()) {
+	// When Bifrost is not configured, call providers directly
+	if (!isBifrostConfigured()) {
 		(await getLogger()).info(
-			"Portkey not configured — using direct provider API",
+			"Bifrost not configured — using direct provider API",
 			{ provider },
 		);
 
@@ -127,7 +145,7 @@ export async function _createGatewayClient(options: PortkeyClientOptions = {}) {
 					"anthropic-version": "2023-06-01",
 				},
 			});
-			return client;
+			return { client, bifrostModel: model }; // Return original model for direct calls
 		}
 
 		// Default: direct OpenAI
@@ -135,31 +153,26 @@ export async function _createGatewayClient(options: PortkeyClientOptions = {}) {
 			apiKey: process.env.OPENAI_API_KEY || "",
 			baseURL: OPENAI_DIRECT_URL,
 		});
-		return client;
+		return { client, bifrostModel: model }; // Return original model for direct calls
 	}
 
-	// Create headers using our Portkey config headers function
-	const headers = await _createPortkeyConfigHeaders({
-		provider,
-		apiKey: process.env.PORTKEY_API_KEY || "",
-		// Include the configuration properly as a header parameter
-		config: config,
+	// Create headers using our Bifrost headers function
+	const headers = await _createBifrostHeaders({
+		userId,
+		teamId,
+		feature,
+		sessionId,
 	});
 
-	// Add our custom tracking metadata
-	if (userId) headers["x-portkey-request-metadata-user-id"] = userId;
-	if (teamId) headers["x-portkey-request-metadata-team-id"] = teamId;
-	if (feature) headers["x-portkey-request-metadata-feature"] = feature;
-	if (sessionId) headers["x-portkey-trace-id"] = sessionId;
-
 	// Log the complete headers for debugging
-	(await getLogger()).info("Complete Portkey headers:", { data: headers });
+	(await getLogger()).info("Complete Bifrost headers:", { data: headers });
 
 	const client = new OpenAI({
-		apiKey: process.env.OPENAI_API_KEY || "", // Can be empty when using virtual keys
-		baseURL: PORTKEY_GATEWAY_URL,
+		apiKey: "",
+		baseURL: BIFROST_GATEWAY_URL,
 		defaultHeaders: headers,
 	});
 
-	return client;
+	// Return both client and transformed model name
+	return { client, bifrostModel };
 }

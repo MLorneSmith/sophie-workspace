@@ -22,6 +22,24 @@ import {
 // Initialize service logger
 const { getLogger } = createServiceLogger("AI-GATEWAY");
 
+/**
+ * Derives the provider name from a model name
+ * @param model The model name (e.g., "gpt-4o", "claude-3.5-sonnet", "openai/gpt-4o")
+ * @returns The provider name ("openai", "anthropic", "groq", etc.)
+ */
+function deriveProviderFromModel(model: string): string {
+	// Handle Bifrost format (provider/model)
+	if (model.includes("/")) {
+		return model.split("/")[0] ?? "openai";
+	}
+	// Handle model name prefixes
+	if (model.toLowerCase().startsWith("claude-")) return "anthropic";
+	if (model.toLowerCase().startsWith("llama-")) return "groq";
+	if (model.toLowerCase().startsWith("gemini-")) return "google";
+	// Default to openai for gpt models
+	return "openai";
+}
+
 // Define available environment variables for feature flags
 const ENV = {
 	BYPASS_AI_CREDITS: process.env.BYPASS_AI_CREDITS !== "false", // Default to true unless explicitly set to false
@@ -250,7 +268,7 @@ export async function getChatCompletion(
 		}
 
 		// Create client with tracking metadata, config, and model info
-		const client = await _createGatewayClient({
+		const { client, bifrostModel } = await _createGatewayClient({
 			userId,
 			teamId,
 			feature,
@@ -262,7 +280,7 @@ export async function getChatCompletion(
 		// Configure request options WITHOUT the config parameter
 		const requestOptions: OpenAI.Chat.ChatCompletionCreateParams = {
 			messages,
-			model,
+			model: bifrostModel, // Use Bifrost-formatted model name
 			temperature,
 		};
 
@@ -347,7 +365,7 @@ export async function getChatCompletion(
 					// Calculate cost based on token usage and model pricing
 					cost = await _calculateCost(
 						supabase,
-						"openai", // For now, assume OpenAI. Could be extracted from headers in future
+						deriveProviderFromModel(model),
 						model,
 						usage.prompt_tokens,
 						usage.completion_tokens,
@@ -358,7 +376,7 @@ export async function getChatCompletion(
 					});
 					// Use our local fallback pricing for cost calculation
 					cost = estimateCost(
-						"openai", // Assume OpenAI as provider if we don't have info
+						deriveProviderFromModel(model),
 						model,
 						usage.prompt_tokens,
 						usage.completion_tokens,
@@ -383,7 +401,7 @@ export async function getChatCompletion(
 						userId,
 						teamId,
 						requestId,
-						provider: "openai", // Could extract from headers if available
+						provider: deriveProviderFromModel(model),
 						model,
 						promptTokens: usage.prompt_tokens,
 						completionTokens: usage.completion_tokens,
@@ -415,7 +433,7 @@ export async function getChatCompletion(
 					completion: usage.completion_tokens,
 					total: usage.total_tokens,
 				},
-				provider: "openai", // Could extract from headers if available
+				provider: deriveProviderFromModel(model),
 				model,
 				feature,
 				userId,
@@ -504,7 +522,7 @@ export async function* getStreamingChatCompletion(
 		}
 
 		// Create client with tracking metadata, config, and model info
-		const client = await _createGatewayClient({
+		const { client, bifrostModel } = await _createGatewayClient({
 			userId,
 			teamId,
 			feature,
@@ -516,7 +534,7 @@ export async function* getStreamingChatCompletion(
 		// Configure request options WITHOUT the config parameter
 		const requestOptions: OpenAI.Chat.ChatCompletionCreateParams = {
 			messages,
-			model,
+			model: bifrostModel, // Use Bifrost-formatted model name
 			temperature,
 			stream: true,
 		};
@@ -596,7 +614,7 @@ export async function* getStreamingChatCompletion(
 					});
 					// Use our local fallback pricing for cost calculation
 					cost = estimateCost(
-						"openai", // Assume OpenAI for streaming as well
+						deriveProviderFromModel(model),
 						model,
 						promptTokens,
 						completionTokens,
@@ -620,7 +638,7 @@ export async function* getStreamingChatCompletion(
 					userId,
 					teamId,
 					requestId: responseId,
-					provider: "openai",
+					provider: deriveProviderFromModel(model),
 					model,
 					promptTokens,
 					completionTokens,
