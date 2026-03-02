@@ -179,9 +179,9 @@ Respond with ONLY the JSON object, no markdown fences.`;
 // ---------------------------------------------------------------------------
 
 export const searchAudienceAction = enhanceAction(
-	async (data) => {
+	async (data, user) => {
 		const [personResults, companyResults] = await Promise.all([
-			searchPersonFuzzy(data.personName, data.company),
+			searchPersonFuzzy(data.personName, data.company, user.id),
 			searchCompany(data.company),
 		]);
 

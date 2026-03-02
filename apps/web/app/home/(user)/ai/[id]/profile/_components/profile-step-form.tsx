@@ -94,14 +94,13 @@ type FormState =
 	| "editing";
 
 interface PersonSearchResult {
-	id: number;
-	urn: string;
-	username: string;
-	firstName: string;
-	lastName: string;
+	fullName: string;
 	headline: string;
+	summary: string | null;
 	profilePicture: string | null;
-	linkedinURL?: string;
+	location: string | null;
+	profileURL: string;
+	username: string;
 }
 
 const RESEARCH_STEPS = [
@@ -398,34 +397,39 @@ export function ProfileStepForm(props: {
 				<div className="grid gap-3">
 					{searchResults.map((person, index) => {
 						const linkedinUrl =
-							person.linkedinURL ??
+							person.profileURL ??
 							(person.username
 								? `https://www.linkedin.com/in/${person.username}/`
 								: undefined);
-						const initials =
-							`${person.firstName?.[0] ?? ""}${person.lastName?.[0] ?? ""}`.toUpperCase();
+						const displayName = person.fullName || person.username || "Unknown";
+						const initials = displayName
+							.split(/\s+/)
+							.slice(0, 2)
+							.map((w) => w[0])
+							.join("")
+							.toUpperCase();
 
 						return (
 							<button
-								key={person.urn || person.id || `search-result-${index}`}
+								key={person.username || `search-result-${index}`}
 								type="button"
-								className="flex items-center gap-4 rounded-lg border border-white/10 bg-white/5 p-4 text-left transition-colors hover:border-primary/50 hover:bg-white/10"
+								className="flex items-center gap-3 overflow-hidden rounded-lg border border-white/10 bg-white/5 p-3 text-left transition-colors hover:border-primary/50 hover:bg-white/10"
 								onClick={() => handleResearchWithSelection(linkedinUrl)}
 							>
 								{person.profilePicture ? (
 									<img
 										src={person.profilePicture}
 										alt=""
-										className="size-12 rounded-full object-cover"
+										className="size-10 shrink-0 rounded-full object-cover"
 									/>
 								) : (
-									<div className="flex size-12 items-center justify-center rounded-full bg-primary/20 text-sm font-medium text-primary">
+									<div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/20 text-sm font-medium text-primary">
 										{initials}
 									</div>
 								)}
 								<div className="min-w-0 flex-1">
-									<p className="font-medium">
-										{person.firstName} {person.lastName}
+									<p className="truncate font-medium text-foreground">
+										{displayName}
 									</p>
 									<p className="truncate text-sm text-muted-foreground">
 										{person.headline}
