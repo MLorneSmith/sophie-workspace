@@ -205,12 +205,14 @@ export namespace TipTapTransformer {
 				}
 				// Handle paragraph nodes
 				else if (node.type === "paragraph" && currentSlide) {
-					const text = extractTextFromNode(node);
+					const { text, formatting } = extractTextWithFormatting(node);
 					if (text.trim().length > 0) {
 						currentSlide.content.push({
 							type: "text" as const,
 							text,
 							columnIndex: currentColumnIndex,
+							formatting:
+								Object.keys(formatting).length > 0 ? formatting : undefined,
 						});
 
 						// Check if this paragraph contains data that might be better as a chart
@@ -471,6 +473,67 @@ export namespace TipTapTransformer {
 	 * @param node The TipTap node to extract text from
 	 * @returns The extracted text content
 	 */
+	/**
+	 * Extract text and formatting from a TipTap node
+	 * Preserves marks like bold, italic, underline for PPTX export
+	 */
+	function extractTextWithFormatting(node: TipTapNode): {
+		text: string;
+		formatting: { bold?: boolean; italic?: boolean; underline?: boolean };
+	} {
+		if (!node.content) {
+			return { text: "", formatting: {} };
+		}
+
+		// Extract text by joining all text nodes
+		const text = node.content
+			.map((contentNode: TipTapNode) => {
+				if ((contentNode as TipTapTextNode).text !== undefined) {
+					return (contentNode as TipTapTextNode).text;
+				}
+				return extractTextFromNode(contentNode);
+			})
+			.join("");
+
+		// Extract formatting from marks on text nodes
+		const formatting: {
+			bold?: boolean;
+			italic?: boolean;
+			underline?: boolean;
+		} = {};
+
+		// Check if any text node has bold, italic, or underline marks
+		for (const contentNode of node.content) {
+			if ((contentNode as TipTapTextNode).text !== undefined) {
+				const textNode = contentNode as TipTapTextNode;
+				if (textNode.marks) {
+					for (const mark of textNode.marks) {
+						if (mark.type === "bold") formatting.bold = true;
+						if (mark.type === "italic") formatting.italic = true;
+						if (mark.type === "underline") formatting.underline = true;
+					}
+				}
+			}
+			// Also check nested nodes
+			if (contentNode.content) {
+				for (const nestedNode of contentNode.content) {
+					if ((nestedNode as TipTapTextNode).text !== undefined) {
+						const textNode = nestedNode as TipTapTextNode;
+						if (textNode.marks) {
+							for (const mark of textNode.marks) {
+								if (mark.type === "bold") formatting.bold = true;
+								if (mark.type === "italic") formatting.italic = true;
+								if (mark.type === "underline") formatting.underline = true;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return { text, formatting };
+	}
+
 	function extractTextFromNode(node: TipTapNode): string {
 		if (!node.content) return "";
 
