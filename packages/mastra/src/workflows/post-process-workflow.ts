@@ -573,7 +573,6 @@ export function createPostProcessWorkflow(
 		},
 	});
 
-
 	const mergeSuggestionsStep = createStep({
 		id: "merge-suggestions",
 		inputSchema: PARALLEL_REVIEWS_SCHEMA,

@@ -44,10 +44,10 @@ export const DEFAULT_TEMPLATE_CONFIG: TemplateConfig = {
 	layout: {
 		slideWidth: 10,
 		slideHeight: 7.5,
-		titleSlidePosition: { x: 0.5, y: 1.0, w: 9, h: 1.5 },
+		titlePosition: { x: 0.5, y: 1.0, w: 9, h: 1.5 },
 		sectionPosition: { x: 0.5, y: 2.5, w: 9, h: 1.5 },
 		defaultContentPosition: { x: 0.5, y: 1.8, w: 9, h: 4 },
-		titlePosition: { x: 0.5, y: 0.6, w: 9, h: 0.5 },
+		contentTitlePosition: { x: 0.5, y: 0.6, w: 9, h: 0.5 },
 		subheadlinePosition: { x: 0.5, y: 1.2, w: 9, h: 0.4 },
 		twoColumnLeft: { x: 0.5, y: 1.8, w: 4.25, h: 4 },
 		twoColumnRight: { x: 5.25, y: 1.8, w: 4.25, h: 4 },

@@ -114,7 +114,7 @@ export const TemplateLayoutSchema = z.object({
 		})
 		.default({ x: 0.5, y: 1.8, w: 9, h: 4 }),
 	/** Title position for content slides */
-	titlePosition: z
+	contentTitlePosition: z
 		.object({
 			x: z.number(),
 			y: z.number(),
@@ -356,13 +356,13 @@ export const TemplateConfigSchema = z.object({
 	/** Template name */
 	name: z.string().default("default"),
 	/** Color palette */
-	colors: TemplateColorsSchema.default({}),
+	colors: TemplateColorsSchema,
 	/** Typography settings */
-	typography: TemplateTypographySchema.default({}),
+	typography: TemplateTypographySchema,
 	/** Layout configuration */
-	layout: TemplateLayoutSchema.default({}),
+	layout: TemplateLayoutSchema,
 	/** Chart settings */
-	charts: TemplateChartsSchema.default({}),
+	charts: TemplateChartsSchema,
 });
 
 export type TemplateConfig = z.infer<typeof TemplateConfigSchema>;

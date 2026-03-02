@@ -3,7 +3,7 @@
 import { enhanceAction } from "@kit/next/actions";
 
 import { PptxGenerator } from "../services/powerpoint/pptx-generator";
-import type { TemplateConfig } from "../../../../_lib/schemas/template-config";
+import type { TemplateConfig } from "../../../_lib/schemas/template-config";
 import type { StoryboardData } from "../types";
 
 /**

@@ -109,7 +109,9 @@ declare module "pptxgenjs" {
 /**
  * Resolve template configuration with defaults
  */
-function resolveTemplateConfig(templateConfig?: TemplateConfig): TemplateConfig {
+function resolveTemplateConfig(
+	templateConfig?: TemplateConfig,
+): TemplateConfig {
 	if (!templateConfig) {
 		return DEFAULT_TEMPLATE_CONFIG;
 	}
@@ -117,7 +119,10 @@ function resolveTemplateConfig(templateConfig?: TemplateConfig): TemplateConfig 
 		...DEFAULT_TEMPLATE_CONFIG,
 		...templateConfig,
 		colors: { ...DEFAULT_TEMPLATE_CONFIG.colors, ...templateConfig.colors },
-		typography: { ...DEFAULT_TEMPLATE_CONFIG.typography, ...templateConfig.typography },
+		typography: {
+			...DEFAULT_TEMPLATE_CONFIG.typography,
+			...templateConfig.typography,
+		},
 		layout: { ...DEFAULT_TEMPLATE_CONFIG.layout, ...templateConfig.layout },
 		charts: { ...DEFAULT_TEMPLATE_CONFIG.charts, ...templateConfig.charts },
 	};
@@ -163,13 +168,23 @@ export class PptxGenerator {
 		try {
 			// Apply custom layout if available - wrapped for compatibility
 			try {
-				(this.pptx as any).defineLayout?.({
+				(
+					this.pptx as pptxgen & {
+						defineLayout?: (opts: {
+							name: string;
+							width: number;
+							height: number;
+						}) => void;
+					}
+				).defineLayout?.({
 					name: "CUSTOM",
 					width: this.templateConfig.layout.slideWidth,
 					height: this.templateConfig.layout.slideHeight,
 				});
 				this.pptx.layout = "CUSTOM";
-			} catch { /* use default layout */ }
+			} catch {
+				/* use default layout */
+			}
 
 			// Set presentation title and other properties
 			this.pptx.title = storyboard.title;
