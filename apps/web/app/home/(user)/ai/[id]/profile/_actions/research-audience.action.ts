@@ -33,6 +33,21 @@ import {
 	searchCompany,
 	searchPersonFuzzy,
 } from "../../../_lib/server/netrows.service";
+import {
+	webSearch,
+	type WebSearchResult,
+} from "../../../_lib/server/company-research.service";
+
+// ---------------------------------------------------------------------------
+// Types for tracking research sources
+// ---------------------------------------------------------------------------
+
+/** Tracks which data sources succeeded during research */
+interface ResearchSources {
+	netrows: boolean;
+	webSearch: boolean;
+	apollo: boolean;
+}
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -77,6 +92,8 @@ function buildBriefPrompt(
 	company: string,
 	context?: string,
 	companyBrief?: CompanyBrief | null,
+	personWebSearchResults?: WebSearchResult[] | null,
+	sources?: ResearchSources,
 ): ChatMessage[] {
 	const { personProfile, companyDetails } = enrichment;
 
@@ -152,7 +169,7 @@ Output valid JSON matching this exact schema:
   "briefSummary": "string — 2-3 sentence summary of the key insight about this audience"
 }
 
-Be specific and actionable. Draw inferences from their background, industry, and seniority. If data is sparse, make reasonable inferences and note them.`;
+Be specific and actionable. Draw inferences from their background, industry, and seniority. If data is sparse, make reasonable inferences and note them.${sources && !sources.netrows && !sources.webSearch ? "\n\nIMPORTANT: Data is very limited. Focus on what IS known. For unknown fields, provide your best inference clearly marked as [INFERRED]. Do not fabricate specific numbers or statistics." : ""}`;
 
 	const userPrompt = `Generate an Audience Brief for the following person:
 
@@ -233,7 +250,16 @@ export const researchAudienceAction = enhanceAction(
 			data.selectedLinkedinUrl ?? "none",
 		);
 
+		// Track which sources succeed
+		const sources: ResearchSources = {
+			netrows: false,
+			webSearch: false,
+			apollo: false,
+		};
+
 		let enrichment: NetrowsEnrichmentResult;
+		let personWebSearchResults = null;
+
 		try {
 			if (data.selectedLinkedinUrl) {
 				// User selected a specific person — fetch their profile directly
@@ -258,9 +284,15 @@ export const researchAudienceAction = enhanceAction(
 					companySearchResults,
 					companyDetails: companyDetailsResult,
 				};
+				if (personProfile || companyDetailsResult) {
+					sources.netrows = true;
+				}
 			} else {
 				// No selection — use original full search flow
 				enrichment = await researchPerson(data.personName, data.company);
+				if (enrichment.personProfile || enrichment.companyDetails) {
+					sources.netrows = true;
+				}
 			}
 		} catch (err) {
 			logger.error(ctx, "Netrows research failed: %o", err);
@@ -271,6 +303,33 @@ export const researchAudienceAction = enhanceAction(
 				companySearchResults: null,
 				companyDetails: null,
 			};
+		}
+
+		// Person profile fallback: if Netrows person lookup failed, try web search
+		if (!enrichment.personProfile) {
+			try {
+				logger.info(
+					ctx,
+					"Attempting web search fallback for person: %s",
+					data.personName,
+				);
+				const personQuery = `${data.personName} ${data.company} ${data.context?.split("\n")[0] || ""} LinkedIn profile`;
+				personWebSearchResults = await withTimeout(
+					webSearch(personQuery, 3),
+					8_000,
+					"Person web search fallback",
+				);
+				if (personWebSearchResults && personWebSearchResults.length > 0) {
+					sources.webSearch = true;
+					logger.info(
+						ctx,
+						"Person web search found %d results",
+						personWebSearchResults.length,
+					);
+				}
+			} catch (webErr) {
+				logger.warn(ctx, "Person web search fallback failed: %o", webErr);
+			}
 		}
 
 		// Step 2: Company web research + brief synthesis (parallel with step 1)
@@ -309,6 +368,14 @@ export const researchAudienceAction = enhanceAction(
 					15_000,
 					"Company web research",
 				);
+
+				// Track web search success
+				if (
+					webResearch.newsResults.length > 0 ||
+					webResearch.industryResults.length > 0
+				) {
+					sources.webSearch = true;
+				}
 
 				// Synthesize into CompanyBrief via LLM
 				const synthesisInput: CompanyResearchInput = {
@@ -371,6 +438,8 @@ export const researchAudienceAction = enhanceAction(
 			data.company,
 			data.context,
 			companyBrief,
+			personWebSearchResults,
+			sources,
 		);
 
 		const config = createOpenAIOnlyConfig({
