@@ -128,7 +128,7 @@ jobs:
       - uses: ./.github/actions/setup-deps
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: build-artifacts-production
           path: .
@@ -193,7 +193,7 @@ jobs:
       - uses: ./.github/actions/setup-deps
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: build-artifacts-production
           path: .

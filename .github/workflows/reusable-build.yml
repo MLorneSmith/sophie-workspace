@@ -204,7 +204,7 @@ jobs:
           EOF
 
       - name: Upload build info
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: build-info-${{ inputs.environment }}
           path: build-info.json
@@ -227,7 +227,7 @@ jobs:
           tar -tf build-artifacts.tar | head -20
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.artifact-key.outputs.name }}
           path: build-artifacts.tar
@@ -269,7 +269,7 @@ jobs:
           ref: ${{ inputs.commit_sha || github.sha }}
 
       - name: Download artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ needs.build.outputs.artifact_name }}
           path: .

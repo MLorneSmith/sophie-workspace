@@ -294,7 +294,7 @@ jobs:
           cat deployment-info/urls.json
 
       - name: Upload deployment URLs artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: deployment-urls
           path: deployment-info/urls.json

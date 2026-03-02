@@ -225,7 +225,7 @@ jobs:
             console.log(`Created security issue for weekly scan`);
 
       - name: Upload scan reports as artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: security-scan-reports
