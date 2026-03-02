@@ -1,0 +1,34 @@
+# Cloudflare Tunnel Configuration for Bifrost
+# This configuration exposes Bifrost via Cloudflare Tunnel with Access authentication
+#
+# Setup Instructions:
+# 1. Install cloudflared: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/tunnel-guide/local/
+# 2. Create a tunnel: cloudflared tunnel create bifrost-gateway
+# 3. Add DNS record: cloudflared tunnel route dns bifrost-gateway bifrost.slideheroes.com
+# 4. Configure Access Policy in Cloudflare Dashboard
+# 5. Run: cloudflared tunnel --config cloudflared.yml run bifrost-gateway
+
+tunnel: bifrost-gateway
+credentials-file: /etc/cloudflared/credentials.json
+
+# Ingress rules - map external requests to local service
+ingress:
+  # Route for Bifrost API
+  - hostname: bifrost.slideheroes.com
+    service: http://localhost:8080
+    originRequest:
+      noTLSVerify: false
+
+  # Catch-all rule - deny all other traffic
+  - service: http_status:404
+
+# Log level (debug, info, warn, error)
+loglevel: info
+
+# Optional: Access service token for authentication
+# Uncomment and configure after setting up Access in Cloudflare Dashboard
+# originRequest:
+#   access:
+#     serviceToken:
+#       id: "your-service-token-id"
+#       secret: "your-service-token-secret"

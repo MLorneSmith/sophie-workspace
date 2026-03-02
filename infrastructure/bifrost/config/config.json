@@ -1,0 +1,30 @@
+{
+	"providers": [
+		{
+			"name": "openai",
+			"type": "openai",
+			"api_base": "https://api.openai.com/v1",
+			"api_key": "${OPENAI_API_KEY}",
+			"default_model": "gpt-4o-mini"
+		},
+		{
+			"name": "anthropic",
+			"type": "anthropic",
+			"api_base": "https://api.anthropic.com/v1",
+			"api_key": "${ANTHROPIC_API_KEY}",
+			"default_model": "claude-3-5-sonnet-20241022"
+		}
+	],
+	"gateway": {
+		"port": 8080,
+		"host": "0.0.0.0",
+		"cors": {
+			"enabled": true,
+			"allowed_origins": ["*"]
+		}
+	},
+	"logging": {
+		"level": "info",
+		"format": "json"
+	}
+}
