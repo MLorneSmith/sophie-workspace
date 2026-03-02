@@ -805,9 +805,6 @@ importers:
       openai:
         specifier: ^6.9.1
         version: 6.25.0(ws@8.19.0)(zod@4.3.6)
-      portkey-ai:
-        specifier: ^3.0.1
-        version: 3.0.3(zod@4.3.6)
       zod:
         specifier: ^4.1.13
         version: 4.3.6
@@ -10451,18 +10448,6 @@ packages:
       zod:
         optional: true
 
-  openai@6.3.0:
-    resolution: {integrity: sha512-E6vOGtZvdcb4yXQ5jXvDlUG599OhIkb/GjBLZXS+qk0HF+PJReIldEc9hM8Ft81vn+N6dRdFRb7BZNK8bbvXrw==}
-    hasBin: true
-    peerDependencies:
-      ws: ^8.18.0
-      zod: ^3.25 || ^4.0
-    peerDependenciesMeta:
-      ws:
-        optional: true
-      zod:
-        optional: true
-
   openapi-fetch@0.14.1:
     resolution: {integrity: sha512-l7RarRHxlEZYjMLd/PR0slfMVse2/vvIAGm75/F7J6MlQ8/b9uUQmUF2kCPrQhJqMXSxmYWObVgeYXbFYzZR+A==}
 
@@ -10756,9 +10741,6 @@ packages:
   pluralize@8.0.0:
     resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
     engines: {node: '>=4'}
-
-  portkey-ai@3.0.3:
-    resolution: {integrity: sha512-LK7iw55Q6k5oQMzi+qIU7Sbg6MEls9GaaWY7jn0Zz+oFPpgcXa4CnAAMzMpy6f/MwRoDmaMIpVLLZyu9uaKc7g==}
 
   postcss-calc@10.1.1:
     resolution: {integrity: sha512-NYEsLHh8DgG/PRH2+G9BTuUdtf9ViS+vdoQ0YA5OQdGsfN4ztiwtDWNtBl9EKeqNMFnIu8IKZ0cLxEQ5r5KVMw==}
@@ -22204,11 +22186,6 @@ snapshots:
       ws: 8.19.0
       zod: 4.3.6
 
-  openai@6.3.0(ws@8.19.0)(zod@4.3.6):
-    optionalDependencies:
-      ws: 8.19.0
-      zod: 4.3.6
-
   openapi-fetch@0.14.1:
     dependencies:
       openapi-typescript-helpers: 0.0.15
@@ -22606,17 +22583,6 @@ snapshots:
       fsevents: 2.3.2
 
   pluralize@8.0.0: {}
-
-  portkey-ai@3.0.3(zod@4.3.6):
-    dependencies:
-      agentkeepalive: 4.6.0
-      dotenv: 16.6.1
-      openai: 6.3.0(ws@8.19.0)(zod@4.3.6)
-      ws: 8.19.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-      - zod
 
   postcss-calc@10.1.1(postcss@8.5.6):
     dependencies:
