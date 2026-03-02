@@ -1,55 +1,3 @@
-/**
- * PptxGenerator - PowerPoint Generation Service
- *
- * ## Supported Content Types
- *
- * This generator handles the following content types from StoryboardData:
- *
- * ### Slide Fields
- * - `title`: Main slide title (rendered as heading)
- * - `subheadlines[]`: Array of subheadlines for multi-column layouts
- * - `content[]`: Array of content items (text, bullets, charts, images, tables)
- * - `layoutId`: Layout template (title, section, one-column, two-column, etc.)
- *
- * ### Content Item Types
- * - `text`: Plain text content with optional formatting
- * - `bullet`: Bullet point items
- * - `subbullet`: Indented sub-bullet items
- * - `chart`: Bar, line, pie, area, scatter, bubble, radar, doughnut charts
- * - `image`: Image from URL or base64
- * - `table`: Tabular data
- *
- * ### Formatting Support
- * The following formatting options are supported when present in content items:
- * - `bold`: Bold text
- * - `italic`: Italic text
- * - `underline`: Underlined text
- * - `color`: Text color (hex format, e.g., "FF0000")
- * - `fontSize`: Font size in points
- *
- * ### Layout Support
- * - title: Title slide layout
- * - section: Section header layout
- * - one-column: Single column content
- * - two-column: Two column content (uses subheadlines[0] and subheadlines[1])
- * - bullet-list: Bullet-focused layout
- * - chart: Chart-focused layout
- * - image-text: Image on left, text on right
- * - text-image: Text on left, image on right
- * - comparison: Two-column comparison layout
- *
- * ## Agent Output Compatibility
- *
- * Agent outputs (Partner, Validator, Whisperer, Editor) produce TipTap documents
- * which are transformed to StoryboardData via TipTapTransformer. This generator
- * handles all the content types that result from that transformation, including:
- * - Paragraphs with rich text (marks are preserved as formatting)
- * - Headings (become text with bold formatting)
- * - Bullet and ordered lists (become bullet content items)
- *
- * @see TipTapTransformer for the transformation from TipTap to StoryboardData
- */
-
 import { createServiceLogger } from "@kit/shared/logger";
 import pptxgen from "pptxgenjs";
 
@@ -59,12 +7,15 @@ import pptxgen from "pptxgenjs";
 
 // Import the logger
 
+import type { TemplateConfig as GeneratorTemplateConfig } from "../../schemas/template-config";
+import { getDefaultTemplate, getTemplate } from "../../templates";
+import { toGeneratorTemplateConfig } from "../../templates/template-config-adapter";
 import type {
 	SlideContent,
 	SlideContentFormatting,
 	StoryboardData,
 } from "../../types";
-import type { TemplateConfig } from "../../../../_lib/schemas/template-config";
+import type { TemplateConfig as CuratedTemplateConfig } from "../../types/template.types";
 import { DEFAULT_TEMPLATE_CONFIG } from "./default-template";
 
 export type { PositionMap } from "../../constants/layout-positions";
@@ -158,15 +109,53 @@ declare module "pptxgenjs" {
 	}
 }
 
-/**
- * Resolve template configuration with defaults
- */
-function resolveTemplateConfig(
-	templateConfig?: TemplateConfig,
-): TemplateConfig {
-	if (!templateConfig) {
-		return DEFAULT_TEMPLATE_CONFIG;
+export type PptxTemplateInput =
+	| GeneratorTemplateConfig
+	| CuratedTemplateConfig
+	| string;
+
+interface ResolvedTemplate {
+	config: GeneratorTemplateConfig;
+	curatedTemplate?: CuratedTemplateConfig;
+}
+
+function isLegacyTemplateConfig(
+	value: unknown,
+): value is GeneratorTemplateConfig {
+	if (!value || typeof value !== "object") {
+		return false;
 	}
+	const candidate = value as Partial<GeneratorTemplateConfig>;
+	return Boolean(
+		candidate.colors &&
+			candidate.typography &&
+			candidate.layout &&
+			candidate.charts,
+	);
+}
+
+function isCuratedTemplateConfig(
+	value: unknown,
+): value is CuratedTemplateConfig {
+	if (!value || typeof value !== "object") {
+		return false;
+	}
+	const candidate = value as Partial<CuratedTemplateConfig>;
+	const colors = candidate.colors;
+	return Boolean(
+		typeof candidate.id === "string" &&
+			typeof candidate.name === "string" &&
+			typeof candidate.description === "string" &&
+			typeof candidate.density === "string" &&
+			colors &&
+			Array.isArray(colors.chartPalette) &&
+			colors.chartPalette.length === 5,
+	);
+}
+
+function mergeGeneratorTemplateConfig(
+	templateConfig: GeneratorTemplateConfig,
+): GeneratorTemplateConfig {
 	return {
 		...DEFAULT_TEMPLATE_CONFIG,
 		...templateConfig,
@@ -180,6 +169,45 @@ function resolveTemplateConfig(
 	};
 }
 
+function resolveTemplate(template?: PptxTemplateInput): ResolvedTemplate {
+	if (!template) {
+		const curatedTemplate = getDefaultTemplate();
+		return {
+			config: DEFAULT_TEMPLATE_CONFIG,
+			curatedTemplate,
+		};
+	}
+
+	if (typeof template === "string") {
+		const curatedTemplate = getTemplate(template) ?? getDefaultTemplate();
+		return {
+			config: toGeneratorTemplateConfig(
+				curatedTemplate,
+				DEFAULT_TEMPLATE_CONFIG,
+			),
+			curatedTemplate,
+		};
+	}
+
+	if (isCuratedTemplateConfig(template)) {
+		return {
+			config: toGeneratorTemplateConfig(template, DEFAULT_TEMPLATE_CONFIG),
+			curatedTemplate: template,
+		};
+	}
+
+	if (isLegacyTemplateConfig(template)) {
+		return {
+			config: mergeGeneratorTemplateConfig(template),
+		};
+	}
+
+	return {
+		config: DEFAULT_TEMPLATE_CONFIG,
+		curatedTemplate: getDefaultTemplate(),
+	};
+}
+
 /**
  * PptxGenerator class for handling PowerPoint generation from storyboard data
  * using PptxGenJS library
@@ -187,14 +215,16 @@ function resolveTemplateConfig(
 export class PptxGenerator {
 	private pptx: pptxgen;
 	private logger: import("@kit/shared/logger").EnhancedLogger;
-	private templateConfig: TemplateConfig;
+	private templateConfig: GeneratorTemplateConfig;
+	private curatedTemplate?: CuratedTemplateConfig;
 
 	/**
 	 * Initializes a new PptxGenerator instance
-	 * @param templateConfig Optional template configuration for customization
 	 */
-	constructor(templateConfig?: TemplateConfig) {
-		this.templateConfig = resolveTemplateConfig(templateConfig);
+	constructor(template?: PptxTemplateInput) {
+		const resolvedTemplate = resolveTemplate(template);
+		this.templateConfig = resolvedTemplate.config;
+		this.curatedTemplate = resolvedTemplate.curatedTemplate;
 		this.pptx = new pptxgen();
 
 		// Initialize logger using createServiceLogger for synchronous access
@@ -205,20 +235,22 @@ export class PptxGenerator {
 	/**
 	 * Generate a PowerPoint file from storyboard data
 	 * @param storyboard The structured storyboard data
-	 * @param templateConfig Optional template configuration for customization
 	 * @returns Promise containing the PowerPoint file as a Buffer
 	 */
 	async generateFromStoryboard(
 		storyboard: StoryboardData,
-		templateConfig?: TemplateConfig,
+		template?: PptxTemplateInput,
 	): Promise<Buffer> {
-		// Resolve template config if provided
-		if (templateConfig) {
-			this.templateConfig = resolveTemplateConfig(templateConfig);
+		// Reset pptx instance to prevent slide bleed between calls
+		this.pptx = new pptxgen();
+
+		if (template) {
+			const resolvedTemplate = resolveTemplate(template);
+			this.templateConfig = resolvedTemplate.config;
+			this.curatedTemplate = resolvedTemplate.curatedTemplate;
 		}
 
 		try {
-			// Apply custom layout if available - wrapped for compatibility
 			try {
 				(
 					this.pptx as pptxgen & {
@@ -261,16 +293,15 @@ export class PptxGenerator {
 				const contentByColumn = this.groupContentByColumn(slide.content);
 
 				// Add subheadlines from the slide's subheadlines array
-				// This properly handles two-column layouts and other multi-column layouts
 				if (slide.subheadlines && slide.subheadlines.length > 0) {
 					for (let i = 0; i < slide.subheadlines.length; i++) {
 						const subheadlineText = slide.subheadlines[i];
-						if (subheadlineText && subheadlineText.trim()) {
+						if (subheadlineText?.trim()) {
 							this.addSubheadlineToSlide(
 								pptxSlide as unknown as PptxSlide,
 								subheadlineText,
 								slide.layoutId,
-								i + 1, // subheadline index (1-based)
+								i + 1,
 							);
 						}
 					}
@@ -315,24 +346,31 @@ export class PptxGenerator {
 		title: string,
 		layoutId: string,
 	): void {
-		// Get position for the title based on layout
-		let position = { x: 0.5, y: 0.6, w: 9, h: 0.5 };
-
-		if (layoutId === "title") {
-			position = { x: 0.5, y: 1.0, w: 9, h: 1.5 };
-		} else if (layoutId === "section") {
-			position = { x: 0.5, y: 2.5, w: 9, h: 1.5 };
-		}
+		const layout = this.templateConfig.layout;
+		const isCentered = layoutId === "title" || layoutId === "section";
+		const position =
+			layoutId === "title"
+				? layout.titlePosition
+				: layoutId === "section"
+					? layout.sectionPosition
+					: layout.contentTitlePosition;
+		const fontSize =
+			layoutId === "title"
+				? this.templateConfig.typography.titleFontSize
+				: layoutId === "section"
+					? this.templateConfig.typography.sectionFontSize
+					: this.templateConfig.typography.headlineFontSize;
 
 		slide.addText(title, {
 			x: position.x,
 			y: position.y,
 			w: position.w,
 			h: position.h,
-			fontSize: layoutId === "title" || layoutId === "section" ? 40 : 24,
-			fontFace: "Arial",
+			fontSize,
+			fontFace: this.getHeadingFont(),
+			color: this.templateConfig.colors.headingText,
 			bold: true,
-			align: layoutId === "title" || layoutId === "section" ? "center" : "left",
+			align: isCentered ? "center" : "left",
 		});
 	}
 
@@ -349,20 +387,20 @@ export class PptxGenerator {
 		layoutId: string,
 		index: number,
 	): void {
-		let position = { x: 0.5, y: 1.2, w: 9, h: 0.4 };
+		const layout = this.templateConfig.layout;
+		let position = layout.subheadlinePosition;
 
-		// Adjust position based on layout and index
 		if (layoutId === "two-column" || layoutId === "comparison") {
 			position =
 				index === 1
-					? { x: 0.5, y: 1.2, w: 4.25, h: 0.4 }
-					: { x: 5.25, y: 1.2, w: 4.25, h: 0.4 };
+					? layout.twoColumnSubheadlineLeft
+					: layout.twoColumnSubheadlineRight;
 		} else if (layoutId === "image-text" && index === 2) {
-			position = { x: 5.0, y: 1.2, w: 4.5, h: 0.4 };
+			position = layout.imageTextSubheadline;
 		} else if (layoutId === "text-image" && index === 1) {
-			position = { x: 0.5, y: 1.2, w: 4.5, h: 0.4 };
+			position = layout.textImageSubheadline;
 		} else if (layoutId === "title") {
-			position = { x: 0.5, y: 3.0, w: 9, h: 1.0 };
+			position = layout.titleSubheadlinePosition;
 		}
 
 		slide.addText(text, {
@@ -370,10 +408,44 @@ export class PptxGenerator {
 			y: position.y,
 			w: position.w,
 			h: position.h,
-			fontSize: 18,
-			fontFace: "Arial",
+			fontSize: this.templateConfig.typography.subheadlineFontSize,
+			fontFace: this.getBodyFont(),
+			color: this.templateConfig.colors.subheadingText,
 			align: layoutId === "comparison" ? "center" : "left",
 		});
+	}
+
+	private getHeadingFont(): string {
+		return (
+			this.curatedTemplate?.typography.headingFont ??
+			this.templateConfig.typography.fontFamily
+		);
+	}
+
+	private getBodyFont(): string {
+		return (
+			this.curatedTemplate?.typography.bodyFont ??
+			this.templateConfig.typography.fontFamily
+		);
+	}
+
+	private adjustPositionForSubbullet(pos: {
+		x: number | string;
+		y: number | string;
+		w: number | string;
+		h: number | string;
+	}): {
+		x: number | string;
+		y: number | string;
+		w: number | string;
+		h: number | string;
+	} {
+		return {
+			x: typeof pos.x === "number" ? pos.x + 0.5 : pos.x,
+			y: pos.y,
+			w: typeof pos.w === "number" ? pos.w - 0.5 : pos.w,
+			h: pos.h,
+		};
 	}
 
 	/**
@@ -428,11 +500,9 @@ export class PptxGenerator {
 		layoutId: string,
 		columnIndex: number,
 	): void {
-		// Get position for the content based on layout and column
 		const position = this.getPositionForContent(layoutId, columnIndex);
-
-		// Process text formatting if available
 		const formatting = this.getFormatting(content.formatting);
+		const bodyFont = this.getBodyFont();
 
 		switch (content.type) {
 			case "text":
@@ -442,9 +512,11 @@ export class PptxGenerator {
 						y: position.y,
 						w: position.w,
 						h: position.h,
-						fontSize: formatting.fontSize || 16,
-						fontFace: "Arial",
-						color: formatting.color,
+						fontSize:
+							formatting.fontSize ||
+							this.templateConfig.typography.bodyFontSize,
+						fontFace: bodyFont,
+						color: formatting.color || this.templateConfig.colors.bodyText,
 						bold: formatting.bold,
 						italic: formatting.italic,
 						underline: formatting.underline,
@@ -459,9 +531,11 @@ export class PptxGenerator {
 						y: position.y,
 						w: position.w,
 						h: position.h,
-						fontSize: formatting.fontSize || 16,
-						fontFace: "Arial",
-						color: formatting.color,
+						fontSize:
+							formatting.fontSize ||
+							this.templateConfig.typography.bulletFontSize,
+						fontFace: bodyFont,
+						color: formatting.color || this.templateConfig.colors.bullet,
 						bold: formatting.bold,
 						italic: formatting.italic,
 						underline: formatting.underline,
@@ -472,14 +546,17 @@ export class PptxGenerator {
 
 			case "subbullet":
 				if (content.text) {
+					const subbulletPos = this.adjustPositionForSubbullet(position);
 					slide.addText(content.text, {
-						x: position.x + 0.5, // Indent subbullets
-						y: position.y,
-						w: position.w - 0.5,
-						h: position.h,
-						fontSize: formatting.fontSize || 14,
-						fontFace: "Arial",
-						color: formatting.color,
+						x: subbulletPos.x,
+						y: subbulletPos.y,
+						w: subbulletPos.w,
+						h: subbulletPos.h,
+						fontSize:
+							formatting.fontSize ||
+							this.templateConfig.typography.subbulletFontSize,
+						fontFace: bodyFont,
+						color: formatting.color || this.templateConfig.colors.bullet,
 						bold: formatting.bold,
 						italic: formatting.italic,
 						underline: formatting.underline,
@@ -491,7 +568,6 @@ export class PptxGenerator {
 			case "chart":
 				if (content.chartType && content.chartData) {
 					const parsedData = this.parseChartData(content);
-					// Extract chart data array and options separately
 					const chartDataArray = (parsedData.chartData as unknown[]) || [];
 					const chartOptions = {
 						x: position.x,
@@ -508,7 +584,6 @@ export class PptxGenerator {
 					};
 
 					try {
-						// Create the appropriate chart type with correct parameters
 						switch (content.chartType) {
 							case "bar":
 								(slide as unknown as PptxSlide).addChart(
@@ -575,7 +650,6 @@ export class PptxGenerator {
 								break;
 
 							default:
-								// Default to bar chart if type is unknown
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.bar,
 									chartDataArray,
@@ -591,7 +665,6 @@ export class PptxGenerator {
 							error: errorMessage,
 						});
 
-						// Add error text instead of failing completely
 						slide.addText(
 							`Chart could not be rendered (${content.chartType}). Error: ${errorMessage}`,
 							{
@@ -599,9 +672,9 @@ export class PptxGenerator {
 								y: position.y,
 								w: position.w,
 								h: position.h,
-								fontSize: 12,
-								fontFace: "Arial",
-								color: "FF0000",
+								fontSize: this.templateConfig.typography.tableFontSize,
+								fontFace: bodyFont,
+								color: this.templateConfig.colors.error,
 							},
 						);
 					}
@@ -612,7 +685,7 @@ export class PptxGenerator {
 				if (content.imageUrl) {
 					try {
 						(slide as unknown as PptxSlide).addImage({
-							path: content.imageUrl, // Can be URL or base64
+							path: content.imageUrl,
 							x: position.x,
 							y: position.y,
 							w: position.w,
@@ -626,15 +699,14 @@ export class PptxGenerator {
 							error: errorMessage,
 						});
 
-						// Add error text instead of failing completely
 						slide.addText(`Image could not be loaded. Error: ${errorMessage}`, {
 							x: position.x,
 							y: position.y,
 							w: position.w,
 							h: position.h,
-							fontSize: 12,
-							fontFace: "Arial",
-							color: "FF0000",
+							fontSize: this.templateConfig.typography.tableFontSize,
+							fontFace: bodyFont,
+							color: this.templateConfig.colors.error,
 						});
 					}
 				}
@@ -653,15 +725,14 @@ export class PptxGenerator {
 							y: position.y,
 							w: position.w,
 							h: position.h,
-							fontFace: "Arial",
-							fontSize: 12,
-							border: { pt: 0.5, color: "666666" },
+							fontFace: bodyFont,
+							fontSize: this.templateConfig.typography.tableFontSize,
+							border: { pt: 0.5, color: this.templateConfig.colors.mutedText },
 							autoPage: true,
 						});
 					} catch (error: unknown) {
 						this.logger.error("Error adding table to slide:", { error });
 
-						// Add error text instead of failing completely
 						const errorMessage =
 							error instanceof Error ? error.message : String(error);
 						slide.addText(
@@ -671,9 +742,9 @@ export class PptxGenerator {
 								y: position.y,
 								w: position.w,
 								h: position.h,
-								fontSize: 12,
-								fontFace: "Arial",
-								color: "FF0000",
+								fontSize: this.templateConfig.typography.tableFontSize,
+								fontFace: bodyFont,
+								color: this.templateConfig.colors.error,
 							},
 						);
 					}
@@ -716,62 +787,44 @@ export class PptxGenerator {
 	private getPositionForContent(
 		layoutId: string,
 		columnIndex: number,
-	): { x: number; y: number; w: number; h: number } {
-		// Default position (for one-column layout)
-		let position = { x: 0.5, y: 1.8, w: 9, h: 4 };
+	): {
+		x: number | string;
+		y: number | string;
+		w: number | string;
+		h: number | string;
+	} {
+		const layout = this.templateConfig.layout;
 
-		// Adjust based on layout type
 		switch (layoutId) {
 			case "title":
-				position = { x: 0.5, y: 4.5, w: 9, h: 1.5 };
-				break;
+				return layout.titleContentPosition;
 
 			case "section":
-				position = { x: 0.5, y: 4.0, w: 9, h: 1.5 };
-				break;
+				return layout.sectionContentPosition;
 
 			case "two-column":
-				if (columnIndex === 0) {
-					position = { x: 0.5, y: 1.8, w: 4.25, h: 4 };
-				} else {
-					position = { x: 5.25, y: 1.8, w: 4.25, h: 4 };
-				}
-				break;
+				return columnIndex === 0 ? layout.twoColumnLeft : layout.twoColumnRight;
 
 			case "image-text":
-				if (columnIndex === 0) {
-					position = { x: 0.5, y: 1.8, w: 4.0, h: 4 }; // Image position
-				} else {
-					position = { x: 5.0, y: 1.8, w: 4.5, h: 4 }; // Text position
-				}
-				break;
+				return columnIndex === 0 ? layout.imageTextImage : layout.imageTextText;
 
 			case "text-image":
-				if (columnIndex === 0) {
-					position = { x: 0.5, y: 1.8, w: 4.5, h: 4 }; // Text position
-				} else {
-					position = { x: 5.5, y: 1.8, w: 4.0, h: 4 }; // Image position
-				}
-				break;
+				return columnIndex === 0 ? layout.textImageText : layout.textImageImage;
 
 			case "comparison":
-				if (columnIndex === 0) {
-					position = { x: 0.5, y: 1.8, w: 4.25, h: 4 };
-				} else {
-					position = { x: 5.25, y: 1.8, w: 4.25, h: 4 };
-				}
-				break;
+				return columnIndex === 0
+					? layout.comparisonLeft
+					: layout.comparisonRight;
 
 			case "chart":
-				position = { x: 1.0, y: 1.8, w: 8, h: 4 }; // Centered chart
-				break;
+				return layout.chartPosition;
 
 			case "bullet-list":
-				position = { x: 0.5, y: 1.8, w: 9, h: 0.5 }; // Taller height for bullets
-				break;
-		}
+				return layout.bulletListPosition;
 
-		return position;
+			default:
+				return layout.defaultContentPosition;
+		}
 	}
 
 	/**
@@ -780,16 +833,19 @@ export class PptxGenerator {
 	 * @returns Parsed chart data in PptxGenJS format
 	 */
 	private parseChartData(content: SlideContent): Record<string, unknown> {
-		// If there's no chartData, return a default structure
+		const defaultChartConfig = {
+			chartColors: this.templateConfig.charts.colors,
+			title: "Sample Chart",
+			showTitle: this.templateConfig.charts.showTitle,
+			showLegend: this.templateConfig.charts.showLegend,
+			legendPos: this.templateConfig.charts.legendPosition,
+			dataLabelPosition: this.templateConfig.charts.dataLabelPosition,
+			showDataLabels: this.templateConfig.charts.showDataLabels,
+		};
+
 		if (!content.chartData) {
 			return {
-				chartColors: ["4472C4", "ED7D31", "FFC000"],
-				title: "Sample Chart",
-				showTitle: true,
-				showLegend: true,
-				legendPos: "b",
-				dataLabelPosition: "outEnd",
-				showDataLabels: true,
+				...defaultChartConfig,
 				chartData: [
 					{
 						name: "Series 1",
@@ -800,16 +856,13 @@ export class PptxGenerator {
 			};
 		}
 
-		// If chartData is provided, parse it to the correct format
 		try {
 			let chartData = content.chartData;
 
-			// If chartData is a string, try to parse it
 			if (typeof chartData === "string") {
 				chartData = JSON.parse(chartData);
 			}
 
-			// If it's already in the correct format, return it
 			if (
 				(chartData as Record<string, unknown>).chartColors ||
 				(chartData as Record<string, unknown>).chartData
@@ -817,23 +870,16 @@ export class PptxGenerator {
 				return chartData as Record<string, unknown>;
 			}
 
-			// If it contains series data, format it appropriately
 			if (Array.isArray((chartData as Record<string, unknown>).series)) {
 				const chartDataObj = chartData as Record<string, unknown>;
 				return {
-					chartColors: chartDataObj.colors || [
-						"4472C4",
-						"ED7D31",
-						"FFC000",
-						"5B9BD5",
-						"70AD47",
-					],
+					...defaultChartConfig,
+					chartColors: chartDataObj.colors || defaultChartConfig.chartColors,
 					title: chartDataObj.title || "Chart",
-					showTitle: true,
-					showLegend: true,
-					legendPos: chartDataObj.legendPosition || "b",
-					dataLabelPosition: chartDataObj.labelPosition || "outEnd",
-					showDataLabels: true,
+					legendPos:
+						chartDataObj.legendPosition || defaultChartConfig.legendPos,
+					dataLabelPosition:
+						chartDataObj.labelPosition || defaultChartConfig.dataLabelPosition,
 					chartData: (chartDataObj.series as unknown[]).map(
 						(series: unknown) => {
 							const seriesObj = series as Record<string, unknown>;
@@ -847,16 +893,14 @@ export class PptxGenerator {
 				};
 			}
 
-			// Otherwise, transform it to the required format for single series
 			const chartDataObj = chartData as Record<string, unknown>;
 			return {
-				chartColors: chartDataObj.colors || ["4472C4", "ED7D31", "FFC000"],
+				...defaultChartConfig,
+				chartColors: chartDataObj.colors || defaultChartConfig.chartColors,
 				title: chartDataObj.title || "Chart",
-				showTitle: true,
-				showLegend: true,
-				legendPos: chartDataObj.legendPosition || "b",
-				dataLabelPosition: chartDataObj.labelPosition || "outEnd",
-				showDataLabels: true,
+				legendPos: chartDataObj.legendPosition || defaultChartConfig.legendPos,
+				dataLabelPosition:
+					chartDataObj.labelPosition || defaultChartConfig.dataLabelPosition,
 				chartData: [
 					{
 						name: chartDataObj.seriesName || "Series 1",
@@ -867,13 +911,9 @@ export class PptxGenerator {
 			};
 		} catch (error: unknown) {
 			this.logger.error("Error parsing chart data:", { error });
-
-			// Return default chart data on error
 			return {
-				chartColors: ["4472C4", "ED7D31", "FFC000"],
+				...defaultChartConfig,
 				title: "Error in Chart Data",
-				showTitle: true,
-				showLegend: true,
 				chartData: [
 					{
 						name: "Error",
