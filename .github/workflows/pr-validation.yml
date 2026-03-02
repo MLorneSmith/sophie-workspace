@@ -451,6 +451,20 @@ jobs:
         with:
           version: latest
 
+      - name: Restore Docker image cache
+        id: docker-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: /tmp/supabase-images.tar.gz
+          key: ${{ runner.os }}-supabase-images-${{ hashFiles('apps/web/supabase/config.toml') }}
+
+      - name: Load cached Docker images
+        if: steps.docker-cache.outputs.cache-hit == 'true'
+        run: |
+          echo "📦 Loading cached Docker images..."
+          docker load < /tmp/supabase-images.tar.gz
+          echo "✅ Docker images loaded from cache"
+
       - name: Set up E2E database for accessibility tests
         run: |
           cd apps/web
@@ -465,6 +479,23 @@ jobs:
             echo "⚠️ Database reset failed, continuing with existing state"
             true
           }
+
+      - name: Save Docker images to cache
+        if: steps.docker-cache.outputs.cache-hit != 'true'
+        run: |
+          echo "📦 Saving Docker images for future runs..."
+          IMAGES=$(docker images --format '{{.Repository}}:{{.Tag}}' | grep -v '<none>')
+          echo "Images to save: $(echo "$IMAGES" | wc -l)"
+          docker save $IMAGES | gzip > /tmp/supabase-images.tar.gz
+          SIZE=$(ls -lh /tmp/supabase-images.tar.gz | awk '{print $5}')
+          echo "✅ Docker images saved ($SIZE compressed)"
+
+      - name: Upload Docker image cache
+        if: steps.docker-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: /tmp/supabase-images.tar.gz
+          key: ${{ runner.os }}-supabase-images-${{ hashFiles('apps/web/supabase/config.toml') }}
 
       - name: Run accessibility tests
         run: pnpm --filter e2e a11y:test:ci  # Use CI-specific script with JUnit reporter
