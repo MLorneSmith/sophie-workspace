@@ -96,7 +96,9 @@ describe("PowerPoint Actions", () => {
 
 		describe("Core Functionality", () => {
 			it("should generate PowerPoint from valid storyboard", async () => {
-				const result = await generatePowerPointAction(validStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: validStoryboard,
+				});
 
 				expect(result.success).toBe(true);
 				expect(result.data).toBeDefined();
@@ -106,25 +108,29 @@ describe("PowerPoint Actions", () => {
 				const mockBuffer = Buffer.from("test-pptx-content");
 				mockGenerateFromStoryboard.mockResolvedValue(mockBuffer);
 
-				const result = await generatePowerPointAction(validStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: validStoryboard,
+				});
 
 				expect(result.success).toBe(true);
 				expect(result.data).toBe(mockBuffer.toString("base64"));
 			});
 
 			it("should pass storyboard data to generator", async () => {
-				await generatePowerPointAction(validStoryboard);
+				await generatePowerPointAction({ storyboard: validStoryboard });
 
 				expect(mockGenerateFromStoryboard).toHaveBeenCalledWith(
 					validStoryboard,
+					undefined,
 				);
 			});
 
 			it("should call generateFromStoryboard on the generator", async () => {
-				await generatePowerPointAction(validStoryboard);
+				await generatePowerPointAction({ storyboard: validStoryboard });
 
 				expect(mockGenerateFromStoryboard).toHaveBeenCalledWith(
 					validStoryboard,
+					undefined,
 				);
 			});
 		});
@@ -145,7 +151,9 @@ describe("PowerPoint Actions", () => {
 					],
 				};
 
-				const result = await generatePowerPointAction(singleSlideStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: singleSlideStoryboard,
+				});
 				expect(result.success).toBe(true);
 			});
 
@@ -155,7 +163,9 @@ describe("PowerPoint Actions", () => {
 					slides: [],
 				};
 
-				const result = await generatePowerPointAction(emptyStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: emptyStoryboard,
+				});
 				expect(result.success).toBe(true);
 			});
 
@@ -203,10 +213,13 @@ describe("PowerPoint Actions", () => {
 					],
 				};
 
-				const result = await generatePowerPointAction(multiContentStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: multiContentStoryboard,
+				});
 				expect(result.success).toBe(true);
 				expect(mockGenerateFromStoryboard).toHaveBeenCalledWith(
 					multiContentStoryboard,
+					undefined,
 				);
 			});
 
@@ -230,7 +243,9 @@ describe("PowerPoint Actions", () => {
 					],
 				};
 
-				const result = await generatePowerPointAction(subheadlineStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: subheadlineStoryboard,
+				});
 				expect(result.success).toBe(true);
 			});
 
@@ -261,7 +276,9 @@ describe("PowerPoint Actions", () => {
 					],
 				};
 
-				const result = await generatePowerPointAction(chartStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: chartStoryboard,
+				});
 				expect(result.success).toBe(true);
 			});
 
@@ -294,7 +311,9 @@ describe("PowerPoint Actions", () => {
 					],
 				};
 
-				const result = await generatePowerPointAction(tableStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: tableStoryboard,
+				});
 				expect(result.success).toBe(true);
 			});
 
@@ -328,7 +347,9 @@ describe("PowerPoint Actions", () => {
 					],
 				};
 
-				const result = await generatePowerPointAction(formattedStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: formattedStoryboard,
+				});
 				expect(result.success).toBe(true);
 			});
 		});
@@ -339,7 +360,9 @@ describe("PowerPoint Actions", () => {
 					new Error("Generator failed"),
 				);
 
-				const result = await generatePowerPointAction(validStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: validStoryboard,
+				});
 
 				expect(result.success).toBe(false);
 				expect(result.error).toBe(
@@ -350,7 +373,9 @@ describe("PowerPoint Actions", () => {
 			it("should handle non-Error exceptions", async () => {
 				mockGenerateFromStoryboard.mockRejectedValue("String error");
 
-				const result = await generatePowerPointAction(validStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: validStoryboard,
+				});
 
 				expect(result.success).toBe(false);
 				expect(result.error).toBe(
@@ -362,7 +387,9 @@ describe("PowerPoint Actions", () => {
 				mockGenerateFromStoryboard.mockResolvedValue(null);
 
 				// This might throw or return error depending on implementation
-				const result = await generatePowerPointAction(validStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: validStoryboard,
+				});
 
 				// The base64 conversion of null would fail
 				expect(result.success).toBe(false);
@@ -371,7 +398,9 @@ describe("PowerPoint Actions", () => {
 			it("should handle generator returning undefined", async () => {
 				mockGenerateFromStoryboard.mockResolvedValue(undefined);
 
-				const result = await generatePowerPointAction(validStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: validStoryboard,
+				});
 
 				expect(result.success).toBe(false);
 			});
@@ -393,7 +422,9 @@ describe("PowerPoint Actions", () => {
 					],
 				};
 
-				const result = await generatePowerPointAction(longTitleStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: longTitleStoryboard,
+				});
 				expect(result.success).toBe(true);
 			});
 
@@ -420,7 +451,9 @@ describe("PowerPoint Actions", () => {
 					],
 				};
 
-				const result = await generatePowerPointAction(specialCharsStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: specialCharsStoryboard,
+				});
 				expect(result.success).toBe(true);
 			});
 
@@ -445,7 +478,9 @@ describe("PowerPoint Actions", () => {
 					})),
 				};
 
-				const result = await generatePowerPointAction(manySlides);
+				const result = await generatePowerPointAction({
+					storyboard: manySlides,
+				});
 				expect(result.success).toBe(true);
 			});
 
@@ -470,7 +505,9 @@ describe("PowerPoint Actions", () => {
 					],
 				};
 
-				const result = await generatePowerPointAction(manyContentItems);
+				const result = await generatePowerPointAction({
+					storyboard: manyContentItems,
+				});
 				expect(result.success).toBe(true);
 			});
 
@@ -513,7 +550,9 @@ describe("PowerPoint Actions", () => {
 					],
 				};
 
-				const result = await generatePowerPointAction(layoutStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: layoutStoryboard,
+				});
 				expect(result.success).toBe(true);
 			});
 		});
@@ -522,7 +561,9 @@ describe("PowerPoint Actions", () => {
 			it("should require authentication", async () => {
 				// The enhanceAction mock provides auth: true
 				// This test verifies the action runs with an authenticated user
-				const result = await generatePowerPointAction(validStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: validStoryboard,
+				});
 
 				expect(result.success).toBe(true);
 			});
@@ -534,7 +575,9 @@ describe("PowerPoint Actions", () => {
 				mockGenerateFromStoryboard.mockResolvedValue(largeBuffer);
 
 				const startTime = Date.now();
-				const result = await generatePowerPointAction(validStoryboard);
+				const result = await generatePowerPointAction({
+					storyboard: validStoryboard,
+				});
 				const endTime = Date.now();
 
 				expect(result.success).toBe(true);

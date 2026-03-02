@@ -56,12 +56,6 @@ export const MastraWorkingMemorySchema = z.object({
 
 export type MastraWorkingMemory = z.infer<typeof MastraWorkingMemorySchema>;
 
-import { partnerAgent } from "./agents/partner-agent";
-import { researchAgent } from "./agents/research-agent";
-import { validatorAgent } from "./agents/validator-agent";
-import { audienceProfilingWorkflow } from "./workflows/audience-profiling-workflow";
-import { postProcessWorkflow } from "./workflows/post-process-workflow";
-
 let _mastra: Mastra | null = null;
 let _storage: PostgresStore | null = null;
 let _memory: Memory | null = null;
@@ -157,24 +151,18 @@ export function getMastra(): Mastra {
 
 	_mastra = new Mastra({
 		storage,
-<<<<<<< HEAD
 		memory: {
 			[MASTRA_MEMORY_ID]: memory,
 		},
 		vectors: {
 			[MASTRA_VECTOR_ID]: vector,
 		},
-=======
->>>>>>> origin/staging
 		agents: {
 			researchAgent,
 			partnerAgent,
 			validatorAgent,
-<<<<<<< HEAD
 			whispererAgent,
 			editorAgent,
-=======
->>>>>>> origin/staging
 		},
 		workflows: {
 			audienceProfilingWorkflow,

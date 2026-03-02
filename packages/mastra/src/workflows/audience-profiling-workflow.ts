@@ -10,7 +10,6 @@ import {
 	recordModelUsageSpan,
 } from "../config/spike-tracing";
 import {
-<<<<<<< HEAD
 	type CompanyBrief,
 	CompanyBriefSchema,
 } from "../schemas/company-brief";
@@ -18,15 +17,6 @@ import {
 	type AudienceBrief,
 	AudienceBriefSchema,
 } from "../schemas/presentation-artifacts";
-=======
-	AudienceBriefSchema,
-	type AudienceBrief,
-} from "../schemas/presentation-artifacts";
-import {
-	CompanyBriefSchema,
-	type CompanyBrief,
-} from "../schemas/company-brief";
->>>>>>> origin/staging
 
 const PERSON_RESEARCH_OUTPUT_SCHEMA = z.object({
 	personName: z.string().min(1),
