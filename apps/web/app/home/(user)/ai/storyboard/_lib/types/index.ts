@@ -450,3 +450,5 @@ export const PRESET_LAYOUTS: LayoutTemplate[] = [
 		],
 	},
 ];
+
+export * from "./template.types";

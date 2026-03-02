@@ -291,8 +291,9 @@ describe("PptxGenerator", () => {
 				y: 1.0,
 				w: 9,
 				h: 1.5,
-				fontSize: 40,
-				fontFace: "Arial",
+				fontSize: 42,
+				fontFace: "Georgia, 'Times New Roman', serif",
+				color: "1B2A4A",
 				bold: true,
 				align: "center",
 			});
@@ -321,8 +322,9 @@ describe("PptxGenerator", () => {
 				y: 2.5,
 				w: 9,
 				h: 1.5,
-				fontSize: 40,
-				fontFace: "Arial",
+				fontSize: 42,
+				fontFace: "Georgia, 'Times New Roman', serif",
+				color: "1B2A4A",
 				bold: true,
 				align: "center",
 			});
@@ -351,8 +353,9 @@ describe("PptxGenerator", () => {
 				y: 0.6,
 				w: 9,
 				h: 0.5,
-				fontSize: 24,
-				fontFace: "Arial",
+				fontSize: 26,
+				fontFace: "Georgia, 'Times New Roman', serif",
+				color: "1B2A4A",
 				bold: true,
 				align: "left",
 			});
@@ -395,11 +398,11 @@ describe("PptxGenerator", () => {
 
 			expect(mockSlide.addText).toHaveBeenCalledWith("Hello World", {
 				x: 0.5,
-				y: 1.8,
+				y: 1.6,
 				w: 9,
-				h: 4,
+				h: 4.4,
 				fontSize: 18,
-				fontFace: "Arial",
+				fontFace: "Arial, Helvetica, sans-serif",
 				color: "FF0000",
 				bold: true,
 				italic: false,
@@ -473,7 +476,7 @@ describe("PptxGenerator", () => {
 					x: 1.0, // Indented by 0.5
 					w: 8.5, // Width reduced by 0.5
 					bullet: { type: "circle" },
-					fontSize: 14,
+					fontSize: 13,
 				}),
 			);
 		});
@@ -530,9 +533,9 @@ describe("PptxGenerator", () => {
 				]),
 				expect.objectContaining({
 					x: 1.0,
-					y: 1.8,
+					y: 1.6,
 					w: 8,
-					h: 4,
+					h: 4.4,
 					chartColors: ["4472C4", "ED7D31"],
 					title: "Test Chart",
 				}),
@@ -699,9 +702,9 @@ describe("PptxGenerator", () => {
 			expect(mockSlide.addImage).toHaveBeenCalledWith({
 				path: "https://example.com/image.jpg",
 				x: 0.5,
-				y: 1.8,
+				y: 1.6,
 				w: 9,
-				h: 4,
+				h: 4.4,
 			});
 		});
 
@@ -780,11 +783,11 @@ describe("PptxGenerator", () => {
 				tableData,
 				expect.objectContaining({
 					x: 0.5,
-					y: 1.8,
+					y: 1.6,
 					w: 9,
-					h: 4,
-					fontFace: "Arial",
-					fontSize: 12,
+					h: 4.4,
+					fontFace: "Arial, Helvetica, sans-serif",
+					fontSize: 11,
 				}),
 			);
 		});
@@ -962,9 +965,9 @@ describe("PptxGenerator", () => {
 				expect.objectContaining({
 					title: "Test Chart",
 					x: 1.0,
-					y: 1.8,
+					y: 1.6,
 					w: 8,
-					h: 4,
+					h: 4.4,
 				}),
 			);
 		});
@@ -1008,9 +1011,9 @@ describe("PptxGenerator", () => {
 				expect.objectContaining({
 					title: "Chart",
 					x: 1.0,
-					y: 1.8,
+					y: 1.6,
 					w: 8,
-					h: 4,
+					h: 4.4,
 				}),
 			);
 		});
@@ -1054,9 +1057,9 @@ describe("PptxGenerator", () => {
 				expect.objectContaining({
 					title: "Error in Chart Data",
 					x: 1.0,
-					y: 1.8,
+					y: 1.6,
 					w: 8,
-					h: 4,
+					h: 4.4,
 				}),
 			);
 			// Error should be logged

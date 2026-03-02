@@ -1,19 +1,8 @@
-/**
- * Default template configuration for PowerPoint generation
- *
- * This file extracts ALL hardcoded values from pptx-generator.ts
- * to allow for customization via TemplateConfig.
- *
- * Issue #2205: Refactor PPTX generator to accept TemplateConfig
- */
+import type { TemplateConfig } from "../../schemas/template-config";
+import { getDefaultTemplate } from "../../templates";
+import { toGeneratorTemplateConfig } from "../../templates/template-config-adapter";
 
-import type { TemplateConfig } from "../../../../_lib/schemas/template-config";
-
-/**
- * Default template configuration with all values that were previously hardcoded
- * in pptx-generator.ts
- */
-export const DEFAULT_TEMPLATE_CONFIG: TemplateConfig = {
+export const BASE_TEMPLATE_CONFIG: TemplateConfig = {
 	name: "default",
 	colors: {
 		primary: "1a1a2e",
@@ -82,3 +71,6 @@ export const DEFAULT_TEMPLATE_CONFIG: TemplateConfig = {
 		roundedCorners: false,
 	},
 };
+
+export const DEFAULT_TEMPLATE_CONFIG: TemplateConfig =
+	toGeneratorTemplateConfig(getDefaultTemplate(), BASE_TEMPLATE_CONFIG);
