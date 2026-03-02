@@ -78,16 +78,6 @@ export const AGENT_MODEL_POLICY: Record<AgentName, ModelPolicy> = {
 
 	// Partner agent — senior consulting partner narrative review
 	partner: {
-<<<<<<< HEAD
-=======
-		default: "openai/gpt-4o",
-		reasoning: "anthropic/claude-sonnet-4-20250514",
-		fast: "openai/gpt-4o-mini",
-	},
-
-	// Validator agent — verifies evidence quality and factual support
-	validator: {
->>>>>>> origin/staging
 		default: "anthropic/claude-sonnet-4-20250514",
 		reasoning: "anthropic/claude-sonnet-4-20250514",
 		fast: "openai/gpt-4o-mini",
