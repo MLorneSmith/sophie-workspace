@@ -241,6 +241,9 @@ export class PptxGenerator {
 		storyboard: StoryboardData,
 		template?: PptxTemplateInput,
 	): Promise<Buffer> {
+		// Reset pptx instance to prevent slide bleed between calls
+		this.pptx = new pptxgen();
+
 		if (template) {
 			const resolvedTemplate = resolveTemplate(template);
 			this.templateConfig = resolvedTemplate.config;
