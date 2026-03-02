@@ -281,7 +281,7 @@ jobs:
       - name: Upload scan reports
         if: always()
         id: upload
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: container-security-scan-${{ github.run_id }}
           path: |

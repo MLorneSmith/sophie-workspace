@@ -1,15 +1,14 @@
 "use client";
 
-import { useContext, useEffect, useMemo, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
-
 import { SidebarContext } from "@kit/ui/shadcn-sidebar";
 import { cn } from "@kit/ui/utils";
+import { usePathname, useRouter } from "next/navigation";
+import { useContext, useEffect, useMemo, useRef } from "react";
 
 import { ContinueButton } from "../../_components/ContinueButton";
 import {
-	WORKFLOW_STEPS,
 	type PresentationStep,
+	WORKFLOW_STEPS,
 } from "../../_components/mock-presentations";
 import { WorkflowStepBar } from "./WorkflowStepBar";
 

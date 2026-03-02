@@ -43,10 +43,10 @@ vi.mock("../logger.js", () => ({
 	})),
 }));
 
+import type { SandboxInstance, SpecManifest } from "../../types/index.js";
+import { createSandboxWithRetry } from "../orchestrator.js";
 import { createSandbox } from "../sandbox.js";
 import { sleep } from "../utils.js";
-import { createSandboxWithRetry } from "../orchestrator.js";
-import type { SandboxInstance, SpecManifest } from "../../types/index.js";
 
 const mockCreateSandbox = vi.mocked(createSandbox);
 const mockSleep = vi.mocked(sleep);

@@ -1,9 +1,9 @@
 import "server-only";
 
 import {
-	ConfigManager,
 	type ChatCompletionOptions,
 	type ChatMessage,
+	ConfigManager,
 	createOpenAIOnlyConfig,
 	getChatCompletion,
 } from "@kit/ai-gateway";
@@ -45,9 +45,21 @@ export interface CompanyBrief {
 	};
 }
 
+export interface ApolloDataInput {
+	estimatedRevenue?: string | null;
+	employeeCount?: string | null;
+	employeeGrowth?: number | null;
+	fundingStage?: string | null;
+	fundingTotal?: number | null;
+	techStack?: string[];
+	keyIndustries?: string[];
+	keyExecutives?: Array<{ name: string; title: string }>;
+}
+
 export interface CompanyResearchInput {
 	companyName: string;
 	industry?: string;
+	apolloData?: ApolloDataInput;
 	netrowsData?: {
 		description?: string;
 		industries?: string[];
@@ -67,6 +79,19 @@ export interface CompanyResearchInput {
 // ---------------------------------------------------------------------------
 
 function buildCompanyBriefPrompt(input: CompanyResearchInput): ChatMessage[] {
+	const apolloSection = input.apolloData
+		? `
+## Company Data (Apollo.io)
+- Estimated Revenue: ${input.apolloData.estimatedRevenue ?? "N/A"}
+- Employee Count: ${input.apolloData.employeeCount ?? "N/A"}
+- Employee Growth: ${input.apolloData.employeeGrowth != null ? `${input.apolloData.employeeGrowth}%` : "N/A"}
+- Funding Stage: ${input.apolloData.fundingStage ?? "N/A"}
+- Total Funding: ${input.apolloData.fundingTotal != null ? `$${input.apolloData.fundingTotal.toLocaleString()}` : "N/A"}
+- Tech Stack: ${input.apolloData.techStack?.slice(0, 15).join(", ") ?? "N/A"}
+- Industries: ${input.apolloData.keyIndustries?.join(", ") ?? "N/A"}
+- Key Executives: ${input.apolloData.keyExecutives?.map((e) => `${e.name} (${e.title})`).join("; ") ?? "N/A"}`
+		: "";
+
 	const netrowsSection = input.netrowsData
 		? `
 ## Company Data (LinkedIn)
@@ -136,6 +161,7 @@ Be specific and actionable. Draw inferences from the data available. If informat
 **Company:** ${input.companyName}
 ${input.industry ? `**Industry:** ${input.industry}` : ""}
 
+${apolloSection}
 ${netrowsSection}
 ${newsSection}
 ${industrySection}

@@ -246,7 +246,7 @@ jobs:
       
       - name: Upload test artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: k6-results-${{ inputs.environment }}-${{ github.run_id }}
           path: |
@@ -319,7 +319,7 @@ jobs:
       - uses: actions/checkout@v6
       
       - name: Download test results
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: k6-results-${{ inputs.environment }}-${{ github.run_id }}
           path: k6-results
@@ -380,7 +380,7 @@ jobs:
           fi
       
       - name: Upload performance insights
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: performance-insights-${{ inputs.environment }}
           path: performance-insights.md

@@ -15,8 +15,8 @@ vi.mock("../manifest.js", () => ({
 
 // Import after mocking
 import {
-	getNextAvailableFeature,
 	assignFeatureToSandbox,
+	getNextAvailableFeature,
 } from "../work-queue.js";
 
 /**

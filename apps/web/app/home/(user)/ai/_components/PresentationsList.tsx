@@ -1,8 +1,15 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@kit/ui/alert-dialog";
 import { Button } from "@kit/ui/button";
 import {
 	Dialog,
@@ -11,16 +18,25 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@kit/ui/dialog";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@kit/ui/dropdown-menu";
 import { cn } from "@kit/ui/utils";
-import { FileText } from "lucide-react";
+import { FileText, MoreVertical, Trash2 } from "lucide-react";
 import { motion } from "motion/react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState, useTransition } from "react";
 
 import { createPresentationAction } from "../_lib/server/create-presentation.action";
+import { deletePresentationAction } from "../_lib/server/delete-presentation.action";
 import type { PresentationRow } from "../_lib/server/list-presentations.loader";
 import {
+	type PresentationStep,
 	STEP_ACCENT_SPECTRUM,
 	WORKFLOW_STEPS,
-	type PresentationStep,
 } from "./mock-presentations";
 
 function formatDate(iso: string) {
@@ -87,6 +103,10 @@ export default function PresentationsList(props: {
 	const [selected, setSelected] = useState<PresentationRow | null>(null);
 	const [createError, setCreateError] = useState<string | null>(null);
 	const [isCreating, startCreating] = useTransition();
+	const [deleteTarget, setDeleteTarget] = useState<PresentationRow | null>(
+		null,
+	);
+	const [isDeleting, startDeleting] = useTransition();
 
 	const presentations = useMemo(
 		() => props.presentations,
@@ -179,12 +199,20 @@ export default function PresentationsList(props: {
 						);
 
 						return (
-							<motion.button
-								type="button"
+							<motion.div
+								role="button"
+								tabIndex={0}
 								key={p.id}
 								onClick={() => {
 									setSelected(p);
 									setOpen(true);
+								}}
+								onKeyDown={(e) => {
+									if (e.key === "Enter" || e.key === " ") {
+										e.preventDefault();
+										setSelected(p);
+										setOpen(true);
+									}
 								}}
 								whileHover={{
 									y: -4,
@@ -193,7 +221,7 @@ export default function PresentationsList(props: {
 								}}
 								transition={{ type: "spring", stiffness: 400, damping: 20 }}
 								className={cn(
-									"group relative overflow-hidden rounded-xl border bg-white/5 text-left backdrop-blur-xl",
+									"group relative cursor-pointer overflow-hidden rounded-xl border bg-white/5 text-left backdrop-blur-xl",
 									"border-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
 								)}
 							>
@@ -208,6 +236,32 @@ export default function PresentationsList(props: {
 										}}
 									/>
 									<div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
+
+									<div className="absolute right-2 top-2 z-10">
+										<DropdownMenu>
+											<DropdownMenuTrigger asChild>
+												<button
+													type="button"
+													onClick={(e) => e.stopPropagation()}
+													className="rounded-md p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+												>
+													<MoreVertical className="size-4" />
+												</button>
+											</DropdownMenuTrigger>
+											<DropdownMenuContent align="end">
+												<DropdownMenuItem
+													onClick={(e) => {
+														e.stopPropagation();
+														setDeleteTarget(p);
+													}}
+													className="text-destructive focus:text-destructive"
+												>
+													<Trash2 className="mr-2 size-4" />
+													Delete
+												</DropdownMenuItem>
+											</DropdownMenuContent>
+										</DropdownMenu>
+									</div>
 
 									<div className="absolute inset-0 flex items-center justify-center p-4">
 										<div className="relative w-full max-w-[320px]">
@@ -263,7 +317,7 @@ export default function PresentationsList(props: {
 										</p>
 									</div>
 								</div>
-							</motion.button>
+							</motion.div>
 						);
 					})}
 				</div>
@@ -389,6 +443,47 @@ export default function PresentationsList(props: {
 					) : null}
 				</DialogContent>
 			</Dialog>
+
+			<AlertDialog
+				open={!!deleteTarget}
+				onOpenChange={(v) => {
+					if (!v) setDeleteTarget(null);
+				}}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Delete presentation?</AlertDialogTitle>
+						<AlertDialogDescription>
+							This will permanently delete &ldquo;
+							{deleteTarget?.title ?? "Untitled Presentation"}&rdquo;. This
+							action cannot be undone.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+						<AlertDialogAction
+							disabled={isDeleting}
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+							onClick={(e) => {
+								e.preventDefault();
+								if (!deleteTarget) return;
+
+								startDeleting(async () => {
+									try {
+										await deletePresentationAction({ id: deleteTarget.id });
+										setDeleteTarget(null);
+										router.refresh();
+									} catch {
+										// Keep dialog open so user sees something went wrong
+									}
+								});
+							}}
+						>
+							{isDeleting ? "Deleting…" : "Delete"}
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</div>
 	);
 }

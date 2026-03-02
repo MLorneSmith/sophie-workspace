@@ -1,14 +1,13 @@
-import Link from "next/link";
+import { Button } from "@kit/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 import {
 	ClipboardList,
 	FileText,
+	type LucideIcon,
 	PlayCircle,
 	Plus,
-	type LucideIcon,
 } from "lucide-react";
-
-import { Button } from "@kit/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
+import Link from "next/link";
 
 interface QuickActionsPanelProps {
 	courseInProgress?: boolean;

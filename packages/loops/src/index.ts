@@ -1,11 +1,11 @@
-export { createLoopsService } from "./loops.service";
 export { getLoopsClient } from "./client";
+export { createLoopsService } from "./loops.service";
 export {
-	TransactionalEmailSchema,
 	LoopsEventSchema,
+	TransactionalEmailSchema,
 } from "./schemas/loops.schema";
 export type {
-	TransactionalEmailParams,
 	LoopsEventParams,
 	LoopsServiceResult,
+	TransactionalEmailParams,
 } from "./types";

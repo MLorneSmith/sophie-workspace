@@ -7,7 +7,7 @@
  * See: Issue #1641, #1642 - E2E Sharded Workflow Dual Failure Modes
  */
 
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock pg Client
 vi.mock("pg", () => ({
@@ -24,9 +24,9 @@ global.fetch = mockFetch;
 
 // Import after mocks are set up
 import {
-	checkPostgresHealth,
-	checkPostgRESTHealth,
 	checkKongHealthWithBackoff,
+	checkPostgRESTHealth,
+	checkPostgresHealth,
 } from "./supabase-health";
 
 describe("Supabase Health Checks", () => {

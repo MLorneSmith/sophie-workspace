@@ -1,8 +1,8 @@
 import "dotenv/config";
-import { stringify } from "qs-esm";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+import { stringify } from "qs-esm";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -12,8 +12,8 @@ import {
 	transitionFeatureStatus,
 	transitionInitiativeStatus,
 } from "./feature-transitions.js";
-import { saveManifest } from "./manifest.js";
 import { createLogger } from "./logger.js";
+import { saveManifest } from "./manifest.js";
 import {
 	DEFAULT_MAX_RETRIES,
 	getBlockingFailedFeatures,

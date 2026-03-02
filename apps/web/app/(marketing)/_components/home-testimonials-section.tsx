@@ -1,10 +1,9 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@kit/ui/tabs";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@kit/ui/tabs";
+import { useCallback, useState } from "react";
 
 import { homepageContentConfig } from "~/config/homepage-content.config";
 

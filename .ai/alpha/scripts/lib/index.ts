@@ -71,12 +71,6 @@ export {
 } from "./event-server.js";
 // Feature implementation
 export { runFeatureImplementation } from "./feature.js";
-// Health monitoring
-export {
-	checkSandboxHealth,
-	killClaudeProcess,
-	runHealthChecks,
-} from "./health.js";
 // Feature status transitions (centralized state management - #1955)
 export type {
 	TransitionOptions,
@@ -89,10 +83,12 @@ export {
 	VALID_FEATURE_TRANSITIONS,
 	VALID_INITIATIVE_TRANSITIONS,
 } from "./feature-transitions.js";
-
-// Shared logger
-export { createLogger } from "./logger.js";
-
+// Health monitoring
+export {
+	checkSandboxHealth,
+	killClaudeProcess,
+	runHealthChecks,
+} from "./health.js";
 // Lock management
 export {
 	acquireLock,
@@ -106,6 +102,8 @@ export {
 	updateLockResetState,
 	writeLock,
 } from "./lock.js";
+// Shared logger
+export { createLogger } from "./logger.js";
 
 // Manifest management
 export {
@@ -121,9 +119,6 @@ export {
 
 // Main orchestration
 export { orchestrate, printDryRun, printSummary } from "./orchestrator.js";
-export type { WorkLoopOptions, WorkLoopResult } from "./work-loop.js";
-// Work loop (refactored from orchestrator.ts - Phase 4 of #1816)
-export { runWorkLoop, WorkLoop } from "./work-loop.js";
 // Port health checks
 export { isPortOpen, waitForDevServer, waitForPort } from "./port-health.js";
 export type {
@@ -146,6 +141,18 @@ export {
 	writeIdleProgress,
 	writeUIProgress,
 } from "./progress.js";
+// Provider utilities
+export {
+	buildDocumentationCommand,
+	buildDocumentationPrompt,
+	buildImplementationPrompt,
+	buildProviderCommand,
+	getForceKillCommand,
+	getGracefulShutdownCommand,
+	getProcessCountCommand,
+	getProviderDisplayName,
+	getTemplateAlias,
+} from "./provider.js";
 export type { RunMetadata } from "./run-id.js";
 // Run ID generation
 export {
@@ -180,18 +187,9 @@ export {
 export { isTTSAvailable, speak, speakCompletion } from "./tts.js";
 // Utilities
 export { sleep } from "./utils.js";
-// Provider utilities
-export {
-	buildDocumentationPrompt,
-	buildDocumentationCommand,
-	buildImplementationPrompt,
-	buildProviderCommand,
-	getForceKillCommand,
-	getGracefulShutdownCommand,
-	getProcessCountCommand,
-	getProviderDisplayName,
-	getTemplateAlias,
-} from "./provider.js";
+export type { WorkLoopOptions, WorkLoopResult } from "./work-loop.js";
+// Work loop (refactored from orchestrator.ts - Phase 4 of #1816)
+export { runWorkLoop, WorkLoop } from "./work-loop.js";
 // Work queue
 export {
 	cleanupStaleState,

@@ -1,12 +1,14 @@
 import "server-only";
 
+import { getLogger } from "@kit/shared/logger";
+
 // ---------------------------------------------------------------------------
 // Netrows API – server-only service for LinkedIn/company enrichment
 // https://api.netrows.com
 // ---------------------------------------------------------------------------
 
 const BASE_URL = "https://api.netrows.com";
-const TIMEOUT_MS = 10_000;
+const TIMEOUT_MS = 15_000;
 
 function getApiKey(): string {
 	const key = process.env.NETROWS_API_KEY;
@@ -20,16 +22,15 @@ function getApiKey(): string {
 // Types
 // ---------------------------------------------------------------------------
 
-/** Minimal person search result item */
+/** Person search result item from /v1/people/search */
 export interface NetrowsPersonSearchItem {
-	id: number;
-	urn: string;
-	username: string;
-	firstName: string;
-	lastName: string;
+	fullName: string;
 	headline: string;
+	summary: string | null;
 	profilePicture: string | null;
-	linkedinURL?: string;
+	location: string | null;
+	profileURL: string;
+	username: string;
 	[key: string]: unknown;
 }
 
@@ -156,6 +157,7 @@ async function netrowsFetch<T>(
 			method: "GET",
 			headers: { "x-api-key": getApiKey() },
 			signal: controller.signal,
+			cache: "no-store",
 		});
 
 		const body = (await res.json()) as Record<string, unknown>;
@@ -189,62 +191,275 @@ async function netrowsFetch<T>(
 // ---------------------------------------------------------------------------
 
 /**
- * Search for a person on LinkedIn by name and company.
- * Returns an array of matching profiles, or null if none found.
+ * Search for a person on LinkedIn using the Netrows API parameters.
+ * Accepts firstName, lastName, keywords, and company as separate fields.
  */
-export async function searchPerson(
-	name: string,
-	company: string,
-): Promise<NetrowsPersonSearchItem[] | null> {
+export async function searchPerson(params: {
+	firstName?: string;
+	lastName?: string;
+	keywords?: string;
+	company?: string;
+}): Promise<NetrowsPersonSearchItem[] | null> {
+	const searchParams: Record<string, string> = {};
+	if (params.firstName) searchParams.firstName = params.firstName;
+	if (params.lastName) searchParams.lastName = params.lastName;
+	if (params.keywords) searchParams.keywords = params.keywords;
+	if (params.company) searchParams.company = params.company;
+
 	const result = await netrowsFetch<{
 		success: boolean;
 		data: { items: NetrowsPersonSearchItem[] };
-	}>("/v1/people/search", { name, company });
+	}>("/v1/people/search", searchParams);
 
 	if (!result) return null;
 	return result.data?.items ?? null;
 }
 
+// ---------------------------------------------------------------------------
+// LLM-powered name expansion
+// ---------------------------------------------------------------------------
+
+interface SearchVariant {
+	firstName?: string;
+	lastName?: string;
+	keywords?: string;
+}
+
 /**
- * Fuzzy person search with fallback strategies.
- * Tries: exact name + company → first name + company → full name only.
- * Returns all matching results (up to 10) for user selection.
+ * Use a fast LLM to expand a person's name into search variants.
+ * Handles nicknames → formal names (e.g. "Ajay" → "Ajaypal").
+ * Falls back to simple first/last split on failure.
+ */
+async function expandSearchTerms(
+	name: string,
+	company: string,
+	_userId?: string,
+): Promise<SearchVariant[]> {
+	const logger = await getLogger();
+	const ctx = { name: "expandSearchTerms" };
+
+	const parts = name.trim().split(/\s+/);
+	const simpleFallback: SearchVariant[] = [
+		{
+			firstName: parts[0] ?? "",
+			lastName: parts.length > 1 ? parts[parts.length - 1] : "",
+		},
+	];
+
+	const apiKey = process.env.OPENAI_API_KEY;
+	if (!apiKey) {
+		logger.warn(ctx, "OPENAI_API_KEY not set, using fallback");
+		return simpleFallback;
+	}
+
+	try {
+		const controller = new AbortController();
+		const timer = setTimeout(() => controller.abort(), 4_000);
+
+		const res = await fetch("https://api.openai.com/v1/chat/completions", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${apiKey}`,
+			},
+			body: JSON.stringify({
+				model: "gpt-4o-mini",
+				temperature: 0.3,
+				max_tokens: 300,
+				messages: [
+					{
+						role: "system",
+						content: `You generate search variations for finding a person on LinkedIn. Given a name and company, return a JSON array of 2-3 objects with optional fields: firstName, lastName, keywords. Your MOST IMPORTANT job is to correct likely misspellings using your knowledge of well-known people at the given company. Also include formal/full name versions and the original spelling. For example: "Michael Meibach" at "Mastercard" → [{"firstName":"Michael","lastName":"Miebach"},{"firstName":"Michael","lastName":"Meibach"}]. "Ajay Banga" at "World Bank" → [{"firstName":"Ajaypal","lastName":"Banga"},{"firstName":"Ajay","lastName":"Banga"}]. Put the most likely correct spelling FIRST. Only return the JSON array, nothing else.`,
+					},
+					{
+						role: "user",
+						content: `Name: "${name}"\nCompany: "${company}"`,
+					},
+				],
+			}),
+			signal: controller.signal,
+			cache: "no-store",
+		});
+
+		clearTimeout(timer);
+
+		if (!res.ok) {
+			logger.warn(ctx, "OpenAI API returned %d, using fallback", res.status);
+			return simpleFallback;
+		}
+
+		const body = (await res.json()) as {
+			choices?: Array<{ message?: { content?: string } }>;
+		};
+		const content = body.choices?.[0]?.message?.content ?? "";
+		const jsonMatch = content.match(/\[[\s\S]*\]/);
+		if (!jsonMatch) {
+			logger.warn(ctx, "No JSON array in LLM response, using fallback");
+			return simpleFallback;
+		}
+
+		const parsed = JSON.parse(jsonMatch[0]) as SearchVariant[];
+		if (!Array.isArray(parsed) || parsed.length === 0) {
+			return simpleFallback;
+		}
+
+		logger.info(
+			ctx,
+			"Expanded '%s' into %d variants: %o",
+			name,
+			parsed.length,
+			parsed,
+		);
+		return parsed.slice(0, 3);
+	} catch (err) {
+		logger.warn(ctx, "Name expansion failed, using fallback: %o", err);
+		return simpleFallback;
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Client-side relevance scoring
+// ---------------------------------------------------------------------------
+
+interface ScoredResult {
+	item: NetrowsPersonSearchItem;
+	score: number;
+}
+
+/**
+ * Score and sort search results by relevance to the original query.
+ * Name token overlap (60%) + company mention in headline (40%).
+ */
+function scoreResults(
+	results: NetrowsPersonSearchItem[],
+	name: string,
+	company: string,
+): NetrowsPersonSearchItem[] {
+	const nameTokens = name
+		.toLowerCase()
+		.split(/\s+/)
+		.filter((t) => t.length > 0);
+	const companyLower = company.toLowerCase();
+
+	const scored: ScoredResult[] = results.map((item) => {
+		// Name score: token overlap
+		const resultTokens = (item.fullName ?? "")
+			.toLowerCase()
+			.split(/\s+/)
+			.filter((t) => t.length > 0);
+		const matchCount = nameTokens.filter((t) =>
+			resultTokens.includes(t),
+		).length;
+		const nameScore =
+			nameTokens.length > 0 ? matchCount / nameTokens.length : 0;
+
+		// Company score: substring match in headline
+		const headlineLower = (item.headline ?? "").toLowerCase();
+		const companyScore = headlineLower.includes(companyLower) ? 1.0 : 0.0;
+
+		return { item, score: nameScore * 0.6 + companyScore * 0.4 };
+	});
+
+	scored.sort((a, b) => b.score - a.score);
+	return scored.map((s) => s.item);
+}
+
+/**
+ * Hybrid person search: LLM name expansion → 2 Netrows calls max → relevance scoring.
+ * Handles nicknames (e.g. "Ajay" → "Ajaypal") while reducing API calls from 6 to 2.
  */
 export async function searchPersonFuzzy(
 	name: string,
 	company: string,
+	userId?: string,
 ): Promise<NetrowsPersonSearchItem[]> {
-	const parts = name.trim().split(/\s+/);
-	const firstName = parts[0] ?? "";
-	const lastName = parts.length > 1 ? parts[parts.length - 1] : "";
+	const logger = await getLogger();
+	const ctx = { name: "searchPersonFuzzy" };
 
-	// Strategy 1: exact name + company
-	let results = await searchPerson(name, company);
-	if (results && results.length > 0) return results;
+	// Phase 1: LLM name expansion
+	const variants = await expandSearchTerms(name, company, userId);
+	logger.info(ctx, "Search variants for '%s': %o", name, variants);
 
-	// Strategy 2: last name + company (catches "Ajay Banga" → "Ajaypal Singh Banga")
-	if (lastName && lastName !== name) {
-		results = await searchPerson(lastName, company);
-		if (results && results.length > 0) return results;
+	const seen = new Set<string>();
+	const allResults: NetrowsPersonSearchItem[] = [];
+
+	const collect = (items: NetrowsPersonSearchItem[] | null) => {
+		if (!items) return;
+		for (const item of items) {
+			const key = item.username || item.profileURL;
+			if (key && !seen.has(key)) {
+				seen.add(key);
+				allResults.push(item);
+			}
+		}
+	};
+
+	// Phase 2: Netrows calls (max 3, sequential to avoid rate-limiting)
+	// Build a keywords string from the best LLM variant
+	const best = variants[0];
+	const expandedName = best
+		? [best.firstName, best.lastName].filter(Boolean).join(" ")
+		: name;
+	const nameChanged = expandedName.toLowerCase() !== name.toLowerCase();
+
+	// Call 1: Expanded name as keywords + company filter
+	{
+		const params = { keywords: expandedName, company };
+		logger.info(ctx, "Call 1 (expanded+company): %o", params);
+		const r = await searchPerson(params);
+		const names =
+			r?.slice(0, 5).map((p) => `${p.fullName} (${p.username})`) ?? [];
+		logger.info(ctx, "Call 1: %d results — %o", r?.length ?? 0, names);
+		collect(r);
 	}
 
-	// Strategy 3: first name + company (catches partial first names)
-	if (firstName && firstName !== name) {
-		results = await searchPerson(firstName, company);
-		if (results && results.length > 0) return results;
+	// Call 2: Expanded name as keywords WITHOUT company (catches company name mismatches)
+	if (nameChanged) {
+		const params = { keywords: expandedName };
+		logger.info(ctx, "Call 2 (expanded-only): %o", params);
+		const r = await searchPerson(params);
+		const names =
+			r?.slice(0, 5).map((p) => `${p.fullName} (${p.username})`) ?? [];
+		logger.info(ctx, "Call 2: %d results — %o", r?.length ?? 0, names);
+		collect(r);
 	}
 
-	// Strategy 4: full name without company filter
-	results = await searchPerson(name, "");
-	if (results && results.length > 0) return results;
-
-	// Strategy 5: last name without company filter (broadest)
-	if (lastName && lastName !== name) {
-		results = await searchPerson(lastName, "");
-		if (results && results.length > 0) return results;
+	// Call 3: Original name as keywords (no company, broad fallback)
+	{
+		const params = { keywords: name };
+		logger.info(
+			ctx,
+			"Call %d (original-keywords): %o",
+			nameChanged ? 3 : 2,
+			params,
+		);
+		const r = await searchPerson(params);
+		const names =
+			r?.slice(0, 5).map((p) => `${p.fullName} (${p.username})`) ?? [];
+		logger.info(
+			ctx,
+			"Call %d: %d results — %o",
+			nameChanged ? 3 : 2,
+			r?.length ?? 0,
+			names,
+		);
+		collect(r);
 	}
 
-	return [];
+	if (allResults.length === 0) {
+		logger.warn(ctx, "No results for '%s' at '%s'", name, company);
+		return [];
+	}
+
+	// Phase 3: Score and sort by relevance
+	const sorted = scoreResults(allResults, name, company);
+	logger.info(
+		ctx,
+		"Returning %d scored candidates (top: %s)",
+		sorted.length,
+		sorted[0]?.fullName ?? "none",
+	);
+	return sorted;
 }
 
 /**
@@ -300,15 +515,21 @@ export async function researchPerson(
 	company: string,
 ): Promise<NetrowsEnrichmentResult> {
 	// Step 1: Search for the person
-	const personSearchResults = await searchPerson(name, company);
+	const parts = name.trim().split(/\s+/);
+	const firstName = parts[0] ?? "";
+	const lastName = parts.length > 1 ? parts[parts.length - 1] : "";
+	const personSearchResults = await searchPerson({
+		firstName,
+		lastName,
+		company,
+	});
 
 	// Step 2: Get full profile of the first match (if any)
 	let personProfile: NetrowsPersonProfile | null = null;
 	if (personSearchResults && personSearchResults.length > 0) {
 		const firstMatch = personSearchResults[0];
-		// Construct LinkedIn URL from username if not provided directly
 		const profileUrl =
-			firstMatch?.linkedinURL ??
+			firstMatch?.profileURL ??
 			(firstMatch?.username
 				? `https://www.linkedin.com/in/${firstMatch.username}/`
 				: null);

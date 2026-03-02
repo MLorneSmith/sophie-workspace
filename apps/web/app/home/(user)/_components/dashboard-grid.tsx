@@ -1,5 +1,6 @@
 "use client";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 import {
 	ArrowRight,
 	BookOpen,
@@ -9,15 +10,13 @@ import {
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
-
 import type { DashboardData } from "../_lib/dashboard/types";
 import { CoachingSessionsCard } from "./coaching-sessions-card";
 import { CourseProgressRadial } from "./dashboard/course-progress-radial";
-import { RecentActivityFeed } from "./recent-activity-feed";
 import { SkillsSpiderDiagram } from "./dashboard/skills-spider-diagram";
 import { KanbanSummaryCard } from "./kanban-summary-card";
 import { PresentationsTable } from "./presentations-table";
+import { RecentActivityFeed } from "./recent-activity-feed";
 import { WelcomeHero } from "./welcome-hero";
 
 interface DashboardGridProps {

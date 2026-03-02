@@ -105,6 +105,13 @@ const AgentSuggestionRowSchema = z.object({
 	detail: z.unknown().nullable(),
 	created_at: z.string().min(1),
 	updated_at: z.string().min(1),
+	// Joined from agent_runs table for staleness detection
+	agent_runs: z
+		.object({
+			storyboard_version: z.number().int().positive(),
+		})
+		.nullable()
+		.optional(),
 });
 
 export const AgentRunSchema = z.object({
@@ -140,6 +147,8 @@ export const AgentSuggestionSchema = z.object({
 	detail: z.unknown().nullable(),
 	createdAt: z.string().min(1),
 	updatedAt: z.string().min(1),
+	// Storyboard version from parent agent run for staleness detection
+	storyboardVersion: z.number().int().positive().nullable().optional(),
 });
 
 export type AgentId = z.infer<typeof AgentIdSchema>;
@@ -253,6 +262,8 @@ function mapAgentSuggestion(rowInput: unknown): AgentSuggestion {
 		detail: row.detail,
 		createdAt: row.created_at,
 		updatedAt: row.updated_at,
+		// Extract storyboard version from joined agent_runs
+		storyboardVersion: row.agent_runs?.storyboard_version ?? null,
 	});
 }
 
@@ -413,9 +424,10 @@ export async function createSuggestions(
 		detail: suggestion.detail ?? null,
 	}));
 
+	// Include storyboard_version from agent_runs join for consistent shape
 	const { data, error } = await agentSuggestionsTable(supabase)
 		.insert(payload)
-		.select("*");
+		.select("*, agent_runs(storyboard_version)");
 
 	if (error) {
 		throw error;
@@ -450,8 +462,9 @@ export async function getSuggestions(
 	presentationId: string,
 	filters: GetSuggestionsFilters = {},
 ): Promise<AgentSuggestion[]> {
+	// Use Supabase join syntax to include storyboard_version from agent_runs
 	let query = agentSuggestionsTable(supabase)
-		.select("*")
+		.select("*, agent_runs(storyboard_version)")
 		.eq("presentation_id", presentationId)
 		.order("created_at", { ascending: false });
 
@@ -484,6 +497,35 @@ export async function getSuggestions(
 	return AgentSuggestionRowsSchema.parse(data ?? []).map(mapAgentSuggestion);
 }
 
+/**
+ * Check if a storyboard version is older than the current version
+ */
+function isOlderStoryboardVersion(
+	sourceVersion: number,
+	currentVersion: number,
+): boolean {
+	return sourceVersion < currentVersion;
+}
+
 export function isStale(run: AgentRun, currentVersion: number): boolean {
-	return run.storyboardVersion !== currentVersion;
+	return isOlderStoryboardVersion(run.storyboardVersion, currentVersion);
+}
+
+/**
+ * Check if a suggestion's results are stale (storyboard was edited after the run)
+ * @param suggestion - The suggestion to check
+ * @param currentStoryboardVersion - The current storyboard version
+ * @returns true if the suggestion is stale, false otherwise
+ */
+export function isSuggestionStale(
+	suggestion: AgentSuggestion,
+	currentStoryboardVersion: number,
+): boolean {
+	if (suggestion.storyboardVersion == null) {
+		return false; // If no version info, assume not stale
+	}
+	return isOlderStoryboardVersion(
+		suggestion.storyboardVersion,
+		currentStoryboardVersion,
+	);
 }

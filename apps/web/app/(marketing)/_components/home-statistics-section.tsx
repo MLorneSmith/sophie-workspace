@@ -1,6 +1,6 @@
 "use client";
 
-import { type Variants, motion, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion, type Variants } from "motion/react";
 
 import { homepageContentConfig } from "~/config/homepage-content.config";
 

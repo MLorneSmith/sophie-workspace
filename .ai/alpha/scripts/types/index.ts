@@ -6,12 +6,12 @@
  */
 
 export type {
+	AgentProvider,
 	FeatureEntry,
 	FeatureImplementationResult,
 	HealthCheckResult,
 	InitiativeEntry,
 	InstallAttemptResult,
-	AgentProvider,
 	OrchestratorLock,
 	OrchestratorOptions,
 	PhaseDefinition,
@@ -31,10 +31,10 @@ export type {
 export type {
 	RefineContext,
 	RefineIssueType,
+	RefinementEntry,
 	RefineOptions,
 	RefineProgress,
 	RefineSkillMapping,
-	RefinementEntry,
 } from "./refine.types.js";
 
 export {

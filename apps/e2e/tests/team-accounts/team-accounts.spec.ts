@@ -4,8 +4,8 @@ import { AUTH_STATES } from "../utils/auth-state";
 import {
 	expect,
 	type Page,
-	test,
 	restoreAuthStorageState,
+	test,
 } from "../utils/base-test";
 import {
 	CI_TIMEOUTS,

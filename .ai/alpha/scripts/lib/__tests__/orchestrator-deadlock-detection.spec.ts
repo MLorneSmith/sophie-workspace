@@ -27,6 +27,8 @@ vi.mock("../event-emitter.js", () => ({
 	emitOrchestratorEvent: vi.fn(),
 }));
 
+import { detectAndHandleDeadlock } from "../deadlock-handler.js";
+import { emitOrchestratorEvent } from "../event-emitter.js";
 // Import after mocking
 import {
 	DEFAULT_MAX_RETRIES,
@@ -35,8 +37,6 @@ import {
 	resetFailedFeatureForRetry,
 	shouldRetryFailedFeature,
 } from "../work-queue.js";
-import { detectAndHandleDeadlock } from "../deadlock-handler.js";
-import { emitOrchestratorEvent } from "../event-emitter.js";
 
 /**
  * Helper to create a minimal test manifest

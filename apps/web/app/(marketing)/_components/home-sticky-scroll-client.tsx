@@ -1,5 +1,7 @@
 "use client";
 
+import { ChevronRight } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
 	type ReactNode,
 	useCallback,
@@ -7,8 +9,6 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ChevronRight } from "lucide-react";
 
 import {
 	AIWritingPanel,

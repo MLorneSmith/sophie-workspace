@@ -5,50 +5,46 @@
  * (Partner, Validator, Whisperer, Editor).
  */
 
-export { researchAgent } from "./research-agent";
-
 export {
-	partnerAgent,
-	PartnerSlideScoresSchema,
-	PartnerSlideReviewSchema,
-	PartnerTopIssueSchema,
-	PartnerReviewSchema,
-	type PartnerSlideReview,
-	type PartnerReview,
-} from "./partner-agent";
-
-export {
-	validatorAgent,
-	ValidatorClaimSchema,
-	ValidatorSlideReviewSchema,
-	ValidatorCriticalFlagSchema,
-	ValidatorReviewSchema,
-	type ValidatorClaim,
-	type ValidatorSlideReview,
-	type ValidatorReview,
-} from "./validator-agent";
-
-export {
-	whispererAgent,
-	WhispererSlideNotesSchema,
-	WhispererReviewSchema,
-	type WhispererSlideNotes,
-	type WhispererReview,
-} from "./whisperer-agent";
-
-export {
-	editorAgent,
-	EditorSlideActionSchema,
 	EditorRedundancyPairSchema,
+	type EditorReview,
 	EditorReviewSchema,
 	type EditorSlideAction,
-	type EditorReview,
+	EditorSlideActionSchema,
+	editorAgent,
 } from "./editor-agent";
 
 export {
+	type PartnerReview,
+	PartnerReviewSchema,
+	type PartnerSlideReview,
+	PartnerSlideReviewSchema,
+	PartnerSlideScoresSchema,
+	PartnerTopIssueSchema,
+	partnerAgent,
+} from "./partner-agent";
+export {
 	AGENT_CATALOG,
-	LAUNCH_AGENTS,
-	getAgent,
-	type LaunchAgentId,
 	type AgentCatalogEntry,
+	getAgent,
+	LAUNCH_AGENTS,
+	type LaunchAgentId,
 } from "./registry";
+export { researchAgent } from "./research-agent";
+export {
+	type ValidatorClaim,
+	ValidatorClaimSchema,
+	ValidatorCriticalFlagSchema,
+	type ValidatorReview,
+	ValidatorReviewSchema,
+	type ValidatorSlideReview,
+	ValidatorSlideReviewSchema,
+	validatorAgent,
+} from "./validator-agent";
+export {
+	type WhispererReview,
+	WhispererReviewSchema,
+	type WhispererSlideNotes,
+	WhispererSlideNotesSchema,
+	whispererAgent,
+} from "./whisperer-agent";

@@ -25,12 +25,12 @@ vi.mock("../progress.js", () => ({
 	writeIdleProgress: vi.fn(),
 }));
 
+import { writeIdleProgress } from "../progress.js";
 // Import after mocking
 import {
-	getNextAvailableFeature,
 	assignFeatureToSandbox,
+	getNextAvailableFeature,
 } from "../work-queue.js";
-import { writeIdleProgress } from "../progress.js";
 
 /**
  * Create a minimal test manifest

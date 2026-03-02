@@ -1,11 +1,10 @@
-import { redirect } from "next/navigation";
-
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { redirect } from "next/navigation";
 
 import type { Database } from "~/lib/database.types";
 
-import { WorkflowShell } from "./_components/WorkflowShell";
+import { WorkflowShell } from "./_components/workflow-shell";
 
 export default async function PresentationWorkflowLayout(props: {
 	children: React.ReactNode;

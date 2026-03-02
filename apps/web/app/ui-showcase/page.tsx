@@ -94,6 +94,7 @@ import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 // App Components
 import { AppLogo } from "~/components/app-logo";
+import { personalAccountNavigationConfig } from "~/config/personal-account-navigation.config";
 import { SiteFooter } from "../(marketing)/_components/site-footer";
 // Site Navigation Components
 import { SiteNavigation } from "../(marketing)/_components/site-navigation";
@@ -113,7 +114,6 @@ import { HomeLayoutPageHeader } from "../home/(user)/_components/home-page-heade
 // Home Components
 import { HomeSidebar } from "../home/(user)/_components/home-sidebar";
 import type { UserWorkspace } from "../home/(user)/_lib/server/load-user-workspace";
-import { personalAccountNavigationConfig } from "~/config/personal-account-navigation.config";
 
 /**
  * Type definitions for navigation items to ensure type safety

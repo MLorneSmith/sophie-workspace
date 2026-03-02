@@ -16,8 +16,8 @@ import {
 	SANDBOX_MAX_AGE_MS,
 } from "../config/index.js";
 import type {
-	FeatureEntry,
 	AgentProvider,
+	FeatureEntry,
 	SandboxInstance,
 	SpecManifest,
 } from "../types/index.js";
@@ -28,11 +28,6 @@ import {
 import { emitOrchestratorEvent } from "./event-emitter.js";
 import { runFeatureImplementation } from "./feature.js";
 import { transitionFeatureStatus } from "./feature-transitions.js";
-import { getGracefulShutdownCommand } from "./provider.js";
-import {
-	type PromiseAgeTracker,
-	createPromiseAgeTracker,
-} from "./promise-age-tracker.js";
 import { runHealthChecks } from "./health.js";
 import { saveManifest } from "./manifest.js";
 import { writeIdleProgress } from "./progress.js";
@@ -42,14 +37,19 @@ import {
 	readProgressFile,
 } from "./progress-file.js";
 import {
+	createPromiseAgeTracker,
+	type PromiseAgeTracker,
+} from "./promise-age-tracker.js";
+import { getGracefulShutdownCommand } from "./provider.js";
+import {
 	createSandbox,
 	getSandboxesNeedingRestart,
 	keepAliveSandboxes,
 } from "./sandbox.js";
 import { sleep } from "./utils.js";
 import {
-	DEFAULT_MAX_RETRIES,
 	assignFeatureToSandbox,
+	DEFAULT_MAX_RETRIES,
 	getBlockedFeatures,
 	shouldRetryFailedFeature,
 } from "./work-queue.js";

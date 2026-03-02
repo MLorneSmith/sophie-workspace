@@ -21,14 +21,14 @@ import type {
 import { emitOrchestratorEvent } from "./event-emitter.js";
 import { saveManifest } from "./manifest.js";
 import {
+	buildDocumentationCommand,
+	buildDocumentationPrompt,
+} from "./provider.js";
+import {
 	createReviewSandbox,
 	getVSCodeUrl,
 	startDevServer,
 } from "./sandbox.js";
-import {
-	buildDocumentationPrompt,
-	buildDocumentationCommand,
-} from "./provider.js";
 import { speakCompletion } from "./tts.js";
 import { withTimeout } from "./utils.js";
 

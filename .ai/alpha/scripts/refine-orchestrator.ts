@@ -78,10 +78,10 @@ import {
 	WORKSPACE_DIR,
 } from "./config/index.js";
 import {
-	E2B_API_KEY,
 	checkEnvironment,
-	getAllEnvVars,
+	E2B_API_KEY,
 	GITHUB_TOKEN,
+	getAllEnvVars,
 } from "./lib/environment.js";
 import { getProjectRoot } from "./lib/lock.js";
 import { findSpecDir, loadManifest, saveManifest } from "./lib/manifest.js";

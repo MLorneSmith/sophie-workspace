@@ -1,9 +1,9 @@
 "use server";
 
 import {
-	ConfigManager,
 	type ChatCompletionOptions,
 	type ChatMessage,
+	ConfigManager,
 	createOpenAIOnlyConfig,
 	getChatCompletion,
 } from "@kit/ai-gateway";
@@ -26,12 +26,17 @@ import {
 } from "../../../_lib/server/company-brief-synthesis.service";
 import { researchCompany } from "../../../_lib/server/company-research.service";
 import {
+	enrichCompany,
+	extractDomain,
+	type ApolloEnrichmentResult,
+} from "../../../_lib/server/apollo-enrichment.service";
+import {
+	getCompanyDetails,
+	getPersonProfile,
 	type NetrowsEnrichmentResult,
 	researchPerson,
-	searchPersonFuzzy,
 	searchCompany,
-	getPersonProfile,
-	getCompanyDetails,
+	searchPersonFuzzy,
 } from "../../../_lib/server/netrows.service";
 
 // ---------------------------------------------------------------------------
@@ -174,9 +179,9 @@ Respond with ONLY the JSON object, no markdown fences.`;
 // ---------------------------------------------------------------------------
 
 export const searchAudienceAction = enhanceAction(
-	async (data) => {
+	async (data, user) => {
 		const [personResults, companyResults] = await Promise.all([
-			searchPersonFuzzy(data.personName, data.company),
+			searchPersonFuzzy(data.personName, data.company, user.id),
 			searchCompany(data.company),
 		]);
 
@@ -273,6 +278,19 @@ export const researchAudienceAction = enhanceAction(
 			};
 		}
 
+		// Step 1.5: Start Apollo company enrichment (non-blocking, runs parallel with Step 2)
+		const companyDomain = enrichment.companyDetails?.website
+			? extractDomain(enrichment.companyDetails.website)
+			: null;
+
+		let apolloEnrichment: ApolloEnrichmentResult | null = null;
+		const apolloPromise: Promise<ApolloEnrichmentResult | null> = companyDomain
+			? (async () => {
+					logger.info(ctx, "Enriching company via Apollo: %s", companyDomain);
+					return enrichCompany(companyDomain);
+				})()
+			: Promise.resolve(null);
+
 		// Step 2: Company web research + brief synthesis (parallel with step 1)
 		// Uses Brave Search API + LLM to build a structured CompanyBrief
 		let companyBrief: CompanyBrief | null = null;
@@ -304,16 +322,69 @@ export const researchAudienceAction = enhanceAction(
 						?.replace(/^https?:\/\//, "")
 						.replace(/\/.*$/, "") ?? undefined;
 
-				const webResearch = await withTimeout(
-					researchCompany(data.company, industry, domain),
-					15_000,
-					"Company web research",
-				);
+				// Run web research AND Apollo enrichment in parallel
+				const [webResearch, apolloResult] = await Promise.all([
+					withTimeout(
+						researchCompany(data.company, industry, domain),
+						15_000,
+						"Company web research",
+					),
+					apolloPromise.catch((apolloErr) => {
+						logger.warn(
+							ctx,
+							"Apollo enrichment failed (non-blocking): %o",
+							apolloErr,
+						);
+						return null;
+					}),
+				]);
+
+				apolloEnrichment = apolloResult;
+				if (apolloEnrichment?.success && apolloEnrichment.organization) {
+					logger.info(
+						ctx,
+						"Apollo enrichment success: revenue=%s, employees=%s",
+						apolloEnrichment.organization.annual_revenue_printed,
+						apolloEnrichment.organization.employee_count_range,
+					);
+				}
 
 				// Synthesize into CompanyBrief via LLM
 				const synthesisInput: CompanyResearchInput = {
 					companyName: data.company,
 					industry,
+					apolloData: apolloEnrichment?.organization
+						? {
+								estimatedRevenue:
+									apolloEnrichment.organization.annual_revenue_printed ??
+									apolloEnrichment.organization.estimated_revenue_range ??
+									undefined,
+								employeeCount:
+									apolloEnrichment.organization.employee_count_range ??
+									undefined,
+								employeeGrowth:
+									apolloEnrichment.organization.employee_growth_rate ??
+									undefined,
+								fundingStage:
+									apolloEnrichment.organization.funding_stage ?? undefined,
+								fundingTotal:
+									apolloEnrichment.organization.total_funding ?? undefined,
+								techStack:
+									apolloEnrichment.organization.technology_names ?? undefined,
+								keyIndustries:
+									apolloEnrichment.organization.industries ?? undefined,
+								keyExecutives:
+									apolloEnrichment.organization.people
+										?.slice(0, 5)
+										.map((p: { name: string; title: string }) => ({
+											name: p.name,
+											title: p.title,
+										}))
+										.filter(
+											(p: { name: string; title: string }) => p.name && p.title,
+										) ?? undefined,
+							}
+						: undefined,
 					netrowsData: enrichment.companyDetails
 						? {
 								description: enrichment.companyDetails.description ?? undefined,
@@ -411,7 +482,43 @@ export const researchAudienceAction = enhanceAction(
 				: "";
 		}
 
+		// Ensure Apollo promise is settled (may already be awaited in synthesis path)
+		if (!apolloEnrichment) {
+			try {
+				apolloEnrichment = await apolloPromise;
+			} catch (apolloErr) {
+				logger.warn(
+					ctx,
+					"Apollo enrichment failed (non-blocking): %o",
+					apolloErr,
+				);
+			}
+		}
+
 		// Step 4: Save to audience_profiles
+		// Only store allowed non-PII fields from Apollo enrichment
+		const sanitizedApolloData = apolloEnrichment?.organization
+			? {
+					configured: apolloEnrichment.configured,
+					success: apolloEnrichment.success,
+					organization: {
+						revenueRange: apolloEnrichment.organization.estimated_revenue_range,
+						employeeRange: apolloEnrichment.organization.employee_count_range,
+						fundingStage: apolloEnrichment.organization.funding_stage,
+						techStack: apolloEnrichment.organization.technology_names,
+						// Only store names and titles, omit emails/phones/PII
+						keyExecutives:
+							apolloEnrichment.organization.people
+								?.slice(0, 5)
+								.map((p) => ({
+									name: p.name,
+									title: p.title,
+								}))
+								.filter((p) => p.name && p.title) ?? [],
+					},
+				}
+			: null;
+
 		const enrichmentData = {
 			netrows: {
 				personProfile: enrichment.personProfile,
@@ -419,6 +526,7 @@ export const researchAudienceAction = enhanceAction(
 				personSearchResults: enrichment.personSearchResults,
 				companySearchResults: enrichment.companySearchResults,
 			},
+			apollo: sanitizedApolloData,
 			companyBrief: companyBrief ?? null,
 			researchedAt: new Date().toISOString(),
 		};

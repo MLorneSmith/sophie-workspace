@@ -1,4 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+	OverallProgressFileSchema,
+	SandboxProgressFileSchema,
+	safeParseProgress,
+} from "../../lib/schemas/index.js";
 import type {
 	GroupInfo,
 	OrchestratorEvent,
@@ -10,11 +15,6 @@ import type {
 	UIState,
 } from "../types.js";
 import { HEARTBEAT_STALL_THRESHOLD_MS, POLL_INTERVAL_MS } from "../types.js";
-import {
-	OverallProgressFileSchema,
-	SandboxProgressFileSchema,
-	safeParseProgress,
-} from "../../lib/schemas/index.js";
 
 /**
 

@@ -1,17 +1,15 @@
 "use client";
 
-import type React from "react";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
 import { cn } from "@kit/ui/utils";
 import { Check } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import type React from "react";
 
 import {
+	type PresentationStep,
 	STEP_ACCENT_SPECTRUM,
 	WORKFLOW_STEPS,
-	type PresentationStep,
 } from "../../_components/mock-presentations";
 
 function getCurrentStepFromPathname(

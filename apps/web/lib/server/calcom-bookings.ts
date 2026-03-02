@@ -2,9 +2,8 @@ import "server-only";
 
 import { getLogger } from "@kit/shared/logger";
 import { cache } from "react";
-
-import type { CalcomBooking } from "./calcom-types";
 import { fetchUpcomingBookings } from "./calcom-client";
+import type { CalcomBooking } from "./calcom-types";
 
 async function _fetchUserBookings(
 	email: string,

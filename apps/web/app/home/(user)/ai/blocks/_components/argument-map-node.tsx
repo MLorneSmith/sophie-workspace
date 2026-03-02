@@ -5,7 +5,7 @@ import { Button } from "@kit/ui/button";
 import { Card, CardContent } from "@kit/ui/card";
 import { Textarea } from "@kit/ui/textarea";
 import { cn } from "@kit/ui/utils";
-import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
+import { Handle, type Node, type NodeProps, Position } from "@xyflow/react";
 import { Check, Pencil, Plus, Trash2, X } from "lucide-react";
 
 import type { ArgumentMapNodeType } from "../../_lib/schemas/presentation-artifacts";

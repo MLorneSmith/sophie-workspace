@@ -12,6 +12,7 @@ import {
 	SheetTrigger,
 } from "@kit/ui/sheet";
 import { cn } from "@kit/ui/utils";
+import type { LucideIcon } from "lucide-react";
 import {
 	CircleAlert,
 	CircleCheck,
@@ -21,13 +22,12 @@ import {
 	Sparkles,
 	Target,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
 import type { StoryboardSlide } from "../../_lib/types/storyboard.types";
 import {
-	runAgentAction,
 	type RunAgentResult,
+	runAgentAction,
 } from "../_actions/run-agent.action";
 import { AgentProgress } from "./agent-progress";
 import { EditorResults } from "./agent-results/editor-results";

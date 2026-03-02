@@ -53,6 +53,7 @@ import {
 	updateInitiativeStatusFromFeatures,
 } from "./feature-transitions.js";
 import { acquireLock, getProjectRoot, releaseLock } from "./lock.js";
+import { createLogger } from "./logger.js";
 import {
 	archiveAndClearPreviousRun,
 	findSpecDir,
@@ -81,9 +82,8 @@ import {
 	reconnectToStoredSandboxes,
 } from "./sandbox.js";
 import { sleep } from "./utils.js";
-import { createLogger } from "./logger.js";
-import { cleanupStaleState, getNextAvailableFeature } from "./work-queue.js";
 import { runWorkLoop } from "./work-loop.js";
+import { cleanupStaleState, getNextAvailableFeature } from "./work-queue.js";
 
 // ============================================================================
 // Dry Run Output
@@ -255,9 +255,9 @@ export function printSummary(
 // Work Loop (Re-exported from work-loop.ts)
 // ============================================================================
 
+export type { WorkLoopOptions, WorkLoopResult } from "./work-loop.js";
 // Work loop logic is now in work-loop.ts for better separation of concerns
 export { runWorkLoop, WorkLoop } from "./work-loop.js";
-export type { WorkLoopOptions, WorkLoopResult } from "./work-loop.js";
 
 // ============================================================================
 // Sandbox Creation with Retry (Chore #1959)

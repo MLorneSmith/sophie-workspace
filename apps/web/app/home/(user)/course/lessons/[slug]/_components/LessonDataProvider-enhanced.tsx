@@ -1,5 +1,5 @@
-import { createServiceLogger } from "@kit/shared/logger";
 import type { CourseLesson } from "@kit/cms-types";
+import { createServiceLogger } from "@kit/shared/logger";
 import type { Database } from "~/lib/database.types";
 // Import the server client using dynamic import to avoid issues with next/headers
 import { updateLessonProgressAction } from "../../../_lib/server/server-actions";

@@ -40,7 +40,7 @@ jobs:
     steps:
       - name: Download deployment URLs
         if: github.event_name == 'workflow_run'
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: deployment-urls
           run-id: ${{ github.event.workflow_run.id }}
@@ -598,7 +598,7 @@ jobs:
 
       - name: Upload HAR files on failure
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: har-logs-${{ github.run_id }}
           path: apps/e2e/test-results/*.har

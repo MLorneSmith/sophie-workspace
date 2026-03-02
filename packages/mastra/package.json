@@ -8,7 +8,8 @@
 		"./agents": "./src/agents/index.ts",
 		"./config": "./src/config/index.ts",
 		"./workflows": "./src/workflows/index.ts",
-		"./persistence": "./src/persistence/agent-results.ts"
+		"./persistence": "./src/persistence/agent-results.ts",
+		"./rag": "./src/rag.ts"
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",

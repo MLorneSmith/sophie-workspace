@@ -1,12 +1,14 @@
 import "server-only";
 
+import { getLogger } from "@kit/shared/logger";
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { cache } from "react";
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { getSupabaseServerClient } from "@kit/supabase/server-client";
-import { getLogger } from "@kit/shared/logger";
-
 import type { Database } from "~/lib/database.types";
+import { loadCoachingSessions } from "~/lib/server/calcom-bookings";
+import type { CalcomBooking } from "~/lib/server/calcom-types";
+import { requireUserInServerComponent } from "~/lib/server/require-user-in-server-component";
 import type {
 	CategoryScores,
 	CoachingSessionData,
@@ -18,10 +20,7 @@ import type {
 	SkillsRadarData,
 } from "../dashboard/types";
 import type { ActivityItem } from "../types/activity.types";
-import type { CalcomBooking } from "~/lib/server/calcom-types";
 import { loadRecentActivities } from "./activity.loader";
-import { loadCoachingSessions } from "~/lib/server/calcom-bookings";
-import { requireUserInServerComponent } from "~/lib/server/require-user-in-server-component";
 
 type Client = SupabaseClient<Database>;
 

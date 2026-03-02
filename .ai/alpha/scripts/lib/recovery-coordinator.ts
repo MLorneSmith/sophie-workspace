@@ -17,8 +17,8 @@
  */
 
 import type {
-	FeatureEntry,
 	AgentProvider,
+	FeatureEntry,
 	SandboxInstance,
 	SpecManifest,
 } from "../types/index.js";

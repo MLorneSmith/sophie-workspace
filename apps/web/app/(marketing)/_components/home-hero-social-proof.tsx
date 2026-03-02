@@ -1,6 +1,6 @@
 "use client";
 
-import { type Variants, m, useReducedMotion } from "motion/react";
+import { m, useReducedMotion, type Variants } from "motion/react";
 
 interface SocialProofStripProps {
 	avatarCount?: number;
