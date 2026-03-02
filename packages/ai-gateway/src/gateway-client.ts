@@ -2,15 +2,15 @@ import OpenAI from "openai";
 
 let openai: OpenAI;
 
-if (process.env.PORTKEY_API_KEY && process.env.PORTKEY_VIRTUAL_KEY) {
-	// Route through Portkey proxy
+if (process.env.BIFROST_GATEWAY_URL) {
+	// Route through Bifrost gateway with Cloudflare Access authentication
 	openai = new OpenAI({
 		apiKey: "",
-		baseURL: "https://api.portkey.ai/v1/proxy",
+		baseURL: process.env.BIFROST_GATEWAY_URL,
 		defaultHeaders: {
-			"x-portkey-api-key": process.env.PORTKEY_API_KEY,
-			"x-portkey-virtual-key": process.env.PORTKEY_VIRTUAL_KEY,
-			"x-portkey-provider": "openai",
+			"CF-Access-Client-Id": process.env.BIFROST_CF_ACCESS_CLIENT_ID || "",
+			"CF-Access-Client-Secret":
+				process.env.BIFROST_CF_ACCESS_CLIENT_SECRET || "",
 		},
 	});
 } else if (process.env.OPENAI_API_KEY) {
@@ -19,9 +19,7 @@ if (process.env.PORTKEY_API_KEY && process.env.PORTKEY_VIRTUAL_KEY) {
 		apiKey: process.env.OPENAI_API_KEY,
 	});
 } else {
-	throw new Error(
-		"Either PORTKEY_API_KEY+PORTKEY_VIRTUAL_KEY or OPENAI_API_KEY must be set",
-	);
+	throw new Error("BIFROST_GATEWAY_URL or OPENAI_API_KEY must be set");
 }
 
 export default openai;

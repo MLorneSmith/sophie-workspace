@@ -21,12 +21,21 @@ export async function getAIGatewayContext(): Promise<AIGatewayContext> {
 		throw new Error("Unauthorized");
 	}
 
-	if (!process.env.PORTKEY_API_KEY) {
-		throw new Error("PORTKEY_API_KEY environment variable is not set");
+	// Check for Bifrost configuration
+	if (!process.env.BIFROST_GATEWAY_URL) {
+		throw new Error("BIFROST_GATEWAY_URL environment variable is not set");
 	}
 
-	if (!process.env.PORTKEY_VIRTUAL_KEY) {
-		throw new Error("PORTKEY_VIRTUAL_KEY environment variable is not set");
+	if (!process.env.BIFROST_CF_ACCESS_CLIENT_ID) {
+		throw new Error(
+			"BIFROST_CF_ACCESS_CLIENT_ID environment variable is not set",
+		);
+	}
+
+	if (!process.env.BIFROST_CF_ACCESS_CLIENT_SECRET) {
+		throw new Error(
+			"BIFROST_CF_ACCESS_CLIENT_SECRET environment variable is not set",
+		);
 	}
 
 	return {
