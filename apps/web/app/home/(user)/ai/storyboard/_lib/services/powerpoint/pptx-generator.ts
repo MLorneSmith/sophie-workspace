@@ -1,3 +1,55 @@
+/**
+ * PptxGenerator - PowerPoint Generation Service
+ *
+ * ## Supported Content Types
+ *
+ * This generator handles the following content types from StoryboardData:
+ *
+ * ### Slide Fields
+ * - `title`: Main slide title (rendered as heading)
+ * - `subheadlines[]`: Array of subheadlines for multi-column layouts
+ * - `content[]`: Array of content items (text, bullets, charts, images, tables)
+ * - `layoutId`: Layout template (title, section, one-column, two-column, etc.)
+ *
+ * ### Content Item Types
+ * - `text`: Plain text content with optional formatting
+ * - `bullet`: Bullet point items
+ * - `subbullet`: Indented sub-bullet items
+ * - `chart`: Bar, line, pie, area, scatter, bubble, radar, doughnut charts
+ * - `image`: Image from URL or base64
+ * - `table`: Tabular data
+ *
+ * ### Formatting Support
+ * The following formatting options are supported when present in content items:
+ * - `bold`: Bold text
+ * - `italic`: Italic text
+ * - `underline`: Underlined text
+ * - `color`: Text color (hex format, e.g., "FF0000")
+ * - `fontSize`: Font size in points
+ *
+ * ### Layout Support
+ * - title: Title slide layout
+ * - section: Section header layout
+ * - one-column: Single column content
+ * - two-column: Two column content (uses subheadlines[0] and subheadlines[1])
+ * - bullet-list: Bullet-focused layout
+ * - chart: Chart-focused layout
+ * - image-text: Image on left, text on right
+ * - text-image: Text on left, image on right
+ * - comparison: Two-column comparison layout
+ *
+ * ## Agent Output Compatibility
+ *
+ * Agent outputs (Partner, Validator, Whisperer, Editor) produce TipTap documents
+ * which are transformed to StoryboardData via TipTapTransformer. This generator
+ * handles all the content types that result from that transformation, including:
+ * - Paragraphs with rich text (marks are preserved as formatting)
+ * - Headings (become text with bold formatting)
+ * - Bullet and ordered lists (become bullet content items)
+ *
+ * @see TipTapTransformer for the transformation from TipTap to StoryboardData
+ */
+
 import { createServiceLogger } from "@kit/shared/logger";
 import pptxgen from "pptxgenjs";
 
@@ -12,6 +64,8 @@ import type {
 	SlideContentFormatting,
 	StoryboardData,
 } from "../../types";
+import type { TemplateConfig } from "../../../../_lib/schemas/template-config";
+import { DEFAULT_TEMPLATE_CONFIG } from "./default-template";
 
 export type { PositionMap } from "../../constants/layout-positions";
 // Re-export layout positions for backward compatibility
@@ -105,17 +159,42 @@ declare module "pptxgenjs" {
 }
 
 /**
+ * Resolve template configuration with defaults
+ */
+function resolveTemplateConfig(
+	templateConfig?: TemplateConfig,
+): TemplateConfig {
+	if (!templateConfig) {
+		return DEFAULT_TEMPLATE_CONFIG;
+	}
+	return {
+		...DEFAULT_TEMPLATE_CONFIG,
+		...templateConfig,
+		colors: { ...DEFAULT_TEMPLATE_CONFIG.colors, ...templateConfig.colors },
+		typography: {
+			...DEFAULT_TEMPLATE_CONFIG.typography,
+			...templateConfig.typography,
+		},
+		layout: { ...DEFAULT_TEMPLATE_CONFIG.layout, ...templateConfig.layout },
+		charts: { ...DEFAULT_TEMPLATE_CONFIG.charts, ...templateConfig.charts },
+	};
+}
+
+/**
  * PptxGenerator class for handling PowerPoint generation from storyboard data
  * using PptxGenJS library
  */
 export class PptxGenerator {
 	private pptx: pptxgen;
 	private logger: import("@kit/shared/logger").EnhancedLogger;
+	private templateConfig: TemplateConfig;
 
 	/**
 	 * Initializes a new PptxGenerator instance
+	 * @param templateConfig Optional template configuration for customization
 	 */
-	constructor() {
+	constructor(templateConfig?: TemplateConfig) {
+		this.templateConfig = resolveTemplateConfig(templateConfig);
 		this.pptx = new pptxgen();
 
 		// Initialize logger using createServiceLogger for synchronous access
@@ -126,10 +205,39 @@ export class PptxGenerator {
 	/**
 	 * Generate a PowerPoint file from storyboard data
 	 * @param storyboard The structured storyboard data
+	 * @param templateConfig Optional template configuration for customization
 	 * @returns Promise containing the PowerPoint file as a Buffer
 	 */
-	async generateFromStoryboard(storyboard: StoryboardData): Promise<Buffer> {
+	async generateFromStoryboard(
+		storyboard: StoryboardData,
+		templateConfig?: TemplateConfig,
+	): Promise<Buffer> {
+		// Resolve template config if provided
+		if (templateConfig) {
+			this.templateConfig = resolveTemplateConfig(templateConfig);
+		}
+
 		try {
+			// Apply custom layout if available - wrapped for compatibility
+			try {
+				(
+					this.pptx as pptxgen & {
+						defineLayout?: (opts: {
+							name: string;
+							width: number;
+							height: number;
+						}) => void;
+					}
+				).defineLayout?.({
+					name: "CUSTOM",
+					width: this.templateConfig.layout.slideWidth,
+					height: this.templateConfig.layout.slideHeight,
+				});
+				this.pptx.layout = "CUSTOM";
+			} catch {
+				/* use default layout */
+			}
+
 			// Set presentation title and other properties
 			this.pptx.title = storyboard.title;
 			this.pptx.subject = "Generated using SlideHeroes";
@@ -152,23 +260,17 @@ export class PptxGenerator {
 				// Group content by column to handle multi-column layouts properly
 				const contentByColumn = this.groupContentByColumn(slide.content);
 
-				// Add subheadlines for each column that has content
-				for (const [i, columnIndex] of Object.keys(contentByColumn).entries()) {
-					const columnContent = contentByColumn[columnIndex];
-
-					if (columnContent && columnContent.length > 0) {
-						// Find a subheadline in the column if any
-						const subheadlineContent = columnContent.find(
-							(item) => item.type === "text" && item.text?.trim(),
-						);
-
-						if (subheadlineContent?.text) {
-							// Add subheadline using coordinates from the layout
+				// Add subheadlines from the slide's subheadlines array
+				// This properly handles two-column layouts and other multi-column layouts
+				if (slide.subheadlines && slide.subheadlines.length > 0) {
+					for (let i = 0; i < slide.subheadlines.length; i++) {
+						const subheadlineText = slide.subheadlines[i];
+						if (subheadlineText && subheadlineText.trim()) {
 							this.addSubheadlineToSlide(
 								pptxSlide as unknown as PptxSlide,
-								subheadlineContent.text,
+								subheadlineText,
 								slide.layoutId,
-								i + 1, // subheadline index
+								i + 1, // subheadline index (1-based)
 							);
 						}
 					}

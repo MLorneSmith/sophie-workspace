@@ -87,6 +87,17 @@ async function braveSearch(
 	}
 }
 
+/**
+ * Generic web search for any query.
+ * Returns up to `count` results with title, url, and snippet.
+ */
+export async function webSearch(
+	query: string,
+	count = 5,
+): Promise<WebSearchResult[]> {
+	return braveSearch(query, count);
+}
+
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
