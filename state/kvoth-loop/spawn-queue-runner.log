@@ -1,0 +1,18 @@
+[2026-03-02 01:35:19 UTC] [kvoth] 1 task(s) in queue — processing FIRST only
+[2026-03-02 01:35:19 UTC]   [mc-research] MC#659: kvoth-mc-659
+[2026-03-02 01:35:24 UTC]   ❌ Spawn failed: error: unknown command 'wake'
+[2026-03-02 01:35:28 UTC] [kvoth] Queue empty.
+[2026-03-02 01:37:17 UTC] [kvoth] 1 task(s) in queue — processing FIRST only
+[2026-03-02 01:37:17 UTC]   [mc-research] MC#659: kvoth-mc-659
+[2026-03-02 01:37:22 UTC]   ❌ Cron add failed: Error: Invalid --at; use ISO time or duration like 20m 
+[2026-03-02 01:37:22 UTC]   📋 Wrote fallback notification for Sophie: kvoth-mc-659
+[2026-03-02 01:37:25 UTC] [kvoth] Queue empty.
+[2026-03-02 01:37:42 UTC] [kvoth] 1 task(s) in queue — processing FIRST only
+[2026-03-02 01:37:42 UTC]   [mc-research] MC#659: kvoth-mc-659
+[2026-03-02 01:37:47 UTC]   ❌ Cron add failed: Error: Invalid --at; use ISO time or duration like 20m 
+[2026-03-02 01:37:47 UTC]   📋 Wrote fallback notification for Sophie: kvoth-mc-659
+[2026-03-02 01:37:50 UTC] [kvoth] Queue empty.
+[2026-03-02 01:38:21 UTC] [kvoth] 1 task(s) in queue — processing FIRST only
+[2026-03-02 01:38:21 UTC]   [mc-research] MC#659: kvoth-mc-659
+[2026-03-02 01:38:26 UTC]   ✅ Sub-agent spawned via cron job: kvoth-mc-659
+[2026-03-02 01:38:29 UTC] [kvoth] Queue empty.

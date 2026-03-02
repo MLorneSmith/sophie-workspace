@@ -14,3 +14,77 @@ No Discord webhook configured
   "ttl_kills": 0,
   "recommendations": []
 }
+Analyzing token usage for last 7 days...
+API error: 500 Server Error: Internal Server Error for url: http://localhost:3001/api/v1/token-history?days=7, trying database directly
+Found 4 days of data
+
+=== Analysis Results ===
+High usage days: 0
+Expensive model instances: 3
+
+Recommendations:
+  💰 3 instances of expensive model usage. Consider using cheaper models for routine tasks.
+No Discord webhook configured
+
+{
+  "high_usage_days": [],
+  "expensive_model_usage": [
+    {
+      "date": "2026-03-01",
+      "model": "anthropic/claude-opus-4-6",
+      "tokens": 239908
+    },
+    {
+      "date": "2026-02-28",
+      "model": "anthropic/claude-opus-4-6",
+      "tokens": 312522
+    },
+    {
+      "date": "2026-02-27",
+      "model": "anthropic/claude-opus-4-6",
+      "tokens": 286461
+    }
+  ],
+  "zombie_sessions": 0,
+  "ttl_kills": 0,
+  "recommendations": [
+    "\ud83d\udcb0 3 instances of expensive model usage. Consider using cheaper models for routine tasks."
+  ]
+}
+Analyzing token usage for last 7 days...
+API error: 500 Server Error: Internal Server Error for url: http://localhost:3001/api/v1/token-history?days=7, trying database directly
+Found 4 days of data
+
+=== Analysis Results ===
+High usage days: 0
+Expensive model instances: 3
+
+Recommendations:
+  💰 3 instances of expensive model usage. Consider using cheaper models for routine tasks.
+No Discord webhook configured
+
+{
+  "high_usage_days": [],
+  "expensive_model_usage": [
+    {
+      "date": "2026-03-01",
+      "model": "anthropic/claude-opus-4-6",
+      "tokens": 239908
+    },
+    {
+      "date": "2026-02-28",
+      "model": "anthropic/claude-opus-4-6",
+      "tokens": 312522
+    },
+    {
+      "date": "2026-02-27",
+      "model": "anthropic/claude-opus-4-6",
+      "tokens": 286461
+    }
+  ],
+  "zombie_sessions": 0,
+  "ttl_kills": 0,
+  "recommendations": [
+    "\ud83d\udcb0 3 instances of expensive model usage. Consider using cheaper models for routine tasks."
+  ]
+}

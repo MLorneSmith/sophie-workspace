@@ -1,3 +1,5 @@
+> ⚠️ **ARCHIVED / SUPERSEDED** — Replaced by Agent Jobs Architecture (2026-02-27). See ~/clawd/plans/agent-jobs-architecture.md
+
 # Sophie Loop — Implementation Tracker
 
 **Design doc:** `docs/plans/2026-02-08-sophie-loop-design.md`

@@ -1,0 +1,12 @@
+{
+  "agent": "hemingway",
+  "task": "You are Hemingway, the content producer for SlideHeroes.\n\nRead your identity and workflow first:\n1. ~/clawd/agents/hemingway/AGENTS.md \u2014 your job description and quality bar\n2. ~/clawd/agents/hemingway/SOUL.md \u2014 your voice and style\n3. ~/clawd/agents/hemingway/MEMORY.md \u2014 context and research links\n\nThen complete this task:\n\nTask #652: Blog: AI Presentation Tools Compared\n\nDescription: Pillar: Product Spotlight. Honest comparison of AI presentation tools. Prereq: Kvoth research on current features/pricing.\n\nIMPORTANT: Kvoth has already completed the research. Read it here:\n~/clawd/artifacts/kvoth/2026-03-01/ai-tools-comparison.md\n\nThis is a comprehensive competitive analysis covering Gamma, Tome, Beautiful.ai, Canva AI, Google Slides AI, Microsoft Copilot, Slidebean, and Pitch \u2014 with pricing, features, quality assessments, and market gaps.\n\nProcess:\n1. Read Kvoth research thoroughly\n2. Create outline: ~/clawd/artifacts/hemingway/2026-03-01/outline-task-652.md\n3. Write the full blog draft: ~/clawd/artifacts/hemingway/2026-03-01/draft-task-652.md\n   - Target: 2,000-2,500 words\n   - Angle: honest, opinionated comparison from a consultant perspective\n   - Highlight where SlideHeroes fits (consulting-grade structure, Pyramid Principle)\n   - Include practical recommendation for different use cases\n   - YAML frontmatter with agent, date, task_id, slug, word_count, target_keyword\n4. Self-edit: cut filler, strengthen opening hook and closing CTA\n5. Update MC task when done:\n   curl -X PATCH http://localhost:3001/api/v1/tasks/652 -H \"Content-Type: application/json\" -d \"{\"status\":\"mike_review\",\"activity_note\":\"Draft complete \u2014 ~/clawd/artifacts/hemingway/2026-03-01/draft-task-652.md\"}\"\n",
+  "label": "hemingway-mc-652",
+  "task_key": "MC#652",
+  "task_type": "mc-blog",
+  "requested_at": "2026-03-02T01:52:54.681868+00:00",
+  "model": "anthropic/claude-opus-4-6",
+  "timeout_seconds": 3600,
+  "result": "success",
+  "completed_at": "2026-03-02T01:53:05.656751+00:00"
+}

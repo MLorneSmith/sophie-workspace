@@ -6,6 +6,7 @@
 - **What to call them:** Mike
 - **Pronouns:** *(optional)*
 - **Timezone:** EST (America/New_York)
+- **Email:** michael@slideheroes.com
 - **Notes:** Prefers friendly + professional tone. Default reach: Discord.
 
 ## Context

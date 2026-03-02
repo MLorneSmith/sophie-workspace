@@ -560,3 +560,27 @@
 2026-02-28T23:48:35Z RESTART: initiating gateway restart. reason=process_not_running
 2026-02-28T23:48:42Z RESTART: gateway appears healthy (active + logs flowing).
 2026-03-01T04:02:58Z watchdog starting (loop=60s stuck=600s maxRestartsPerHour=3)
+2026-03-01T17:06:29Z DETECT: gateway not running
+2026-03-01T17:06:29Z RESTART: initiating gateway restart. reason=process_not_running
+2026-03-01T17:06:35Z RESTART: gateway appears healthy (active + logs flowing).
+2026-03-01T19:23:19Z DETECT: gateway not running
+2026-03-01T19:23:30Z RESTART: initiating gateway restart. reason=process_not_running
+2026-03-01T19:35:39Z watchdog starting (loop=60s stuck=600s maxRestartsPerHour=3)
+2026-03-01T19:35:39Z DETECT: gateway not running
+2026-03-01T19:35:39Z RESTART: initiating gateway restart. reason=process_not_running
+2026-03-01T19:35:45Z RESTART: gateway appears healthy (active + logs flowing).
+2026-03-01T19:42:24Z watchdog starting (loop=60s stuck=600s maxRestartsPerHour=3)
+2026-03-01T19:42:24Z DETECT: gateway not running
+2026-03-01T19:42:25Z RESTART: initiating gateway restart. reason=process_not_running
+2026-03-01T19:42:33Z RESTART: gateway appears healthy (active + logs flowing).
+2026-03-01T19:58:23Z watchdog starting (loop=60s stuck=600s maxRestartsPerHour=3)
+2026-03-01T19:58:23Z DETECT: gateway not running
+2026-03-01T19:58:23Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-03-01T20:12:26Z DETECT: gateway not running
+2026-03-01T20:12:26Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-03-01T21:21:34Z DETECT: gateway not running
+2026-03-01T21:21:34Z RESTART: initiating gateway restart. reason=process_not_running
+2026-03-01T21:21:40Z RESTART: gateway appears healthy (active + logs flowing).
+2026-03-01T21:43:41Z DETECT: gateway not running
+2026-03-01T21:43:41Z RESTART: initiating gateway restart. reason=process_not_running
+2026-03-01T21:43:43Z RESTART: gateway appears healthy (active + logs flowing).

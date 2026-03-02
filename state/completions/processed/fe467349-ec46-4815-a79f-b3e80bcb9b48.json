@@ -1,0 +1,8 @@
+{
+  "agent": "neo",
+  "task": "Implement GitHub issue #2205: Refactor PPTX generator to accept TemplateConfig",
+  "status": "done",
+  "result": "Successfully implemented TemplateConfig support for PPTX generator. Created template-config.ts with Zod schemas, default-template.ts with extracted values, updated generator to accept optional templateConfig parameter. All 32 tests pass. PR opened at https://github.com/slideheroes/2025slideheroes/pull/2206",
+  "timestamp": "2026-03-01T16:55:41Z",
+  "runtime_seconds": 300
+}

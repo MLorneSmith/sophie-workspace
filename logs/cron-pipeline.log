@@ -276,3 +276,101 @@ Stored pipeline results in Mission Control
 === Pipeline Complete ===
 Downloaded=3 Uploaded=3 Failed=7
 Evaluated=93 Kept=10 Deleted=83 MC Synced=0
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 463, in <module>
+    main()
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 421, in main
+    s3_client = get_s3_client()
+                ^^^^^^^^^^^^^^^
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 129, in get_s3_client
+    raise ValueError("Missing R2 environment variables")
+ValueError: Missing R2 environment variables
+
+=== Nightly Presentation Pipeline ===
+Started at: 2026-03-02 03:00:01
+Limit: 10 | Threshold: 3.5/5
+
+== PHASE 1: Download & Upload to R2 ==
+Unprocessed: 10 selected for download
+
+--- [1/10] Roland Berger Nearshoring in Mexico Report 2024 ---
+    Source: roland_berger
+    Downloading...
+    Downloaded: 2138 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/roland_berger/roland_berger-Roland Berger Nearshoring in Mexico Report 2024.pdf
+    UPLOADED: to-be-evaluated/roland_berger/roland_berger-Roland Berger Nearshoring in Mexico Report 2024.pdf
+
+--- [2/10] Roland Berger Resilient Supply Chains for Raw Materials ---
+    Source: roland_berger
+    Downloading...
+    Downloaded: 948 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/roland_berger/roland_berger-Roland Berger Resilient Supply Chains for Raw Materials.pdf
+    UPLOADED: to-be-evaluated/roland_berger/roland_berger-Roland Berger Resilient Supply Chains for Raw Materials.pdf
+
+--- [3/10] L.E.K. Consulting 2023 US Packaging Report ---
+    Source: lek_consulting
+    Downloading...
+    Downloaded: 15487 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting 2023 US Packaging Report.pdf
+    UPLOADED: to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting 2023 US Packaging Report.pdf
+
+--- [4/10] L.E.K. Consulting Enterprise Digital Impact 2023 ---
+    Source: lek_consulting
+    Downloading...
+    Downloaded: 1759 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting Enterprise Digital Impact 2023.pdf
+    UPLOADED: to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting Enterprise Digital Impact 2023.pdf
+
+--- [5/10] L.E.K. Consulting Resilience of Global K-12 Education ---
+    Source: lek_consulting
+    Downloading...
+    Downloaded: 1728 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting Resilience of Global K-12 Education.pdf
+    UPLOADED: to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting Resilience of Global K-12 Education.pdf
+
+--- [6/10] L.E.K. Consulting 2023 Sustainability Report ---
+    Source: lek_consulting
+    Downloading...
+    Downloaded: 14098 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting 2023 Sustainability Report.pdf
+    UPLOADED: to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting 2023 Sustainability Report.pdf
+
+--- [7/10] L.E.K. Consulting Growing Revenues Through Commercial Excellence ---
+    Source: lek_consulting
+    Downloading...
+    Downloaded: 963 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting Growing Revenues Through Commercial Excellence.pdf
+    UPLOADED: to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting Growing Revenues Through Commercial Excellence.pdf
+
+--- [8/10] Arthur D. Little Innovating in the Digital Age ---
+    Source: arthur_d_little
+    Downloading...
+    FAILED: HTTP 403
+
+--- [9/10] Arthur D. Little Future of Automotive Mobility Global Study ---
+    Source: arthur_d_little
+    Downloading...
+    FAILED: HTTP 403
+
+--- [10/10] Arthur D. Little Innovation High Ground Report ---
+    Source: arthur_d_little
+    Downloading...
+    FAILED: HTTP 403
+
+Phase 1 complete: Downloaded=7 Uploaded=7 Failed=3
+
+== PHASE 2: AI Evaluation ==
+Available for evaluation: 20
+Evaluating 10 presentations (threshold: 3.5/5)
+Manifest: 162 total, 20 ready to evaluate
+Connecting to R2...
+
+
+Total kept: 10 | Total deleted: 83
+
+Syncing kept presentations to Mission Control...
+Stored pipeline results in Mission Control
+
+=== Pipeline Complete ===
+Downloaded=7 Uploaded=7 Failed=3
+Evaluated=93 Kept=10 Deleted=83 MC Synced=0

@@ -3776,3 +3776,115 @@
 [2026-03-01T03:30:04-05:00]   Deleted
 [2026-03-01T03:30:04-05:00] === Cleanup complete: 40 removed, 196 kept, 0 errors ===
 [2026-03-01T03:30:04-05:00] === Cleanup complete: 40 removed, 196 kept, 0 errors ===
+[2026-03-02T03:30:01-05:00] === Session cleanup starting (threshold: 72h) ===
+[2026-03-02T03:30:01-05:00] === Session cleanup starting (threshold: 72h) ===
+[2026-03-02T03:30:01-05:00] Exporting sessions to database...
+[2026-03-02T03:30:01-05:00] Exporting sessions to database...
+[2026-03-02T03:30:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-02T03:30:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-02T03:30:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-02T03:30:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-02T03:30:01-05:00]   Exporting token sessions for 2026-03-02
+[2026-03-02T03:30:01-05:00]   Exporting token sessions for 2026-03-02
+[2026-03-02T03:30:01-05:00]   (marking as zombie cleanup)
+[2026-03-02T03:30:01-05:00]   (marking as zombie cleanup)
+[2026-03-02T03:30:01-05:00]   ✓ 6613805a-d5df-43f2-8d02-c... 1 models, 0K tokens
+[2026-03-02T03:30:01-05:00]   ✓ 6613805a-d5df-43f2-8d02-c... 1 models, 0K tokens
+[2026-03-02T03:30:01-05:00]   
+[2026-03-02T03:30:01-05:00]   
+[2026-03-02T03:30:01-05:00]   Exported: 1, Skipped: 0
+[2026-03-02T03:30:01-05:00]   Exported: 1, Skipped: 0
+[2026-03-02T03:30:01-05:00] ZOMBIE: 089e6ffc-da72-4312-8fed-e4d32974054a
+[2026-03-02T03:30:01-05:00] ZOMBIE: 089e6ffc-da72-4312-8fed-e4d32974054a
+[2026-03-02T03:30:01-05:00]   Last user: 2026-02-26T09:42:11.290Z (94h ago)
+[2026-03-02T03:30:01-05:00]   Last user: 2026-02-26T09:42:11.290Z (94h ago)
+[2026-03-02T03:30:01-05:00]   Last activity: 2026-02-26T09:42:25.081Z
+[2026-03-02T03:30:01-05:00]   Last activity: 2026-02-26T09:42:25.081Z
+[2026-03-02T03:30:01-05:00]   Messages: 39, Size: 4.3K
+[2026-03-02T03:30:01-05:00]   Messages: 39, Size: 4.3K
+[2026-03-02T03:30:01-05:00]   Deleted
+[2026-03-02T03:30:01-05:00]   Deleted
+[2026-03-02T03:30:01-05:00] ZOMBIE: 1da686ff-366c-43f4-b1cd-475297a13b84
+[2026-03-02T03:30:01-05:00] ZOMBIE: 1da686ff-366c-43f4-b1cd-475297a13b84
+[2026-03-02T03:30:01-05:00]   Last user: 2026-02-26T13:59:38.272Z (90h ago)
+[2026-03-02T03:30:01-05:00]   Last user: 2026-02-26T13:59:38.272Z (90h ago)
+[2026-03-02T03:30:01-05:00]   Last activity: 2026-02-26T13:59:53.436Z
+[2026-03-02T03:30:01-05:00]   Last activity: 2026-02-26T13:59:53.436Z
+[2026-03-02T03:30:01-05:00]   Messages: 86, Size: 5.7K
+[2026-03-02T03:30:01-05:00]   Messages: 86, Size: 5.7K
+[2026-03-02T03:30:01-05:00]   Deleted
+[2026-03-02T03:30:01-05:00]   Deleted
+[2026-03-02T03:30:01-05:00] ZOMBIE: 292042d9-2f44-4ca5-a813-9969b81a7ba5
+[2026-03-02T03:30:01-05:00] ZOMBIE: 292042d9-2f44-4ca5-a813-9969b81a7ba5
+[2026-03-02T03:30:01-05:00]   Last user: 2026-02-26T17:53:25.271Z (86h ago)
+[2026-03-02T03:30:01-05:00]   Last user: 2026-02-26T17:53:25.271Z (86h ago)
+[2026-03-02T03:30:01-05:00]   Last activity: 2026-02-26T17:53:37.085Z
+[2026-03-02T03:30:01-05:00]   Last activity: 2026-02-26T17:53:37.085Z
+[2026-03-02T03:30:01-05:00]   Messages: 69, Size: 7.5K
+[2026-03-02T03:30:01-05:00]   Messages: 69, Size: 7.5K
+[2026-03-02T03:30:01-05:00]   Deleted
+[2026-03-02T03:30:01-05:00]   Deleted
+[2026-03-02T03:30:02-05:00] ZOMBIE: 4420e064-138f-483b-9a7c-c2af92ba81de
+[2026-03-02T03:30:02-05:00] ZOMBIE: 4420e064-138f-483b-9a7c-c2af92ba81de
+[2026-03-02T03:30:02-05:00]   Last user: 2026-02-27T04:00:00.971Z (76h ago)
+[2026-03-02T03:30:02-05:00]   Last user: 2026-02-27T04:00:00.971Z (76h ago)
+[2026-03-02T03:30:02-05:00]   Last activity: 2026-02-27T04:08:34.049Z
+[2026-03-02T03:30:02-05:00]   Last activity: 2026-02-27T04:08:34.049Z
+[2026-03-02T03:30:02-05:00]   Messages: 1460, Size: 508K
+[2026-03-02T03:30:02-05:00]   Messages: 1460, Size: 508K
+[2026-03-02T03:30:02-05:00]   Deleted
+[2026-03-02T03:30:02-05:00]   Deleted
+[2026-03-02T03:30:02-05:00] ZOMBIE: 751a55d4-19a7-4668-87f8-103f233168c4
+[2026-03-02T03:30:02-05:00] ZOMBIE: 751a55d4-19a7-4668-87f8-103f233168c4
+[2026-03-02T03:30:02-05:00]   Last user: 2026-02-26T15:48:22.158Z (88h ago)
+[2026-03-02T03:30:02-05:00]   Last user: 2026-02-26T15:48:22.158Z (88h ago)
+[2026-03-02T03:30:02-05:00]   Last activity: 2026-02-26T15:49:30.061Z
+[2026-03-02T03:30:02-05:00]   Last activity: 2026-02-26T15:49:30.061Z
+[2026-03-02T03:30:02-05:00]   Messages: 387, Size: 103K
+[2026-03-02T03:30:02-05:00]   Messages: 387, Size: 103K
+[2026-03-02T03:30:02-05:00]   Deleted
+[2026-03-02T03:30:02-05:00]   Deleted
+[2026-03-02T03:30:02-05:00] ZOMBIE (no user): 89650fc1-6604-4bb6-bb9d-7d1454bc404f (73h old)
+[2026-03-02T03:30:02-05:00] ZOMBIE (no user): 89650fc1-6604-4bb6-bb9d-7d1454bc404f (73h old)
+[2026-03-02T03:30:02-05:00] ZOMBIE: 8b10501f-c16b-44d7-8c7d-dbbebab641ca
+[2026-03-02T03:30:02-05:00] ZOMBIE: 8b10501f-c16b-44d7-8c7d-dbbebab641ca
+[2026-03-02T03:30:02-05:00]   Last user: 2026-02-27T07:00:00.845Z (73h ago)
+[2026-03-02T03:30:02-05:00]   Last user: 2026-02-27T07:00:00.845Z (73h ago)
+[2026-03-02T03:30:02-05:00]   Last activity: 2026-02-27T07:37:08.091Z
+[2026-03-02T03:30:02-05:00]   Last activity: 2026-02-27T07:37:08.091Z
+[2026-03-02T03:30:02-05:00]   Messages: 2284, Size: 1.1M
+[2026-03-02T03:30:02-05:00]   Messages: 2284, Size: 1.1M
+[2026-03-02T03:30:02-05:00]   Deleted
+[2026-03-02T03:30:02-05:00]   Deleted
+[2026-03-02T03:30:03-05:00] ZOMBIE: b4b78dd0-c03c-4694-8020-c0439624c04d
+[2026-03-02T03:30:03-05:00] ZOMBIE: b4b78dd0-c03c-4694-8020-c0439624c04d
+[2026-03-02T03:30:03-05:00]   Last user: 2026-02-26T17:36:32.161Z (86h ago)
+[2026-03-02T03:30:03-05:00]   Last user: 2026-02-26T17:36:32.161Z (86h ago)
+[2026-03-02T03:30:03-05:00]   Last activity: 2026-02-26T17:36:42.985Z
+[2026-03-02T03:30:03-05:00]   Last activity: 2026-02-26T17:36:42.985Z
+[2026-03-02T03:30:03-05:00]   Messages: 39, Size: 4.7K
+[2026-03-02T03:30:03-05:00]   Messages: 39, Size: 4.7K
+[2026-03-02T03:30:03-05:00]   Deleted
+[2026-03-02T03:30:03-05:00]   Deleted
+[2026-03-02T03:30:03-05:00] ZOMBIE: cc5653d3-7843-44c3-88a8-aafdafadb0f6
+[2026-03-02T03:30:03-05:00] ZOMBIE: cc5653d3-7843-44c3-88a8-aafdafadb0f6
+[2026-03-02T03:30:03-05:00]   Last user: 2026-02-26T14:42:40.449Z (89h ago)
+[2026-03-02T03:30:03-05:00]   Last user: 2026-02-26T14:42:40.449Z (89h ago)
+[2026-03-02T03:30:03-05:00]   Last activity: 2026-02-26T14:42:46.712Z
+[2026-03-02T03:30:03-05:00]   Last activity: 2026-02-26T14:42:46.712Z
+[2026-03-02T03:30:03-05:00]   Messages: 39, Size: 3.8K
+[2026-03-02T03:30:03-05:00]   Messages: 39, Size: 3.8K
+[2026-03-02T03:30:03-05:00]   Deleted
+[2026-03-02T03:30:03-05:00]   Deleted
+[2026-03-02T03:30:03-05:00] ZOMBIE: cea0a384-62bc-4ec5-8026-42aef030e72c
+[2026-03-02T03:30:03-05:00] ZOMBIE: cea0a384-62bc-4ec5-8026-42aef030e72c
+[2026-03-02T03:30:03-05:00]   Last user: 2026-02-26T12:05:12.087Z (92h ago)
+[2026-03-02T03:30:03-05:00]   Last user: 2026-02-26T12:05:12.087Z (92h ago)
+[2026-03-02T03:30:03-05:00]   Last activity: 2026-02-26T12:05:26.394Z
+[2026-03-02T03:30:03-05:00]   Last activity: 2026-02-26T12:05:26.394Z
+[2026-03-02T03:30:03-05:00]   Messages: 39, Size: 5.4K
+[2026-03-02T03:30:03-05:00]   Messages: 39, Size: 5.4K
+[2026-03-02T03:30:03-05:00]   Deleted
+[2026-03-02T03:30:03-05:00]   Deleted
+[2026-03-02T03:30:03-05:00] === Cleanup complete: 10 removed, 220 kept, 0 errors ===
+[2026-03-02T03:30:03-05:00] === Cleanup complete: 10 removed, 220 kept, 0 errors ===

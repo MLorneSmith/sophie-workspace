@@ -1,3 +1,5 @@
+> ⚠️ **ARCHIVED** — Sub-agent tool audit from Sophie Loop v1. Findings still valid as reference.
+
 # Phase 2: Sub-Agent Tool Audit
 
 **Date:** 2026-02-08

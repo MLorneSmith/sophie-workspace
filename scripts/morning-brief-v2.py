@@ -185,6 +185,7 @@ def get_calendar_events(date_str, next_date_str, label="today"):
     def fetch_cal(cal_id):
         raw = run_cmd(
             f'gog calendar events "{cal_id}" '
+            f'--account sophie@slideheroes.com '
             f'--from "{date_str}T05:00:00Z" --to "{next_date_str}T05:00:00Z" --json',
             timeout=10
         )
@@ -627,7 +628,7 @@ def send_email(html):
         f"python3 -c \""
         f"import subprocess, pathlib; "
         f"html = pathlib.Path('{tmp}').read_text(); "
-        f"subprocess.run(['gog','gmail','send','--to','{EMAIL_TO}',"
+        f"subprocess.run(['gog','gmail','send','--account','sophie@slideheroes.com','--to','{EMAIL_TO}',"
         f"'--subject','{subject}','--body-html',html,'--no-input'], check=True)"
         f"\"",
         timeout=30

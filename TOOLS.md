@@ -155,4 +155,82 @@ Configured in `openclaw.json` → `models.providers.zai.baseUrl`
 
 ---
 
+## Rabbit Pipeline Status
+
+Check the full Neo + Rabbit Plan pipeline at a glance:
+
+```bash
+python3 ~/clawd/scripts/neo-loop/rabbit-status.py
+```
+
+Shows: plan-me issues, in-progress issues, open PRs, CI status, spawn queue, active ACP sessions, cooldowns, and recent completions.
+
+---
+
+## Neo Loop Scripts
+
+All in `~/clawd/scripts/neo-loop/`:
+
+| Script | Cron | Purpose |
+|--------|------|---------|
+| `neo-issue-pickup.py` | */10 8-23 | Detects plan-me issues with CR plans → queues Neo |
+| `neo-review-responder.py` | */10 8-23 | Detects PR review comments → queues Neo |
+| `neo-ci-fix.py` | */10 8-23 | Detects CI failures → queues Neo |
+| `neo-mc-pickup.py` | */30 8-23 | Picks up MC tasks assigned to Neo |
+| `neo-nightly-backlog.py` | 0 23 | Nightly backlog task |
+| `neo-pr-merge-sync.py` | */10 8-23 | Syncs MC task status on PR merge |
+| `process-spawn-queue.py` | On demand | Processes spawn queue → launches ACP sessions |
+| `rabbit-status.py` | Manual | Pipeline dashboard |
+
+---
+
+---
+
+## Structured Data Store (SQLite)
+
+**DB:** `~/clawd/data/structured.db`
+**Script:** `python3 ~/clawd/scripts/structured-db.py`
+
+### When to use
+Use SQLite for **precise, structured queries** — when you need exact data, not fuzzy recall.
+- "What tools are we using?" → `query "SELECT name, category, status FROM tools WHERE status='active'"`
+- "What decisions have we made?" → `query "SELECT topic, decision FROM decisions"`
+- "Show me our competitors" → `query "SELECT * FROM competitive_intel"`
+
+### Commands
+```bash
+python3 scripts/structured-db.py query "SQL"          # Run any SELECT/INSERT/UPDATE
+python3 scripts/structured-db.py insert TABLE 'JSON'   # Insert a row
+python3 scripts/structured-db.py stats                  # Table sizes
+```
+
+### Tables
+| Table | Contents |
+|-------|----------|
+| `tools` | SaaS tools & services (name, category, status, url, cost, notes) |
+| `contacts` | People & orgs (name, role, org, email, notes) |
+| `decisions` | Key decisions with rationale (topic, decision, rationale, status) |
+| `projects` | Project metadata (name, repo, status, tech_stack) |
+| `competitive_intel` | Competitor data (company, product, pricing, strengths, weaknesses) |
+| `api_endpoints` | API docs (service, path, method, auth_required, description) |
+
+### Keep it updated
+When Mike mentions a new tool, contact, decision, or competitor → add it to SQLite.
+When a decision is superseded → update the old row's status and add the new one.
+
+---
+
+## Memory System Overview
+
+Sophie has three memory layers — use the right one:
+
+| Need | Layer | How |
+|------|-------|-----|
+| "What does Mike prefer?" | **Mem0** (auto-recall) | Already injected in `<relevant-memories>`. Or `memory_search("query")` |
+| "What tools do we use?" | **SQLite** | `python3 scripts/structured-db.py query "SQL"` |
+| "What went wrong last time?" | **Learnings** | Read `learnings/LEARNINGS.md` |
+| "What happened yesterday?" | **Daily logs** | Read `memory/YYYY-MM-DD.md` |
+
+---
+
 Add whatever helps you do your job. This is your cheat sheet.

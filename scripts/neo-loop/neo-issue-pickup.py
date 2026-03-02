@@ -171,6 +171,10 @@ def main():
             processed.add(num)
             spawned += 1
             log(f"  #{num} queued for Neo: {title}")
+            # Update labels: remove plan-me, add in-progress
+            gh("issue", "edit", str(num), "--repo", REPO,
+               "--remove-label", "plan-me", "--add-label", "in-progress",
+               json_output=False)
 
     # Save state
     state["processed_issues"] = list(processed)

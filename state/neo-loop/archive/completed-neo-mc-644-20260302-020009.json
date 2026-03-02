@@ -1,0 +1,13 @@
+{
+  "agent": "neo",
+  "task": "Implement Mission Control task #644: Extract shared agent-loop infrastructure from Neo Loop\n\nDescription:\nRefactor neo-loop/common.py into shared ~/clawd/scripts/agent-loop/common.py.\n\nExtract:\n- MC task polling (query by assigned_agent)\n- Spawn queue management\n- Safety rails (concurrency, cooldown, memory gate, hours)\n- Discord notifications (parameterized)\n\nKeep GitHub-specific logic in neo-loop/.\n\nDepends on: MC assigned_agent feature.\n\nRef: plans/agent-jobs-architecture.md \u00a73.1\n\nFollow the workflow in your AGENTS.md. /codecheck must pass. Write tests for new functionality. Open a PR when done.",
+  "label": "neo-mc-644",
+  "task_key": "PR#644-mc-task",
+  "task_type": "mc-task",
+  "requested_at": "2026-03-02T02:00:01.340990+00:00",
+  "model": "minimax/MiniMax-M2.5-highspeed",
+  "timeout_seconds": 1800,
+  "pr_number": 644,
+  "result": "failed",
+  "completed_at": "2026-03-02T02:00:09.924886+00:00"
+}

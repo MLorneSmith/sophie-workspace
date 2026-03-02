@@ -144,7 +144,7 @@ def build_task_prompt(pr_number: int, pr_title: str, branch: str, failure_logs: 
 4. Diagnose the root cause
 5. Fix the issue
 6. Run `pnpm format:fix && pnpm lint:fix && pnpm typecheck` locally to verify
-7. Also run any relevant tests: `pnpm test` or specific test files
+7. Run ONLY the specific test files related to your changes — NEVER run `pnpm test` (full suite). Use `cd apps/web && pnpm vitest run <specific-test-file>` instead
 8. Commit with: `git commit -m "fix: CI failure on PR #{pr_number}"`
 9. Push: `git push origin {branch}`
 
@@ -153,10 +153,13 @@ def build_task_prompt(pr_number: int, pr_title: str, branch: str, failure_logs: 
 {failure_logs[:8000]}
 
 ## Important
+- ONLY fix errors caused by changes in THIS PR. Check `git diff upstream/dev...HEAD --name-only` to see what this PR changed
+- If a CI failure is in a file NOT touched by this PR, SKIP IT — it's a pre-existing issue
 - Read the FULL error output carefully before changing anything
 - The fix should address the root cause, not just suppress the error
 - If the failure is a flaky test (not deterministic), note that in your commit message
 - Do NOT force push — always add new commits
+- Do NOT run `pnpm test` — only run specific test files related to your changes
 """
 
 
@@ -222,7 +225,7 @@ def main():
                 logs_parts.append(f"### {name}\n{summary[:2000]}")
             failure_logs = "\n\n".join(logs_parts) if logs_parts else "(no logs available)"
 
-        # Queue spawn
+        # Queue spawn — only mark SHA if queue succeeds
         label = f"neo-ci-{num}"
         task = build_task_prompt(num, title, branch, failure_logs)
         queued = queue_spawn(task, label, num, "ci-fix")
@@ -230,6 +233,8 @@ def main():
         if queued:
             fixed_shas.add(sha)
             spawned += 1
+        else:
+            log(f"  PR #{num}: queue failed, SHA NOT marked (will retry next cycle)")
 
     # Save state — keep last 200 SHAs
     state["fixed_shas"] = sorted(fixed_shas)[-200:]

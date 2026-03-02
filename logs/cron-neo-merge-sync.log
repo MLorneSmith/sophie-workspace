@@ -1,0 +1,298 @@
+[2026-03-01 18:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 18:50:02 UTC] Checking 20 merged PRs
+[2026-03-01 18:50:02 UTC]   PR #2192: linked issues [2191]
+[2026-03-01 18:50:02 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:03 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/2191: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:07 UTC] Posted to #neo: ✅ PR #2192 merged → MC tasks updated for issues [2191]
+[2026-03-01 18:50:07 UTC]   PR #2190: no linked issues found
+[2026-03-01 18:50:07 UTC]   PR #2188: linked issues [625]
+[2026-03-01 18:50:07 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:07 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/pull/625: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:11 UTC] Posted to #neo: ✅ PR #2188 merged → MC tasks updated for issues [625]
+[2026-03-01 18:50:11 UTC]   PR #2187: linked issues [626]
+[2026-03-01 18:50:11 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:12 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/626: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:15 UTC] Posted to #neo: ✅ PR #2187 merged → MC tasks updated for issues [626]
+[2026-03-01 18:50:15 UTC]   PR #2185: no linked issues found
+[2026-03-01 18:50:15 UTC]   PR #2184: linked issues [2183]
+[2026-03-01 18:50:15 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:16 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/pull/2183: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:19 UTC] Posted to #neo: ✅ PR #2184 merged → MC tasks updated for issues [2183]
+[2026-03-01 18:50:19 UTC]   PR #2183: no linked issues found
+[2026-03-01 18:50:19 UTC]   PR #2182: no linked issues found
+[2026-03-01 18:50:19 UTC]   PR #2179: linked issues [495]
+[2026-03-01 18:50:19 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:20 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/495: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:23 UTC] Posted to #neo: ✅ PR #2179 merged → MC tasks updated for issues [495]
+[2026-03-01 18:50:23 UTC]   PR #2178: linked issues [484]
+[2026-03-01 18:50:23 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:23 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/484: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:27 UTC] Posted to #neo: ✅ PR #2178 merged → MC tasks updated for issues [484]
+[2026-03-01 18:50:27 UTC]   PR #2177: linked issues [493, 496]
+[2026-03-01 18:50:27 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:27 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/493: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:27 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:28 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/496: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:31 UTC] Posted to #neo: ✅ PR #2177 merged → MC tasks updated for issues [493, 496]
+[2026-03-01 18:50:31 UTC]   PR #2176: no linked issues found
+[2026-03-01 18:50:31 UTC]   PR #2174: linked issues [483, 493, 496]
+[2026-03-01 18:50:31 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:32 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/483: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:32 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:32 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/493: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:32 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:33 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/496: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:36 UTC] Posted to #neo: ✅ PR #2174 merged → MC tasks updated for issues [483, 493, 496]
+[2026-03-01 18:50:36 UTC]   PR #2172: no linked issues found
+[2026-03-01 18:50:36 UTC]   PR #2168: linked issues [474]
+[2026-03-01 18:50:36 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:37 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/474: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:40 UTC] Posted to #neo: ✅ PR #2168 merged → MC tasks updated for issues [474]
+[2026-03-01 18:50:40 UTC]   PR #2166: linked issues [473, 2165]
+[2026-03-01 18:50:40 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:41 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/473: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:41 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:42 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/pull/2165: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:45 UTC] Posted to #neo: ✅ PR #2166 merged → MC tasks updated for issues [473, 2165]
+[2026-03-01 18:50:45 UTC]   PR #2165: linked issues [473]
+[2026-03-01 18:50:45 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:46 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/473: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:49 UTC] Posted to #neo: ✅ PR #2165 merged → MC tasks updated for issues [473]
+[2026-03-01 18:50:49 UTC]   PR #2154: linked issues [486, 495, 501, 503, 504]
+[2026-03-01 18:50:49 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:50 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/486: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:50 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:51 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/495: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:51 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:51 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/501: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:51 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:52 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/503: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:52 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:53 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/pull/504: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:56 UTC] Posted to #neo: ✅ PR #2154 merged → MC tasks updated for issues [486, 495, 501, 503, 504]
+[2026-03-01 18:50:56 UTC]   PR #2149: linked issues [569, 572, 582, 583, 2148]
+[2026-03-01 18:50:56 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:57 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/569: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:57 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:58 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/572: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:58 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:58 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/582: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:58 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:50:59 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/583: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:50:59 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:51:00 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/pull/2148: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:51:03 UTC] Posted to #neo: ✅ PR #2149 merged → MC tasks updated for issues [569, 572, 582, 583, 2148]
+[2026-03-01 18:51:03 UTC]   PR #2148: linked issues [580, 581, 2141, 2144]
+[2026-03-01 18:51:03 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:51:04 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/580: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:51:04 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:51:04 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/581: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:51:04 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:51:05 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/pull/2141: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:51:05 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-01 18:51:06 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/pull/2144: 'in-progress' not found
+failed to update 1 issue
+[2026-03-01 18:51:09 UTC] Posted to #neo: ✅ PR #2148 merged → MC tasks updated for issues [580, 581, 2141, 2144]
+[2026-03-01 18:51:09 UTC] Done. Updated: 14
+[2026-03-01 19:00:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 19:00:02 UTC] Checking 20 merged PRs
+[2026-03-01 19:00:02 UTC] Done. Updated: 0
+[2026-03-01 19:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 19:10:02 UTC] Checking 20 merged PRs
+[2026-03-01 19:10:02 UTC] Done. Updated: 0
+[2026-03-01 19:20:20 UTC] === Neo PR Merge Sync ===
+[2026-03-01 19:21:07 UTC] gh exception: Command '['gh', 'pr', 'list', '--repo', 'slideheroes/2025slideheroes', '--state', 'merged', '--author', 'SophieLegerPA', '--json', 'number,title,body,mergedAt,headRefName', '--limit', '20']' timed out after 30 seconds
+[2026-03-01 19:21:07 UTC] No recently merged PRs
+[2026-03-01 19:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 19:50:02 UTC] Checking 20 merged PRs
+[2026-03-01 19:50:02 UTC] Done. Updated: 0
+[2026-03-01 20:00:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 20:00:02 UTC] Checking 20 merged PRs
+[2026-03-01 20:00:02 UTC] Done. Updated: 0
+[2026-03-01 20:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 20:10:02 UTC] Checking 20 merged PRs
+[2026-03-01 20:10:02 UTC] Done. Updated: 0
+[2026-03-01 20:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 20:20:02 UTC] Checking 20 merged PRs
+[2026-03-01 20:20:02 UTC] Done. Updated: 0
+[2026-03-01 20:30:02 UTC] === Neo PR Merge Sync ===
+[2026-03-01 20:30:03 UTC] Checking 20 merged PRs
+[2026-03-01 20:30:03 UTC] Done. Updated: 0
+[2026-03-01 20:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 20:40:02 UTC] Checking 20 merged PRs
+[2026-03-01 20:40:02 UTC] Done. Updated: 0
+[2026-03-01 20:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 20:50:02 UTC] Checking 20 merged PRs
+[2026-03-01 20:50:02 UTC] Done. Updated: 0
+[2026-03-01 21:00:02 UTC] === Neo PR Merge Sync ===
+[2026-03-01 21:00:02 UTC] Checking 20 merged PRs
+[2026-03-01 21:00:02 UTC] Done. Updated: 0
+[2026-03-01 21:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 21:10:01 UTC] Checking 20 merged PRs
+[2026-03-01 21:10:01 UTC] Done. Updated: 0
+[2026-03-01 21:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 21:20:02 UTC] Checking 20 merged PRs
+[2026-03-01 21:20:02 UTC] Done. Updated: 0
+[2026-03-01 21:30:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 21:30:02 UTC] Checking 20 merged PRs
+[2026-03-01 21:30:02 UTC] Done. Updated: 0
+[2026-03-01 21:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 21:40:01 UTC] Checking 20 merged PRs
+[2026-03-01 21:40:01 UTC] Done. Updated: 0
+[2026-03-01 21:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 21:50:01 UTC] Checking 20 merged PRs
+[2026-03-01 21:50:01 UTC] Done. Updated: 0
+[2026-03-01 22:00:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 22:00:02 UTC] Checking 20 merged PRs
+[2026-03-01 22:00:02 UTC] Done. Updated: 0
+[2026-03-01 22:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 22:10:01 UTC] Checking 20 merged PRs
+[2026-03-01 22:10:01 UTC] Done. Updated: 0
+[2026-03-01 22:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 22:20:01 UTC] Checking 20 merged PRs
+[2026-03-01 22:20:01 UTC] Done. Updated: 0
+[2026-03-01 22:30:02 UTC] === Neo PR Merge Sync ===
+[2026-03-01 22:30:02 UTC] Checking 20 merged PRs
+[2026-03-01 22:30:02 UTC] Done. Updated: 0
+[2026-03-01 22:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 22:40:01 UTC] Checking 20 merged PRs
+[2026-03-01 22:40:01 UTC] Done. Updated: 0
+[2026-03-01 22:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 22:50:01 UTC] Checking 20 merged PRs
+[2026-03-01 22:50:01 UTC] Done. Updated: 0
+[2026-03-01 23:00:02 UTC] === Neo PR Merge Sync ===
+[2026-03-01 23:00:03 UTC] Checking 20 merged PRs
+[2026-03-01 23:00:03 UTC] Done. Updated: 0
+[2026-03-01 23:10:02 UTC] === Neo PR Merge Sync ===
+[2026-03-01 23:10:02 UTC] Checking 20 merged PRs
+[2026-03-01 23:10:02 UTC] Done. Updated: 0
+[2026-03-01 23:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 23:20:01 UTC] Checking 20 merged PRs
+[2026-03-01 23:20:01 UTC] Done. Updated: 0
+[2026-03-01 23:30:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 23:30:02 UTC] Checking 20 merged PRs
+[2026-03-01 23:30:02 UTC] Done. Updated: 0
+[2026-03-01 23:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-01 23:40:01 UTC] Checking 20 merged PRs
+[2026-03-01 23:40:01 UTC] Done. Updated: 0
+[2026-03-01 23:50:02 UTC] === Neo PR Merge Sync ===
+[2026-03-01 23:50:02 UTC] Checking 20 merged PRs
+[2026-03-01 23:50:02 UTC] Done. Updated: 0
+[2026-03-02 00:00:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 00:00:02 UTC] Checking 20 merged PRs
+[2026-03-02 00:00:02 UTC] Done. Updated: 0
+[2026-03-02 00:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 00:10:02 UTC] Checking 20 merged PRs
+[2026-03-02 00:10:02 UTC] Done. Updated: 0
+[2026-03-02 00:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 00:20:02 UTC] Checking 20 merged PRs
+[2026-03-02 00:20:02 UTC] Done. Updated: 0
+[2026-03-02 00:30:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 00:30:02 UTC] Checking 20 merged PRs
+[2026-03-02 00:30:02 UTC] Done. Updated: 0
+[2026-03-02 00:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 00:40:02 UTC] Checking 20 merged PRs
+[2026-03-02 00:40:02 UTC] Done. Updated: 0
+[2026-03-02 00:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 00:50:02 UTC] Checking 20 merged PRs
+[2026-03-02 00:50:02 UTC] Done. Updated: 0
+[2026-03-02 01:00:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 01:00:02 UTC] Checking 20 merged PRs
+[2026-03-02 01:00:02 UTC] Done. Updated: 0
+[2026-03-02 01:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 01:10:01 UTC] Checking 20 merged PRs
+[2026-03-02 01:10:01 UTC] Done. Updated: 0
+[2026-03-02 01:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 01:20:01 UTC] Checking 20 merged PRs
+[2026-03-02 01:20:01 UTC] Done. Updated: 0
+[2026-03-02 01:30:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 01:30:02 UTC] Checking 20 merged PRs
+[2026-03-02 01:30:02 UTC] Done. Updated: 0
+[2026-03-02 01:40:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 01:40:02 UTC] Checking 20 merged PRs
+[2026-03-02 01:40:02 UTC] Done. Updated: 0
+[2026-03-02 01:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 01:50:02 UTC] Checking 20 merged PRs
+[2026-03-02 01:50:02 UTC] Done. Updated: 0
+[2026-03-02 02:00:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 02:00:01 UTC] Checking 20 merged PRs
+[2026-03-02 02:00:01 UTC] Done. Updated: 0
+[2026-03-02 02:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 02:10:01 UTC] Checking 20 merged PRs
+[2026-03-02 02:10:01 UTC] Done. Updated: 0
+[2026-03-02 02:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 02:20:01 UTC] Checking 20 merged PRs
+[2026-03-02 02:20:01 UTC] Done. Updated: 0
+[2026-03-02 02:30:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 02:30:02 UTC] Checking 20 merged PRs
+[2026-03-02 02:30:02 UTC] Done. Updated: 0
+[2026-03-02 02:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 02:40:01 UTC] Checking 20 merged PRs
+[2026-03-02 02:40:01 UTC] Done. Updated: 0
+[2026-03-02 02:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 02:50:02 UTC] Checking 20 merged PRs
+[2026-03-02 02:50:02 UTC] Done. Updated: 0
+[2026-03-02 03:00:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 03:00:03 UTC] Checking 20 merged PRs
+[2026-03-02 03:00:03 UTC] Done. Updated: 0
+[2026-03-02 03:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 03:10:01 UTC] Checking 20 merged PRs
+[2026-03-02 03:10:01 UTC] Done. Updated: 0
+[2026-03-02 03:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 03:20:02 UTC] Checking 20 merged PRs
+[2026-03-02 03:20:02 UTC] Done. Updated: 0
+[2026-03-02 03:30:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 03:30:02 UTC] Checking 20 merged PRs
+[2026-03-02 03:30:02 UTC] Done. Updated: 0
+[2026-03-02 03:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 03:40:01 UTC] Checking 20 merged PRs
+[2026-03-02 03:40:01 UTC] Done. Updated: 0
+[2026-03-02 03:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 03:50:01 UTC] Checking 20 merged PRs
+[2026-03-02 03:50:01 UTC] Done. Updated: 0
+[2026-03-02 04:00:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 04:00:02 UTC] Checking 20 merged PRs
+[2026-03-02 04:00:02 UTC] Done. Updated: 0
+[2026-03-02 04:10:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 04:10:02 UTC] Checking 20 merged PRs
+[2026-03-02 04:10:02 UTC] Done. Updated: 0
+[2026-03-02 04:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 04:20:01 UTC] Checking 20 merged PRs
+[2026-03-02 04:20:01 UTC] Done. Updated: 0
+[2026-03-02 04:30:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 04:30:02 UTC] Checking 20 merged PRs
+[2026-03-02 04:30:02 UTC] Done. Updated: 0
+[2026-03-02 04:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 04:40:01 UTC] Checking 20 merged PRs
+[2026-03-02 04:40:01 UTC] Done. Updated: 0
+[2026-03-02 04:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 04:50:01 UTC] Checking 20 merged PRs
+[2026-03-02 04:50:01 UTC] Done. Updated: 0

@@ -549,6 +549,7 @@ Standardized checklist for bringing a new agent online:
 | 2026-02-28 | AGENTS.md purpose | Strategic direction only, no platform boilerplate | Clean separation — we manage intent, OpenClaw manages mechanics |
 | 2026-02-28 | MC assigned_agent | New field + API filter + card display | Blocker for cross-agent task routing and agent-specific views |
 | 2026-02-28 | Loop design | Three patterns: event-driven, task-driven, calendar-driven | Not all agents are GitHub-centric; MC polling is the universal trigger |
+| 2026-03-01 | Code task tracking | Option A: GitHub is source of truth for coding, MC mirrors for visibility | Neo's loops already poll GitHub. MC mirrors with `githubIssue` link. Sophie syncs status manually (automate later). |
 | 2026-02-28 | Content management | Option A: MC tasks with contentType/contentPhase (kill separate Kanban) | Single system principle; content-specific Kanban view in MC instead of separate tool |
 | 2026-02-28 | Agent identity writes | Agents can update own LEARNINGS.md + MEMORY.md; AGENTS.md is Sophie/Mike-managed | Agents learn from experience, but strategic direction stays centrally controlled |
 

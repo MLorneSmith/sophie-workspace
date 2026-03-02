@@ -13,6 +13,14 @@
 - [2026-02-02] Always push after committing to `slideheroes-internal-tools`. It deploys on EC2 via push, not Railway.
 - [2026-02-24] `slideheroes-internal-tools` lives at `~/clawd/slideheroes-internal-tools/` ONLY. The live DB is `app/prisma/dev.db`.
 
+## CodeRabbit
+
+- [2026-02-27] Always run `coderabbit --prompt-only --base upstream/dev` BEFORE committing. Catches issues before the PR — saves review rounds.
+- [2026-02-27] CodeRabbit Coding Plans live as comments from `coderabbitai[bot]` on GitHub issues labeled `plan-me`. That comment is your implementation spec.
+- [2026-02-27] CodeRabbit rate limit: 8 reviews per hour. Fix findings in batches, not one at a time.
+- [2026-02-27] After PR creation, CodeRabbit auto-reviews. Expect 2-3 rounds of iteration. Each round catches fewer issues.
+- [2026-02-27] PR naming for Rabbit Plan features: `feat(scope): description [RP-<spec>#F<feature>]`
+
 ## Code Quality
 
 - [2026-02-23] Always run `pnpm format:fix && pnpm lint:fix && pnpm typecheck` before committing in 2025slideheroes. CI will fail without it.

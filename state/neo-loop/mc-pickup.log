@@ -14,3 +14,265 @@ Traceback (most recent call last):
   File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
     from common import (
 ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/scripts/neo-loop/neo-mc-pickup.py", line 20, in <module>
+    from common import (
+ImportError: cannot import name 'should_skip' from 'common' (/home/ubuntu/clawd/scripts/neo-loop/common.py)
+[2026-03-01 19:00:06 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 19:00:06 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 19:00:06 UTC] Task #644 recently queued, skipping
+[2026-03-01 19:00:06 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-01 20:00:05 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 20:00:05 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 20:00:05 UTC] Queued spawn: neo-mc-644 (PR #644)
+[2026-03-01 20:00:12 UTC] Posted to #neo: 🧑‍💻 **Neo queued:** neo-mc-644 (PR #644)
+[2026-03-01 20:00:12 UTC] Spawn queue processor triggered
+[2026-03-01 20:00:12 UTC] Queued MC task #644: Extract shared agent-loop infrastructure from Neo Loop
+[2026-03-01 20:00:19 UTC] Posted to #neo: 📋 Picking up MC task #644: Extract shared agent-loop infrastructure from Neo Loo
+[2026-03-01 20:00:19 UTC] MC pickup complete: 1 task(s) queued from 3 found
+[2026-03-01 20:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 20:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 20:30:02 UTC] Task #644 recently queued, skipping
+[2026-03-01 20:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-01 21:00:03 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 21:00:03 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 21:00:03 UTC] PR #644 run expired (started 60m ago), clearing
+[2026-03-01 21:00:03 UTC] Queued spawn: neo-mc-644 (PR #644)
+[2026-03-01 21:00:13 UTC] #neo post exception: Command '['openclaw', 'message', 'send', '--channel', 'discord', '--target', 'channel:1477061196795478199', '--message', '🧑\u200d💻 **Neo queued:** neo-mc-644 (PR #644)']' timed out after 10 seconds
+[2026-03-01 21:00:13 UTC] Spawn queue processor triggered
+[2026-03-01 21:00:13 UTC] Queued MC task #644: Extract shared agent-loop infrastructure from Neo Loop
+[2026-03-01 21:00:23 UTC] #neo post exception: Command '['openclaw', 'message', 'send', '--channel', 'discord', '--target', 'channel:1477061196795478199', '--message', '📋 Picking up MC task #644: Extract shared agent-loop infrastructure from Neo Loop']' timed out after 10 seconds
+[2026-03-01 21:00:23 UTC] MC pickup complete: 1 task(s) queued from 3 found
+[2026-03-01 21:30:01 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 21:30:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 21:30:01 UTC] Task #644 recently queued, skipping
+[2026-03-01 21:30:01 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-01 22:00:04 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 22:00:04 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 22:00:04 UTC] PR #644 run expired (started 60m ago), clearing
+[2026-03-01 22:00:07 UTC] #neo post failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4959:54)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4982:40)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65) {
+  varName: 'OPENAI_API_KEY',
+  configPath: 'plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key'
+}
+Config invalid
+File: ~/.openclaw/openclaw.json
+Problem:
+  - <root>: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+
+Run: openclaw doctor --fix
+[2026-03-01 22:00:11 UTC] Wake failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4959:54)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4982:40)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65) {
+  varName: 'OPENAI_API_KEY',
+  configPath: 'plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key'
+}
+error: unknown command 'wake'
+[2026-03-01 22:00:11 UTC] PR #644 hit daily cooldown for mc-task, skipping
+[2026-03-01 22:00:11 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-01 22:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 22:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 22:30:02 UTC] PR #644 hit daily cooldown for mc-task, skipping
+[2026-03-01 22:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-01 23:00:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 23:00:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 23:00:02 UTC] PR #644 hit daily cooldown for mc-task, skipping
+[2026-03-01 23:00:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-01 23:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 23:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-01 23:30:02 UTC] PR #644 hit daily cooldown for mc-task, skipping
+[2026-03-01 23:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 00:00:01 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 00:00:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 00:00:01 UTC] Queued spawn: neo-mc-644 (PR #644)
+[2026-03-02 00:00:04 UTC] #neo post failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4959:54)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4982:40)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65) {
+  varName: 'OPENAI_API_KEY',
+  configPath: 'plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key'
+}
+Config invalid
+File: ~/.openclaw/openclaw.json
+Problem:
+  - <root>: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+
+Run: openclaw doctor --fix
+[2026-03-02 00:00:04 UTC] Spawn queue processor triggered
+[2026-03-02 00:00:04 UTC] Queued MC task #644: Extract shared agent-loop infrastructure from Neo Loop
+[2026-03-02 00:00:08 UTC] #neo post failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4959:54)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4982:40)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65) {
+  varName: 'OPENAI_API_KEY',
+  configPath: 'plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key'
+}
+Config invalid
+File: ~/.openclaw/openclaw.json
+Problem:
+  - <root>: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+
+Run: openclaw doctor --fix
+[2026-03-02 00:00:08 UTC] MC pickup complete: 1 task(s) queued from 3 found
+[2026-03-02 00:30:01 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 00:30:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 00:30:01 UTC] Task #644 recently queued, skipping
+[2026-03-02 00:30:01 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 01:00:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 01:00:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 01:00:02 UTC] PR #644 run expired (started 60m ago), clearing
+[2026-03-02 01:00:02 UTC] Queued spawn: neo-mc-644 (PR #644)
+[2026-03-02 01:00:05 UTC] #neo post failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4959:54)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4982:40)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65) {
+  varName: 'OPENAI_API_KEY',
+  configPath: 'plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key'
+}
+Config invalid
+File: ~/.openclaw/openclaw.json
+Problem:
+  - <root>: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+
+Run: openclaw doctor --fix
+[2026-03-02 01:00:05 UTC] Spawn queue processor triggered
+[2026-03-02 01:00:05 UTC] Queued MC task #644: Extract shared agent-loop infrastructure from Neo Loop
+[2026-03-02 01:00:10 UTC] #neo post failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4959:54)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4982:40)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65)
+    at substituteAny (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth-profiles-6WJHPoy1.js:4986:65) {
+  varName: 'OPENAI_API_KEY',
+  configPath: 'plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key'
+}
+Config invalid
+File: ~/.openclaw/openclaw.json
+Problem:
+  - <root>: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+
+Run: openclaw doctor --fix
+[2026-03-02 01:00:10 UTC] MC pickup complete: 1 task(s) queued from 3 found
+[2026-03-02 01:30:01 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 01:30:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 01:30:01 UTC] Task #644 recently queued, skipping
+[2026-03-02 01:30:01 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 02:00:01 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 02:00:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 02:00:01 UTC] [neo] Queued spawn: neo-mc-644 (PR#644-mc-task)
+[2026-03-02 02:00:04 UTC] [neo] Spawn queue processor triggered
+[2026-03-02 02:00:04 UTC] Queued MC task #644: Extract shared agent-loop infrastructure from Neo Loop
+[2026-03-02 02:00:07 UTC] MC pickup complete: 1 task(s) queued from 3 found
+[2026-03-02 02:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 02:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 02:30:02 UTC] Task #644 recently queued, skipping
+[2026-03-02 02:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 03:00:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 03:00:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 03:00:02 UTC] [neo] Run for 'PR#644-mc-task' expired (60m), clearing
+[2026-03-02 03:00:02 UTC] [neo] Queued spawn: neo-mc-644 (PR#644-mc-task)
+[2026-03-02 03:00:07 UTC] [neo] Spawn queue processor triggered
+[2026-03-02 03:00:07 UTC] Queued MC task #644: Extract shared agent-loop infrastructure from Neo Loop
+[2026-03-02 03:00:12 UTC] MC pickup complete: 1 task(s) queued from 3 found
+[2026-03-02 03:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 03:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 03:30:02 UTC] Task #644 recently queued, skipping
+[2026-03-02 03:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 04:00:01 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 04:00:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 04:00:01 UTC] [neo] Run for 'PR#644-mc-task' expired (60m), clearing
+[2026-03-02 04:00:01 UTC] [neo] Queued spawn: neo-mc-644 (PR#644-mc-task)
+[2026-03-02 04:00:06 UTC] [neo] Spawn queue processor triggered
+[2026-03-02 04:00:06 UTC] Queued MC task #644: Extract shared agent-loop infrastructure from Neo Loop
+[2026-03-02 04:00:13 UTC] MC pickup complete: 1 task(s) queued from 3 found
+[2026-03-02 04:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 04:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 04:30:02 UTC] Task #644 recently queued, skipping
+[2026-03-02 04:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found

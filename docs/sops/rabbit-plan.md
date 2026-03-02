@@ -26,8 +26,7 @@ Use Rabbit Plan for any new feature, enhancement, or significant change to the 2
 Phase 1: Brainstorm → Design Document
 Phase 2: Spec       → Spec Document + GitHub Spec Issue
 Phase 3: Issues     → GitHub Feature Issues (auto-triggers CodeRabbit)
-Phase 4: Review     → Approved Coding Plans
-Phase 5: Execute    → PRs → Merged Code
+Phase 4: Auto-Execute → Neo implements, opens PR, handles reviews (no manual plan approval)
 ```
 
 ---
@@ -141,45 +140,34 @@ Each feature issue follows the template at `~/clawd/plans/templates/feature-issu
 
 ---
 
-## Phase 4: Plan Review
+## Phase 4: Auto-Execute (No Manual Approval)
 
-**Trigger:** CodeRabbit posts a Coding Plan comment on a feature issue.
-**Who:** Sophie (monitors) + Mike (reviews/approves)
-**Duration:** 5-15 minutes per feature
+**Trigger:** CodeRabbit posts a Coding Plan comment on a `plan-me` issue.
+**Who:** Fully automated — Neo's cron loop detects and executes.
+**Duration:** Minutes to hours depending on feature size.
 
-### Process
+### Why No Manual Plan Approval?
 
-1. **Sophie detects** CR plan comment (via webhook or polling)
-2. **Sophie summarizes** the plan for Mike in Discord
-3. **Mike reviews** — either approves or requests changes
-4. **If changes needed** — Sophie (or Mike) replies to the CR comment to refine
-5. **CR regenerates** the plan incorporating feedback
-6. **Repeat** until Mike approves
+Architectural decisions are made during spec design (Phase 1-2) by Sophie + Mike. By the time an issue exists, the *what* and *why* are settled. CodeRabbit's plan is purely tactical (*how to write the code*), and Mike reviews the actual code at the PR stage. Approving the plan AND the PR is redundant.
 
-### Approval
+**Quality gates:**
+- **Front gate:** Spec design (Sophie + Mike) → ensures right direction
+- **Back gate:** PR review (Mike) → ensures right implementation
 
-Mike signals approval by saying "approved" or "go" (or similar). Sophie marks the MC task as ready for execution.
+### Automated Flow
 
----
-
-## Phase 5: Execute
-
-**Trigger:** Approved CodeRabbit plan.
-**Who:** Sophie (orchestrates) → Neo (codes)
-**Duration:** Hours to days depending on feature size
-
-### Process
-
-1. **Sophie extracts** the agent-ready prompt from CR's plan comment
-2. **Sophie spawns Neo** with the prompt (model: `ccproxy/gpt-5.3-codex`, fallback: `zai/glm-4.7`)
-3. **Neo implements** the feature on a branch in Sophie's fork
-4. **Neo runs** `pnpm format:fix && pnpm lint:fix && pnpm typecheck` before committing
-5. **Neo pushes** to origin (fork) and opens PR targeting upstream `dev`
-6. **CodeRabbit reviews** the PR automatically
-7. **Sophie processes** CR feedback, iterates if needed
-8. **Sophie notifies Mike** when PR is clean and ready for review
-9. **Mike reviews and merges**
-10. **MC task** moves to `done`
+1. **`neo-issue-pickup.py`** runs every 10 min (cron)
+2. Detects `plan-me` issues with a CodeRabbit Coding Plan comment
+3. Checks no PR already exists for the issue
+4. Queues Neo to implement (via spawn queue)
+5. **Neo implements** the feature on a branch in Sophie's fork
+6. **Neo runs** `pnpm format:fix && pnpm lint:fix && pnpm typecheck` before committing
+7. **Neo pushes** to origin (fork) and opens PR targeting upstream `dev`
+8. **CodeRabbit reviews** the PR automatically
+9. **`neo-review-responder.py`** detects review comments (every 10 min) and queues Neo to address them
+10. **`neo-ci-fix.py`** detects CI failures (every 10 min) and queues Neo to fix them
+11. **Mike reviews and merges** when PR is clean
+12. **MC task** moves to `done`
 
 ### PR Naming Convention
 
@@ -193,20 +181,19 @@ Example: `feat(export): add PPTX export for presentations [RP-2200#F3]`
 
 ## Notification Architecture
 
-### How Sophie Knows CR Posted a Plan
+### How Neo Detects Work
 
-**Primary:** GitHub webhook → `github-webhook-proxy` (port 8790) → OpenClaw hook
-- Proxy filters for `coderabbitai[bot]` events
-- Forwards `issue_comment` events (plan posts) and `pull_request_review` events (PR reviews)
+**Primary:** Cron-based polling (no LLM involved):
 
-**Fallback:** Cron job polls open feature issues with `plan-me` label for new CR comments
+| Script | Interval | Purpose |
+|--------|----------|---------|
+| `neo-issue-pickup.py` | Every 10 min | Detects `plan-me` issues with CodeRabbit plans → queues implementation |
+| `neo-review-responder.py` | Every 10 min | Detects new PR review comments → queues fixes |
+| `neo-ci-fix.py` | Every 10 min | Detects CI failures → queues fixes |
 
-### Hook Mappings
+**Backup:** GitHub webhook → `github-webhook-proxy` (port 8790) can also wake Sophie for manual intervention if needed.
 
-| Hook Path | Event Type | Action |
-|-----------|------------|--------|
-| `github-pr` | PR reviews from CR | Wake Sophie to process review feedback |
-| `github-plan` | Issue comments from CR | Wake Sophie to notify Mike of new plan |
+All scripts are pure Python + `gh` CLI. No LLM calls in the detection/queuing loop.
 
 ---
 
@@ -222,6 +209,8 @@ Example: `feat(export): add PPTX export for presentations [RP-2200#F3]`
 | Spec docs | `~/clawd/plans/specs/<slug>/` |
 | CR config | `2025slideheroes/.coderabbit.yaml` |
 | Webhook proxy | `~/clawd/scripts/github-webhook-proxy.py` |
+| Pipeline status | `python3 ~/clawd/scripts/neo-loop/rabbit-status.py` |
+| Neo Loop scripts | `~/clawd/scripts/neo-loop/` |
 
 ---
 

@@ -1,3 +1,5 @@
+> ⚠️ **ARCHIVED** — Sub-agent tool audit from Sophie Loop v1. Findings still valid as reference.
+
 # Phase 2 Tool Research: What Sophie Loop Should Adopt
 
 **Date:** 2026-02-08  

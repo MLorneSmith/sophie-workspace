@@ -19,7 +19,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from common import (
     queue_spawn,
-    run_spawn_queue,
     should_skip,
     notify_neo_channel,
     STATE_DIR,
@@ -84,35 +83,35 @@ def main():
     for task in tasks:
         task_id = task.get("id")
         task_name = task.get("name", "unnamed")
+        board_id = task.get("objectiveId")
+        
+        # GUARDRAIL: Board 2 (product) tasks must go through Rabbit Plan, not MC pickup
+        if board_id == 2:
+            log(f"⚠️ Task #{task_id} is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).")
+            continue
         
         if is_recently_queued(task_id):
             log(f"Task #{task_id} recently queued, skipping")
             continue
         
         # Queue for execution
-        spawn_task = {
-            "type": "mc-task",
-            "task_id": task_id,
-            "task_name": task_name,
-            "description": task.get("description", ""),
-            "prompt": (
-                f"Implement Mission Control task #{task_id}: {task_name}\n\n"
-                f"Description:\n{task.get('description', 'No description')}\n\n"
-                f"Follow the workflow in your AGENTS.md. "
-                f"/codecheck must pass. Write tests for new functionality. "
-                f"Open a PR when done."
-            ),
-        }
+        prompt = (
+            f"Implement Mission Control task #{task_id}: {task_name}\n\n"
+            f"Description:\n{task.get('description', 'No description')}\n\n"
+            f"Follow the workflow in your AGENTS.md. "
+            f"/codecheck must pass. Write tests for new functionality. "
+            f"Open a PR when done."
+        )
+        label = f"neo-mc-{task_id}"
         
-        queue_spawn(spawn_task)
+        queued = queue_spawn(prompt, label, task_id, "mc-task")
+        if not queued:
+            continue
         mark_queued(task_id)
         queued_count += 1
         
         log(f"Queued MC task #{task_id}: {task_name}")
         notify_neo_channel(f"📋 Picking up MC task #{task_id}: {task_name}")
-    
-    if queued_count > 0:
-        run_spawn_queue()
     
     log(f"MC pickup complete: {queued_count} task(s) queued from {len(tasks)} found")
 

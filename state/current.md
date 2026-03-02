@@ -1,37 +1,31 @@
-# Current State — Feb 27, 2026 (23:53 EST)
+# Current State — Mar 01, 2026 (21:20 EST)
 
-## Active Work
-- **Neo (4 agents):** Implementing Template System (#2197, #2198, #2199, #2200)
-- **Scrooge:** Created, awaiting first task (cost audit)
+## Agent Fleet — ALL OPERATIONAL
+| Agent | Channel | Model | Loop | Status |
+|-------|---------|-------|------|--------|
+| Neo 🧑‍💻 | #neo | MiniMax M2.5 | 6 detection scripts | Running |
+| Kvoth 🔍 | #kvoth | MiniMax M2.5 | MC pickup hourly | Running — delivered task #659 |
+| Hemingway ✍️ | #hemingway | Opus 4.6 | MC pickup 2-hourly | Running — delivered task #652 draft |
+| Viral 🚀 | #viral | MiniMax M2.5 | MC pickup 2-hourly | Ready — 4 backlog tasks |
+| Michelangelo 🎨 | #michelangelo | MiniMax M2.5 | MC pickup hourly | Ready — reactive |
 
-## Completed Today
-- Rabbit Plan: fully designed, documented, tested end-to-end
-- CodeRabbit Issue Planner integrated (auto-planning via `plan-me` label)
-- PR #2190 merged — CodeRabbit Issue Planner config
-- PR #2192 merged — Keyboard shortcut hints (first Rabbit Plan feature!)
-- PR #2194 opened — Apollo.io enrichment for audience profiling
-- PR #2195 opened — Sparse data fallbacks (#517)
-- PR #2196 opened — PPTX export fix (Task #506)
-- **Nightly Backlog:** 7 deliverables complete (#586, #435, #453, #433, #181, #168, #160)
-- Sub-agent allowlist configured (all agents spawnable)
-- Heartbeat optimized: 60min on GLM-5 (was 30min on Opus)
-- 2am job timeout: 2hr → 30min
-- New agent: Scrooge 💰 (cost watchdog, GLM-4.7)
+Shared infra: `~/clawd/scripts/agent_loop/common.py` (AgentLoop class) + `process-spawn-queue.py`
 
-## In Progress
-- PR #2194: Apollo enrichment (CodeRabbit feedback)
-- PR #2195: Sparse data fallbacks (CI errors)
-- PR #2196: PPTX export fix (nitpicks only)
-- Template System: 4 Neo agents spawned for #2197, #2198, #2199, #2200
+## Product Pipeline
+- PR #2206 (TemplateConfig) — open, CI failing (setup-deps infra issue, not code)
+- Next: #2198 (5 curated templates) → #2199 (template UI) → #2200 (library nav)
+- Blocked on CI fix (Mike tomorrow)
+
+## Pending Review
+- MC #669 — Review Hemingway blog draft (AI Presentation Tools Compared)
+- PRs: #2206, #2196, #2195, #2194
 
 ## Blockers
-- **Stripe API version mismatch** — affects ALL PRs, needs fix on `dev`
-- Webhook wake broken (cron fallback in place)
-- Cron delivery errors ("announce delivery failed")
-- ChatGPT Pro rate limited until March 2nd
-- Hook edit function broken
+- CI setup-deps failing on all PRs (dep install issue)
+- GitHub PAT swap to classic token (checks:read)
 
-## Context
-- SophieLegerPA: Triage role on upstream repo, PAT regenerated today
-- Fork workflow: push to origin (fork), not upstream
-- Always use `sessions_spawn(agentId=)` not `codex exec` for sub-agents
+## Key Files
+- Agent identities: ~/clawd/agents/{neo,kvoth,hemingway,viral,michelangelo}/
+- Loop scripts: ~/clawd/scripts/{agent}-loop/
+- Shared infra: ~/clawd/scripts/agent_loop/
+- Architecture doc: ~/clawd/plans/agent-jobs-architecture.md

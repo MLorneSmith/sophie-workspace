@@ -128,3 +128,54 @@ Total tokens: 3.5M
 Checking token usage for 2026-02-28 (threshold: 10.0M)
 Total tokens: 3.5M
 ✅ Within budget (3.5M / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 173K
+✅ Within budget (173K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 173K
+✅ Within budget (173K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 173K
+✅ Within budget (173K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 173K
+✅ Within budget (173K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 173K
+✅ Within budget (173K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 101K
+✅ Within budget (101K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 101K
+✅ Within budget (101K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 101K
+✅ Within budget (101K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 101K
+✅ Within budget (101K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Error fetching token usage: HTTPConnectionPool(host='localhost', port=3001): Read timed out. (read timeout=10)
+No data available
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 101K
+✅ Within budget (101K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 101K
+✅ Within budget (101K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 101K
+✅ Within budget (101K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 101K
+✅ Within budget (101K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 101K
+✅ Within budget (101K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 101K
+✅ Within budget (101K / 10.0M)
+Checking token usage for 2026-03-01 (threshold: 10.0M)
+Total tokens: 101K
+✅ Within budget (101K / 10.0M)

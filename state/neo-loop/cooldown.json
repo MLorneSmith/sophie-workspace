@@ -30,5 +30,29 @@
   "2194-ci-fix": {
     "date": "2026-02-28",
     "attempts": 3
+  },
+  "2205-issue-pickup": {
+    "date": "2026-03-01",
+    "attempts": 1
+  },
+  "644-mc-task": {
+    "date": "2026-03-02",
+    "attempts": 2
+  },
+  "2206-ci-fix": {
+    "date": "2026-03-01",
+    "attempts": 2
+  },
+  "PR#644-mc-task": {
+    "date": "2026-03-02",
+    "attempts": 3
+  },
+  "MC#672": {
+    "date": "2026-03-02",
+    "attempts": 1
+  },
+  "PR#644-nightly-backlog": {
+    "date": "2026-03-02",
+    "attempts": 1
   }
 }

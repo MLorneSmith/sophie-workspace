@@ -23,7 +23,7 @@ SPAWN_QUEUE = Path.home() / "clawd" / "state" / "neo-loop" / "spawn-queue.jsonl"
 ARCHIVE_DIR = Path.home() / "clawd" / "state" / "neo-loop" / "archive"
 ACTIVE_FILE = Path.home() / "clawd" / "state" / "neo-loop" / "active-acp.json"
 NEO_CHANNEL = "channel:1477061196795478199"  # #neo Discord channel
-MIN_AVAILABLE_MB = 500  # Don't spawn if less than this available
+MIN_AVAILABLE_MB = 800  # Don't spawn if less than this available (protects OpenClaw)
 
 ENV_WITH_PATH = {
     **os.environ,
@@ -98,7 +98,7 @@ def spawn_acp_session(task: str, label: str, timeout_seconds: int = 1800) -> boo
     try:
         task_file.write_text(task)
 
-        cmd = [
+        acpx_cmd = [
             "npx", "acpx",
             "--cwd", str(Path.home() / "2025slideheroes-sophie"),
             "--approve-all",
@@ -107,8 +107,19 @@ def spawn_acp_session(task: str, label: str, timeout_seconds: int = 1800) -> boo
             "--format", "json",
             "--json-strict",
             "claude", "exec",
-            "--file", str(task_file),
+            "-f", str(task_file),
         ]
+
+        # Wrap in cgroup memory limit to prevent OOM-killing OpenClaw
+        # If Neo exceeds limit, only Neo dies — OpenClaw survives
+        # Instance: m7i-flex.large (8GB). Budget: ~3GB for Neo, rest for OpenClaw + services
+        MEMORY_LIMIT = "3G"
+        cmd = [
+            "systemd-run", "--user", "--scope",
+            "-p", f"MemoryMax={MEMORY_LIMIT}",
+            "-p", "MemorySwapMax=4G",
+            "--",
+        ] + acpx_cmd
 
         log(f"  Spawning acpx exec for {label} (sync, timeout {timeout_seconds}s)...")
 

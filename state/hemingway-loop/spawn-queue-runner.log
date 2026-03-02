@@ -1,0 +1,4 @@
+[2026-03-02 01:52:57 UTC] [hemingway] 1 task(s) in queue — processing FIRST only
+[2026-03-02 01:52:57 UTC]   [mc-blog] MC#652: hemingway-mc-652
+[2026-03-02 01:53:02 UTC]   ✅ Sub-agent spawned via cron job: hemingway-mc-652
+[2026-03-02 01:53:05 UTC] [hemingway] Queue empty.

@@ -1,0 +1,59 @@
+{
+  "description": "Maps agent roles to Mem0 search queries for scoped memory injection at spawn time. Sophie queries these before spawning sub-agents and injects results into task briefs.",
+  "tokenBudget": 2000,
+  "maxMemoriesPerQuery": 3,
+  "minScore": 0.2,
+  "agents": {
+    "neo": {
+      "name": "Neo (The Coder)",
+      "queries": [
+        "coding patterns and conventions",
+        "architecture decisions and technical choices",
+        "git workflow and branch naming",
+        "CI testing and linting requirements",
+        "code review preferences"
+      ],
+      "contextPrefix": "## 🧠 Coding Context from Memory\nThese are established patterns and decisions. Follow them unless the task explicitly overrides.\n"
+    },
+    "hemingway": {
+      "name": "Hemingway (The Writer)",
+      "queries": [
+        "brand voice and writing style",
+        "content strategy and target audience",
+        "SlideHeroes product positioning and value prop",
+        "email and blog preferences",
+        "LinkedIn content strategy"
+      ],
+      "contextPrefix": "## 🧠 Writing Context from Memory\nThese are established brand/voice decisions. Follow them for consistency.\n"
+    },
+    "kvoth": {
+      "name": "Kvoth (The Researcher)",
+      "queries": [
+        "competitive landscape and market analysis",
+        "tools platforms and services evaluated",
+        "industry context and trends",
+        "customer profile and personas"
+      ],
+      "contextPrefix": "## 🧠 Research Context from Memory\nKnown facts and prior research to build on.\n"
+    },
+    "michelangelo": {
+      "name": "Michelangelo (The Artist)",
+      "queries": [
+        "visual design and brand identity",
+        "image style preferences",
+        "color palette and typography"
+      ],
+      "contextPrefix": "## 🧠 Design Context from Memory\nEstablished visual identity and preferences.\n"
+    },
+    "viral": {
+      "name": "Viral (The GTM Engineer)",
+      "queries": [
+        "SEO strategy and target keywords",
+        "growth channels and acquisition strategy",
+        "target customer profile",
+        "competitive positioning"
+      ],
+      "contextPrefix": "## 🧠 GTM Context from Memory\nEstablished strategy and market positioning.\n"
+    }
+  }
+}

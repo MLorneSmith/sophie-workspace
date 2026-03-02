@@ -277,6 +277,56 @@
       "status": "uploaded",
       "date": "2026-03-01",
       "r2Key": "to-be-evaluated/roland_berger/roland_berger-Roland Berger IT Study 2024 Part 2_ Less Costs More Value.pdf"
+    },
+    "https://www.rolandberger.com/publications/publication_pdf/Nearshoring-in-Mexico_Roland-Berger-Report-2024.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-02",
+      "r2Key": "to-be-evaluated/roland_berger/roland_berger-Roland Berger Nearshoring in Mexico Report 2024.pdf"
+    },
+    "https://content.rolandberger.com/hubfs/07_presse/24-2258_REP_Critical-raw-materials_DS.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-02",
+      "r2Key": "to-be-evaluated/roland_berger/roland_berger-Roland Berger Resilient Supply Chains for Raw Materials.pdf"
+    },
+    "https://www.lek.com/sites/default/files/PDFs/combined-packaging-report-2023.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-02",
+      "r2Key": "to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting 2023 US Packaging Report.pdf"
+    },
+    "https://www.lek.com/sites/default/files/PDFs/enterprise-digital-impact-2023.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-02",
+      "r2Key": "to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting Enterprise Digital Impact 2023.pdf"
+    },
+    "https://www.lek.com/sites/default/files/PDFs/apac-k12-gold.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-02",
+      "r2Key": "to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting Resilience of Global K-12 Education.pdf"
+    },
+    "https://www.lek.com/sites/default/files/2024-09/2023-lek-sustainability-report.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-02",
+      "r2Key": "to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting 2023 Sustainability Report.pdf"
+    },
+    "https://www.lek.com/sites/default/files/insights/pdf-attachments/1812_Growing_Revenues_Through_Commercial_%20Excellence_LEK_Executive_Insights.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-02",
+      "r2Key": "to-be-evaluated/lek_consulting/lek_consulting-L_E_K_ Consulting Growing Revenues Through Commercial Excellence.pdf"
+    },
+    "https://www.adlittle.com/sites/default/files/viewpoints/adl_innovating_in_the_digital_age-min.pdf": {
+      "status": "failed",
+      "date": "2026-03-02",
+      "reason": "HTTP 403"
+    },
+    "https://www.adlittle.com/sites/default/files/viewpoints/adl_future_of_automotive_mobility_global_study_executive_summary-min_0.pdf": {
+      "status": "failed",
+      "date": "2026-03-02",
+      "reason": "HTTP 403"
+    },
+    "https://www.adlittle.com/sites/default/files/viewpoints/ADL_Innovation_High_Ground_report_03.pdf": {
+      "status": "failed",
+      "date": "2026-03-02",
+      "reason": "HTTP 403"
     }
   }
 }

@@ -253,3 +253,488 @@
 [2026-03-01 04:30:02 UTC]   #2198 already processed, skipping
 [2026-03-01 04:30:02 UTC]   #2197 already processed, skipping
 [2026-03-01 04:30:02 UTC] Done. Spawned: 0
+[2026-03-01 13:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 13:00:02 UTC] Found 4 plan-me issues
+[2026-03-01 13:00:02 UTC]   #2200 already processed, skipping
+[2026-03-01 13:00:02 UTC]   #2199 already processed, skipping
+[2026-03-01 13:00:02 UTC]   #2198 already processed, skipping
+[2026-03-01 13:00:02 UTC]   #2197 already processed, skipping
+[2026-03-01 13:00:02 UTC] Done. Spawned: 0
+[2026-03-01 13:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 13:30:02 UTC] Found 4 plan-me issues
+[2026-03-01 13:30:02 UTC]   #2200 already processed, skipping
+[2026-03-01 13:30:02 UTC]   #2199 already processed, skipping
+[2026-03-01 13:30:02 UTC]   #2198 already processed, skipping
+[2026-03-01 13:30:02 UTC]   #2197 already processed, skipping
+[2026-03-01 13:30:02 UTC] Done. Spawned: 0
+[2026-03-01 14:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 14:00:02 UTC] Found 4 plan-me issues
+[2026-03-01 14:00:02 UTC]   #2200 already processed, skipping
+[2026-03-01 14:00:02 UTC]   #2199 already processed, skipping
+[2026-03-01 14:00:02 UTC]   #2198 already processed, skipping
+[2026-03-01 14:00:02 UTC]   #2197 already processed, skipping
+[2026-03-01 14:00:02 UTC] Done. Spawned: 0
+[2026-03-01 14:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 14:30:02 UTC] Found 4 plan-me issues
+[2026-03-01 14:30:02 UTC]   #2200 already processed, skipping
+[2026-03-01 14:30:02 UTC]   #2199 already processed, skipping
+[2026-03-01 14:30:02 UTC]   #2198 already processed, skipping
+[2026-03-01 14:30:02 UTC]   #2197 already processed, skipping
+[2026-03-01 14:30:02 UTC] Done. Spawned: 0
+[2026-03-01 15:00:02 UTC] === Neo Issue Pickup ===
+[2026-03-01 15:00:02 UTC] Found 4 plan-me issues
+[2026-03-01 15:00:02 UTC]   #2200 already processed, skipping
+[2026-03-01 15:00:02 UTC]   #2199 already processed, skipping
+[2026-03-01 15:00:02 UTC]   #2198 already processed, skipping
+[2026-03-01 15:00:02 UTC]   #2197 already processed, skipping
+[2026-03-01 15:00:02 UTC] Done. Spawned: 0
+[2026-03-01 15:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 15:30:01 UTC] Found 4 plan-me issues
+[2026-03-01 15:30:01 UTC]   #2200 already processed, skipping
+[2026-03-01 15:30:01 UTC]   #2199 already processed, skipping
+[2026-03-01 15:30:01 UTC]   #2198 already processed, skipping
+[2026-03-01 15:30:01 UTC]   #2197 already processed, skipping
+[2026-03-01 15:30:01 UTC] Done. Spawned: 0
+[2026-03-01 16:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 16:00:02 UTC] Found 4 plan-me issues
+[2026-03-01 16:00:02 UTC]   #2200 already processed, skipping
+[2026-03-01 16:00:02 UTC]   #2199 already processed, skipping
+[2026-03-01 16:00:02 UTC]   #2198 already processed, skipping
+[2026-03-01 16:00:02 UTC]   #2197 already processed, skipping
+[2026-03-01 16:00:02 UTC] Done. Spawned: 0
+[2026-03-01 16:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 16:30:02 UTC] Found 5 plan-me issues
+[2026-03-01 16:30:03 UTC] Queued spawn: neo-issue-2205 (PR #2205)
+[2026-03-01 16:30:13 UTC] Posted to #neo: 🧑‍💻 **Neo queued:** neo-issue-2205 (PR #2205)
+[2026-03-01 16:30:13 UTC] Spawn queue processor triggered
+[2026-03-01 16:30:13 UTC]   #2205 queued for Neo: [Templates Step 2] Refactor PPTX generator to accept TemplateConfig
+[2026-03-01 16:30:13 UTC]   #2200 already processed, skipping
+[2026-03-01 16:30:13 UTC]   #2199 already processed, skipping
+[2026-03-01 16:30:13 UTC]   #2198 already processed, skipping
+[2026-03-01 16:30:13 UTC]   #2197 already processed, skipping
+[2026-03-01 16:30:13 UTC] Done. Spawned: 1
+[2026-03-01 17:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 17:00:01 UTC] Found 5 plan-me issues
+[2026-03-01 17:00:01 UTC]   #2205 already processed, skipping
+[2026-03-01 17:00:01 UTC]   #2200 already processed, skipping
+[2026-03-01 17:00:01 UTC]   #2199 already processed, skipping
+[2026-03-01 17:00:01 UTC]   #2198 already processed, skipping
+[2026-03-01 17:00:01 UTC]   #2197 already processed, skipping
+[2026-03-01 17:00:01 UTC] Done. Spawned: 0
+[2026-03-01 17:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 17:30:01 UTC] Found 5 plan-me issues
+[2026-03-01 17:30:01 UTC]   #2205 already processed, skipping
+[2026-03-01 17:30:01 UTC]   #2200 already processed, skipping
+[2026-03-01 17:30:01 UTC]   #2199 already processed, skipping
+[2026-03-01 17:30:01 UTC]   #2198 already processed, skipping
+[2026-03-01 17:30:01 UTC]   #2197 already processed, skipping
+[2026-03-01 17:30:01 UTC] Done. Spawned: 0
+[2026-03-01 17:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 17:40:01 UTC] Found 5 plan-me issues
+[2026-03-01 17:40:01 UTC]   #2205 already processed, skipping
+[2026-03-01 17:40:01 UTC]   #2200 already processed, skipping
+[2026-03-01 17:40:01 UTC]   #2199 already processed, skipping
+[2026-03-01 17:40:01 UTC]   #2198 already processed, skipping
+[2026-03-01 17:40:01 UTC]   #2197 already processed, skipping
+[2026-03-01 17:40:01 UTC] Done. Spawned: 0
+[2026-03-01 17:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 17:50:02 UTC] Found 5 plan-me issues
+[2026-03-01 17:50:02 UTC]   #2205 already processed, skipping
+[2026-03-01 17:50:02 UTC]   #2200 already processed, skipping
+[2026-03-01 17:50:02 UTC]   #2199 already processed, skipping
+[2026-03-01 17:50:02 UTC]   #2198 already processed, skipping
+[2026-03-01 17:50:02 UTC]   #2197 already processed, skipping
+[2026-03-01 17:50:02 UTC] Done. Spawned: 0
+[2026-03-01 18:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 18:00:01 UTC] Found 5 plan-me issues
+[2026-03-01 18:00:01 UTC]   #2205 already processed, skipping
+[2026-03-01 18:00:01 UTC]   #2200 already processed, skipping
+[2026-03-01 18:00:01 UTC]   #2199 already processed, skipping
+[2026-03-01 18:00:01 UTC]   #2198 already processed, skipping
+[2026-03-01 18:00:01 UTC]   #2197 already processed, skipping
+[2026-03-01 18:00:01 UTC] Done. Spawned: 0
+[2026-03-01 18:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 18:10:01 UTC] Found 5 plan-me issues
+[2026-03-01 18:10:01 UTC]   #2205 already processed, skipping
+[2026-03-01 18:10:01 UTC]   #2200 already processed, skipping
+[2026-03-01 18:10:01 UTC]   #2199 already processed, skipping
+[2026-03-01 18:10:01 UTC]   #2198 already processed, skipping
+[2026-03-01 18:10:01 UTC]   #2197 already processed, skipping
+[2026-03-01 18:10:01 UTC] Done. Spawned: 0
+[2026-03-01 18:20:02 UTC] === Neo Issue Pickup ===
+[2026-03-01 18:20:02 UTC] Found 5 plan-me issues
+[2026-03-01 18:20:02 UTC]   #2205 already processed, skipping
+[2026-03-01 18:20:02 UTC]   #2200 already processed, skipping
+[2026-03-01 18:20:02 UTC]   #2199 already processed, skipping
+[2026-03-01 18:20:02 UTC]   #2198 already processed, skipping
+[2026-03-01 18:20:02 UTC]   #2197 already processed, skipping
+[2026-03-01 18:20:02 UTC] Done. Spawned: 0
+[2026-03-01 18:30:02 UTC] === Neo Issue Pickup ===
+[2026-03-01 18:30:02 UTC] Found 5 plan-me issues
+[2026-03-01 18:30:02 UTC]   #2205 already processed, skipping
+[2026-03-01 18:30:02 UTC]   #2200 already processed, skipping
+[2026-03-01 18:30:02 UTC]   #2199 already processed, skipping
+[2026-03-01 18:30:02 UTC]   #2198 already processed, skipping
+[2026-03-01 18:30:02 UTC]   #2197 already processed, skipping
+[2026-03-01 18:30:02 UTC] Done. Spawned: 0
+[2026-03-01 18:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 18:40:02 UTC] Found 5 plan-me issues
+[2026-03-01 18:40:02 UTC]   #2205 already processed, skipping
+[2026-03-01 18:40:02 UTC]   #2200 already processed, skipping
+[2026-03-01 18:40:02 UTC]   #2199 already processed, skipping
+[2026-03-01 18:40:02 UTC]   #2198 already processed, skipping
+[2026-03-01 18:40:02 UTC]   #2197 already processed, skipping
+[2026-03-01 18:40:02 UTC] Done. Spawned: 0
+[2026-03-01 18:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 18:50:02 UTC] Found 5 plan-me issues
+[2026-03-01 18:50:02 UTC]   #2205 already processed, skipping
+[2026-03-01 18:50:02 UTC]   #2200 already processed, skipping
+[2026-03-01 18:50:02 UTC]   #2199 already processed, skipping
+[2026-03-01 18:50:02 UTC]   #2198 already processed, skipping
+[2026-03-01 18:50:02 UTC]   #2197 already processed, skipping
+[2026-03-01 18:50:02 UTC] Done. Spawned: 0
+[2026-03-01 19:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 19:00:02 UTC] Found 3 plan-me issues
+[2026-03-01 19:00:02 UTC]   #2200 already processed, skipping
+[2026-03-01 19:00:02 UTC]   #2199 already processed, skipping
+[2026-03-01 19:00:02 UTC]   #2198 already processed, skipping
+[2026-03-01 19:00:02 UTC] Done. Spawned: 0
+[2026-03-01 19:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 19:10:01 UTC] Found 3 plan-me issues
+[2026-03-01 19:10:01 UTC]   #2200 already processed, skipping
+[2026-03-01 19:10:01 UTC]   #2199 already processed, skipping
+[2026-03-01 19:10:01 UTC]   #2198 already processed, skipping
+[2026-03-01 19:10:01 UTC] Done. Spawned: 0
+[2026-03-01 19:20:11 UTC] === Neo Issue Pickup ===
+[2026-03-01 19:20:42 UTC] gh exception: Command '['gh', 'issue', 'list', '--repo', 'slideheroes/2025slideheroes', '--label', 'plan-me', '--state', 'open', '--json', 'number,title,body,labels', '--limit', '20']' timed out after 30 seconds
+[2026-03-01 19:20:42 UTC] No plan-me issues found
+[2026-03-01 19:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 19:50:02 UTC] Found 3 plan-me issues
+[2026-03-01 19:50:02 UTC]   #2200 already processed, skipping
+[2026-03-01 19:50:02 UTC]   #2199 already processed, skipping
+[2026-03-01 19:50:02 UTC]   #2198 already processed, skipping
+[2026-03-01 19:50:02 UTC] Done. Spawned: 0
+[2026-03-01 20:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 20:00:02 UTC] Found 3 plan-me issues
+[2026-03-01 20:00:02 UTC]   #2200 already processed, skipping
+[2026-03-01 20:00:02 UTC]   #2199 already processed, skipping
+[2026-03-01 20:00:02 UTC]   #2198 already processed, skipping
+[2026-03-01 20:00:02 UTC] Done. Spawned: 0
+[2026-03-01 20:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 20:10:02 UTC] Found 3 plan-me issues
+[2026-03-01 20:10:02 UTC]   #2200 already processed, skipping
+[2026-03-01 20:10:02 UTC]   #2199 already processed, skipping
+[2026-03-01 20:10:02 UTC]   #2198 already processed, skipping
+[2026-03-01 20:10:02 UTC] Done. Spawned: 0
+[2026-03-01 20:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 20:20:01 UTC] Found 3 plan-me issues
+[2026-03-01 20:20:01 UTC]   #2200 already processed, skipping
+[2026-03-01 20:20:01 UTC]   #2199 already processed, skipping
+[2026-03-01 20:20:01 UTC]   #2198 already processed, skipping
+[2026-03-01 20:20:01 UTC] Done. Spawned: 0
+[2026-03-01 20:30:02 UTC] === Neo Issue Pickup ===
+[2026-03-01 20:30:02 UTC] Found 3 plan-me issues
+[2026-03-01 20:30:02 UTC]   #2200 already processed, skipping
+[2026-03-01 20:30:02 UTC]   #2199 already processed, skipping
+[2026-03-01 20:30:02 UTC]   #2198 already processed, skipping
+[2026-03-01 20:30:02 UTC] Done. Spawned: 0
+[2026-03-01 20:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 20:40:02 UTC] Found 3 plan-me issues
+[2026-03-01 20:40:02 UTC]   #2200 already processed, skipping
+[2026-03-01 20:40:02 UTC]   #2199 already processed, skipping
+[2026-03-01 20:40:02 UTC]   #2198 already processed, skipping
+[2026-03-01 20:40:02 UTC] Done. Spawned: 0
+[2026-03-01 20:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 20:50:01 UTC] Found 3 plan-me issues
+[2026-03-01 20:50:01 UTC]   #2200 already processed, skipping
+[2026-03-01 20:50:01 UTC]   #2199 already processed, skipping
+[2026-03-01 20:50:01 UTC]   #2198 already processed, skipping
+[2026-03-01 20:50:01 UTC] Done. Spawned: 0
+[2026-03-01 21:00:02 UTC] === Neo Issue Pickup ===
+[2026-03-01 21:00:02 UTC] Found 3 plan-me issues
+[2026-03-01 21:00:02 UTC]   #2200 already processed, skipping
+[2026-03-01 21:00:02 UTC]   #2199 already processed, skipping
+[2026-03-01 21:00:02 UTC]   #2198 already processed, skipping
+[2026-03-01 21:00:02 UTC] Done. Spawned: 0
+[2026-03-01 21:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 21:10:01 UTC] Found 3 plan-me issues
+[2026-03-01 21:10:01 UTC]   #2200 already processed, skipping
+[2026-03-01 21:10:01 UTC]   #2199 already processed, skipping
+[2026-03-01 21:10:01 UTC]   #2198 already processed, skipping
+[2026-03-01 21:10:01 UTC] Done. Spawned: 0
+[2026-03-01 21:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 21:20:02 UTC] Found 3 plan-me issues
+[2026-03-01 21:20:02 UTC]   #2200 already processed, skipping
+[2026-03-01 21:20:02 UTC]   #2199 already processed, skipping
+[2026-03-01 21:20:02 UTC]   #2198 already processed, skipping
+[2026-03-01 21:20:02 UTC] Done. Spawned: 0
+[2026-03-01 21:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 21:30:01 UTC] Found 3 plan-me issues
+[2026-03-01 21:30:01 UTC]   #2200 already processed, skipping
+[2026-03-01 21:30:01 UTC]   #2199 already processed, skipping
+[2026-03-01 21:30:01 UTC]   #2198 already processed, skipping
+[2026-03-01 21:30:01 UTC] Done. Spawned: 0
+[2026-03-01 21:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 21:40:01 UTC] Found 3 plan-me issues
+[2026-03-01 21:40:01 UTC]   #2200 already processed, skipping
+[2026-03-01 21:40:01 UTC]   #2199 already processed, skipping
+[2026-03-01 21:40:01 UTC]   #2198 already processed, skipping
+[2026-03-01 21:40:01 UTC] Done. Spawned: 0
+[2026-03-01 21:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 21:50:01 UTC] Found 3 plan-me issues
+[2026-03-01 21:50:01 UTC]   #2200 already processed, skipping
+[2026-03-01 21:50:01 UTC]   #2199 already processed, skipping
+[2026-03-01 21:50:01 UTC]   #2198 already processed, skipping
+[2026-03-01 21:50:01 UTC] Done. Spawned: 0
+[2026-03-01 22:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 22:00:02 UTC] Found 3 plan-me issues
+[2026-03-01 22:00:02 UTC]   #2200 already processed, skipping
+[2026-03-01 22:00:02 UTC]   #2199 already processed, skipping
+[2026-03-01 22:00:02 UTC]   #2198 already processed, skipping
+[2026-03-01 22:00:02 UTC] Done. Spawned: 0
+[2026-03-01 22:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 22:10:01 UTC] Found 3 plan-me issues
+[2026-03-01 22:10:01 UTC]   #2200 already processed, skipping
+[2026-03-01 22:10:01 UTC]   #2199 already processed, skipping
+[2026-03-01 22:10:01 UTC]   #2198 already processed, skipping
+[2026-03-01 22:10:01 UTC] Done. Spawned: 0
+[2026-03-01 22:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 22:20:01 UTC] Found 3 plan-me issues
+[2026-03-01 22:20:01 UTC]   #2200 already processed, skipping
+[2026-03-01 22:20:01 UTC]   #2199 already processed, skipping
+[2026-03-01 22:20:01 UTC]   #2198 already processed, skipping
+[2026-03-01 22:20:01 UTC] Done. Spawned: 0
+[2026-03-01 22:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 22:30:02 UTC] Found 3 plan-me issues
+[2026-03-01 22:30:02 UTC]   #2200 already processed, skipping
+[2026-03-01 22:30:02 UTC]   #2199 already processed, skipping
+[2026-03-01 22:30:02 UTC]   #2198 already processed, skipping
+[2026-03-01 22:30:02 UTC] Done. Spawned: 0
+[2026-03-01 22:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 22:40:01 UTC] Found 3 plan-me issues
+[2026-03-01 22:40:01 UTC]   #2200 already processed, skipping
+[2026-03-01 22:40:01 UTC]   #2199 already processed, skipping
+[2026-03-01 22:40:01 UTC]   #2198 already processed, skipping
+[2026-03-01 22:40:01 UTC] Done. Spawned: 0
+[2026-03-01 22:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 22:50:03 UTC] Found 3 plan-me issues
+[2026-03-01 22:50:03 UTC]   #2200 already processed, skipping
+[2026-03-01 22:50:03 UTC]   #2199 already processed, skipping
+[2026-03-01 22:50:03 UTC]   #2198 already processed, skipping
+[2026-03-01 22:50:03 UTC] Done. Spawned: 0
+[2026-03-01 23:00:02 UTC] === Neo Issue Pickup ===
+[2026-03-01 23:00:02 UTC] Found 3 plan-me issues
+[2026-03-01 23:00:02 UTC]   #2200 already processed, skipping
+[2026-03-01 23:00:02 UTC]   #2199 already processed, skipping
+[2026-03-01 23:00:02 UTC]   #2198 already processed, skipping
+[2026-03-01 23:00:02 UTC] Done. Spawned: 0
+[2026-03-01 23:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 23:10:02 UTC] Found 3 plan-me issues
+[2026-03-01 23:10:02 UTC]   #2200 already processed, skipping
+[2026-03-01 23:10:02 UTC]   #2199 already processed, skipping
+[2026-03-01 23:10:02 UTC]   #2198 already processed, skipping
+[2026-03-01 23:10:02 UTC] Done. Spawned: 0
+[2026-03-01 23:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 23:20:01 UTC] Found 3 plan-me issues
+[2026-03-01 23:20:01 UTC]   #2200 already processed, skipping
+[2026-03-01 23:20:01 UTC]   #2199 already processed, skipping
+[2026-03-01 23:20:01 UTC]   #2198 already processed, skipping
+[2026-03-01 23:20:01 UTC] Done. Spawned: 0
+[2026-03-01 23:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 23:30:02 UTC] Found 3 plan-me issues
+[2026-03-01 23:30:02 UTC]   #2200 already processed, skipping
+[2026-03-01 23:30:02 UTC]   #2199 already processed, skipping
+[2026-03-01 23:30:02 UTC]   #2198 already processed, skipping
+[2026-03-01 23:30:02 UTC] Done. Spawned: 0
+[2026-03-01 23:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 23:40:01 UTC] Found 3 plan-me issues
+[2026-03-01 23:40:01 UTC]   #2200 already processed, skipping
+[2026-03-01 23:40:01 UTC]   #2199 already processed, skipping
+[2026-03-01 23:40:01 UTC]   #2198 already processed, skipping
+[2026-03-01 23:40:01 UTC] Done. Spawned: 0
+[2026-03-01 23:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-01 23:50:02 UTC] Found 3 plan-me issues
+[2026-03-01 23:50:02 UTC]   #2200 already processed, skipping
+[2026-03-01 23:50:02 UTC]   #2199 already processed, skipping
+[2026-03-01 23:50:02 UTC]   #2198 already processed, skipping
+[2026-03-01 23:50:02 UTC] Done. Spawned: 0
+[2026-03-02 00:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 00:00:02 UTC] Found 3 plan-me issues
+[2026-03-02 00:00:02 UTC]   #2200 already processed, skipping
+[2026-03-02 00:00:02 UTC]   #2199 already processed, skipping
+[2026-03-02 00:00:02 UTC]   #2198 already processed, skipping
+[2026-03-02 00:00:02 UTC] Done. Spawned: 0
+[2026-03-02 00:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 00:10:01 UTC] Found 3 plan-me issues
+[2026-03-02 00:10:01 UTC]   #2200 already processed, skipping
+[2026-03-02 00:10:01 UTC]   #2199 already processed, skipping
+[2026-03-02 00:10:01 UTC]   #2198 already processed, skipping
+[2026-03-02 00:10:01 UTC] Done. Spawned: 0
+[2026-03-02 00:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 00:20:02 UTC] Found 3 plan-me issues
+[2026-03-02 00:20:02 UTC]   #2200 already processed, skipping
+[2026-03-02 00:20:02 UTC]   #2199 already processed, skipping
+[2026-03-02 00:20:02 UTC]   #2198 already processed, skipping
+[2026-03-02 00:20:02 UTC] Done. Spawned: 0
+[2026-03-02 00:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 00:30:02 UTC] Found 3 plan-me issues
+[2026-03-02 00:30:02 UTC]   #2200 already processed, skipping
+[2026-03-02 00:30:02 UTC]   #2199 already processed, skipping
+[2026-03-02 00:30:02 UTC]   #2198 already processed, skipping
+[2026-03-02 00:30:02 UTC] Done. Spawned: 0
+[2026-03-02 00:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 00:40:01 UTC] Found 3 plan-me issues
+[2026-03-02 00:40:01 UTC]   #2200 already processed, skipping
+[2026-03-02 00:40:01 UTC]   #2199 already processed, skipping
+[2026-03-02 00:40:01 UTC]   #2198 already processed, skipping
+[2026-03-02 00:40:01 UTC] Done. Spawned: 0
+[2026-03-02 00:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 00:50:02 UTC] Found 3 plan-me issues
+[2026-03-02 00:50:02 UTC]   #2200 already processed, skipping
+[2026-03-02 00:50:02 UTC]   #2199 already processed, skipping
+[2026-03-02 00:50:02 UTC]   #2198 already processed, skipping
+[2026-03-02 00:50:02 UTC] Done. Spawned: 0
+[2026-03-02 01:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 01:00:02 UTC] Found 3 plan-me issues
+[2026-03-02 01:00:02 UTC]   #2200 already processed, skipping
+[2026-03-02 01:00:02 UTC]   #2199 already processed, skipping
+[2026-03-02 01:00:02 UTC]   #2198 already processed, skipping
+[2026-03-02 01:00:02 UTC] Done. Spawned: 0
+[2026-03-02 01:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 01:10:01 UTC] Found 3 plan-me issues
+[2026-03-02 01:10:01 UTC]   #2200 already processed, skipping
+[2026-03-02 01:10:01 UTC]   #2199 already processed, skipping
+[2026-03-02 01:10:01 UTC]   #2198 already processed, skipping
+[2026-03-02 01:10:01 UTC] Done. Spawned: 0
+[2026-03-02 01:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 01:20:01 UTC] Found 3 plan-me issues
+[2026-03-02 01:20:01 UTC]   #2200 already processed, skipping
+[2026-03-02 01:20:01 UTC]   #2199 already processed, skipping
+[2026-03-02 01:20:01 UTC]   #2198 already processed, skipping
+[2026-03-02 01:20:01 UTC] Done. Spawned: 0
+[2026-03-02 01:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 01:30:02 UTC] Found 3 plan-me issues
+[2026-03-02 01:30:02 UTC]   #2200 already processed, skipping
+[2026-03-02 01:30:02 UTC]   #2199 already processed, skipping
+[2026-03-02 01:30:02 UTC]   #2198 already processed, skipping
+[2026-03-02 01:30:02 UTC] Done. Spawned: 0
+[2026-03-02 01:40:02 UTC] === Neo Issue Pickup ===
+[2026-03-02 01:40:02 UTC] Found 3 plan-me issues
+[2026-03-02 01:40:02 UTC]   #2200 already processed, skipping
+[2026-03-02 01:40:02 UTC]   #2199 already processed, skipping
+[2026-03-02 01:40:02 UTC]   #2198 already processed, skipping
+[2026-03-02 01:40:02 UTC] Done. Spawned: 0
+[2026-03-02 01:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 01:50:02 UTC] Found 3 plan-me issues
+[2026-03-02 01:50:02 UTC]   #2200 already processed, skipping
+[2026-03-02 01:50:02 UTC]   #2199 already processed, skipping
+[2026-03-02 01:50:02 UTC]   #2198 already processed, skipping
+[2026-03-02 01:50:02 UTC] Done. Spawned: 0
+[2026-03-02 02:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 02:00:01 UTC] Found 3 plan-me issues
+[2026-03-02 02:00:01 UTC]   #2200 already processed, skipping
+[2026-03-02 02:00:01 UTC]   #2199 already processed, skipping
+[2026-03-02 02:00:01 UTC]   #2198 already processed, skipping
+[2026-03-02 02:00:01 UTC] Done. Spawned: 0
+[2026-03-02 02:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 02:10:01 UTC] Found 3 plan-me issues
+[2026-03-02 02:10:01 UTC]   #2200 already processed, skipping
+[2026-03-02 02:10:01 UTC]   #2199 already processed, skipping
+[2026-03-02 02:10:01 UTC]   #2198 already processed, skipping
+[2026-03-02 02:10:01 UTC] Done. Spawned: 0
+[2026-03-02 02:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 02:20:01 UTC] Found 3 plan-me issues
+[2026-03-02 02:20:01 UTC]   #2200 already processed, skipping
+[2026-03-02 02:20:01 UTC]   #2199 already processed, skipping
+[2026-03-02 02:20:01 UTC]   #2198 already processed, skipping
+[2026-03-02 02:20:01 UTC] Done. Spawned: 0
+[2026-03-02 02:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 02:30:02 UTC] Found 3 plan-me issues
+[2026-03-02 02:30:02 UTC]   #2200 already processed, skipping
+[2026-03-02 02:30:02 UTC]   #2199 already processed, skipping
+[2026-03-02 02:30:02 UTC]   #2198 already processed, skipping
+[2026-03-02 02:30:02 UTC] Done. Spawned: 0
+[2026-03-02 02:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 02:40:01 UTC] Found 3 plan-me issues
+[2026-03-02 02:40:01 UTC]   #2200 already processed, skipping
+[2026-03-02 02:40:01 UTC]   #2199 already processed, skipping
+[2026-03-02 02:40:01 UTC]   #2198 already processed, skipping
+[2026-03-02 02:40:01 UTC] Done. Spawned: 0
+[2026-03-02 02:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 02:50:01 UTC] Found 3 plan-me issues
+[2026-03-02 02:50:01 UTC]   #2200 already processed, skipping
+[2026-03-02 02:50:01 UTC]   #2199 already processed, skipping
+[2026-03-02 02:50:01 UTC]   #2198 already processed, skipping
+[2026-03-02 02:50:01 UTC] Done. Spawned: 0
+[2026-03-02 03:00:02 UTC] === Neo Issue Pickup ===
+[2026-03-02 03:00:02 UTC] Found 3 plan-me issues
+[2026-03-02 03:00:02 UTC]   #2200 already processed, skipping
+[2026-03-02 03:00:02 UTC]   #2199 already processed, skipping
+[2026-03-02 03:00:02 UTC]   #2198 already processed, skipping
+[2026-03-02 03:00:02 UTC] Done. Spawned: 0
+[2026-03-02 03:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 03:10:01 UTC] Found 3 plan-me issues
+[2026-03-02 03:10:01 UTC]   #2200 already processed, skipping
+[2026-03-02 03:10:01 UTC]   #2199 already processed, skipping
+[2026-03-02 03:10:01 UTC]   #2198 already processed, skipping
+[2026-03-02 03:10:01 UTC] Done. Spawned: 0
+[2026-03-02 03:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 03:20:02 UTC] Found 3 plan-me issues
+[2026-03-02 03:20:02 UTC]   #2200 already processed, skipping
+[2026-03-02 03:20:02 UTC]   #2199 already processed, skipping
+[2026-03-02 03:20:02 UTC]   #2198 already processed, skipping
+[2026-03-02 03:20:02 UTC] Done. Spawned: 0
+[2026-03-02 03:30:02 UTC] === Neo Issue Pickup ===
+[2026-03-02 03:30:02 UTC] Found 3 plan-me issues
+[2026-03-02 03:30:02 UTC]   #2200 already processed, skipping
+[2026-03-02 03:30:02 UTC]   #2199 already processed, skipping
+[2026-03-02 03:30:02 UTC]   #2198 already processed, skipping
+[2026-03-02 03:30:02 UTC] Done. Spawned: 0
+[2026-03-02 03:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 03:40:01 UTC] Found 3 plan-me issues
+[2026-03-02 03:40:01 UTC]   #2200 already processed, skipping
+[2026-03-02 03:40:01 UTC]   #2199 already processed, skipping
+[2026-03-02 03:40:01 UTC]   #2198 already processed, skipping
+[2026-03-02 03:40:01 UTC] Done. Spawned: 0
+[2026-03-02 03:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 03:50:01 UTC] Found 3 plan-me issues
+[2026-03-02 03:50:01 UTC]   #2200 already processed, skipping
+[2026-03-02 03:50:01 UTC]   #2199 already processed, skipping
+[2026-03-02 03:50:01 UTC]   #2198 already processed, skipping
+[2026-03-02 03:50:01 UTC] Done. Spawned: 0
+[2026-03-02 04:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 04:00:01 UTC] Found 3 plan-me issues
+[2026-03-02 04:00:01 UTC]   #2200 already processed, skipping
+[2026-03-02 04:00:01 UTC]   #2199 already processed, skipping
+[2026-03-02 04:00:01 UTC]   #2198 already processed, skipping
+[2026-03-02 04:00:01 UTC] Done. Spawned: 0
+[2026-03-02 04:10:02 UTC] === Neo Issue Pickup ===
+[2026-03-02 04:10:02 UTC] Found 3 plan-me issues
+[2026-03-02 04:10:02 UTC]   #2200 already processed, skipping
+[2026-03-02 04:10:02 UTC]   #2199 already processed, skipping
+[2026-03-02 04:10:02 UTC]   #2198 already processed, skipping
+[2026-03-02 04:10:02 UTC] Done. Spawned: 0
+[2026-03-02 04:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 04:20:01 UTC] Found 3 plan-me issues
+[2026-03-02 04:20:01 UTC]   #2200 already processed, skipping
+[2026-03-02 04:20:01 UTC]   #2199 already processed, skipping
+[2026-03-02 04:20:01 UTC]   #2198 already processed, skipping
+[2026-03-02 04:20:01 UTC] Done. Spawned: 0
+[2026-03-02 04:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 04:30:02 UTC] Found 3 plan-me issues
+[2026-03-02 04:30:02 UTC]   #2200 already processed, skipping
+[2026-03-02 04:30:02 UTC]   #2199 already processed, skipping
+[2026-03-02 04:30:02 UTC]   #2198 already processed, skipping
+[2026-03-02 04:30:02 UTC] Done. Spawned: 0
+[2026-03-02 04:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 04:40:01 UTC] Found 3 plan-me issues
+[2026-03-02 04:40:01 UTC]   #2200 already processed, skipping
+[2026-03-02 04:40:01 UTC]   #2199 already processed, skipping
+[2026-03-02 04:40:01 UTC]   #2198 already processed, skipping
+[2026-03-02 04:40:01 UTC] Done. Spawned: 0
+[2026-03-02 04:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-02 04:50:01 UTC] Found 3 plan-me issues
+[2026-03-02 04:50:01 UTC]   #2200 already processed, skipping
+[2026-03-02 04:50:01 UTC]   #2199 already processed, skipping
+[2026-03-02 04:50:01 UTC]   #2198 already processed, skipping
+[2026-03-02 04:50:01 UTC] Done. Spawned: 0

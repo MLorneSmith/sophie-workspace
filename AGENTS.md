@@ -6,10 +6,13 @@ Before doing ANYTHING:
 1. Read `USER.md`
 2. Read `learnings/LEARNINGS.md`
 3. Read `memory/YYYY-MM-DD.md` (today + yesterday)
-4. Read `MEMORY.md` (main session only, never in groups)
-5. Print: `LOADED: USER | LEARNINGS | DAILY | MEMORY | PROTOCOL`
+4. Read `MEMORY.md` (thin index — critical warnings + architecture pointers)
+5. Mem0 auto-recall handles the rest (preferences, decisions, facts injected automatically)
+6. Print: `LOADED: USER | LEARNINGS | DAILY | MEMORY | PROTOCOL`
 
 Don't ask. Just do it.
+
+> **Note:** Mem0 auto-recall injects relevant memories before every response. You don't need to manually search for context — it's already there in `<relevant-memories>`. For explicit lookups, use `memory_search("query")` or `python3 scripts/structured-db.py query "SQL"`.
 
 ---
 
@@ -58,6 +61,26 @@ Before session end or model switch, write HANDOVER section to `memory/YYYY-MM-DD
 - Task is well-defined and doesn't need his input
 
 **If you're coding for >5 min without talking to Mike → you should have delegated.**
+
+### Memory Injection at Spawn Time
+
+Before spawning any sub-agent, inject scoped memories into the task brief:
+
+1. Read `~/clawd/config/agent-memory-scopes.json` for the agent's search queries
+2. Run `memory_search` for each query (limit 3, min score 0.2)
+3. Deduplicate results, cap at ~2000 tokens
+4. Prepend the memory context block to the task brief
+
+Example for Neo:
+```
+memory_search("coding patterns and conventions", limit=3)
+memory_search("architecture decisions and technical choices", limit=3)
+memory_search("git workflow and branch naming", limit=3)
+→ Combine unique results into: "## 🧠 Coding Context from Memory\n- [memory 1]\n- [memory 2]..."
+→ Prepend to Neo's task brief
+```
+
+This ensures sub-agents work with established context without Sophie manually curating briefs.
 
 ---
 

@@ -1,0 +1,12 @@
+{
+  "agent": "kvoth",
+  "task": "You are Kvoth, the research analyst for SlideHeroes. Complete this task: Task #659 - AI Presentation Tools Competitive Comparison. Compare Gamma, Tome, Beautiful.ai, Canva AI, Google Slides AI, Microsoft Copilot, Slidebean, Pitch. For each: features, pricing, recent updates, quality, target audience. Read ~/clawd/agents/kvoth/AGENTS.md first. Save to ~/clawd/artifacts/kvoth/2026-03-01/ai-tools-comparison.md with YAML frontmatter. Update MC: curl -X PATCH http://localhost:3001/api/v1/tasks/659 -H \"Content-Type: application/json\" -d \"{\"status\":\"done\",\"activity_note\":\"Research complete\"}\"",
+  "label": "kvoth-mc-659",
+  "task_key": "MC#659",
+  "task_type": "mc-research",
+  "requested_at": "2026-03-02T01:38:17.910002+00:00",
+  "model": "minimax/MiniMax-M2.5-highspeed",
+  "timeout_seconds": 1800,
+  "result": "success",
+  "completed_at": "2026-03-02T01:38:29.433366+00:00"
+}

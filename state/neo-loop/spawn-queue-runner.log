@@ -3,3 +3,95 @@
 [2026-02-28 23:30:16 UTC]   Spawning acpx exec for neo-ci-2196 (sync, timeout 1800s)...
 [2026-02-28 23:30:19 UTC] ACP session already running — skipping this cycle.
 [2026-02-28 23:30:31 UTC] ACP session already running — skipping this cycle.
+[2026-03-01 16:30:13 UTC] 4 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-01 16:30:13 UTC]   [ci-fix] PR #2196: neo-ci-2196
+[2026-03-01 16:30:17 UTC]   Spawning acpx exec for neo-ci-2196 (sync, timeout 1800s)...
+[2026-03-01 16:30:19 UTC]   ❌ Session failed for neo-ci-2196 (exit 1) 
+[2026-03-01 16:30:24 UTC] 3 task(s) remaining in queue for next cycle.
+[2026-03-01 17:00:16 UTC] 4 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-01 17:00:16 UTC]   [ci-fix] PR #2195: neo-ci-2195
+[2026-03-01 17:00:25 UTC]   Spawning acpx exec for neo-ci-2195 (sync, timeout 1800s)...
+[2026-03-01 17:00:27 UTC]   ❌ Session failed for neo-ci-2195 (exit 1) npm warn exec The following package was not found and will be installed: acpx@0.1.14
+[2026-03-01 17:00:34 UTC] 3 task(s) remaining in queue for next cycle.
+[2026-03-01 18:40:08 UTC] 4 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-01 18:40:08 UTC]   [ci-fix] PR #2194: neo-ci-2194
+[2026-03-01 18:40:11 UTC]   Spawning acpx exec for neo-ci-2194 (sync, timeout 1800s)...
+[2026-03-01 18:40:12 UTC]   ❌ Session failed for neo-ci-2194 (exit 1) 
+[2026-03-01 18:40:15 UTC] 3 task(s) remaining in queue for next cycle.
+[2026-03-01 18:44:08 UTC] 4 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-01 18:44:08 UTC]   [issue-pickup] PR #2205: neo-issue-2205
+[2026-03-01 18:44:13 UTC]   Spawning acpx exec for neo-issue-2205 (sync, timeout 1800s)...
+[2026-03-01 18:44:14 UTC]   ❌ Session failed for neo-issue-2205 (exit 1) 
+[2026-03-01 18:44:18 UTC] 3 task(s) remaining in queue for next cycle.
+[2026-03-01 19:06:19 UTC] 2 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-01 19:06:19 UTC]   [ci-fix] PR #2206: neo-ci-2206
+[2026-03-01 19:06:22 UTC]   Spawning acpx exec for neo-ci-2206 (sync, timeout 1800s)...
+[2026-03-01 19:52:26 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-01 19:52:26 UTC]   [ci-fix] PR #2206: neo-ci-2206
+[2026-03-01 19:52:29 UTC]   Spawning acpx exec for neo-ci-2206 (sync, timeout 1800s)...
+[2026-03-01 19:54:58 UTC]   ❌ Session failed for neo-ci-2206 (exit -15) Running as unit: run-r8592b0fd499a4cbdaa90873a2d577bdf.scope; invocation ID: f1c1d679cfa04bb1b02f7f1e82ea0bba
+[2026-03-01 20:00:12 UTC] 2 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-01 20:00:12 UTC]   [ci-fix] PR #2206: neo-ci-2206
+[2026-03-01 20:00:19 UTC]   Spawning acpx exec for neo-ci-2206 (sync, timeout 1800s)...
+[2026-03-01 20:00:19 UTC]   ❌ Session failed for neo-ci-2206 (exit 1) Failed to connect to bus: No medium found
+[2026-03-01 20:00:25 UTC] 1 task(s) remaining in queue for next cycle.
+[2026-03-01 20:01:11 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-01 20:01:11 UTC]   [ci-fix] PR #2206: neo-ci-2206
+[2026-03-01 20:01:15 UTC]   Spawning acpx exec for neo-ci-2206 (sync, timeout 1800s)...
+[2026-03-01 20:07:41 UTC]   ❌ Session failed for neo-ci-2206 (exit -15) Running as unit: run-rfed52ab34ec346989d3c01b0a49f72ef.scope; invocation ID: 7810e66cac3843cbb82151e72ed68bf5
+[2026-03-01 20:07:44 UTC] Queue empty.
+[2026-03-01 20:11:12 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-01 20:11:12 UTC]   [ci-fix] PR #2206: neo-ci-2206
+[2026-03-01 20:11:15 UTC]   Spawning acpx exec for neo-ci-2206 (sync, timeout 1800s)...
+[2026-03-01 20:41:28 UTC]   ❌ Session failed for neo-ci-2206 (exit 3) Running as unit: run-r24ea573b32554f1eb17e8f2c9f430a2d.scope; invocation ID: 32bc7ab8a06242ac88f650a9c17153e4
+[2026-03-01 20:41:31 UTC] Queue empty.
+[2026-03-01 20:43:57 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-01 20:43:57 UTC]   [ci-fix] PR #2206: neo-ci-2206
+[2026-03-01 20:44:00 UTC]   Spawning acpx exec for neo-ci-2206 (sync, timeout 1800s)...
+[2026-03-01 20:47:51 UTC]   ❌ Session failed for neo-ci-2206 (exit 0) Running as unit: run-r316e8260a06b4f10b989c67cf2f2290a.scope; invocation ID: 407580a6cbf445a097f1aea683429465
+[2026-03-01 20:47:55 UTC] Queue empty.
+[2026-03-01 21:00:13 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-01 21:00:13 UTC]   [mc-task] PR #644: neo-mc-644
+[2026-03-01 21:00:23 UTC]   Spawning acpx exec for neo-mc-644 (sync, timeout 1800s)...
+[2026-03-01 21:00:23 UTC]   ❌ Session failed for neo-mc-644 (exit 1) Failed to connect to bus: No medium found
+[2026-03-01 21:00:29 UTC] Queue empty.
+[2026-03-01 21:30:08 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-01 21:30:08 UTC]   [ci-fix] PR #2206: neo-ci-2206
+[2026-03-01 21:30:10 UTC]   Spawning acpx exec for neo-ci-2206 (sync, timeout 1800s)...
+[2026-03-01 21:30:10 UTC]   ❌ Session failed for neo-ci-2206 (exit 1) Failed to connect to bus: No medium found
+[2026-03-01 21:30:13 UTC] Queue empty.
+[2026-03-02 00:00:04 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 00:00:04 UTC]   [mc-task] PR #644: neo-mc-644
+[2026-03-02 00:00:08 UTC]   Spawning acpx exec for neo-mc-644 (sync, timeout 1800s)...
+[2026-03-02 00:00:08 UTC]   ❌ Session failed for neo-mc-644 (exit 1) Failed to connect to bus: No medium found
+[2026-03-02 00:00:11 UTC] Queue empty.
+[2026-03-02 01:00:05 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 01:00:05 UTC]   [mc-task] PR #644: neo-mc-644
+[2026-03-02 01:00:10 UTC]   Spawning acpx exec for neo-mc-644 (sync, timeout 1800s)...
+[2026-03-02 01:00:10 UTC]   ❌ Session failed for neo-mc-644 (exit 1) Failed to connect to bus: No medium found
+[2026-03-02 01:00:13 UTC] Queue empty.
+[2026-03-02 02:00:04 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 02:00:04 UTC]   [mc-task] PR #644: neo-mc-644
+[2026-03-02 02:00:07 UTC]   Spawning acpx exec for neo-mc-644 (sync, timeout 1800s)...
+[2026-03-02 02:00:07 UTC]   ❌ Session failed for neo-mc-644 (exit 1) Failed to connect to bus: No medium found
+[2026-03-02 02:00:09 UTC] Queue empty.
+[2026-03-02 03:00:07 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 03:00:07 UTC]   [mc-task] PR #644: neo-mc-644
+[2026-03-02 03:00:12 UTC]   Spawning acpx exec for neo-mc-644 (sync, timeout 1800s)...
+[2026-03-02 03:00:12 UTC]   ❌ Session failed for neo-mc-644 (exit 1) Failed to connect to bus: No medium found
+[2026-03-02 03:00:15 UTC] Queue empty.
+[2026-03-02 03:08:27 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 03:08:27 UTC]   [mc-implementation] PR #0: neo-mc-672-captures-api
+[2026-03-02 03:08:31 UTC]   Spawning acpx exec for neo-mc-672-captures-api (sync, timeout 1800s)...
+[2026-03-02 03:11:14 UTC]   ❌ Session failed for neo-mc-672-captures-api (exit 0) Running as unit: run-r86f53f9fc9f34258a160513f1c193ef7.scope; invocation ID: 63fb670aa3134af1a128c8c9b9580546
+[2026-03-02 03:11:17 UTC] Queue empty.
+[2026-03-02 04:00:06 UTC] 2 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 04:00:06 UTC]   [mc-task] PR #644: neo-mc-644
+[2026-03-02 04:00:07 UTC] 2 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 04:00:07 UTC]   [mc-task] PR #644: neo-mc-644
+[2026-03-02 04:00:13 UTC]   Spawning acpx exec for neo-mc-644 (sync, timeout 1800s)...
+[2026-03-02 04:00:13 UTC]   ❌ Session failed for neo-mc-644 (exit 1) Failed to connect to bus: No medium found
+[2026-03-02 04:00:13 UTC]   Spawning acpx exec for neo-mc-644 (sync, timeout 1800s)...
+[2026-03-02 04:00:13 UTC]   ❌ Session failed for neo-mc-644 (exit 1) Failed to connect to bus: No medium found
+[2026-03-02 04:00:17 UTC] 1 task(s) remaining in queue for next cycle.
+[2026-03-02 04:00:17 UTC] 1 task(s) remaining in queue for next cycle.
