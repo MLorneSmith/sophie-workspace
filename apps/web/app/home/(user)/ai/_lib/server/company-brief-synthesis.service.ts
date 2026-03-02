@@ -43,6 +43,12 @@ export interface CompanyBrief {
 		relevantBenchmarks: string[];
 		avoidTopics: string[];
 	};
+	/** Confidence scoring based on data sources */
+	dataConfidence?: {
+		level: "high" | "medium" | "low";
+		sources: string[];
+		missingFields: string[];
+	};
 }
 
 export interface CompanyResearchInput {
@@ -66,7 +72,10 @@ export interface CompanyResearchInput {
 // Prompt builder
 // ---------------------------------------------------------------------------
 
-function buildCompanyBriefPrompt(input: CompanyResearchInput): ChatMessage[] {
+function buildCompanyBriefPrompt(
+	input: CompanyResearchInput,
+	options?: { isSparse?: boolean },
+): ChatMessage[] {
 	const netrowsSection = input.netrowsData
 		? `
 ## Company Data (LinkedIn)
@@ -129,7 +138,9 @@ Output valid JSON matching this exact schema:
   }
 }
 
-Be specific and actionable. Draw inferences from the data available. If information is sparse, make reasonable inferences based on what you know and note them. Focus on what matters for someone preparing a presentation to people at this company.`;
+Be specific and actionable. Draw inferences from the data available. If information is sparse, make reasonable inferences based on what you know and note them. Focus on what matters for someone preparing a presentation to people at this company.
+
+${options?.isSparse ? "IMPORTANT: Data is limited. Focus on what IS known. For unknown fields, provide your best inference clearly marked as [INFERRED]. Do not fabricate specific numbers or statistics." : ""}`;
 
 	const userPrompt = `Generate a Company Brief for:
 
@@ -177,6 +188,50 @@ function withTimeout<T>(
  * Takes raw company research data and synthesizes it into a structured
  * CompanyBrief via LLM. Returns the brief or throws on failure.
  */
+/**
+ * Computes confidence level based on available data sources.
+ */
+function computeDataConfidence(input: CompanyResearchInput): {
+	level: "high" | "medium" | "low";
+	sources: string[];
+	missingFields: string[];
+} {
+	const sources: string[] = [];
+	const missingFields: string[] = [];
+
+	// Track which sources have data
+	if (input.netrowsData) {
+		sources.push("netrows");
+		if (!input.netrowsData.description && !input.netrowsData.industries) {
+			missingFields.push("netrows_company_details");
+		}
+	} else {
+		missingFields.push("netrows");
+	}
+
+	if (input.newsResults && input.newsResults.length > 0) {
+		sources.push("web_search");
+	} else {
+		missingFields.push("news");
+	}
+
+	if (input.industryResults && input.industryResults.length > 0) {
+		sources.push("industry_search");
+	}
+
+	// Determine confidence level
+	let level: "high" | "medium" | "low";
+	if (sources.includes("netrows") && sources.includes("web_search")) {
+		level = "high";
+	} else if (sources.length >= 1) {
+		level = "medium";
+	} else {
+		level = "low";
+	}
+
+	return { level, sources, missingFields };
+}
+
 export async function synthesizeCompanyBrief(
 	input: CompanyResearchInput,
 	userId: string,
@@ -189,7 +244,15 @@ export async function synthesizeCompanyBrief(
 
 	logger.info(ctx, "Synthesizing company brief for %s", input.companyName);
 
-	const messages = buildCompanyBriefPrompt(input);
+	// Compute confidence and determine if data is sparse
+	const confidence = computeDataConfidence(input);
+	const hasNetrows = !!input.netrowsData;
+	const hasWebData = !!(
+		input.newsResults?.length || input.industryResults?.length
+	);
+	const isSparse = !hasNetrows && !hasWebData;
+
+	const messages = buildCompanyBriefPrompt(input, { isSparse });
 
 	const config = createOpenAIOnlyConfig({
 		userId,
@@ -219,10 +282,14 @@ export async function synthesizeCompanyBrief(
 
 	const brief = JSON.parse(jsonMatch[0]) as CompanyBrief;
 
+	// Attach confidence to the brief
+	brief.dataConfidence = confidence;
+
 	logger.info(
 		ctx,
-		"Company brief synthesized — archetype: %s",
+		"Company brief synthesized — archetype: %s, confidence: %s",
 		brief.currentSituation?.archetype,
+		confidence.level,
 	);
 
 	return brief;
