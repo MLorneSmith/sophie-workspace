@@ -72,6 +72,7 @@
 		"kanban": "Kanban",
 		"coaching": "Coaching",
 		"assessment": "Self-Assessment",
+		"library": "Library",
 		"blocks": "Building Blocks",
 		"aiCanvas": "AI Editor",
 		"storyboard": "Storyboard"
@@ -135,5 +136,19 @@
 	"coachingTabLabel": "Coaching Tab Label",
 	"coachingTabDescription": "Book a Coaching Session",
 	"assessmentTabLabel": "Assessment Tab Label",
-	"assessmentTabDescription": "Complete your Self-Assessment"
+	"assessmentTabDescription": "Complete your Self-Assessment",
+	"library": {
+		"templates": "Templates",
+		"profiles": "Individual Profiles",
+		"companyProfiles": "Company Profiles",
+		"templatesDescription": "Choose from curated presentation templates",
+		"profilesDescription": "Your saved audience profiles",
+		"companyProfilesDescription": "Your saved company briefs",
+		"emptyProfiles": "No saved profiles yet. Profiles are saved when you complete the Audience Profiling step.",
+		"emptyCompanyProfiles": "No saved company profiles yet.",
+		"emptyTemplates": "No templates available",
+		"useTemplate": "Use this template",
+		"viewDetails": "View details",
+		"createdAt": "Created"
+	}
 }
