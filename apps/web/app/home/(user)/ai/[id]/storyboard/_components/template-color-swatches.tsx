@@ -25,7 +25,9 @@ export function TemplateColorSwatches({
 				<div
 					key={color}
 					className="h-3.5 w-3.5 rounded-full border border-black/10"
-					style={{ backgroundColor: color }}
+					style={{
+						backgroundColor: color.startsWith("#") ? color : `#${color}`,
+					}}
 					title={`Color: #${color}`}
 				/>
 			))}
