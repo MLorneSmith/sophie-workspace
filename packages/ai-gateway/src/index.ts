@@ -254,10 +254,8 @@ export async function getChatCompletion(
 
 		// Resolve model and temperature: explicit option > config target > default
 		const configParams = extractParamsFromConfig(config);
-		const model =
-			options.model ?? configParams.model ?? "gpt-3.5-turbo";
-		const temperature =
-			options.temperature ?? configParams.temperature ?? 0.7;
+		const model = options.model ?? configParams.model ?? "gpt-3.5-turbo";
+		const temperature = options.temperature ?? configParams.temperature ?? 0.7;
 
 		// Read environment variable to determine if we should check usage limits
 		const checkUsageLimitsFlag = process.env.CHECK_AI_USAGE_LIMITS === "true";
@@ -508,10 +506,8 @@ export async function* getStreamingChatCompletion(
 
 		// Resolve model and temperature: explicit option > config target > default
 		const configParams = extractParamsFromConfig(config);
-		const model =
-			options.model ?? configParams.model ?? "gpt-3.5-turbo";
-		const temperature =
-			options.temperature ?? configParams.temperature ?? 0.7;
+		const model = options.model ?? configParams.model ?? "gpt-3.5-turbo";
+		const temperature = options.temperature ?? configParams.temperature ?? 0.7;
 
 		// Read environment variable to determine if we should check usage limits
 		const checkUsageLimitsFlag = process.env.CHECK_AI_USAGE_LIMITS === "true";
