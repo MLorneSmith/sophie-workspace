@@ -94,10 +94,8 @@ export function WorkflowShell(props: {
 
 			<div
 				className={cn(
-					"mx-auto grid gap-0 px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10",
-					showAgentRail
-						? "max-w-7xl grid-cols-[1fr_48px]"
-						: "max-w-5xl grid-cols-1",
+					"mx-auto grid max-w-7xl gap-0 px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10",
+					showAgentRail ? "grid-cols-[1fr_48px]" : "grid-cols-1",
 				)}
 			>
 				<div className="min-w-0">

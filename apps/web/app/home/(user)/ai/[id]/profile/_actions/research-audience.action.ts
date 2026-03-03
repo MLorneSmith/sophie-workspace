@@ -180,15 +180,20 @@ Respond with ONLY the JSON object, no markdown fences.`;
 
 export const searchAudienceAction = enhanceAction(
 	async (data, user) => {
-		const [personResults, companyResults] = await Promise.all([
+		const [personSettled, companySettled] = await Promise.allSettled([
 			searchPersonFuzzy(data.personName, data.company, user.id),
 			searchCompany(data.company),
 		]);
 
+		const personResults =
+			personSettled.status === "fulfilled" ? (personSettled.value ?? []) : [];
+		const companyResults =
+			companySettled.status === "fulfilled" ? (companySettled.value ?? []) : [];
+
 		return {
 			success: true as const,
-			personResults: personResults ?? [],
-			companyResults: companyResults ?? [],
+			personResults,
+			companyResults,
 		};
 	},
 	{
