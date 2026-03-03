@@ -45,13 +45,10 @@ export function getBifrostUrl(): string {
 function getApiKey(modelId: string): string {
 	const [provider] = modelId.split("/");
 
-	switch (provider) {
-		case "anthropic":
-			return process.env.ANTHROPIC_API_KEY ?? "";
-		case "openai":
-		default:
-			return process.env.OPENAI_API_KEY ?? "";
+	if (provider === "anthropic") {
+		return process.env.ANTHROPIC_API_KEY ?? "";
 	}
+	return process.env.OPENAI_API_KEY ?? "";
 }
 
 /**
