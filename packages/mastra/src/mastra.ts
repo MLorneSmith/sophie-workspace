@@ -6,6 +6,7 @@
  */
 
 import { Mastra } from "@mastra/core";
+import type { MastraModelGateway } from "@mastra/core/llm";
 import { Memory } from "@mastra/memory";
 import { PgVector, PostgresStore } from "@mastra/pg";
 import { z } from "zod";
@@ -19,6 +20,7 @@ import { CompanyBriefSchema } from "./schemas/company-brief";
 import { AudienceBriefSchema } from "./schemas/presentation-artifacts";
 import { audienceProfilingWorkflow } from "./workflows/audience-profiling-workflow";
 import { postProcessWorkflow } from "./workflows/post-process-workflow";
+import { bifrostGateway, isBifrostEnabled } from "./gateways";
 
 const MASTRA_STORAGE_ID = "slideheroes-mastra";
 const MASTRA_VECTOR_ID = "slideheroes-vectors";
@@ -149,6 +151,15 @@ export function getMastra(): Mastra {
 	partnerAgent.__setMemory(memory);
 	validatorAgent.__setMemory(memory);
 
+	// Configure Bifrost gateway if enabled (conditional loading for local dev)
+	// Gateways are registered by name and used for model routing
+	// Type assertion needed due to Mastra's complex gateway type system
+	const gatewayConfig = isBifrostEnabled()
+		? ({
+				bifrost: bifrostGateway,
+			} as unknown as Record<string, MastraModelGateway>)
+		: undefined;
+
 	_mastra = new Mastra({
 		storage,
 		memory: {
@@ -168,6 +179,7 @@ export function getMastra(): Mastra {
 			audienceProfilingWorkflow,
 			postProcessWorkflow,
 		},
+		gateways: gatewayConfig,
 	});
 
 	return _mastra;

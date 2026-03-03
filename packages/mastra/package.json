@@ -19,7 +19,8 @@
 		"@mastra/core": "^1.7.0",
 		"@mastra/memory": "^1.5.1",
 		"@mastra/pg": "^1.6.1",
-		"@mastra/rag": "^2.1.0"
+		"@mastra/rag": "^2.1.0",
+		"openai": "^6.9.1"
 	},
 	"peerDependencies": {
 		"zod": "^3.25.0 || ^4.0.0"

@@ -153,12 +153,30 @@ async function executeAgentCall<T>(params: {
 	modelId: string;
 	messages: RunAgentOptions["messages"];
 	structuredOutput?: RunAgentOptions["structuredOutput"];
+	agentId: AgentName;
+	taskType: TaskType;
+	sessionId: string;
 }): Promise<{ result: T; tokenUsage?: RunAgentResult<unknown>["tokenUsage"] }> {
 	const requestContext = new RequestContext();
 	requestContext.set("modelId", params.modelId);
 
+	// Set agent metadata for potential future Langfuse trace headers via gateway
+	requestContext.set("agentName", params.agentId);
+	requestContext.set("taskType", params.taskType);
+	requestContext.set("sessionId", params.sessionId);
+
 	const generationOptions: Record<string, unknown> = {
 		requestContext,
+	};
+
+	// Pass Langfuse trace headers through generation options for gateway
+	generationOptions["headers"] = {
+		"x-langfuse-trace-name": params.agentId,
+		"x-langfuse-session-id": params.sessionId,
+		"x-langfuse-metadata": JSON.stringify({
+			taskType: params.taskType,
+			agentName: params.agentId,
+		}),
 	};
 
 	if (params.structuredOutput) {
@@ -213,6 +231,9 @@ export async function runAgentWithResilience<T>(
 	let attempts = 0;
 	let lastError: unknown;
 
+	// Generate a session ID for this agent run (used for Langfuse traces via Bifrost)
+	const sessionId = `${options.agentId}-${startedAtMs}-${Math.random().toString(36).slice(2, 9)}`;
+
 	for (const modelId of modelChain) {
 		const circuitBreaker = getCircuitBreaker(modelId);
 
@@ -231,6 +252,9 @@ export async function runAgentWithResilience<T>(
 						modelId,
 						messages: options.messages,
 						structuredOutput: options.structuredOutput,
+						agentId: options.agentId,
+						taskType: options.taskType ?? "default",
+						sessionId,
 					}),
 				);
 			});
