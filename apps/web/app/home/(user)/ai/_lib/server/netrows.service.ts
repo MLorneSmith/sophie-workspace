@@ -395,7 +395,8 @@ export async function searchPersonFuzzy(
 	};
 
 	// Phase 2: Netrows calls (max 3, sequential to avoid rate-limiting)
-	// Build a keywords string from the best LLM variant
+	// Each call is wrapped in try/catch so a single timeout doesn't lose
+	// results from earlier successful calls.
 	const best = variants[0];
 	const expandedName = best
 		? [best.firstName, best.lastName].filter(Boolean).join(" ")
@@ -403,7 +404,7 @@ export async function searchPersonFuzzy(
 	const nameChanged = expandedName.toLowerCase() !== name.toLowerCase();
 
 	// Call 1: Expanded name as keywords + company filter
-	{
+	try {
 		const params = { keywords: expandedName, company };
 		logger.info(ctx, "Call 1 (expanded+company): %o", params);
 		const r = await searchPerson(params);
@@ -411,21 +412,35 @@ export async function searchPersonFuzzy(
 			r?.slice(0, 5).map((p) => `${p.fullName} (${p.username})`) ?? [];
 		logger.info(ctx, "Call 1: %d results — %o", r?.length ?? 0, names);
 		collect(r);
+	} catch (err) {
+		logger.warn(
+			ctx,
+			"Call 1 failed: %s",
+			err instanceof Error ? err.message : String(err),
+		);
 	}
 
 	// Call 2: Expanded name as keywords WITHOUT company (catches company name mismatches)
 	if (nameChanged) {
-		const params = { keywords: expandedName };
-		logger.info(ctx, "Call 2 (expanded-only): %o", params);
-		const r = await searchPerson(params);
-		const names =
-			r?.slice(0, 5).map((p) => `${p.fullName} (${p.username})`) ?? [];
-		logger.info(ctx, "Call 2: %d results — %o", r?.length ?? 0, names);
-		collect(r);
+		try {
+			const params = { keywords: expandedName };
+			logger.info(ctx, "Call 2 (expanded-only): %o", params);
+			const r = await searchPerson(params);
+			const names =
+				r?.slice(0, 5).map((p) => `${p.fullName} (${p.username})`) ?? [];
+			logger.info(ctx, "Call 2: %d results — %o", r?.length ?? 0, names);
+			collect(r);
+		} catch (err) {
+			logger.warn(
+				ctx,
+				"Call 2 failed: %s",
+				err instanceof Error ? err.message : String(err),
+			);
+		}
 	}
 
 	// Call 3: Original name as keywords (no company, broad fallback)
-	{
+	try {
 		const params = { keywords: name };
 		logger.info(
 			ctx,
@@ -444,6 +459,13 @@ export async function searchPersonFuzzy(
 			names,
 		);
 		collect(r);
+	} catch (err) {
+		logger.warn(
+			ctx,
+			"Call %d failed: %s",
+			nameChanged ? 3 : 2,
+			err instanceof Error ? err.message : String(err),
+		);
 	}
 
 	if (allResults.length === 0) {
