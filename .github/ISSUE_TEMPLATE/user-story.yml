@@ -135,7 +135,7 @@ body:
         
         **Technical Approach**:
         - Frontend: React component with Zod form validation
-        - Backend: Portkey AI Gateway integration with usage tracking
+        - Backend: Bifrost AI Gateway integration with usage tracking
         - Database: Extend ai_usage table with new feature tracking
         - Testing: Unit tests for AI response parsing and error handling
     validations:
@@ -157,7 +157,7 @@ body:
         - CLAUDE.md - Project standards and patterns
         
         **Documentation to Review**:
-        - Portkey AI Gateway configuration
+        - Bifrost AI Gateway configuration
         - SlideHeroes editor architecture
         - AI usage billing requirements
     validations:
@@ -171,7 +171,7 @@ body:
       placeholder: |
         **Blocking Stories**: #456 (Epic infrastructure setup)
         **Related Stories**: #789 (AI Usage Dashboard), #012 (Editor Performance)
-        **External Dependencies**: Portkey AI Gateway service availability
+        **External Dependencies**: Bifrost AI Gateway service availability
     validations:
       required: false
       

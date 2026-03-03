@@ -72,7 +72,7 @@ The following are the key technologies used:
 - Supabase for authentication and database
 - Payload CMS for content management
 - Turborepo for monorepo management
-- Portkey AI Gateway for AI features
+- Bifrost AI Gateway for AI features
 - Vercel for deployment
 
 ### Repository Structure
@@ -97,15 +97,15 @@ between our Payload content. For example, we use Supabase to store the relations
 courses they have enrolled in. We also use Supabase to store the relationship between a user and the
 survey responses they have submitted.
 
-### Portkey AI Gateway
+### Bifrost AI Gateway
 
-Portkey AI Gateway is used for managing all of our AI integrations. It is located in the packages/ai-gateway
-directory. It is built on top of the OpenAI SDK and uses the Portkey AI Gateway API.
-We use Portkey for the following:
+Bifrost AI Gateway is used for managing all of our AI integrations. It is located in the packages/ai-gateway
+directory. It is built on top of the OpenAI SDK and uses the Bifrost Gateway for provider routing.
+We use Bifrost and Langfuse for the following:
 
-- Managing API keys for all of our AI providers
-- Managing AI requests and responses
-- Managing AI usage and billing
+- AI provider routing and model transformation
+- Prompt management and versioning (via Langfuse)
+- Observability and tracing (via Langfuse)
 
 ## Getting Started
 
@@ -117,8 +117,8 @@ We use Portkey for the following:
 - GitHub CLI (`gh`) - for automation and repository management
 - Stripe account
 - Supabase account
-- Portkey account
 - OpenAI account
+- Bifrost/Langfuse (optional - falls back to direct API calls)
 
 ### Installation
 

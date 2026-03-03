@@ -1,91 +1,105 @@
-# Portkey AI Gateway Integration
+# Bifrost AI Gateway Integration
 
-This package provides a secure and type-safe integration with the Portkey AI Gateway,
-allowing server-side access to various AI providers through a unified interface.
+This package provides a secure and type-safe integration with the Bifrost AI Gateway
+for AI provider routing, combined with Langfuse for prompt management and observability.
+
+## Architecture
+
+The AI integration uses a dual-layer architecture:
+
+1. **Bifrost Gateway** (<https://bifrost.gateway.slideheroes.com>)
+   - Provider routing layer for AI API calls
+   - Model transformation (e.g., `gpt-4o` → `openai/gpt-4o`)
+   - Cloudflare Access authentication
+   - Falls back to direct OpenAI API calls when not configured
+
+2. **Langfuse** (optional)
+   - Prompt management and versioning
+   - Observability and tracing
+   - Falls back to local prompt templates when not configured
+
+## Environment Variables
+
+### Bifrost Gateway (Required for production)
+
+```env
+# Gateway URL for AI provider routing
+BIFROST_GATEWAY_URL=https://bifrost.gateway.slideheroes.com
+# Cloudflare Access credentials for authenticated gateway access
+BIFROST_CF_ACCESS_CLIENT_ID=your_cf_access_client_id
+BIFROST_CF_ACCESS_CLIENT_SECRET=your_cf_access_client_secret
+```
+
+### Langfuse (Optional)
+
+```env
+# Langfuse public key for client-side analytics
+LANGFUSE_PUBLIC_KEY=pk-your-public-key
+# Langfuse secret key for server-side operations
+LANGFUSE_SECRET_KEY=sk-your-secret-key
+# Langfuse host URL (defaults to cloud if not specified)
+LANGFUSE_HOST=https://cloud.langfuse.com
+```
+
+### OpenAI (Fallback)
+
+When Bifrost is not configured, the system falls back to direct OpenAI API calls:
+
+```env
+OPENAI_API_KEY=your_openai_api_key
+```
 
 ## Key Implementation Choices
 
-1. **Virtual Keys System**
-
-   - Using Portkey's virtual keys system for secure API key management
-   - API keys are stored in Portkey's vault, not exposed in our codebase
-   - Environment variables:
-     - `PORTKEY_API_KEY`: Our Portkey API key
-     - `PORTKEY_VIRTUAL_KEY`: Virtual key that securely references provider keys
-
-2. **Server-Side Only Access**
+1. **Server-Side Only Access**
 
    - All AI calls are made server-side to ensure API key security
    - Uses Next.js 15 Server Actions for handling AI requests
    - Client components never have direct access to API keys or the AI gateway
 
-3. **OpenAI SDK with Portkey Configuration**
+2. **OpenAI SDK with Bifrost Configuration**
 
-   - Leverages OpenAI's SDK configured to use Portkey's gateway
-   - Maintains familiar OpenAI SDK interface while adding Portkey capabilities
-   - Supports all OpenAI-compatible providers through Portkey's universal API
+   - Leverages OpenAI's SDK configured to use Bifrost gateway
+   - Maintains familiar OpenAI SDK interface while adding routing capabilities
+   - Automatic model name transformation for provider compatibility
 
-4. **Type Safety**
+3. **Type Safety**
+
    - Full TypeScript support for requests and responses
    - Zod validation for chat messages
    - Proper error handling and type definitions
 
+4. **Fallback Behavior**
+
+   - If `BIFROST_GATEWAY_URL` is not set, uses direct OpenAI API
+   - If Langfuse is not configured, uses local prompt templates
+   - Graceful degradation ensures functionality without external services
+
 ## Usage
 
-1. **Environment Setup**
+### Basic Usage
 
-   ```env
-   PORTKEY_API_KEY=your-portkey-api-key
-   PORTKEY_VIRTUAL_KEY=your-virtual-key
-   ```
+```typescript
+import { getChatCompletion } from '@kit/ai-gateway';
+import { createBalancedOptimizedConfig } from '@kit/ai-gateway/configs/templates';
 
-2. **Basic Usage**
+const messages = [
+  { role: 'system', content: 'You are a helpful assistant.' },
+  { role: 'user', content: 'Hello!' },
+];
 
-   ```typescript
-   import { getChatCompletion } from '@kit/ai-gateway';
-   import { createBalancedOptimizedConfig } from '@kit/ai-gateway/configs/templates';
+// Create a balanced configuration with cache namespacing
+const config = createBalancedOptimizedConfig({
+  userId: 'user-123',
+  teamId: 'team-456',
+});
 
-   const messages = [
-     { role: 'system', content: 'You are a helpful assistant.' },
-     { role: 'user', content: 'Hello!' },
-   ];
+const response = await getChatCompletion(messages, { config });
+```
 
-   // Create a balanced configuration with cache namespacing
-   const config = createBalancedOptimizedConfig({
-     userId: 'user-123',
-     teamId: 'team-456',
-   });
+### With Server Actions
 
-   const response = await getChatCompletion(messages, { config });
-   ```
-
-3. **With Server Actions**
-   See the example implementation in `example.tsx` for a complete pattern using Next.js Server Actions.
-
-## Benefits
-
-1. **Security**
-
-   - Provider API keys are securely stored in Portkey's vault
-   - No sensitive credentials in our codebase or client-side
-   - Server-side only access prevents unauthorized usage
-
-2. **Flexibility**
-
-   - Easy to switch between AI providers using virtual keys
-   - Support for multiple providers through one interface
-   - Unified API for all AI operations
-
-3. **Monitoring & Control**
-
-   - Built-in request logging through Portkey
-   - Cost tracking and budget controls
-   - Usage analytics and monitoring
-
-4. **Performance**
-   - Server-side execution for better performance
-   - Proper error handling and recovery
-   - Type safety to prevent runtime errors
+See the example implementation in `example.tsx` for a complete pattern using Next.js Server Actions.
 
 ## Configuration and Prompt Management System
 
@@ -184,7 +198,6 @@ allowing server-side access to various AI providers through a unified interface.
    Features:
 
    - **Cache Namespacing**
-
      - User-specific cache isolation
      - Team-level cache partitioning
      - Context-aware caching
