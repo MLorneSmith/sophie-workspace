@@ -7,9 +7,14 @@ import pptxgen from "pptxgenjs";
 import { z } from "zod";
 
 import type { StoryboardSlide } from "../../_lib/types/storyboard.types";
+import {
+	DEFAULT_TEMPLATE_ID,
+	getTemplateById,
+} from "../../../_lib/config/presentation-templates.config";
 
 const ExportSchema = z.object({
 	presentationId: z.string().min(1),
+	templateId: z.string().optional(),
 });
 
 export const exportPowerPointAction = enhanceAction(
@@ -41,6 +46,19 @@ export const exportPowerPointAction = enhanceAction(
 			throw new Error("Storyboard has no slides to export");
 		}
 
+		// Get template configuration
+		const templateId = data.templateId ?? DEFAULT_TEMPLATE_ID;
+		const template = getTemplateById(templateId);
+
+		// Extract theme colors from template
+		const theme = {
+			primary: template?.colors[0] ?? "1a1a2e",
+			secondary: template?.colors[1] ?? "333333",
+			accent: template?.colors[2] ?? "666666",
+			bodyText: template?.colors[3] ?? "333333",
+			muted: template?.colors[4] ?? "666666",
+		};
+
 		// Generate PPTX
 		const pptx = new pptxgen();
 		pptx.title = presentation?.title ?? "Presentation";
@@ -57,7 +75,7 @@ export const exportPowerPointAction = enhanceAction(
 					h: "15%",
 					fontSize: 24,
 					bold: true,
-					color: "1a1a2e",
+					color: theme.primary,
 				});
 			};
 
@@ -70,7 +88,7 @@ export const exportPowerPointAction = enhanceAction(
 					fontSize: 36,
 					bold: true,
 					align: "center",
-					color: "1a1a2e",
+					color: theme.primary,
 				});
 			} else if (
 				slide.layout === "title-two-column" ||
@@ -90,7 +108,7 @@ export const exportPowerPointAction = enhanceAction(
 					w: "42%",
 					h: "65%",
 					fontSize: 14,
-					color: "333333",
+					color: theme.bodyText,
 				});
 				pptxSlide.addText(rightContent, {
 					x: "53%",
@@ -98,7 +116,7 @@ export const exportPowerPointAction = enhanceAction(
 					w: "42%",
 					h: "65%",
 					fontSize: 14,
-					color: "333333",
+					color: theme.bodyText,
 				});
 			} else if (slide.layout === "blank") {
 				if (baseContent) {
@@ -108,7 +126,7 @@ export const exportPowerPointAction = enhanceAction(
 						w: "84%",
 						h: "80%",
 						fontSize: 16,
-						color: "333333",
+						color: theme.bodyText,
 					});
 				}
 			} else {
@@ -130,7 +148,7 @@ export const exportPowerPointAction = enhanceAction(
 						fontSize: 28,
 						italic: true,
 						align: "center",
-						color: "1a1a2e",
+						color: theme.primary,
 					});
 					if (slide.visual_notes) {
 						pptxSlide.addText(`— ${slide.visual_notes}`, {
@@ -140,7 +158,7 @@ export const exportPowerPointAction = enhanceAction(
 							h: "10%",
 							fontSize: 14,
 							align: "right",
-							color: "666666",
+							color: theme.muted,
 						});
 					}
 				} else {
@@ -150,12 +168,12 @@ export const exportPowerPointAction = enhanceAction(
 						w: "90%",
 						h: "65%",
 						fontSize: 14,
-						color: "333333",
+						color: theme.bodyText,
 					});
 				}
 			}
 
-			addSlideNumberFooter(pptxSlide, index + 1, slides.length);
+			addSlideNumberFooter(pptxSlide, index + 1, slides.length, theme.muted);
 
 			// Add speaker notes
 			if (slide.speaker_notes) {
@@ -172,6 +190,7 @@ export const exportPowerPointAction = enhanceAction(
 		logger.info("PowerPoint exported", {
 			presentationId: data.presentationId,
 			slideCount: slides.length,
+			templateId: templateId,
 		});
 
 		return {
@@ -227,6 +246,7 @@ function addSlideNumberFooter(
 	slide: { addText: (text: string, options: Record<string, unknown>) => void },
 	current: number,
 	total: number,
+	mutedColor: string,
 ) {
 	slide.addText(`${current}/${total}`, {
 		x: "90%",
@@ -234,7 +254,7 @@ function addSlideNumberFooter(
 		w: "8%",
 		h: "4%",
 		fontSize: 10,
-		color: "666666",
+		color: mutedColor,
 		align: "right",
 	});
 }

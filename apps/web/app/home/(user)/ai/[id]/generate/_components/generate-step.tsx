@@ -15,11 +15,16 @@ import { useMemo, useState, useTransition } from "react";
 
 import { exportPowerPointAction } from "../../storyboard/_actions/export-powerpoint.action";
 import { saveGenerateAction } from "../_actions/save-generate.action";
+import { saveTemplateAction } from "../_actions/save-template.action";
+import { TemplatePicker } from "../../storyboard/_components/template-picker";
+import { DEFAULT_TEMPLATE_ID } from "../../../_lib/config/presentation-templates.config";
+import type { TemplateId } from "../../../_lib/schemas/presentation-template.schema";
 
 interface GenerateStepProps {
 	presentationId: string;
 	presentationTitle: string;
 	slideCount: number;
+	templateId?: string | null;
 }
 
 type ExportStatus = "idle" | "success" | "error";
@@ -55,15 +60,36 @@ export function GenerateStep({
 	presentationId,
 	presentationTitle,
 	slideCount,
+	templateId,
 }: GenerateStepProps) {
 	const [isExporting, startExport] = useTransition();
+	const [_isSavingTemplate, startSaveTemplate] = useTransition();
 	const [status, setStatus] = useState<ExportStatus>("idle");
 	const [statusMessage, setStatusMessage] = useState<string>("");
+	const [selectedTemplateId, setSelectedTemplateId] = useState<string>(
+		templateId ?? DEFAULT_TEMPLATE_ID,
+	);
 
 	const slideLabel = useMemo(() => {
 		if (slideCount === 1) return "1 slide";
 		return `${slideCount} slides`;
 	}, [slideCount]);
+
+	const handleTemplateChange = (templateId: TemplateId) => {
+		setSelectedTemplateId(templateId);
+
+		// Save template selection to database
+		startSaveTemplate(async () => {
+			try {
+				await saveTemplateAction({
+					presentationId,
+					templateId,
+				});
+			} catch {
+				// Non-blocking - template selection will be passed directly to export
+			}
+		});
+	};
 
 	const handleExport = () => {
 		setStatus("idle");
@@ -71,7 +97,10 @@ export function GenerateStep({
 
 		startExport(async () => {
 			try {
-				const result = await exportPowerPointAction({ presentationId });
+				const result = await exportPowerPointAction({
+					presentationId,
+					templateId: selectedTemplateId,
+				});
 
 				if (!(result && "data" in result && result.data?.base64)) {
 					setStatus("error");
@@ -85,7 +114,7 @@ export function GenerateStep({
 				try {
 					await saveGenerateAction({
 						presentationId,
-						templateId: "default",
+						templateId: selectedTemplateId,
 						exportFormat: "pptx",
 						generatedAt: new Date().toISOString(),
 					});
@@ -123,7 +152,14 @@ export function GenerateStep({
 						</Badge>
 					</div>
 				</CardHeader>
-				<CardContent className="space-y-4">
+				<CardContent className="space-y-6">
+					{/* Template Picker */}
+					<TemplatePicker
+						value={selectedTemplateId}
+						onChange={handleTemplateChange}
+					/>
+
+					{/* Export Button */}
 					<Button
 						size="lg"
 						className="w-full sm:w-auto"
