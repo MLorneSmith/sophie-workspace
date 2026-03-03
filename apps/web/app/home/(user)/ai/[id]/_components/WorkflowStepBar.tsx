@@ -1,5 +1,6 @@
 "use client";
 
+import { SidebarTrigger } from "@kit/ui/shadcn-sidebar";
 import { cn } from "@kit/ui/utils";
 import { Check } from "lucide-react";
 import Link from "next/link";
@@ -8,9 +9,10 @@ import type React from "react";
 
 import {
 	type PresentationStep,
-	STEP_ACCENT_SPECTRUM,
 	WORKFLOW_STEPS,
 } from "../../_components/mock-presentations";
+
+const BRAND_BLUE = "#24A9E0";
 
 function getCurrentStepFromPathname(
 	pathname: string,
@@ -40,107 +42,88 @@ export function WorkflowStepBar(props: { presentationId: string }) {
 	const currentIndex = WORKFLOW_STEPS.findIndex((s) => s.key === currentStep);
 
 	return (
-		<div className="border-b border-white/5 bg-background/80 backdrop-blur-md">
-			<div className="mx-auto flex max-w-5xl items-center px-4 py-4 sm:px-6 lg:px-8">
-				<nav className="w-full" aria-label="Workflow progress">
-					<ol className="flex w-full items-center gap-1">
+		<div className="border-b border-border/50 bg-background/80 backdrop-blur-md">
+			{/* Sidebar trigger — matches standard page header */}
+			<div className="px-4 pt-4 pb-1 lg:px-8">
+				<SidebarTrigger className="text-muted-foreground hover:text-secondary-foreground hidden size-4.5 cursor-pointer lg:inline-flex" />
+			</div>
+
+			{/* Segmented step bar */}
+			<div className="mx-auto max-w-6xl px-4 pt-2 pb-4 lg:px-8">
+				<nav aria-label="Workflow progress">
+					<ol className="flex w-full">
 						{WORKFLOW_STEPS.map((step, idx) => {
 							const isCompleted = idx < currentIndex;
 							const isCurrent = idx === currentIndex;
-							const isFuture = idx > currentIndex;
-							const accent = STEP_ACCENT_SPECTRUM[idx] ?? "#24A9E0";
 
-							return (
-								<li key={step.key} className="flex flex-1 items-center">
-									{idx !== 0 && (
-										<div
-											className={cn(
-												"h-[2px] w-4 shrink-0 transition-colors duration-300",
-												isCompleted ? "bg-white/25" : "bg-white/8",
-											)}
-											style={
-												isCompleted
-													? ({
-															backgroundColor: `${accent}40`,
-														} as React.CSSProperties)
-													: undefined
-											}
-											aria-hidden="true"
+							const label = (
+								<span className="flex items-center justify-center gap-1.5">
+									{isCompleted ? (
+										<Check
+											className="size-3.5"
+											style={{ color: BRAND_BLUE }}
+											strokeWidth={2.5}
 										/>
-									)}
-
-									<Link
-										href={`/home/ai/${props.presentationId}/${step.key}`}
-										aria-disabled={isFuture}
-										aria-current={isCurrent ? "step" : undefined}
-										className={cn(
-											"group relative flex flex-1 items-center gap-2.5 rounded-lg px-3 py-2 transition-all duration-200",
-											isFuture
-												? "pointer-events-none opacity-40"
-												: "hover:bg-white/5",
-											isCurrent && "bg-white/5",
-										)}
-									>
+									) : (
 										<span
 											className={cn(
-												"relative grid size-7 shrink-0 place-items-center rounded-full text-xs font-semibold transition-all duration-300",
-												isCurrent && "shadow-lg",
+												"text-xs tabular-nums",
+												isCurrent ? "text-foreground" : "text-muted-foreground",
 											)}
-											style={
-												{
-													backgroundColor: isCompleted
-														? `${accent}25`
-														: isCurrent
-															? `${accent}20`
-															: "rgba(255,255,255,0.06)",
-													color:
-														isCompleted || isCurrent
-															? accent
-															: "rgba(255,255,255,0.5)",
-													boxShadow: isCurrent
-														? `0 0 12px ${accent}30`
-														: undefined,
-												} as React.CSSProperties
-											}
 										>
-											{isCompleted ? (
-												<Check className="size-3.5" strokeWidth={2.5} />
-											) : (
-												<span>{idx + 1}</span>
-											)}
+											{idx + 1}
 										</span>
+									)}
+									<span>{step.label}</span>
+								</span>
+							);
 
-										<div className="min-w-0 flex-1">
-											<span
-												className={cn(
-													"block truncate text-sm font-medium transition-colors duration-200",
-													isCurrent
-														? "text-foreground"
-														: isCompleted
-															? "text-foreground/80"
-															: "text-white/50",
-												)}
-											>
-												{step.label}
-											</span>
-
-											{isCurrent && (
-												<span
-													className="mt-0.5 block h-0.5 rounded-full"
-													style={
-														{
-															backgroundColor: accent,
-															width: "60%",
-														} as React.CSSProperties
-													}
-												/>
+							return (
+								<li key={step.key} className="flex-1 text-center">
+									{isCompleted || isCurrent ? (
+										<Link
+											href={`/home/ai/${props.presentationId}/${step.key}`}
+											aria-current={isCurrent ? "step" : undefined}
+											className={cn(
+												"block pb-2 text-sm transition-colors duration-200",
+												isCurrent
+													? "font-semibold text-foreground"
+													: "text-muted-foreground hover:text-foreground",
 											)}
-										</div>
-									</Link>
+										>
+											{label}
+										</Link>
+									) : (
+										<span
+											aria-disabled="true"
+											className="block cursor-default pb-2 text-sm text-muted-foreground"
+										>
+											{label}
+										</span>
+									)}
 								</li>
 							);
 						})}
 					</ol>
+
+					{/* Segmented progress bar */}
+					<div className="flex gap-1" aria-hidden="true">
+						{WORKFLOW_STEPS.map((step, idx) => {
+							const isFilled = idx <= currentIndex;
+
+							return (
+								<div
+									key={step.key}
+									className="h-[3px] flex-1 rounded-full bg-muted transition-colors duration-300"
+									style={
+										isFilled
+											? ({ backgroundColor: BRAND_BLUE } as React.CSSProperties)
+											: undefined
+									}
+								/>
+							);
+						})}
+					</div>
 				</nav>
 			</div>
 		</div>

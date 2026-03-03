@@ -111,6 +111,29 @@ const RESEARCH_STEPS = [
 	"Generating audience brief…",
 ] as const;
 
+/** Returns true when the brief has at least one populated section. */
+function hasBriefContent(b: BriefStructured | null): boolean {
+	if (!b) return false;
+	const cp = b.communicationProfile;
+	const sr = b.strategicRecommendations;
+	const pf = b.presentationFormat;
+	return !!(
+		cp?.decisionMakingStyle ||
+		cp?.attentionSpan ||
+		cp?.whatTheyTrust ||
+		cp?.careerContext ||
+		sr?.leadWith ||
+		sr?.frameAs ||
+		sr?.avoid ||
+		sr?.include ||
+		pf?.structure ||
+		pf?.dataDensity ||
+		pf?.tone ||
+		pf?.lengthRecommendation ||
+		b.briefSummary
+	);
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -124,9 +147,8 @@ export function ProfileStepForm(props: {
 	const [isSaving, startSaving] = useTransition();
 
 	// Determine initial form state based on existing profile data
-	const hasBrief = !!(
-		props.initialProfile?.brief_structured &&
-		Object.keys(props.initialProfile.brief_structured).length > 0
+	const hasBrief = hasBriefContent(
+		props.initialProfile?.brief_structured as BriefStructured | null,
 	);
 
 	const initial = useMemo(
@@ -349,7 +371,7 @@ export function ProfileStepForm(props: {
 
 	if (formState === "searching") {
 		return (
-			<div className="mx-auto w-full max-w-3xl space-y-8">
+			<div className="mx-auto w-full max-w-5xl space-y-8">
 				<div className="text-center">
 					<h2 className="text-app-h3 font-semibold">Searching for profiles…</h2>
 					<p className="mt-2 text-app-sm text-muted-foreground">
@@ -377,7 +399,7 @@ export function ProfileStepForm(props: {
 
 	if (formState === "selecting") {
 		return (
-			<div className="mx-auto w-full max-w-3xl space-y-6">
+			<div className="mx-auto w-full max-w-5xl space-y-6">
 				<div>
 					<h2 className="text-app-h3 font-semibold">Select the right person</h2>
 					<p className="mt-2 text-app-sm text-muted-foreground">
@@ -505,7 +527,7 @@ export function ProfileStepForm(props: {
 
 	if (formState === "researching") {
 		return (
-			<div className="mx-auto w-full max-w-3xl space-y-8">
+			<div className="mx-auto w-full max-w-5xl space-y-8">
 				<div className="text-center">
 					<h2 className="text-app-h3 font-semibold">
 						Researching your audience
@@ -577,9 +599,11 @@ export function ProfileStepForm(props: {
 	// Render: Audience Brief
 	// -----------------------------------------------------------------------
 
-	if (formState === "brief" && brief) {
+	if (formState === "brief") {
+		const briefEmpty = !hasBriefContent(brief);
+
 		return (
-			<div className="mx-auto w-full max-w-3xl space-y-6">
+			<div className="mx-auto w-full max-w-5xl space-y-6">
 				<div>
 					<div className="flex items-center gap-3">
 						<h2 className="text-app-h3 font-semibold">Audience Brief</h2>
@@ -622,150 +646,164 @@ export function ProfileStepForm(props: {
 					</p>
 				</div>
 
-				{brief.briefSummary ? (
+				{briefEmpty ? (
+					<div className="rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-6 text-center">
+						<p className="text-app-sm font-medium text-foreground">
+							Brief generation failed
+						</p>
+						<p className="mt-1 text-app-xs text-muted-foreground">
+							We collected research data but couldn&apos;t generate the audience
+							brief. Click <strong>Re-research</strong> to try again.
+						</p>
+					</div>
+				) : null}
+
+				{brief?.briefSummary ? (
 					<p className="rounded-lg border bg-muted/30 p-4 text-app-sm italic text-muted-foreground">
 						{brief.briefSummary}
 					</p>
 				) : null}
 
-				<div className="grid gap-4 md:grid-cols-3">
-					{/* Communication Profile */}
-					<Card>
-						<CardHeader className="pb-3">
-							<CardTitle className="text-app-sm font-semibold">
-								🎯 Communication Profile
-							</CardTitle>
-						</CardHeader>
-						<CardContent className="space-y-2 text-app-xs">
-							{brief.communicationProfile?.decisionMakingStyle ? (
-								<div>
-									<span className="font-medium text-muted-foreground">
-										Decisions:{" "}
-									</span>
-									{brief.communicationProfile.decisionMakingStyle}
-								</div>
-							) : null}
-							{brief.communicationProfile?.attentionSpan ? (
-								<div>
-									<span className="font-medium text-muted-foreground">
-										Attention:{" "}
-									</span>
-									{brief.communicationProfile.attentionSpan}
-								</div>
-							) : null}
-							{brief.communicationProfile?.whatTheyTrust ? (
-								<div>
-									<span className="font-medium text-muted-foreground">
-										Trusts:{" "}
-									</span>
-									{brief.communicationProfile.whatTheyTrust}
-								</div>
-							) : null}
-							{brief.communicationProfile?.careerContext ? (
-								<div>
-									<span className="font-medium text-muted-foreground">
-										Background:{" "}
-									</span>
-									{brief.communicationProfile.careerContext}
-								</div>
-							) : null}
-						</CardContent>
-					</Card>
+				{brief && !briefEmpty ? (
+					<div className="grid gap-4 md:grid-cols-3">
+						{/* Communication Profile */}
+						<Card>
+							<CardHeader className="pb-3">
+								<CardTitle className="text-app-sm font-semibold">
+									🎯 Communication Profile
+								</CardTitle>
+							</CardHeader>
+							<CardContent className="space-y-2 text-app-xs">
+								{brief.communicationProfile?.decisionMakingStyle ? (
+									<div>
+										<span className="font-medium text-muted-foreground">
+											Decisions:{" "}
+										</span>
+										{brief.communicationProfile.decisionMakingStyle}
+									</div>
+								) : null}
+								{brief.communicationProfile?.attentionSpan ? (
+									<div>
+										<span className="font-medium text-muted-foreground">
+											Attention:{" "}
+										</span>
+										{brief.communicationProfile.attentionSpan}
+									</div>
+								) : null}
+								{brief.communicationProfile?.whatTheyTrust ? (
+									<div>
+										<span className="font-medium text-muted-foreground">
+											Trusts:{" "}
+										</span>
+										{brief.communicationProfile.whatTheyTrust}
+									</div>
+								) : null}
+								{brief.communicationProfile?.careerContext ? (
+									<div>
+										<span className="font-medium text-muted-foreground">
+											Background:{" "}
+										</span>
+										{brief.communicationProfile.careerContext}
+									</div>
+								) : null}
+							</CardContent>
+						</Card>
 
-					{/* Strategic Recommendations */}
-					<Card>
-						<CardHeader className="pb-3">
-							<CardTitle className="text-app-sm font-semibold">
-								💡 Strategic Recommendations
-							</CardTitle>
-						</CardHeader>
-						<CardContent className="space-y-2 text-app-xs">
-							{brief.strategicRecommendations?.leadWith ? (
-								<div>
-									<span className="font-medium text-muted-foreground">
-										Lead with:{" "}
-									</span>
-									{brief.strategicRecommendations.leadWith}
-								</div>
-							) : null}
-							{brief.strategicRecommendations?.frameAs ? (
-								<div>
-									<span className="font-medium text-muted-foreground">
-										Frame as:{" "}
-									</span>
-									{brief.strategicRecommendations.frameAs}
-								</div>
-							) : null}
-							{brief.strategicRecommendations?.avoid ? (
-								<div>
-									<span className="font-medium text-muted-foreground">
-										Avoid:{" "}
-									</span>
-									{brief.strategicRecommendations.avoid}
-								</div>
-							) : null}
-							{brief.strategicRecommendations?.include ? (
-								<div>
-									<span className="font-medium text-muted-foreground">
-										Include:{" "}
-									</span>
-									{brief.strategicRecommendations.include}
-								</div>
-							) : null}
-						</CardContent>
-					</Card>
+						{/* Strategic Recommendations */}
+						<Card>
+							<CardHeader className="pb-3">
+								<CardTitle className="text-app-sm font-semibold">
+									💡 Strategic Recommendations
+								</CardTitle>
+							</CardHeader>
+							<CardContent className="space-y-2 text-app-xs">
+								{brief.strategicRecommendations?.leadWith ? (
+									<div>
+										<span className="font-medium text-muted-foreground">
+											Lead with:{" "}
+										</span>
+										{brief.strategicRecommendations.leadWith}
+									</div>
+								) : null}
+								{brief.strategicRecommendations?.frameAs ? (
+									<div>
+										<span className="font-medium text-muted-foreground">
+											Frame as:{" "}
+										</span>
+										{brief.strategicRecommendations.frameAs}
+									</div>
+								) : null}
+								{brief.strategicRecommendations?.avoid ? (
+									<div>
+										<span className="font-medium text-muted-foreground">
+											Avoid:{" "}
+										</span>
+										{brief.strategicRecommendations.avoid}
+									</div>
+								) : null}
+								{brief.strategicRecommendations?.include ? (
+									<div>
+										<span className="font-medium text-muted-foreground">
+											Include:{" "}
+										</span>
+										{brief.strategicRecommendations.include}
+									</div>
+								) : null}
+							</CardContent>
+						</Card>
 
-					{/* Presentation Format */}
-					<Card>
-						<CardHeader className="pb-3">
-							<CardTitle className="text-app-sm font-semibold">
-								📊 Presentation Format
-							</CardTitle>
-						</CardHeader>
-						<CardContent className="space-y-2 text-app-xs">
-							{brief.presentationFormat?.structure ? (
-								<div>
-									<span className="font-medium text-muted-foreground">
-										Structure:{" "}
-									</span>
-									{brief.presentationFormat.structure}
-								</div>
-							) : null}
-							{brief.presentationFormat?.dataDensity ? (
-								<div>
-									<span className="font-medium text-muted-foreground">
-										Data density:{" "}
-									</span>
-									{brief.presentationFormat.dataDensity}
-								</div>
-							) : null}
-							{brief.presentationFormat?.tone ? (
-								<div>
-									<span className="font-medium text-muted-foreground">
-										Tone:{" "}
-									</span>
-									{brief.presentationFormat.tone}
-								</div>
-							) : null}
-							{brief.presentationFormat?.lengthRecommendation ? (
-								<div>
-									<span className="font-medium text-muted-foreground">
-										Length:{" "}
-									</span>
-									{brief.presentationFormat.lengthRecommendation}
-								</div>
-							) : null}
-							{brief.presentationFormat?.frameworksTheyRecognize ? (
-								<div>
-									<span className="font-medium text-muted-foreground">
-										Frameworks:{" "}
-									</span>
-									{brief.presentationFormat.frameworksTheyRecognize}
-								</div>
-							) : null}
-						</CardContent>
-					</Card>
-				</div>
+						{/* Presentation Format */}
+						<Card>
+							<CardHeader className="pb-3">
+								<CardTitle className="text-app-sm font-semibold">
+									📊 Presentation Format
+								</CardTitle>
+							</CardHeader>
+							<CardContent className="space-y-2 text-app-xs">
+								{brief.presentationFormat?.structure ? (
+									<div>
+										<span className="font-medium text-muted-foreground">
+											Structure:{" "}
+										</span>
+										{brief.presentationFormat.structure}
+									</div>
+								) : null}
+								{brief.presentationFormat?.dataDensity ? (
+									<div>
+										<span className="font-medium text-muted-foreground">
+											Data density:{" "}
+										</span>
+										{brief.presentationFormat.dataDensity}
+									</div>
+								) : null}
+								{brief.presentationFormat?.tone ? (
+									<div>
+										<span className="font-medium text-muted-foreground">
+											Tone:{" "}
+										</span>
+										{brief.presentationFormat.tone}
+									</div>
+								) : null}
+								{brief.presentationFormat?.lengthRecommendation ? (
+									<div>
+										<span className="font-medium text-muted-foreground">
+											Length:{" "}
+										</span>
+										{brief.presentationFormat.lengthRecommendation}
+									</div>
+								) : null}
+								{brief.presentationFormat?.frameworksTheyRecognize ? (
+									<div>
+										<span className="font-medium text-muted-foreground">
+											Frameworks:{" "}
+										</span>
+										{brief.presentationFormat.frameworksTheyRecognize}
+									</div>
+								) : null}
+							</CardContent>
+						</Card>
+					</div>
+				) : null}
 
 				{/* Company Context Section */}
 				{companyBrief ? (
@@ -924,7 +962,7 @@ export function ProfileStepForm(props: {
 					</Button>
 
 					<div className="flex gap-2">
-						{!showAdaptive ? (
+						{!showAdaptive && !briefEmpty ? (
 							<Button
 								variant="secondary"
 								disabled={isSaving || isLoadingQuestions}
@@ -960,7 +998,7 @@ export function ProfileStepForm(props: {
 	// -----------------------------------------------------------------------
 
 	return (
-		<div className="mx-auto w-full max-w-3xl space-y-6">
+		<div className="mx-auto w-full max-w-5xl space-y-6">
 			<div>
 				<h2 className="text-app-h3 font-semibold">
 					Who are you presenting to?
