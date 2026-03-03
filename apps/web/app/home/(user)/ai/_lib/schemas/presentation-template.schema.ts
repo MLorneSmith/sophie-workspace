@@ -6,6 +6,17 @@ import { z } from "zod";
  */
 
 // ============================================
+// Hex Color Schema
+// ============================================
+
+/**
+ * Validates a 6-digit hex color string (with or without # prefix)
+ */
+const HexColorSchema = z
+	.string()
+	.regex(/^#?[0-9a-fA-F]{6}$/, "Expected a 6-digit hex color");
+
+// ============================================
 // Template ID Type
 // ============================================
 
@@ -47,7 +58,7 @@ export const PresentationTemplateSchema = z.object({
 	/** Brief description for UI display */
 	description: z.string(),
 	/** Color palette preview (5-6 hex color codes) */
-	colors: z.array(z.string()).min(5).max(6),
+	colors: z.array(HexColorSchema).min(5).max(6),
 	/** Path to template thumbnail preview image */
 	thumbnailUrl: z.string(),
 	/** Optional typography configuration */

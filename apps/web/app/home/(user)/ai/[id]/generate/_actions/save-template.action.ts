@@ -5,9 +5,11 @@ import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
 
+import { TEMPLATE_IDS } from "../../../_lib/schemas/presentation-template.schema";
+
 const SaveTemplateSchema = z.object({
 	presentationId: z.string().min(1),
-	templateId: z.string().min(1),
+	templateId: z.enum(TEMPLATE_IDS),
 });
 
 export const saveTemplateAction = enhanceAction(

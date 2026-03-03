@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -16,12 +18,39 @@ import {
 	SheetTrigger,
 } from "@kit/ui/sheet";
 import { ExternalLink } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import type { Template } from "~/config/templates.config";
 
 interface LibraryTemplatesProps {
 	templates: Template[];
+}
+
+function TemplateThumbnail({
+	src,
+	alt,
+	className,
+}: {
+	src: string;
+	alt: string;
+	className?: string;
+}) {
+	const [error, setError] = useState(false);
+
+	if (error || !src) {
+		return null;
+	}
+
+	return (
+		<Image
+			src={src}
+			alt={alt}
+			fill
+			className={className}
+			onError={() => setError(true)}
+		/>
+	);
 }
 
 export function LibraryTemplates({ templates }: LibraryTemplatesProps) {
@@ -31,12 +60,13 @@ export function LibraryTemplates({ templates }: LibraryTemplatesProps) {
 				<Sheet key={template.id}>
 					<SheetTrigger asChild>
 						<Card className="cursor-pointer transition-all hover:shadow-md">
-							<div
-								className="aspect-video w-full rounded-t-lg"
-								style={{
-									background: `linear-gradient(135deg, ${template.colors[0]} 0%, ${template.colors[1]} 100%)`,
-								}}
-							/>
+							<div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
+								<TemplateThumbnail
+									src={template.thumbnailUrl}
+									alt={template.name}
+									className="object-cover"
+								/>
+							</div>
 							<CardHeader className="p-4">
 								<CardTitle className="text-lg">{template.name}</CardTitle>
 								<CardDescription className="line-clamp-2">
@@ -61,12 +91,13 @@ export function LibraryTemplates({ templates }: LibraryTemplatesProps) {
 							<SheetTitle>{template.name}</SheetTitle>
 						</SheetHeader>
 						<div className="mt-4 space-y-4">
-							<div
-								className="aspect-video w-full rounded-lg"
-								style={{
-									background: `linear-gradient(135deg, ${template.colors[0]} 0%, ${template.colors[1]} 100%)`,
-								}}
-							/>
+							<div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
+								<TemplateThumbnail
+									src={template.previewUrl || template.thumbnailUrl}
+									alt={`${template.name} preview`}
+									className="object-cover"
+								/>
+							</div>
 							<p className="text-muted-foreground">{template.description}</p>
 							<div className="flex items-center gap-2">
 								<span className="text-sm font-medium">Colors:</span>
