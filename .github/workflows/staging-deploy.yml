@@ -308,6 +308,43 @@ jobs:
 
       - uses: ./.github/actions/setup-deps
 
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start Supabase services
+        run: pnpm run supabase:web:start -- -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
+
+      - name: Extract Supabase JWT keys
+        run: |
+          cd apps/web
+          # Extract actual JWT keys from running Supabase instance
+          # This ensures we use the ES256 keys that Supabase generates, not hardcoded HS256 keys
+          # IMPORTANT: Must run before build verification, as fallback rebuilds need these env vars
+          # See: Issue #1626 - E2E Sharded Workflow Environment Variable Naming Mismatch
+          echo "📋 Extracting JWT keys from Supabase..."
+          eval "$(supabase status -o env)"
+
+          # Verify keys were extracted
+          if [ -z "$ANON_KEY" ] || [ -z "$SERVICE_ROLE_KEY" ]; then
+            echo "❌ Failed to extract JWT keys from Supabase"
+            supabase status
+            exit 1
+          fi
+
+          # Export for build and E2E tests
+          # NOTE: E2E_ prefixed variables are required by test-users.ts and auth.po.ts
+          echo "SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+          echo "E2E_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "E2E_SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+          # Signal that we're running with local Supabase in CI (allows localhost validation to pass)
+          echo "E2E_LOCAL_SUPABASE=true" >> $GITHUB_ENV
+
+          echo "✅ JWT keys extracted successfully"
+
       - name: Restore build artifacts
         uses: actions/cache@v5
         with:
@@ -364,14 +401,6 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps
 
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-      - name: Start Supabase services
-        run: pnpm run supabase:web:start -- -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
-
       # Run Payload CMS migrations to create payload.* tables
       # Required for E2E Shards 7, 8, 9 (Payload tests)
       # Without this, tests fail with: "relation payload.users does not exist"
@@ -408,37 +437,6 @@ jobs:
           PAYLOAD_SECRET: test_payload_secret_for_e2e_testing
           SEED_USER_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
           SEED_SOPHIE_API_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
-
-      - name: Extract Supabase JWT keys
-        run: |
-          cd apps/web
-          # Extract actual JWT keys from running Supabase instance
-          # This ensures we use the ES256 keys that Supabase generates, not hardcoded HS256 keys
-          echo "📋 Extracting JWT keys from Supabase..."
-          eval "$(supabase status -o env)"
-
-          # Verify keys were extracted
-          if [ -z "$ANON_KEY" ] || [ -z "$SERVICE_ROLE_KEY" ]; then
-            echo "❌ Failed to extract JWT keys from Supabase"
-            supabase status
-            exit 1
-          fi
-
-          # Export for E2E tests
-          # NOTE: E2E_ prefixed variables are required by test-users.ts and auth.po.ts
-          # The test code falls back to hardcoded HS256 keys if E2E_ vars are missing,
-          # but Supabase uses ES256 keys, causing JWT signing method validation errors.
-          # See: Issue #1626 - E2E Sharded Workflow Environment Variable Naming Mismatch
-          echo "SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
-          echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
-          echo "E2E_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
-          echo "E2E_SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
-          # Signal that we're running with local Supabase in CI (allows localhost validation to pass)
-          # See: Issue #1626 - Localhost validation blocks sharded workflow with local Supabase
-          echo "E2E_LOCAL_SUPABASE=true" >> $GITHUB_ENV
-
-          echo "✅ JWT keys extracted successfully"
 
       - name: Login to GHCR
         run: echo "${{ github.token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
