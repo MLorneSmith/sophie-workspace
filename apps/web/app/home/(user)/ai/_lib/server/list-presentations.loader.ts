@@ -8,8 +8,15 @@ import { cache } from "react";
 import type { Database } from "~/lib/database.types";
 
 type Client = SupabaseClient<Database>;
-export type PresentationRow =
+type BasePresentationRow =
 	Database["public"]["Tables"]["presentations"]["Row"];
+
+export type PresentationRow = BasePresentationRow & {
+	audience_profiles: {
+		person_name: string;
+		company: string | null;
+	} | null;
+};
 
 export const loadPresentations = cache(listPresentationsLoader);
 
@@ -31,7 +38,7 @@ async function listPresentations(
 	const { data, error } = await client
 		.from("presentations")
 		.select(
-			"id, user_id, account_id, title, current_step, completed_steps, template_id, audience_profile_id, created_at, updated_at",
+			"id, user_id, account_id, title, current_step, completed_steps, template_id, audience_profile_id, created_at, updated_at, audience_profiles(person_name, company)",
 		)
 		.eq("user_id", userId)
 		.order("updated_at", { ascending: false });
@@ -40,5 +47,5 @@ async function listPresentations(
 		throw error;
 	}
 
-	return data ?? [];
+	return (data ?? []) as PresentationRow[];
 }

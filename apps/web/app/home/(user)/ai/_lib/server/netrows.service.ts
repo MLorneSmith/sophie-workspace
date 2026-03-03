@@ -234,6 +234,7 @@ async function expandSearchTerms(
 	name: string,
 	company: string,
 	_userId?: string,
+	context?: string,
 ): Promise<SearchVariant[]> {
 	const logger = await getLogger();
 	const ctx = { name: "expandSearchTerms" };
@@ -269,11 +270,11 @@ async function expandSearchTerms(
 				messages: [
 					{
 						role: "system",
-						content: `You generate search variations for finding a person on LinkedIn. Given a name and company, return a JSON array of 2-3 objects with optional fields: firstName, lastName, keywords. Your MOST IMPORTANT job is to correct likely misspellings using your knowledge of well-known people at the given company. Also include formal/full name versions and the original spelling. For example: "Michael Meibach" at "Mastercard" → [{"firstName":"Michael","lastName":"Miebach"},{"firstName":"Michael","lastName":"Meibach"}]. "Ajay Banga" at "World Bank" → [{"firstName":"Ajaypal","lastName":"Banga"},{"firstName":"Ajay","lastName":"Banga"}]. Put the most likely correct spelling FIRST. Only return the JSON array, nothing else.`,
+						content: `You generate search variations for finding a person on LinkedIn. Given a name, company, and optional context hints (role, location, background), return a JSON array of 2-3 objects with optional fields: firstName, lastName, keywords. Your MOST IMPORTANT job is to correct likely misspellings using your knowledge of well-known people at the given company. Also include formal/full name versions and the original spelling. Use context hints (title, location, etc.) in the keywords field to help disambiguate. For example: "Michael Meibach" at "Mastercard" → [{"firstName":"Michael","lastName":"Miebach"},{"firstName":"Michael","lastName":"Meibach"}]. "Ajay Banga" at "World Bank" → [{"firstName":"Ajaypal","lastName":"Banga"},{"firstName":"Ajay","lastName":"Banga"}]. "Sarah Chen" at "TD Bank" with context "VP of Engineering, Toronto" → [{"firstName":"Sarah","lastName":"Chen","keywords":"VP Engineering Toronto"}]. Put the most likely correct spelling FIRST. Only return the JSON array, nothing else.`,
 					},
 					{
 						role: "user",
-						content: `Name: "${name}"\nCompany: "${company}"`,
+						content: `Name: "${name}"\nCompany: "${company}"${context ? `\nContext: "${context}"` : ""}`,
 					},
 				],
 			}),
@@ -372,12 +373,13 @@ export async function searchPersonFuzzy(
 	name: string,
 	company: string,
 	userId?: string,
+	context?: string,
 ): Promise<NetrowsPersonSearchItem[]> {
 	const logger = await getLogger();
 	const ctx = { name: "searchPersonFuzzy" };
 
 	// Phase 1: LLM name expansion
-	const variants = await expandSearchTerms(name, company, userId);
+	const variants = await expandSearchTerms(name, company, userId, context);
 	logger.info(ctx, "Search variants for '%s': %o", name, variants);
 
 	const seen = new Set<string>();

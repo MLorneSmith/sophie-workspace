@@ -292,8 +292,15 @@ export default function PresentationsList(props: {
 											{p.title}
 										</h3>
 										<p className="line-clamp-1 text-app-sm text-muted-foreground">
-											{p.audience_profile_id
-												? "Audience set"
+											{p.audience_profiles
+												? p.audience_profiles.company &&
+													!p.audience_profiles.person_name
+														.toLowerCase()
+														.includes(
+															p.audience_profiles.company.toLowerCase(),
+														)
+													? `${p.audience_profiles.person_name} at ${p.audience_profiles.company}`
+													: p.audience_profiles.person_name
 												: "No audience yet"}
 										</p>
 									</div>
@@ -350,8 +357,15 @@ export default function PresentationsList(props: {
 									Audience
 								</p>
 								<p className="mt-2 text-app-body text-muted-foreground">
-									{selected.audience_profile_id
-										? "Audience profile selected"
+									{selected.audience_profiles
+										? selected.audience_profiles.company &&
+											!selected.audience_profiles.person_name
+												.toLowerCase()
+												.includes(
+													selected.audience_profiles.company.toLowerCase(),
+												)
+											? `${selected.audience_profiles.person_name} at ${selected.audience_profiles.company}`
+											: selected.audience_profiles.person_name
 										: "No audience profile yet"}
 								</p>
 							</div>

@@ -266,6 +266,7 @@ export function ProfileStepForm(props: {
 			const result = await searchAudienceAction({
 				personName,
 				company,
+				context: context || undefined,
 			});
 
 			if (!result.success) {
@@ -287,7 +288,7 @@ export function ProfileStepForm(props: {
 			setError(err instanceof Error ? err.message : "Search failed");
 			setFormState("input");
 		}
-	}, [personName, company, handleResearchWithSelection]);
+	}, [personName, company, context, handleResearchWithSelection]);
 
 	// -----------------------------------------------------------------------
 	// Adaptive questions handler
@@ -373,7 +374,7 @@ export function ProfileStepForm(props: {
 		return (
 			<div className="mx-auto w-full max-w-5xl space-y-8">
 				<div className="text-center">
-					<h2 className="text-app-h3 font-semibold">Searching for profiles…</h2>
+					<h2 className="text-app-h3 font-semibold">Searching for your audience…</h2>
 					<p className="mt-2 text-app-sm text-muted-foreground">
 						Looking up{" "}
 						<span className="font-medium text-foreground">{personName}</span>
@@ -416,14 +417,21 @@ export function ProfileStepForm(props: {
 					</p>
 				</div>
 
-				<div className="grid gap-3">
-					{searchResults.map((person, index) => {
+				{(() => {
+					const topResults = searchResults.slice(0, 3);
+					const moreResults = searchResults.slice(3);
+
+					const renderPersonCard = (
+						person: PersonSearchResult,
+						index: number,
+					) => {
 						const linkedinUrl =
 							person.profileURL ??
 							(person.username
 								? `https://www.linkedin.com/in/${person.username}/`
 								: undefined);
-						const displayName = person.fullName || person.username || "Unknown";
+						const displayName =
+							person.fullName || person.username || "Unknown";
 						const initials = displayName
 							.split(/\s+/)
 							.slice(0, 2)
@@ -462,8 +470,32 @@ export function ProfileStepForm(props: {
 								</Badge>
 							</button>
 						);
-					})}
-				</div>
+					};
+
+					return (
+						<div className="space-y-3">
+							<div className="grid gap-3">
+								{topResults.map((person, index) =>
+									renderPersonCard(person, index),
+								)}
+							</div>
+
+							{moreResults.length > 0 ? (
+								<details className="rounded-lg border border-white/10 bg-white/5 p-3">
+									<summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+										Show {moreResults.length} more result
+										{moreResults.length !== 1 ? "s" : ""}
+									</summary>
+									<div className="mt-3 grid gap-3">
+										{moreResults.map((person, index) =>
+											renderPersonCard(person, index + 3),
+										)}
+									</div>
+								</details>
+							) : null}
+						</div>
+					);
+				})()}
 
 				<div className="space-y-3">
 					<div className="flex items-center gap-3">
@@ -1036,27 +1068,38 @@ export function ProfileStepForm(props: {
 					</div>
 				</div>
 
-				<div className="grid gap-2">
-					<Label htmlFor={`${reactId}-context`}>
-						Additional context{" "}
-						<span className="text-muted-foreground">(optional)</span>
-					</Label>
-					<Textarea
-						id={`${reactId}-context`}
-						value={context}
-						onChange={(e) => setContext(e.target.value)}
-						placeholder="e.g. Quarterly board review, she's skeptical about our cloud migration costs…"
-						className="min-h-[80px]"
-					/>
-				</div>
+				<details className="group rounded-lg border border-white/10 bg-white/5 p-3">
+					<summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+						Add search hints{" "}
+						<span className="text-xs text-muted-foreground/70">
+							(help us find the right person)
+						</span>
+					</summary>
+					<div className="mt-3 grid gap-2">
+						<Label htmlFor={`${reactId}-context`}>
+							What else do you know about them?
+						</Label>
+						<Textarea
+							id={`${reactId}-context`}
+							value={context}
+							onChange={(e) => setContext(e.target.value)}
+							placeholder="e.g. She's the VP of Engineering, based in Toronto, previously at McKinsey…"
+							className="min-h-[80px]"
+						/>
+					</div>
+				</details>
 
 				{error ? <p className="text-app-sm text-destructive">{error}</p> : null}
+			</div>
 
-				<div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+			<div className="mt-10 flex flex-col items-end gap-2 border-t border-white/5 pt-6">
+				<div className="flex gap-2">
 					<Button
 						variant="secondary"
 						disabled={
-							personName.trim().length === 0 || company.trim().length === 0
+							isSaving ||
+							personName.trim().length === 0 ||
+							company.trim().length === 0
 						}
 						onClick={() => {
 							// Skip research, just save and continue

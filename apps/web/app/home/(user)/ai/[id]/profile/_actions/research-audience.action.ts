@@ -46,6 +46,7 @@ import {
 const SearchAudienceSchema = z.object({
 	personName: z.string().min(1, "Person name is required"),
 	company: z.string().min(1, "Company is required"),
+	context: z.string().optional(),
 });
 
 const ResearchAudienceSchema = z.object({
@@ -181,7 +182,7 @@ Respond with ONLY the JSON object, no markdown fences.`;
 export const searchAudienceAction = enhanceAction(
 	async (data, user) => {
 		const [personSettled, companySettled] = await Promise.allSettled([
-			searchPersonFuzzy(data.personName, data.company, user.id),
+			searchPersonFuzzy(data.personName, data.company, user.id, data.context),
 			searchCompany(data.company),
 		]);
 
