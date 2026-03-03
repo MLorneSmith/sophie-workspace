@@ -183,8 +183,11 @@ export const searchAudienceAction = enhanceAction(
 	async (data, user) => {
 		const [personSettled, companySettled] = await Promise.allSettled([
 <<<<<<< HEAD
+<<<<<<< HEAD
 			searchPersonFuzzy(data.personName, data.company, user.id, data.context),
 =======
+=======
+>>>>>>> origin/staging
 			searchPersonFuzzy(data.personName, data.company, user.id),
 >>>>>>> origin/staging
 			searchCompany(data.company),
