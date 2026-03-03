@@ -40,6 +40,26 @@ function deriveProviderFromModel(model: string): string {
 	return "openai";
 }
 
+/**
+ * Extracts model and temperature from a Config object's first target.
+ * Returns undefined for values not found, so callers can apply their own defaults.
+ */
+function extractParamsFromConfig(config?: string | Config): {
+	model?: string;
+	temperature?: number;
+} {
+	if (!config || typeof config === "string") return {};
+	const overrides = config.targets?.[0]?.override_params;
+	if (!overrides) return {};
+	return {
+		model: typeof overrides.model === "string" ? overrides.model : undefined,
+		temperature:
+			typeof overrides.temperature === "number"
+				? overrides.temperature
+				: undefined,
+	};
+}
+
 // Define available environment variables for feature flags
 const ENV = {
 	BYPASS_AI_CREDITS: process.env.BYPASS_AI_CREDITS !== "false", // Default to true unless explicitly set to false
@@ -223,8 +243,6 @@ export async function getChatCompletion(
 		ChatMessagesSchema.parse(messages);
 
 		const {
-			model = "gpt-3.5-turbo",
-			temperature = 0.7,
 			userId,
 			teamId,
 			feature,
@@ -233,6 +251,13 @@ export async function getChatCompletion(
 			bypassCredits: _bypassCredits = false,
 			config,
 		} = options;
+
+		// Resolve model and temperature: explicit option > config target > default
+		const configParams = extractParamsFromConfig(config);
+		const model =
+			options.model ?? configParams.model ?? "gpt-3.5-turbo";
+		const temperature =
+			options.temperature ?? configParams.temperature ?? 0.7;
 
 		// Read environment variable to determine if we should check usage limits
 		const checkUsageLimitsFlag = process.env.CHECK_AI_USAGE_LIMITS === "true";
@@ -273,18 +298,16 @@ export async function getChatCompletion(
 			teamId,
 			feature,
 			sessionId,
-			config, // Pass config to client creation
-			model, // Pass model to determine the correct provider
+			config,
+			model,
 		});
 
-		// Configure request options WITHOUT the config parameter
+		// Configure request options
 		const requestOptions: OpenAI.Chat.ChatCompletionCreateParams = {
 			messages,
-			model: bifrostModel, // Use Bifrost-formatted model name
+			model: bifrostModel,
 			temperature,
 		};
-
-		// No longer need to add config to requestOptions
 
 		const response = await client.chat.completions.create(requestOptions);
 
@@ -474,8 +497,6 @@ export async function* getStreamingChatCompletion(
 		ChatMessagesSchema.parse(messages);
 
 		const {
-			model = "gpt-3.5-turbo",
-			temperature = 0.7,
 			userId,
 			teamId,
 			feature,
@@ -484,6 +505,13 @@ export async function* getStreamingChatCompletion(
 			bypassCredits: _bypassCredits = false,
 			config,
 		} = options;
+
+		// Resolve model and temperature: explicit option > config target > default
+		const configParams = extractParamsFromConfig(config);
+		const model =
+			options.model ?? configParams.model ?? "gpt-3.5-turbo";
+		const temperature =
+			options.temperature ?? configParams.temperature ?? 0.7;
 
 		// Read environment variable to determine if we should check usage limits
 		const checkUsageLimitsFlag = process.env.CHECK_AI_USAGE_LIMITS === "true";
@@ -527,19 +555,17 @@ export async function* getStreamingChatCompletion(
 			teamId,
 			feature,
 			sessionId,
-			config, // Pass config to client creation
-			model, // Pass model to determine the correct provider
+			config,
+			model,
 		});
 
-		// Configure request options WITHOUT the config parameter
+		// Configure request options
 		const requestOptions: OpenAI.Chat.ChatCompletionCreateParams = {
 			messages,
-			model: bifrostModel, // Use Bifrost-formatted model name
+			model: bifrostModel,
 			temperature,
 			stream: true,
 		};
-
-		// No longer need to add config to requestOptions
 
 		// Get the streaming response
 		// Using unknown type to avoid TypeScript errors with streaming
