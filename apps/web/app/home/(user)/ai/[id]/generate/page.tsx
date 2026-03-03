@@ -20,7 +20,7 @@ export default async function GenerateStepPage({
 	const [presentationResult, storyboardResult] = await Promise.all([
 		client
 			.from("presentations")
-			.select("id, title")
+			.select("id, title, template_id")
 			.eq("id", presentationId)
 			.eq("user_id", auth.data.id)
 			.maybeSingle(),
@@ -53,6 +53,7 @@ export default async function GenerateStepPage({
 				presentationResult.data.title ?? "Untitled Presentation"
 			}
 			slideCount={slides.length}
+			templateId={presentationResult.data.template_id}
 		/>
 	);
 }
