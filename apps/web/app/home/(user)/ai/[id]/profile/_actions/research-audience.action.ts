@@ -182,7 +182,11 @@ Respond with ONLY the JSON object, no markdown fences.`;
 export const searchAudienceAction = enhanceAction(
 	async (data, user) => {
 		const [personSettled, companySettled] = await Promise.allSettled([
+<<<<<<< HEAD
 			searchPersonFuzzy(data.personName, data.company, user.id, data.context),
+=======
+			searchPersonFuzzy(data.personName, data.company, user.id),
+>>>>>>> origin/staging
 			searchCompany(data.company),
 		]);
 
