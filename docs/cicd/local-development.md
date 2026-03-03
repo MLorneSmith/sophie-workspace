@@ -140,9 +140,14 @@ STRIPE_SECRET_KEY="sk_test_..."
 STRIPE_PUBLISHABLE_KEY="pk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 
-# AI Services (optional for development)
-PORTKEY_API_KEY="your-portkey-key"
+# AI Services (optional for development - falls back to direct OpenAI API when not configured)
 OPENAI_API_KEY="your-openai-key"
+BIFROST_GATEWAY_URL="https://bifrost.gateway.slideheroes.com"
+BIFROST_CF_ACCESS_CLIENT_ID="your-cf-access-client-id"
+BIFROST_CF_ACCESS_CLIENT_SECRET="your-cf-access-client-secret"
+LANGFUSE_PUBLIC_KEY="pk-..."
+LANGFUSE_SECRET_KEY="sk-..."
+LANGFUSE_HOST="https://cloud.langfuse.com"
 ```
 
 ## Development Services

@@ -9,7 +9,7 @@ body:
     attributes:
       label: Task Title
       description: Descriptive title for this implementation task
-      placeholder: "AI Service Integration - Portkey Gateway Setup"
+      placeholder: "AI Service Integration - Bifrost Gateway Setup"
     validations:
       required: true
       
@@ -28,7 +28,7 @@ body:
       label: Task Summary
       description: 50-100 word summary of this task's purpose and scope
       placeholder: |
-        This task covers the backend AI integration with Portkey Gateway for presentation outline generation. 
+        This task covers the backend AI integration with Bifrost Gateway for presentation outline generation. 
         It handles API client setup, authentication, prompt management, and response processing. 
         Provides foundation for frontend outline generation features.
     validations:
@@ -41,7 +41,7 @@ body:
       description: Specific technical boundaries and components for this task
       placeholder: |
         **Core Components**:
-        - Portkey AI client configuration
+        - Bifrost AI client configuration
         - Outline generation service layer
         - Response validation and processing
         - Error handling and retry logic
@@ -102,7 +102,7 @@ body:
       label: Task Acceptance Criteria
       description: Specific, testable criteria that define when this task is complete
       placeholder: |
-        - [ ] Portkey AI client successfully configured and authenticated
+        - [ ] Bifrost AI client successfully configured and authenticated
         - [ ] Outline generation API endpoint responds with valid data structure
         - [ ] Error handling covers all failure scenarios (network, auth, rate limits)
         - [ ] Response validation using Zod schemas
@@ -135,7 +135,7 @@ body:
         - Error handling patterns for AI services (affects all AI features)
         
         **External Dependencies**:
-        - Portkey AI Gateway service availability
+        - Bifrost AI Gateway service availability
         - Environment variables for API keys
     validations:
       required: false
@@ -154,7 +154,7 @@ body:
         - Task #125: Canvas Integration (depends on this task)
         
         **External Dependencies**:
-        - Portkey API account setup
+        - Bifrost API account setup
         - Environment configuration
     validations:
       required: false
@@ -206,7 +206,7 @@ body:
         - Similar server actions in the editor modules
         
         **Documentation to Review**:
-        - Portkey AI Gateway integration guide
+        - Bifrost AI Gateway integration guide
         - SlideHeroes AI architecture decisions
         - Error handling patterns for external services
     validations:
