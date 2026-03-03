@@ -179,7 +179,9 @@ All in `~/clawd/scripts/neo-loop/`:
 | `neo-mc-pickup.py` | */30 8-23 | Picks up MC tasks assigned to Neo |
 | `neo-nightly-backlog.py` | 0 23 | Nightly backlog task |
 | `neo-pr-merge-sync.py` | */10 8-23 | Syncs MC task status on PR merge |
-| `process-spawn-queue.py` | On demand | Processes spawn queue → launches ACP sessions |
+| `process-spawn-queue.py` | */10 8-23 | Processes spawn queue → launches ACP sessions |
+| `cleanup-stale-locks.py` | */15 8-23 | Clears stale active-run locks (45 min expiry) |
+| `neo-healthcheck.py` | Manual/heartbeat | Validates pipeline health (D-Bus, labels, locks, queue) |
 | `rabbit-status.py` | Manual | Pipeline dashboard |
 
 ---

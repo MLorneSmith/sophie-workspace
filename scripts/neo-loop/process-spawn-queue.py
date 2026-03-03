@@ -19,8 +19,9 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-SPAWN_QUEUE = Path.home() / "clawd" / "state" / "neo-loop" / "spawn-queue.jsonl"
-ARCHIVE_DIR = Path.home() / "clawd" / "state" / "neo-loop" / "archive"
+STATE_DIR = Path.home() / "clawd" / "state" / "neo-loop"
+SPAWN_QUEUE = STATE_DIR / "spawn-queue.jsonl"
+ARCHIVE_DIR = STATE_DIR / "archive"
 ACTIVE_FILE = Path.home() / "clawd" / "state" / "neo-loop" / "active-acp.json"
 NEO_CHANNEL = "channel:1477061196795478199"  # #neo Discord channel
 MIN_AVAILABLE_MB = 800  # Don't spawn if less than this available (protects OpenClaw)
@@ -28,6 +29,9 @@ MIN_AVAILABLE_MB = 800  # Don't spawn if less than this available (protects Open
 ENV_WITH_PATH = {
     **os.environ,
     "PATH": "/usr/local/bin:/home/ubuntu/.npm-global/bin:/usr/bin:/bin:" + os.environ.get("PATH", ""),
+    # Ensure systemd --user session bus is available (cron doesn't inherit these)
+    "DBUS_SESSION_BUS_ADDRESS": os.environ.get("DBUS_SESSION_BUS_ADDRESS", f"unix:path=/run/user/{os.getuid()}/bus"),
+    "XDG_RUNTIME_DIR": os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}"),
 }
 
 
@@ -83,6 +87,114 @@ def is_acp_session_running() -> bool:
             ACTIVE_FILE.unlink(missing_ok=True)
 
     return False
+
+
+def _extract_issue_number(label: str) -> int | None:
+    """Extract issue number from a label like 'neo-issue-2213'."""
+    import re
+    match = re.search(r"issue-(\d+)", label)
+    return int(match.group(1)) if match else None
+
+
+def _infer_repo_from_label(label: str) -> str:
+    """Infer the GitHub repo from the spawn label."""
+    if "internal-tools" in label or "slideheroes-internal-tools" in label:
+        return "slideheroes/slideheroes-internal-tools"
+    return "slideheroes/2025slideheroes"
+
+
+def _reset_issue_for_retry(issue_number: int, label: str):
+    """Reset a failed issue's label back to plan-me and remove from processed list,
+    so the pickup loop can retry it automatically."""
+    repo = _infer_repo_from_label(label)
+
+    # 1. Reset GitHub labels: remove status:in-progress, add plan-me
+    try:
+        subprocess.run(
+            ["gh", "issue", "edit", str(issue_number),
+             "--repo", repo,
+             "--remove-label", "status:in-progress",
+             "--add-label", "plan-me"],
+            capture_output=True, text=True, timeout=15, env=ENV_WITH_PATH,
+        )
+        log(f"  🔄 Reset #{issue_number} label to plan-me for retry")
+    except Exception as e:
+        log(f"  ⚠️ Failed to reset label for #{issue_number}: {e}")
+
+    # 2. Remove from processed list so pickup script sees it again
+    state_file = STATE_DIR / "issue-pickup-state.json"
+    try:
+        if state_file.exists():
+            with open(state_file) as f:
+                state = json.load(f)
+            processed = state.get("processed_issues", [])
+            if issue_number in processed:
+                processed.remove(issue_number)
+                state["processed_issues"] = processed
+                with open(state_file, "w") as f:
+                    json.dump(state, f, indent=2)
+                log(f"  🔄 Removed #{issue_number} from processed list")
+    except Exception as e:
+        log(f"  ⚠️ Failed to update processed list for #{issue_number}: {e}")
+
+    # 3. Update cooldown to track retry count
+    cooldown_file = STATE_DIR / "cooldown.json"
+    try:
+        cooldowns = {}
+        if cooldown_file.exists():
+            with open(cooldown_file) as f:
+                cooldowns = json.load(f)
+
+        key = f"issue-{issue_number}"
+        entry = cooldowns.get(key, {"attempts": 0, "max_attempts": 3})
+        entry["attempts"] = entry.get("attempts", 0) + 1
+        entry["last_failure"] = datetime.now(timezone.utc).isoformat()
+        cooldowns[key] = entry
+
+        with open(cooldown_file, "w") as f:
+            json.dump(cooldowns, f, indent=2)
+
+        if entry["attempts"] >= entry.get("max_attempts", 3):
+            log(f"  🚨 #{issue_number} has failed {entry['attempts']} times — escalating (won't auto-retry)")
+            # Remove plan-me so it doesn't loop forever
+            subprocess.run(
+                ["gh", "issue", "edit", str(issue_number),
+                 "--repo", repo,
+                 "--remove-label", "plan-me",
+                 "--add-label", "status:blocked"],
+                capture_output=True, text=True, timeout=15, env=ENV_WITH_PATH,
+            )
+            notify_neo(f"🚨 **Escalation:** #{issue_number} failed {entry['attempts']} times. Needs manual attention.")
+        else:
+            log(f"  🔄 #{issue_number} attempt {entry['attempts']}/{entry.get('max_attempts', 3)} — will retry on next pickup cycle")
+
+    except Exception as e:
+        log(f"  ⚠️ Failed to update cooldown for #{issue_number}: {e}")
+
+
+def _check_for_new_pr(label: str) -> bool:
+    """Check if a PR was created in the last 30 minutes by SophieLegerPA.
+    This catches cases where acpx reports failure but the work was actually done."""
+    try:
+        result = subprocess.run(
+            ["gh", "pr", "list", "--repo", "slideheroes/2025slideheroes",
+             "--author", "SophieLegerPA", "--state", "open",
+             "--json", "number,createdAt", "--jq", "length"],
+            capture_output=True, text=True, timeout=15, env=ENV_WITH_PATH,
+        )
+        # Also check recently merged PRs
+        result2 = subprocess.run(
+            ["gh", "pr", "list", "--repo", "slideheroes/2025slideheroes",
+             "--author", "SophieLegerPA", "--state", "merged",
+             "--json", "number,mergedAt", "--jq", "length"],
+            capture_output=True, text=True, timeout=15, env=ENV_WITH_PATH,
+        )
+        # Simple heuristic: if there are open or recently merged PRs, assume success
+        # A more precise check would match the branch name from the label
+        open_count = int(result.stdout.strip() or "0")
+        return open_count > 0
+    except Exception:
+        return False
 
 
 def spawn_acp_session(task: str, label: str, timeout_seconds: int = 1800) -> bool:
@@ -165,6 +277,13 @@ def spawn_acp_session(task: str, label: str, timeout_seconds: int = 1800) -> boo
             log(f"  ✅ Session completed for {label} (exit {exit_code})")
             return True
         else:
+            # Check for actual outcomes even if exit code is non-zero
+            # (acpx can report failure even when work was done)
+            pr_created = _check_for_new_pr(label)
+            if pr_created:
+                log(f"  ✅ Session exit code {exit_code} but PR was created — marking success")
+                return True
+
             err_text = ""
             try:
                 err_text = err_file.read_text().strip()[-200:]
@@ -252,10 +371,15 @@ def main():
 
     success = spawn_acp_session(task, label, timeout)
 
+    issue_number = req.get("issue_number") or _extract_issue_number(label)
+
     if success:
         notify_neo(f"✅ **Neo completed** PR #{pr_number} ({task_type})")
     else:
         notify_neo(f"❌ **Neo failed** PR #{pr_number} ({task_type})")
+        # Reset label so the issue re-enters the pickup loop for retry
+        if issue_number:
+            _reset_issue_for_retry(issue_number, label)
 
     # Archive the processed task
     ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)

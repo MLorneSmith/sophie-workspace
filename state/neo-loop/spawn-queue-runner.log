@@ -95,3 +95,90 @@
 [2026-03-02 04:00:13 UTC]   ❌ Session failed for neo-mc-644 (exit 1) Failed to connect to bus: No medium found
 [2026-03-02 04:00:17 UTC] 1 task(s) remaining in queue for next cycle.
 [2026-03-02 04:00:17 UTC] 1 task(s) remaining in queue for next cycle.
+[2026-03-02 14:20:06 UTC] 2 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 14:20:06 UTC]   [nightly-backlog] PR #644: neo-nightly-644
+[2026-03-02 14:20:07 UTC]   Spawning acpx exec for neo-nightly-644 (sync, timeout 1800s)...
+[2026-03-02 14:20:07 UTC]   ❌ Session failed for neo-nightly-644 (exit 1) Failed to connect to bus: No medium found
+[2026-03-02 14:20:10 UTC] 1 task(s) remaining in queue for next cycle.
+[2026-03-02 17:30:08 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 17:30:08 UTC]   [ci-fix] PR #2211: neo-ci-2211
+[2026-03-02 17:30:12 UTC]   Spawning acpx exec for neo-ci-2211 (sync, timeout 1800s)...
+[2026-03-02 17:30:12 UTC]   ❌ Session failed for neo-ci-2211 (exit 1) Failed to connect to bus: No medium found
+[2026-03-02 17:30:16 UTC] Queue empty.
+[2026-03-02 18:20:05 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 18:20:05 UTC]   [ci-fix] PR #2211: neo-ci-2211
+[2026-03-02 18:20:07 UTC]   Spawning acpx exec for neo-ci-2211 (sync, timeout 1800s)...
+[2026-03-02 18:20:07 UTC]   ❌ Session failed for neo-ci-2211 (exit 1) Failed to connect to bus: No medium found
+[2026-03-02 18:20:09 UTC] Queue empty.
+[2026-03-02 19:00:08 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 19:00:08 UTC]   [issue-pickup] PR #2215: neo-issue-2215
+[2026-03-02 19:00:13 UTC]   Spawning acpx exec for neo-issue-2215 (sync, timeout 1800s)...
+[2026-03-02 19:00:13 UTC]   ❌ Session failed for neo-issue-2215 (exit 1) Failed to connect to bus: No medium found
+[2026-03-02 19:00:17 UTC] 2 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 19:00:17 UTC]   [issue-pickup] PR #2215: neo-issue-2215
+[2026-03-02 19:00:18 UTC] Queue empty.
+[2026-03-02 19:00:22 UTC]   Spawning acpx exec for neo-issue-2215 (sync, timeout 1800s)...
+[2026-03-02 19:00:22 UTC]   ❌ Session failed for neo-issue-2215 (exit 1) Failed to connect to bus: No medium found
+[2026-03-02 19:00:25 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 19:00:25 UTC]   [issue-pickup] PR #2213: neo-issue-2213
+[2026-03-02 19:00:26 UTC] 1 task(s) remaining in queue for next cycle.
+[2026-03-02 19:00:27 UTC]   Spawning acpx exec for neo-issue-2213 (sync, timeout 1800s)...
+[2026-03-02 19:00:27 UTC]   ❌ Session failed for neo-issue-2213 (exit 1) Failed to connect to bus: No medium found
+[2026-03-02 19:00:29 UTC] Queue empty.
+[2026-03-02 19:20:05 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 19:20:05 UTC]   [ci-fix] PR #2211: neo-ci-2211
+[2026-03-02 19:20:07 UTC]   Spawning acpx exec for neo-ci-2211 (sync, timeout 1800s)...
+[2026-03-02 19:20:07 UTC]   ❌ Session failed for neo-ci-2211 (exit 1) Failed to connect to bus: No medium found
+[2026-03-02 19:20:08 UTC] Queue empty.
+[2026-03-02 19:35:06 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 19:35:06 UTC]   [issue-pickup] PR #2215: neo-issue-2215
+[2026-03-02 19:35:11 UTC]   Spawning acpx exec for neo-issue-2215 (sync, timeout 1800s)...
+[2026-03-02 19:35:14 UTC] ACP session already running — skipping this cycle.
+[2026-03-02 19:35:23 UTC] ACP session already running — skipping this cycle.
+[2026-03-02 19:46:29 UTC]   ❌ Session failed for neo-issue-2215 (exit 0) Running as unit: run-r485a9f8aaa414fdfbea5961b8fc17849.scope; invocation ID: 7689c0f59c31414290d4d6e0092ecacb
+[2026-03-02 19:46:33 UTC] Queue empty.
+[2026-03-02 20:01:38 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 20:01:38 UTC]   [issue-pickup] PR #2214: neo-issue-2214
+[2026-03-02 20:01:43 UTC]   Spawning acpx exec for neo-issue-2214 (sync, timeout 1800s)...
+[2026-03-02 20:01:48 UTC] ACP session already running — skipping this cycle.
+[2026-03-02 20:11:32 UTC]   ❌ Session failed for neo-issue-2214 (exit 0) Running as unit: run-r8e414b2a32634eb588b05fe7c5b857ec.scope; invocation ID: c933aa97949d4093a31ac97da0ad7f27
+[2026-03-02 20:11:38 UTC] Queue empty.
+[2026-03-02 22:35:55 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 22:35:55 UTC]   [issue-pickup] PR #2213: neo-issue-2213
+[2026-03-02 22:35:59 UTC]   Spawning acpx exec for neo-issue-2213 (sync, timeout 1800s)...
+[2026-03-02 22:41:17 UTC]   ✅ Session exit code 0 but PR was created — marking success
+[2026-03-02 22:41:23 UTC] Queue empty.
+[2026-03-02 23:48:00 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 23:48:00 UTC]   [issue-pickup] PR #23: neo-issue-slideheroes-internal-tools-23
+[2026-03-02 23:48:05 UTC]   Spawning acpx exec for neo-issue-slideheroes-internal-tools-23 (sync, timeout 1800s)...
+[2026-03-02 23:48:08 UTC] ACP session already running — skipping this cycle.
+[2026-03-02 23:54:38 UTC]   ❌ Session failed for neo-issue-slideheroes-internal-tools-23 (exit 0) Running as unit: run-r0e5014de16c149ecb3a9347ebd7710ff.scope; invocation ID: 232c4d8c011b41788593701cb5d379ba
+[2026-03-02 23:54:43 UTC] Queue empty.
+[2026-03-02 23:55:04 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-02 23:55:04 UTC]   [issue-pickup] PR #2200: neo-issue-2200
+[2026-03-02 23:55:09 UTC]   Spawning acpx exec for neo-issue-2200 (sync, timeout 1800s)...
+[2026-03-02 23:55:14 UTC] ACP session already running — skipping this cycle.
+[2026-03-03 00:00:05 UTC] ACP session already running — skipping this cycle.
+[2026-03-03 00:00:09 UTC] ACP session already running — skipping this cycle.
+[2026-03-03 00:07:15 UTC]   ✅ Session exit code 0 but PR was created — marking success
+[2026-03-03 00:07:19 UTC] Queue empty.
+[2026-03-03 00:31:52 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-03 00:31:52 UTC]   [issue-pickup] PR #2199: neo-issue-2199
+[2026-03-03 00:31:56 UTC]   Spawning acpx exec for neo-issue-2199 (sync, timeout 1800s)...
+[2026-03-03 00:52:16 UTC]   ✅ Session exit code 0 but PR was created — marking success
+[2026-03-03 00:52:20 UTC] Queue empty.
+[2026-03-03 01:00:09 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-03 01:00:09 UTC]   [mc-task] PR #644: neo-mc-644
+[2026-03-03 01:00:15 UTC]   Spawning acpx exec for neo-mc-644 (sync, timeout 1800s)...
+[2026-03-03 01:15:02 UTC]   ✅ Session exit code 0 but PR was created — marking success
+[2026-03-03 01:15:03 UTC] Queue empty.
+[2026-03-03 01:30:05 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-03 01:30:05 UTC]   [mc-task] PR #?: neo-mc-644
+[2026-03-03 01:30:09 UTC]   Spawning acpx exec for neo-mc-644 (sync, timeout 1800s)...
+[2026-03-03 01:37:23 UTC]   ✅ Session exit code 0 but PR was created — marking success
+[2026-03-03 01:37:24 UTC] Queue empty.
+[2026-03-03 02:20:05 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-03 02:20:05 UTC]   [issue-pickup] PR #25: neo-issue-slideheroes-internal-tools-25
+[2026-03-03 02:20:07 UTC]   Spawning acpx exec for neo-issue-slideheroes-internal-tools-25 (sync, timeout 1800s)...
+[2026-03-03 02:30:28 UTC]   ✅ Session exit code 0 but PR was created — marking success
+[2026-03-03 02:30:29 UTC] Queue empty.

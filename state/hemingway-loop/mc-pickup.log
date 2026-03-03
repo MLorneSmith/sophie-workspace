@@ -1,0 +1,15 @@
+[2026-03-02 14:00:02 UTC] [hemingway] Queued spawn: hemingway-mc-657 (MC#657)
+[2026-03-02 14:00:08 UTC] [hemingway] Spawn queue processor triggered
+[2026-03-02 14:00:08 UTC] [hemingway] Queued: Blog: Presentation Surgery — TBD Consultancy not BCG
+[2026-03-02 16:00:02 UTC] [hemingway] Run for 'MC#657' expired (120m), clearing
+[2026-03-02 16:00:02 UTC] [hemingway] Queued spawn: hemingway-mc-657 (MC#657)
+[2026-03-02 16:00:09 UTC] [hemingway] Spawn queue processor triggered
+[2026-03-02 16:00:09 UTC] [hemingway] Queued: Blog: Presentation Surgery — TBD Consultancy not BCG
+[2026-03-02 18:00:02 UTC] [hemingway] Run for 'MC#657' expired (120m), clearing
+[2026-03-02 18:00:17 UTC] [hemingway] Wake sent: 🚨 hemingway cooldown: MC#657 failed 2x. Please investigate or reassign.
+[2026-03-02 18:00:17 UTC] [hemingway] 'MC#657' hit daily cooldown, skipping
+[2026-03-02 18:00:17 UTC] [hemingway] Skipped (safety check): Blog: Presentation Surgery — TBD Consultancy not BCG
+[2026-03-02 20:00:01 UTC] [hemingway] 'MC#657' hit daily cooldown, skipping
+[2026-03-02 20:00:01 UTC] [hemingway] Skipped (safety check): Blog: Presentation Surgery — TBD Consultancy not BCG
+[2026-03-02 22:00:02 UTC] [hemingway] 'MC#657' hit daily cooldown, skipping
+[2026-03-02 22:00:02 UTC] [hemingway] Skipped (safety check): Blog: Presentation Surgery — TBD Consultancy not BCG

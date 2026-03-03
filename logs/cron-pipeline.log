@@ -374,3 +374,103 @@ Stored pipeline results in Mission Control
 === Pipeline Complete ===
 Downloaded=7 Uploaded=7 Failed=3
 Evaluated=93 Kept=10 Deleted=83 MC Synced=0
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 463, in <module>
+    main()
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 421, in main
+    s3_client = get_s3_client()
+                ^^^^^^^^^^^^^^^
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 129, in get_s3_client
+    raise ValueError("Missing R2 environment variables")
+ValueError: Missing R2 environment variables
+
+=== Nightly Presentation Pipeline ===
+Started at: 2026-03-03 03:00:01
+Limit: 10 | Threshold: 3.5/5
+
+== PHASE 1: Download & Upload to R2 ==
+Unprocessed: 10 selected for download
+
+--- [1/10] Arthur D. Little Innovation for Value ---
+    Source: arthur_d_little
+    Downloading...
+    FAILED: HTTP 403
+
+--- [2/10] Arthur D. Little Moving Innovation Forward 2025 ---
+    Source: arthur_d_little
+    Downloading...
+    FAILED: HTTP 403
+
+--- [3/10] AlixPartners 2023 Annual Report ---
+    Source: alixpartners
+    Downloading...
+    Downloaded: 28192 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/alixpartners/alixpartners-AlixPartners 2023 Annual Report.pdf
+    UPLOADED: to-be-evaluated/alixpartners/alixpartners-AlixPartners 2023 Annual Report.pdf
+
+--- [4/10] AlixPartners 2024 Impact Report ---
+    Source: alixpartners
+    Downloading...
+    Downloaded: 27057 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/alixpartners/alixpartners-AlixPartners 2024 Impact Report.pdf
+    UPLOADED: to-be-evaluated/alixpartners/alixpartners-AlixPartners 2024 Impact Report.pdf
+
+--- [5/10] AlixPartners Disruption Index 2024 ---
+    Source: alixpartners
+    Downloading...
+    Downloaded: 2260 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/alixpartners/alixpartners-AlixPartners Disruption Index 2024.pdf
+    UPLOADED: to-be-evaluated/alixpartners/alixpartners-AlixPartners Disruption Index 2024.pdf
+
+--- [6/10] AlixPartners 2025 Media & Entertainment Industry Predictions ---
+    Source: alixpartners
+    Downloading...
+    Downloaded: 3740 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/alixpartners/alixpartners-AlixPartners 2025 Media _ Entertainment Industry Predictions.pdf
+    UPLOADED: to-be-evaluated/alixpartners/alixpartners-AlixPartners 2025 Media _ Entertainment Industry Predictions.pdf
+
+--- [7/10] AlixPartners Tech Sector Growth and Performance 2024 ---
+    Source: alixpartners
+    Downloading...
+    Downloaded: 2096 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/alixpartners/alixpartners-AlixPartners Tech Sector Growth and Performance 2024.pdf
+    UPLOADED: to-be-evaluated/alixpartners/alixpartners-AlixPartners Tech Sector Growth and Performance 2024.pdf
+
+--- [8/10] AlixPartners Global Consumer Outlook 2025 ---
+    Source: alixpartners
+    Downloading...
+    Downloaded: 2006 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/alixpartners/alixpartners-AlixPartners Global Consumer Outlook 2025.pdf
+    UPLOADED: to-be-evaluated/alixpartners/alixpartners-AlixPartners Global Consumer Outlook 2025.pdf
+
+--- [9/10] Kearney State of Logistics Report 2024 Executive Summary ---
+    Source: kearney
+    Downloading...
+    Downloaded: 1363 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/kearney/kearney-Kearney State of Logistics Report 2024 Executive Summary.pdf
+    UPLOADED: to-be-evaluated/kearney/kearney-Kearney State of Logistics Report 2024 Executive Summary.pdf
+
+--- [10/10] Kearney Sustainability Report 2024 ---
+    Source: kearney
+    Downloading...
+    Downloaded: 6093 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/kearney/kearney-Kearney Sustainability Report 2024.pdf
+    UPLOADED: to-be-evaluated/kearney/kearney-Kearney Sustainability Report 2024.pdf
+
+Phase 1 complete: Downloaded=8 Uploaded=8 Failed=2
+
+== PHASE 2: AI Evaluation ==
+Available for evaluation: 28
+Evaluating 10 presentations (threshold: 3.5/5)
+Manifest: 170 total, 28 ready to evaluate
+Connecting to R2...
+
+
+Total kept: 10 | Total deleted: 83
+
+Syncing kept presentations to Mission Control...
+Stored pipeline results in Mission Control
+
+=== Pipeline Complete ===
+Downloaded=8 Uploaded=8 Failed=2
+Evaluated=93 Kept=10 Deleted=83 MC Synced=0

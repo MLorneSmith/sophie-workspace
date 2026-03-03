@@ -584,3 +584,50 @@
 2026-03-01T21:43:41Z DETECT: gateway not running
 2026-03-01T21:43:41Z RESTART: initiating gateway restart. reason=process_not_running
 2026-03-01T21:43:43Z RESTART: gateway appears healthy (active + logs flowing).
+2026-03-02T15:00:24Z DETECT: gateway not running
+2026-03-02T15:00:24Z RESTART: initiating gateway restart. reason=process_not_running
+2026-03-02T15:00:26Z RESTART: gateway appears healthy (active + logs flowing).
+2026-03-02T15:01:26Z DETECT: gateway not running
+2026-03-02T15:01:26Z RESTART: initiating gateway restart. reason=process_not_running
+2026-03-02T15:01:30Z RESTART: gateway appears healthy (active + logs flowing).
+2026-03-02T15:02:30Z DETECT: gateway not running
+2026-03-02T15:02:30Z RESTART: initiating gateway restart. reason=process_not_running
+2026-03-02T15:02:34Z RESTART: gateway appears healthy (active + logs flowing).
+2026-03-02T15:03:34Z DETECT: gateway not running
+2026-03-02T15:03:34Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-03-02T15:05:35Z DETECT: gateway not running
+2026-03-02T15:05:35Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-03-02T15:06:35Z DETECT: gateway not running
+2026-03-02T15:06:35Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-03-02T15:07:35Z DETECT: gateway not running
+2026-03-02T15:07:35Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-03-02T15:08:35Z DETECT: gateway not running
+2026-03-02T15:08:35Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-03-02T15:09:35Z DETECT: gateway not running
+2026-03-02T15:09:35Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-03-02T15:11:35Z DETECT: gateway not running
+2026-03-02T15:11:35Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-03-02T15:12:35Z DETECT: gateway not running
+2026-03-02T15:12:35Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-03-02T15:14:35Z DETECT: gateway not running
+2026-03-02T15:14:35Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-03-02T15:15:35Z DETECT: gateway not running
+2026-03-02T15:15:35Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-03-02T15:16:35Z DETECT: gateway not running
+2026-03-02T15:16:35Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-03-02T15:17:35Z DETECT: gateway not running
+2026-03-02T15:17:35Z CIRCUIT_BREAKER: restart suppressed (>3/hour). reason=process_not_running
+2026-03-02T16:35:38Z DETECT: gateway not running
+2026-03-02T16:35:38Z RESTART: initiating gateway restart. reason=process_not_running
+2026-03-02T16:35:40Z RESTART: gateway appears healthy (active + logs flowing).
+2026-03-02T18:14:45Z DETECT: gateway not running
+2026-03-02T18:14:45Z RESTART: initiating gateway restart. reason=process_not_running
+2026-03-02T18:14:52Z RESTART: gateway appears healthy (active + logs flowing).
+2026-03-02T18:20:52Z DETECT: gateway logs matched billing/cooldown pattern; verifying ZAI after 30s
+2026-03-02T18:21:23Z VERIFY: ZAI API responds OK; treating gateway billing/cooldown as false-positive → restart
+2026-03-02T18:21:23Z RESTART: initiating gateway restart. reason=false_billing_cooldown
+2026-03-02T18:21:23Z RESTART: gateway appears healthy (active + logs flowing).
+2026-03-02T22:27:33Z DETECT: gateway logs matched billing/cooldown pattern; verifying ZAI after 30s
+2026-03-02T22:28:04Z VERIFY: ZAI API responds OK; treating gateway billing/cooldown as false-positive → restart
+2026-03-02T22:28:04Z RESTART: initiating gateway restart. reason=false_billing_cooldown
+2026-03-02T22:28:04Z RESTART: gateway appears healthy (active + logs flowing).

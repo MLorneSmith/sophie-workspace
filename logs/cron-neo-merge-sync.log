@@ -296,3 +296,326 @@ failed to update 1 issue
 [2026-03-02 04:50:01 UTC] === Neo PR Merge Sync ===
 [2026-03-02 04:50:01 UTC] Checking 20 merged PRs
 [2026-03-02 04:50:01 UTC] Done. Updated: 0
+[2026-03-02 13:00:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 13:00:03 UTC] Checking 20 merged PRs
+[2026-03-02 13:00:03 UTC] Done. Updated: 0
+[2026-03-02 13:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 13:10:02 UTC] Checking 20 merged PRs
+[2026-03-02 13:10:02 UTC] Done. Updated: 0
+[2026-03-02 13:20:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 13:20:02 UTC] Checking 20 merged PRs
+[2026-03-02 13:20:02 UTC] Done. Updated: 0
+[2026-03-02 13:30:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 13:30:03 UTC] Checking 20 merged PRs
+[2026-03-02 13:30:03 UTC] Done. Updated: 0
+[2026-03-02 13:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 13:40:02 UTC] Checking 20 merged PRs
+[2026-03-02 13:40:02 UTC] Done. Updated: 0
+[2026-03-02 13:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 13:50:02 UTC] Checking 20 merged PRs
+[2026-03-02 13:50:02 UTC] Done. Updated: 0
+[2026-03-02 14:00:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 14:00:03 UTC] Checking 20 merged PRs
+[2026-03-02 14:00:03 UTC] Done. Updated: 0
+[2026-03-02 14:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 14:10:02 UTC] Checking 20 merged PRs
+[2026-03-02 14:10:02 UTC] Done. Updated: 0
+[2026-03-02 14:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 14:20:01 UTC] Checking 20 merged PRs
+[2026-03-02 14:20:01 UTC] Done. Updated: 0
+[2026-03-02 14:30:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 14:30:02 UTC] Checking 20 merged PRs
+[2026-03-02 14:30:02 UTC] Done. Updated: 0
+[2026-03-02 14:40:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 14:40:02 UTC] Checking 20 merged PRs
+[2026-03-02 14:40:02 UTC] Done. Updated: 0
+[2026-03-02 14:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 14:50:02 UTC] Checking 20 merged PRs
+[2026-03-02 14:50:02 UTC] Done. Updated: 0
+[2026-03-02 15:00:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 15:00:02 UTC] Checking 20 merged PRs
+[2026-03-02 15:00:02 UTC]   PR #2206: linked issues [2205]
+[2026-03-02 15:00:03 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-02 15:00:04 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/2205: 'in-progress' not found
+failed to update 1 issue
+[2026-03-02 15:00:09 UTC]   PR #2196: linked issues [506]
+[2026-03-02 15:00:09 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-02 15:00:10 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/506: 'in-progress' not found
+failed to update 1 issue
+[2026-03-02 15:00:16 UTC]   PR #2195: linked issues [517]
+[2026-03-02 15:00:16 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-02 15:00:17 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/pull/517: 'in-progress' not found
+failed to update 1 issue
+[2026-03-02 15:00:23 UTC] Done. Updated: 3
+[2026-03-02 15:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 15:10:02 UTC] Checking 20 merged PRs
+[2026-03-02 15:10:02 UTC] Done. Updated: 0
+[2026-03-02 15:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 15:20:02 UTC] Checking 20 merged PRs
+[2026-03-02 15:20:02 UTC]   PR #2194: linked issues [1, 588]
+[2026-03-02 15:20:02 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-02 15:20:03 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/1: 'in-progress' not found
+failed to update 1 issue
+[2026-03-02 15:20:03 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-02 15:20:04 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/588: 'in-progress' not found
+failed to update 1 issue
+[2026-03-02 15:20:06 UTC] Done. Updated: 1
+[2026-03-02 15:30:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 15:30:02 UTC] Checking 20 merged PRs
+[2026-03-02 15:30:02 UTC] Done. Updated: 0
+[2026-03-02 15:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 15:40:02 UTC] Checking 20 merged PRs
+[2026-03-02 15:40:02 UTC] Done. Updated: 0
+[2026-03-02 15:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 15:50:02 UTC] Checking 20 merged PRs
+[2026-03-02 15:50:02 UTC] Done. Updated: 0
+[2026-03-02 16:00:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 16:00:03 UTC] Checking 20 merged PRs
+[2026-03-02 16:00:03 UTC] Done. Updated: 0
+[2026-03-02 16:10:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 16:10:02 UTC] Checking 20 merged PRs
+[2026-03-02 16:10:02 UTC] Done. Updated: 0
+[2026-03-02 16:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 16:20:01 UTC] Checking 20 merged PRs
+[2026-03-02 16:20:01 UTC] Done. Updated: 0
+[2026-03-02 16:30:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 16:30:03 UTC] Checking 20 merged PRs
+[2026-03-02 16:30:03 UTC] Done. Updated: 0
+[2026-03-02 16:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 16:40:02 UTC] Checking 20 merged PRs
+[2026-03-02 16:40:02 UTC] Done. Updated: 0
+[2026-03-02 16:50:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 16:50:02 UTC] Checking 20 merged PRs
+[2026-03-02 16:50:02 UTC] Done. Updated: 0
+[2026-03-02 17:00:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 17:00:03 UTC] Checking 20 merged PRs
+[2026-03-02 17:00:03 UTC] Done. Updated: 0
+[2026-03-02 17:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 17:10:01 UTC] Checking 20 merged PRs
+[2026-03-02 17:10:01 UTC] Done. Updated: 0
+[2026-03-02 17:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 17:20:01 UTC] Checking 20 merged PRs
+[2026-03-02 17:20:01 UTC] Done. Updated: 0
+[2026-03-02 17:30:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 17:30:03 UTC] Checking 20 merged PRs
+[2026-03-02 17:30:03 UTC] Done. Updated: 0
+[2026-03-02 17:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 17:40:02 UTC] Checking 20 merged PRs
+[2026-03-02 17:40:02 UTC] Done. Updated: 0
+[2026-03-02 17:50:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 17:50:02 UTC] Checking 20 merged PRs
+[2026-03-02 17:50:02 UTC] Done. Updated: 0
+[2026-03-02 18:00:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 18:00:02 UTC] Checking 20 merged PRs
+[2026-03-02 18:00:02 UTC] Done. Updated: 0
+[2026-03-02 18:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 18:10:02 UTC] Checking 20 merged PRs
+[2026-03-02 18:10:02 UTC] Done. Updated: 0
+[2026-03-02 18:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 18:20:01 UTC] Checking 20 merged PRs
+[2026-03-02 18:20:01 UTC] Done. Updated: 0
+[2026-03-02 18:30:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 18:30:02 UTC] Checking 20 merged PRs
+[2026-03-02 18:30:02 UTC] Done. Updated: 0
+[2026-03-02 18:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 18:40:01 UTC] Checking 20 merged PRs
+[2026-03-02 18:40:01 UTC] Done. Updated: 0
+[2026-03-02 18:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 18:50:01 UTC] Checking 20 merged PRs
+[2026-03-02 18:50:01 UTC] Done. Updated: 0
+[2026-03-02 19:00:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 19:00:02 UTC] Checking 20 merged PRs
+[2026-03-02 19:00:02 UTC] Done. Updated: 0
+[2026-03-02 19:10:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 19:10:02 UTC] Checking 20 merged PRs
+[2026-03-02 19:10:02 UTC] Done. Updated: 0
+[2026-03-02 19:20:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 19:20:02 UTC] Checking 20 merged PRs
+[2026-03-02 19:20:02 UTC] Done. Updated: 0
+[2026-03-02 19:30:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 19:30:02 UTC] Checking 20 merged PRs
+[2026-03-02 19:30:02 UTC] Done. Updated: 0
+[2026-03-02 19:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 19:40:02 UTC] Checking 20 merged PRs
+[2026-03-02 19:40:02 UTC] Done. Updated: 0
+[2026-03-02 19:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 19:50:01 UTC] Checking 20 merged PRs
+[2026-03-02 19:50:01 UTC] Done. Updated: 0
+[2026-03-02 20:00:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 20:00:02 UTC] Checking 20 merged PRs
+[2026-03-02 20:00:02 UTC] Done. Updated: 0
+[2026-03-02 20:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 20:10:01 UTC] Checking 20 merged PRs
+[2026-03-02 20:10:01 UTC]   PR #2217: linked issues [2215]
+[2026-03-02 20:10:01 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-02 20:10:02 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/2215: 'in-progress' not found
+failed to update 1 issue
+[2026-03-02 20:10:04 UTC] Done. Updated: 1
+[2026-03-02 20:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 20:20:02 UTC] Checking 20 merged PRs
+[2026-03-02 20:20:02 UTC] Done. Updated: 0
+[2026-03-02 20:30:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 20:30:02 UTC] Checking 20 merged PRs
+[2026-03-02 20:30:02 UTC]   PR #2211: linked issues [2198]
+[2026-03-02 20:30:03 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-02 20:30:03 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/2198: 'in-progress' not found
+failed to update 1 issue
+[2026-03-02 20:30:06 UTC] Done. Updated: 1
+[2026-03-02 20:40:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 20:40:02 UTC] Checking 20 merged PRs
+[2026-03-02 20:40:02 UTC] Done. Updated: 0
+[2026-03-02 20:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 20:50:01 UTC] Checking 20 merged PRs
+[2026-03-02 20:50:01 UTC] Done. Updated: 0
+[2026-03-02 21:00:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 21:00:02 UTC] Checking 20 merged PRs
+[2026-03-02 21:00:02 UTC] Done. Updated: 0
+[2026-03-02 21:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 21:10:02 UTC] Checking 20 merged PRs
+[2026-03-02 21:10:02 UTC] Done. Updated: 0
+[2026-03-02 21:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 21:20:01 UTC] Checking 20 merged PRs
+[2026-03-02 21:20:01 UTC] Done. Updated: 0
+[2026-03-02 21:30:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 21:30:02 UTC] Checking 20 merged PRs
+[2026-03-02 21:30:02 UTC] Done. Updated: 0
+[2026-03-02 21:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 21:40:02 UTC] Checking 20 merged PRs
+[2026-03-02 21:40:02 UTC] Done. Updated: 0
+[2026-03-02 21:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 21:50:01 UTC] Checking 20 merged PRs
+[2026-03-02 21:50:01 UTC] Done. Updated: 0
+[2026-03-02 22:00:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 22:00:02 UTC] Checking 20 merged PRs
+[2026-03-02 22:00:02 UTC] Done. Updated: 0
+[2026-03-02 22:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 22:10:02 UTC] Checking 20 merged PRs
+[2026-03-02 22:10:02 UTC] Done. Updated: 0
+[2026-03-02 22:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 22:20:01 UTC] Checking 20 merged PRs
+[2026-03-02 22:20:01 UTC] Done. Updated: 0
+[2026-03-02 22:30:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 22:30:02 UTC] Checking 20 merged PRs
+[2026-03-02 22:30:02 UTC] Done. Updated: 0
+[2026-03-02 22:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 22:40:01 UTC] Checking 20 merged PRs
+[2026-03-02 22:40:01 UTC] Done. Updated: 0
+[2026-03-02 22:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 22:50:02 UTC] Checking 20 merged PRs
+[2026-03-02 22:50:02 UTC] Done. Updated: 0
+[2026-03-02 23:00:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 23:00:01 UTC] Checking 20 merged PRs
+[2026-03-02 23:00:01 UTC] Done. Updated: 0
+[2026-03-02 23:10:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 23:10:02 UTC] Checking 20 merged PRs
+[2026-03-02 23:10:02 UTC] Done. Updated: 0
+[2026-03-02 23:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 23:20:02 UTC] Checking 20 merged PRs
+[2026-03-02 23:20:02 UTC] Done. Updated: 0
+[2026-03-02 23:30:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 23:30:02 UTC] Checking 20 merged PRs
+[2026-03-02 23:30:02 UTC] Done. Updated: 0
+[2026-03-02 23:40:02 UTC] === Neo PR Merge Sync ===
+[2026-03-02 23:40:02 UTC] Checking 20 merged PRs
+[2026-03-02 23:40:02 UTC]   PR #2219: linked issues [2214]
+[2026-03-02 23:40:02 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-02 23:40:03 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/2214: 'in-progress' not found
+failed to update 1 issue
+[2026-03-02 23:40:04 UTC] Done. Updated: 1
+[2026-03-02 23:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-02 23:50:01 UTC] Checking 20 merged PRs
+[2026-03-02 23:50:01 UTC]   PR #2220: linked issues [2213]
+[2026-03-02 23:50:01 UTC]   MC search failed: HTTP Error 403: Forbidden
+[2026-03-02 23:50:02 UTC] gh error: failed to update https://github.com/slideheroes/2025slideheroes/issues/2213: 'in-progress' not found
+failed to update 1 issue
+[2026-03-02 23:50:03 UTC] Done. Updated: 1
+[2026-03-03 00:00:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 00:00:02 UTC] Checking 20 merged PRs
+[2026-03-03 00:00:02 UTC] Done. Updated: 0
+[2026-03-03 00:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 00:10:02 UTC] Checking 20 merged PRs
+[2026-03-03 00:10:02 UTC] Done. Updated: 0
+[2026-03-03 00:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 00:20:01 UTC] Checking 20 merged PRs
+[2026-03-03 00:20:01 UTC] Done. Updated: 0
+[2026-03-03 00:30:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 00:30:02 UTC] Checking 20 merged PRs
+[2026-03-03 00:30:02 UTC] Done. Updated: 0
+[2026-03-03 00:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 00:40:02 UTC] Checking 20 merged PRs
+[2026-03-03 00:40:02 UTC] Done. Updated: 0
+[2026-03-03 00:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 00:50:01 UTC] Checking 20 merged PRs
+[2026-03-03 00:50:01 UTC] Done. Updated: 0
+[2026-03-03 01:00:02 UTC] === Neo PR Merge Sync ===
+[2026-03-03 01:00:03 UTC] Checking 20 merged PRs
+[2026-03-03 01:00:03 UTC] Done. Updated: 0
+[2026-03-03 01:10:02 UTC] === Neo PR Merge Sync ===
+[2026-03-03 01:10:02 UTC] Checking 20 merged PRs
+[2026-03-03 01:10:02 UTC] Done. Updated: 0
+[2026-03-03 01:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 01:20:02 UTC] Checking 20 merged PRs
+[2026-03-03 01:20:02 UTC] Done. Updated: 0
+[2026-03-03 01:30:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 01:30:02 UTC] Checking 20 merged PRs
+[2026-03-03 01:30:02 UTC] Done. Updated: 0
+[2026-03-03 01:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 01:40:02 UTC] Checking 20 merged PRs
+[2026-03-03 01:40:02 UTC] Done. Updated: 0
+[2026-03-03 01:50:02 UTC] === Neo PR Merge Sync ===
+[2026-03-03 01:50:02 UTC] Checking 20 merged PRs
+[2026-03-03 01:50:02 UTC] Done. Updated: 0
+[2026-03-03 02:00:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 02:00:02 UTC] Checking 20 merged PRs
+[2026-03-03 02:00:02 UTC] Done. Updated: 0
+[2026-03-03 02:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 02:10:02 UTC] Checking 20 merged PRs
+[2026-03-03 02:10:02 UTC] Done. Updated: 0
+[2026-03-03 02:20:02 UTC] === Neo PR Merge Sync ===
+[2026-03-03 02:20:02 UTC] Checking 20 merged PRs
+[2026-03-03 02:20:02 UTC] Done. Updated: 0
+[2026-03-03 02:30:02 UTC] === Neo PR Merge Sync ===
+[2026-03-03 02:30:02 UTC] Checking 20 merged PRs
+[2026-03-03 02:30:02 UTC] Done. Updated: 0
+[2026-03-03 02:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 02:40:01 UTC] Checking 20 merged PRs
+[2026-03-03 02:40:01 UTC] Done. Updated: 0
+[2026-03-03 02:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 02:50:01 UTC] Checking 20 merged PRs
+[2026-03-03 02:50:01 UTC] Done. Updated: 0
+[2026-03-03 03:00:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 03:00:02 UTC] Checking 20 merged PRs
+[2026-03-03 03:00:02 UTC] Done. Updated: 0
+[2026-03-03 03:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 03:10:02 UTC] Checking 20 merged PRs
+[2026-03-03 03:10:02 UTC] Done. Updated: 0
+[2026-03-03 03:20:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 03:20:02 UTC] Checking 20 merged PRs
+[2026-03-03 03:20:02 UTC] Done. Updated: 0
+[2026-03-03 03:30:02 UTC] === Neo PR Merge Sync ===
+[2026-03-03 03:30:02 UTC] Checking 20 merged PRs
+[2026-03-03 03:30:02 UTC] Done. Updated: 0
+[2026-03-03 03:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 03:40:02 UTC] Checking 20 merged PRs
+[2026-03-03 03:40:02 UTC] Done. Updated: 0
+[2026-03-03 03:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 03:50:02 UTC] Checking 20 merged PRs
+[2026-03-03 03:50:02 UTC] Done. Updated: 0
+[2026-03-03 04:00:02 UTC] === Neo PR Merge Sync ===
+[2026-03-03 04:00:02 UTC] Checking 20 merged PRs
+[2026-03-03 04:00:02 UTC] Done. Updated: 0
+[2026-03-03 04:10:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 04:10:02 UTC] Checking 20 merged PRs
+[2026-03-03 04:10:02 UTC] Done. Updated: 0
+[2026-03-03 04:20:02 UTC] === Neo PR Merge Sync ===
+[2026-03-03 04:20:02 UTC] Checking 20 merged PRs
+[2026-03-03 04:20:02 UTC] Done. Updated: 0
+[2026-03-03 04:30:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 04:30:02 UTC] Checking 20 merged PRs
+[2026-03-03 04:30:02 UTC] Done. Updated: 0
+[2026-03-03 04:40:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 04:40:01 UTC] Checking 20 merged PRs
+[2026-03-03 04:40:01 UTC] Done. Updated: 0
+[2026-03-03 04:50:01 UTC] === Neo PR Merge Sync ===
+[2026-03-03 04:50:01 UTC] Checking 20 merged PRs
+[2026-03-03 04:50:01 UTC] Done. Updated: 0

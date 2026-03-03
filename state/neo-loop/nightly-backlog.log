@@ -3,3 +3,5 @@
 [2026-03-02 04:00:01 UTC] [neo] Queued spawn: neo-nightly-644 (PR#644-nightly-backlog)
 [2026-03-02 04:00:05 UTC] [neo] Spawn queue processor triggered
 [2026-03-02 04:00:12 UTC] Nightly backlog complete: queued=True #644
+[2026-03-03 04:00:01 UTC] === Nightly Backlog Run (max 3 tasks) ===
+[2026-03-03 04:00:02 UTC] No tasks for Neo tonight

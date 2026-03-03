@@ -327,6 +327,56 @@
       "status": "failed",
       "date": "2026-03-02",
       "reason": "HTTP 403"
+    },
+    "https://www.adlittle.com/sites/default/files/viewpoints/ADL_IFV.pdf": {
+      "status": "failed",
+      "date": "2026-03-03",
+      "reason": "HTTP 403"
+    },
+    "https://www.adlittle.com/sites/default/files/2025-02/ADL_Moving_innovation_forward_2025.pdf": {
+      "status": "failed",
+      "date": "2026-03-03",
+      "reason": "HTTP 403"
+    },
+    "https://www.alixpartners.com/media/0eel14bw/alixpartners-2023-annual-report.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-03",
+      "r2Key": "to-be-evaluated/alixpartners/alixpartners-AlixPartners 2023 Annual Report.pdf"
+    },
+    "https://www.alixpartners.com/media/q14pqr0l/alixpartners-2024-impact-report.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-03",
+      "r2Key": "to-be-evaluated/alixpartners/alixpartners-AlixPartners 2024 Impact Report.pdf"
+    },
+    "https://www.alixpartners.com/media/p02h2gzy/2024-alixpartners-disruption-index.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-03",
+      "r2Key": "to-be-evaluated/alixpartners/alixpartners-AlixPartners Disruption Index 2024.pdf"
+    },
+    "https://www.alixpartners.com/media/ow1n5vey/2025-media-entertainment-industry-predictions-report.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-03",
+      "r2Key": "to-be-evaluated/alixpartners/alixpartners-AlixPartners 2025 Media _ Entertainment Industry Predictions.pdf"
+    },
+    "https://www.alixpartners.com/media/cxkckpi2/2024-tech-sector-growth-and-performance-report.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-03",
+      "r2Key": "to-be-evaluated/alixpartners/alixpartners-AlixPartners Tech Sector Growth and Performance 2024.pdf"
+    },
+    "https://www.alixpartners.com/media/k1th1ykq/alixpartners-2025-global-consumer-outlook.pdf": {
+      "status": "uploaded",
+      "date": "2026-03-03",
+      "r2Key": "to-be-evaluated/alixpartners/alixpartners-AlixPartners Global Consumer Outlook 2025.pdf"
+    },
+    "https://www.kearney.com/documents/d/asset-library-291362522/2024-state-of-logistics-report-executive-summary-pdf": {
+      "status": "uploaded",
+      "date": "2026-03-03",
+      "r2Key": "to-be-evaluated/kearney/kearney-Kearney State of Logistics Report 2024 Executive Summary.pdf"
+    },
+    "https://www.kearney.com/documents/d/asset-library-291362522/kearney-sustainability-report-2024-pdf": {
+      "status": "uploaded",
+      "date": "2026-03-03",
+      "r2Key": "to-be-evaluated/kearney/kearney-Kearney Sustainability Report 2024.pdf"
     }
   }
 }

@@ -1,0 +1,8 @@
+{
+  "agent": "kvoth",
+  "task": "Prompt Management + Hosting Requirements Research",
+  "status": "done",
+  "result": "Researched open-source prompt management tools (Langfuse, Pezzo, PromptLayer, Humanloop) and hosting requirements for LiteLLM, Bifrost, and Portkey OSS. Key finding: Langfuse + LiteLLM achieves Portkey-level prompt management with self-hosting. LiteLLM requires 4 vCPU/8GB RAM for production, Bifrost needs only 2 vCPU/2GB. Both can colocate on existing EC2. None run on Vercel serverless.",
+  "timestamp": "2026-03-02T18:35:00Z",
+  "runtime_seconds": 180
+}

@@ -39,7 +39,7 @@ You are the frugal guardian of SlideHeroes' AI spend. Your job is to monitor, an
 ## Workspace
 
 - Working directory: `~/clawd/agents/scrooge/`
-- Reports go to: `~/clawd/agents/scrooge/reports/`
+- Reports go to: `~/clawd/artifacts/scrooge/YYYY-MM-DD/` (create the date directory if needed)
 
 ## Rules
 

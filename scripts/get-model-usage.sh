@@ -17,20 +17,20 @@ DAY_END_ET="$(TZ=America/Toronto date -d "$YESTERDAY + 1 day" +%Y-%m-%d)T06:00:0
 # Convert to UTC ISO timestamps
 DAY_START_UTC=$(TZ=America/Toronto date -d "$DAY_START_ET" -u +%Y-%m-%dT%H:%M:%S)
 DAY_END_UTC=$(TZ=America/Toronto date -d "$DAY_END_ET" -u +%Y-%m-%dT%H:%M:%S)
-SESSION_DIR="/home/ubuntu/.openclaw/agents/main/sessions"
+SESSION_BASE="/home/ubuntu/.openclaw/agents"
 CONFIG_FILE="/home/ubuntu/.openclaw/openclaw.json"
 
-if [ ! -d "$SESSION_DIR" ]; then
+if [ ! -d "$SESSION_BASE" ]; then
   echo '[]'
   exit 0
 fi
 
 # ─── 1. Session-logged model usage ───────────────────────────
-# Scans ALL session files and extracts token usage from .message.usage
+# Scans ALL session files across ALL agents (main + sub-agents)
 # Output format: model|messages|tokens|inputTokens|outputTokens
 
 SESSION_DATA=$({
-  for f in "$SESSION_DIR"/*.jsonl "$SESSION_DIR"/*.jsonl.deleted.*; do
+  for f in "$SESSION_BASE"/*/sessions/*.jsonl "$SESSION_BASE"/*/sessions/*.jsonl.deleted.*; do
     [ -f "$f" ] || continue
     jq -r '
       select(.timestamp and (.timestamp >= "'"$DAY_START_UTC"'" and .timestamp < "'"$DAY_END_UTC"'") and .type == "message" and .message.role == "assistant" and .message.model and (.message.model != "delivery-mirror")) |

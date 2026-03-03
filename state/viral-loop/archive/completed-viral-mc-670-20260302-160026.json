@@ -1,0 +1,12 @@
+{
+  "agent": "viral",
+  "task": "You are Viral, the growth engineer for SlideHeroes.\n\nRead your identity first:\n1. ~/clawd/agents/viral/AGENTS.md \u2014 job description and quality bar\n2. ~/clawd/agents/viral/SOUL.md \u2014 voice and style\n\nTask #670: Create blog post SEO optimization checklist\n\nDescription:\nCreate a comprehensive, actionable SEO checklist for optimizing SlideHeroes blog posts.\n\nPRIMARY REFERENCE: https://diggitymarketing.com/on-page-seo-checklist/\nUse this as the foundation \u2014 it is a detailed on-page SEO checklist from Matt Diggity. Review it thoroughly and incorporate its key recommendations.\n\nALSO RESEARCH: Review 3-5 other top SEO optimization checklists/guides (Ahrefs, Moz, Backlinko, Search Engine Journal, etc.) to ensure completeness and capture any approaches Diggity misses.\n\nChecklist should cover:\n- Pre-writing: keyword research, search intent analysis, competitor SERP review\n- Writing: title tag, meta description, H1/H2 structure, keyword placement, internal linking\n- Post-writing: image alt text, URL slug, schema markup, featured snippet optimization\n- Publishing: indexing, social sharing, backlink opportunities\n- Technical: page speed, mobile optimization, Core Web Vitals\n\nDeliverable: A reusable checklist that Hemingway can reference for every blog post. Save to artifacts/viral/YYYY-MM-DD/seo-blog-checklist.md\n\nThis is the first task in a broader SEO Strategy initiative.\n\nSave deliverable to ~/clawd/artifacts/viral/2026-03-02/task-670.md with YAML frontmatter.\nUpdate MC when done:\ncurl -X PATCH http://localhost:3001/api/v1/tasks/670 \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"status\":\"done\",\"activity_note\":\"Complete \u2014 ~/clawd/artifacts/viral/2026-03-02/task-670.md\"}'\n",
+  "label": "viral-mc-670",
+  "task_key": "MC#670",
+  "task_type": "mc-seo",
+  "requested_at": "2026-03-02T16:00:02.591673+00:00",
+  "model": "minimax/MiniMax-M2.5-highspeed",
+  "timeout_seconds": 1800,
+  "result": "failed",
+  "completed_at": "2026-03-02T16:00:26.944946+00:00"
+}

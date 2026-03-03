@@ -144,3 +144,47 @@
 [2026-03-01 18:00:12] Failed to spawn for #659: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.a
 [2026-03-01 18:00:12] Queued task #659: Research: AI Presentation Tools Competitive Comparison
 [2026-03-01 18:00:12] MC pickup complete: 3 task(s) spawned from 3 found
+[2026-03-02 14:00:02 UTC] [kvoth] Queued spawn: kvoth-mc-661 (MC#661)
+[2026-03-02 14:00:08 UTC] [kvoth] Spawn queue processor triggered
+[2026-03-02 14:00:08 UTC] [kvoth] Queued spawn: kvoth-mc-660 (MC#660)
+[2026-03-02 14:00:15 UTC] [kvoth] Spawn queue processor triggered
+[2026-03-02 14:00:15 UTC] [kvoth] MC pickup complete: 2 queued from 2 found
+[2026-03-02 15:00:12 UTC] [kvoth] Run for 'MC#661' expired (60m), clearing
+[2026-03-02 15:00:12 UTC] [kvoth] Queued spawn: kvoth-mc-661 (MC#661)
+[2026-03-02 15:00:17 UTC] [kvoth] Spawn queue processor triggered
+[2026-03-02 15:00:17 UTC] [kvoth] Run for 'MC#660' expired (60m), clearing
+[2026-03-02 15:00:17 UTC] [kvoth] Queued spawn: kvoth-mc-660 (MC#660)
+[2026-03-02 15:00:23 UTC] [kvoth] Spawn queue processor triggered
+[2026-03-02 15:00:23 UTC] [kvoth] MC pickup complete: 2 queued from 2 found
+[2026-03-02 16:00:02 UTC] [kvoth] Run for 'MC#661' expired (60m), clearing
+[2026-03-02 16:00:02 UTC] [kvoth] 'MC#661' already queued in last 60m, skipping
+[2026-03-02 16:00:02 UTC] [kvoth] Run for 'MC#660' expired (60m), clearing
+[2026-03-02 16:00:02 UTC] [kvoth] 'MC#660' already queued in last 60m, skipping
+[2026-03-02 16:00:02 UTC] [kvoth] MC pickup complete: 0 queued from 2 found
+[2026-03-02 17:00:07 UTC] [kvoth] Queued spawn: kvoth-mc-661 (MC#661)
+[2026-03-02 17:00:16 UTC] [kvoth] Spawn queue processor triggered
+[2026-03-02 17:00:16 UTC] [kvoth] Queued spawn: kvoth-mc-660 (MC#660)
+[2026-03-02 17:00:24 UTC] [kvoth] Spawn queue processor triggered
+[2026-03-02 17:00:24 UTC] [kvoth] MC pickup complete: 2 queued from 2 found
+[2026-03-02 18:00:02 UTC] [kvoth] Run for 'MC#661' expired (60m), clearing
+[2026-03-02 18:00:16 UTC] [kvoth] Wake sent: 🚨 kvoth cooldown: MC#661 failed 3x. Please investigate or reassign.
+[2026-03-02 18:00:16 UTC] [kvoth] 'MC#661' hit daily cooldown, skipping
+[2026-03-02 18:00:16 UTC] [kvoth] Run for 'MC#660' expired (60m), clearing
+[2026-03-02 18:00:26 UTC] [kvoth] Wake sent: 🚨 kvoth cooldown: MC#660 failed 3x. Please investigate or reassign.
+[2026-03-02 18:00:26 UTC] [kvoth] 'MC#660' hit daily cooldown, skipping
+[2026-03-02 18:00:26 UTC] [kvoth] MC pickup complete: 0 queued from 2 found
+[2026-03-02 19:00:02 UTC] [kvoth] 'MC#661' hit daily cooldown, skipping
+[2026-03-02 19:00:02 UTC] [kvoth] 'MC#660' hit daily cooldown, skipping
+[2026-03-02 19:00:02 UTC] [kvoth] MC pickup complete: 0 queued from 2 found
+[2026-03-02 20:00:01 UTC] [kvoth] 'MC#661' hit daily cooldown, skipping
+[2026-03-02 20:00:01 UTC] [kvoth] 'MC#660' hit daily cooldown, skipping
+[2026-03-02 20:00:01 UTC] [kvoth] MC pickup complete: 0 queued from 2 found
+[2026-03-02 21:00:02 UTC] [kvoth] 'MC#661' hit daily cooldown, skipping
+[2026-03-02 21:00:02 UTC] [kvoth] 'MC#660' hit daily cooldown, skipping
+[2026-03-02 21:00:02 UTC] [kvoth] MC pickup complete: 0 queued from 2 found
+[2026-03-02 22:00:02 UTC] [kvoth] 'MC#661' hit daily cooldown, skipping
+[2026-03-02 22:00:02 UTC] [kvoth] 'MC#660' hit daily cooldown, skipping
+[2026-03-02 22:00:02 UTC] [kvoth] MC pickup complete: 0 queued from 2 found
+[2026-03-02 23:00:05 UTC] [kvoth] 'MC#661' hit daily cooldown, skipping
+[2026-03-02 23:00:05 UTC] [kvoth] 'MC#660' hit daily cooldown, skipping
+[2026-03-02 23:00:05 UTC] [kvoth] MC pickup complete: 0 queued from 2 found

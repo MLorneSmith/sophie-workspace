@@ -25,9 +25,31 @@ from agent_loop.common import AgentLoop, log, load_json, save_json  # noqa: F401
 # ---------------------------------------------------------------------------
 
 NEO_CHANNEL = "channel:1477061196795478199"  # #neo Discord channel
-REPO = "slideheroes/2025slideheroes"
+REPO = "slideheroes/2025slideheroes"  # primary repo (backward compat)
 FORK = "slideheroes/2025slideheroes-sophie"
 BOT_LOGIN = "SophieLegerPA"
+
+# Multi-repo support: each repo Neo watches for plan-me issues
+WATCHED_REPOS = [
+    {
+        "repo": "slideheroes/2025slideheroes",
+        "fork": "slideheroes/2025slideheroes-sophie",
+        "local_dir": "~/2025slideheroes-sophie",
+        "base_branch": "dev",
+        "workflow": "fork",  # fork-based: push to fork, PR into upstream
+        "upstream_repo_id": "R_kgDON3X_Ow",
+        "fork_repo_id": "R_kgDORH2m4g",
+    },
+    {
+        "repo": "slideheroes/slideheroes-internal-tools",
+        "fork": None,  # direct push, no fork
+        "local_dir": "~/clawd/slideheroes-internal-tools",
+        "base_branch": "main",
+        "workflow": "direct",  # direct: push branch, open PR on same repo
+        "upstream_repo_id": None,
+        "fork_repo_id": None,
+    },
+]
 
 neo = AgentLoop(
     agent="neo",

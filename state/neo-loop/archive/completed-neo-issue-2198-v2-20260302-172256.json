@@ -1,0 +1,9 @@
+{
+  "task": "## Complete GitHub Issue #2198 \u2014 Define 5 Curated Presentation Templates\n\n**Repo:** ~/2025slideheroes-sophie (fork of slideheroes/2025slideheroes)\n**Branch:** `sophie/alpha/templates-step3` already exists with work done.\n\n### Current State\nThe branch has template files already created but NOT committed. Check git status.\n\n### What Needs Doing\n1. Review the existing files in `apps/web/app/home/(user)/ai/storyboard/_lib/templates/` and `_lib/types/template.types.ts`\n2. Run `pnpm format:fix && pnpm lint:fix && pnpm typecheck` \u2014 fix any errors\n3. Stage all changes: `git add -A`\n4. Commit: `git commit -m \"feat: define 5 curated presentation template configurations\"`\n5. Push: `git push origin sophie/alpha/templates-step3`\n6. Create PR via GraphQL (gh pr create fails for same-org forks):\n```bash\ngh api graphql -f query='mutation { createPullRequest(input: { repositoryId: \"R_kgDON3X_Ow\", baseRefName: \"dev\", headRefName: \"sophie/alpha/templates-step3\", headRepositoryId: \"R_kgDORH2m4g\", title: \"feat: define 5 curated presentation template configurations\", body: \"Implements #2198\\n\\nAdds TemplateConfig interface, Zod schema, 5 curated templates, and template registry.\" }) { pullRequest { url number } } }'\n```\n\n### Key Rules\n- `pnpm format:fix && pnpm lint:fix && pnpm typecheck` MUST pass before commit\n- Fork-based workflow: push to origin (fork), PR targets upstream dev\n- Use GraphQL for PR creation (not gh pr create)\n",
+  "label": "neo-issue-2198-v2",
+  "task_key": "PR#2198-issue-pickup",
+  "task_type": "issue-pickup",
+  "pr_number": 2198,
+  "result": "failed",
+  "completed_at": "2026-03-02T17:22:56.205472+00:00"
+}

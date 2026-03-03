@@ -2576,3 +2576,793 @@ Chunks embedded: 0
 Errors: 2
   - qmd update failed
   - qmd embed failed
+=== qmd Index Refresh ===
+Started at: 2026-03-03 04:00:01
+
+Ensuring swap is active...
+Killing stale qmd processes...
+Running qmd update...
+Updating 36 collection(s)...
+
+[1/36] clawd (**/*.md)
+Collection: /home/ubuntu/clawd (**/*.md)
+
+Indexed: 16 new, 4 updated, 575 unchanged, 0 removed
+Cleaned up 4 orphaned content hash(es)
+
+[2/36] clawdbot-docs (**/*.md)
+Collection: /home/ubuntu/clawd/docs (**/*.md)
+
+Indexed: 0 new, 0 updated, 22 unchanged, 0 removed
+
+[3/36] memory-root-data-pipeline (MEMORY.md)
+Collection: /home/ubuntu/agents/data-pipeline-agent (MEMORY.md)
+]9;4;3]9;4;1;0
+Indexing: 1/595        ]9;4;1;0
+Indexing: 2/595        ]9;4;1;1
+Indexing: 3/595 ETA: 2s        ]9;4;1;1
+Indexing: 4/595 ETA: 1s        ]9;4;1;1
+Indexing: 5/595 ETA: 1s        ]9;4;1;1
+Indexing: 6/595 ETA: 1s        ]9;4;1;1
+Indexing: 7/595 ETA: 2s        ]9;4;1;1
+Indexing: 8/595 ETA: 2s        ]9;4;1;2
+Indexing: 9/595 ETA: 2s        ]9;4;1;2
+Indexing: 10/595 ETA: 2s        ]9;4;1;2
+Indexing: 11/595 ETA: 1s        ]9;4;1;2
+Indexing: 12/595 ETA: 1s        ]9;4;1;2
+Indexing: 13/595 ETA: 1s        ]9;4;1;2
+Indexing: 14/595 ETA: 3s        ]9;4;1;3
+Indexing: 15/595 ETA: 3s        ]9;4;1;3
+Indexing: 16/595 ETA: 3s        ]9;4;1;3
+Indexing: 17/595 ETA: 3s        ]9;4;1;3
+Indexing: 18/595 ETA: 4s        ]9;4;1;3
+Indexing: 19/595 ETA: 4s        ]9;4;1;3
+Indexing: 20/595 ETA: 4s        ]9;4;1;4
+Indexing: 21/595 ETA: 3s        ]9;4;1;4
+Indexing: 22/595 ETA: 3s        ]9;4;1;4
+Indexing: 23/595 ETA: 3s        ]9;4;1;4
+Indexing: 24/595 ETA: 3s        ]9;4;1;4
+Indexing: 25/595 ETA: 3s        ]9;4;1;4
+Indexing: 26/595 ETA: 3s        ]9;4;1;5
+Indexing: 27/595 ETA: 3s        ]9;4;1;5
+Indexing: 28/595 ETA: 3s        ]9;4;1;5
+Indexing: 29/595 ETA: 3s        ]9;4;1;5
+Indexing: 30/595 ETA: 2s        ]9;4;1;5
+Indexing: 31/595 ETA: 2s        ]9;4;1;5
+Indexing: 32/595 ETA: 2s        ]9;4;1;6
+Indexing: 33/595 ETA: 2s        ]9;4;1;6
+Indexing: 34/595 ETA: 2s        ]9;4;1;6
+Indexing: 35/595 ETA: 2s        ]9;4;1;6
+Indexing: 36/595 ETA: 2s        ]9;4;1;6
+Indexing: 37/595 ETA: 2s        ]9;4;1;6
+Indexing: 38/595 ETA: 2s        ]9;4;1;7
+Indexing: 39/595 ETA: 2s        ]9;4;1;7
+Indexing: 40/595 ETA: 2s        ]9;4;1;7
+Indexing: 41/595 ETA: 2s        ]9;4;1;7
+Indexing: 42/595 ETA: 2s        ]9;4;1;7
+Indexing: 43/595 ETA: 2s        ]9;4;1;7
+Indexing: 44/595 ETA: 2s        ]9;4;1;8
+Indexing: 45/595 ETA: 2s        ]9;4;1;8
+Indexing: 46/595 ETA: 2s        ]9;4;1;8
+Indexing: 47/595 ETA: 2s        ]9;4;1;8
+Indexing: 48/595 ETA: 2s        ]9;4;1;8
+Indexing: 49/595 ETA: 2s        ]9;4;1;8
+Indexing: 50/595 ETA: 2s        ]9;4;1;9
+Indexing: 51/595 ETA: 2s        ]9;4;1;9
+Indexing: 52/595 ETA: 2s        ]9;4;1;9
+Indexing: 53/595 ETA: 2s        ]9;4;1;9
+Indexing: 54/595 ETA: 1s        ]9;4;1;9
+Indexing: 55/595 ETA: 1s        ]9;4;1;9
+Indexing: 56/595 ETA: 1s        ]9;4;1;10
+Indexing: 57/595 ETA: 1s        ]9;4;1;10
+Indexing: 58/595 ETA: 1s        ]9;4;1;10
+Indexing: 59/595 ETA: 1s        ]9;4;1;10
+Indexing: 60/595 ETA: 1s        ]9;4;1;10
+Indexing: 61/595 ETA: 1s        ]9;4;1;10
+Indexing: 62/595 ETA: 1s        ]9;4;1;11
+Indexing: 63/595 ETA: 1s        ]9;4;1;11
+Indexing: 64/595 ETA: 1s        ]9;4;1;11
+Indexing: 65/595 ETA: 1s        ]9;4;1;11
+Indexing: 66/595 ETA: 1s        ]9;4;1;11
+Indexing: 67/595 ETA: 1s        ]9;4;1;11
+Indexing: 68/595 ETA: 1s        ]9;4;1;12
+Indexing: 69/595 ETA: 1s        ]9;4;1;12
+Indexing: 70/595 ETA: 1s        ]9;4;1;12
+Indexing: 71/595 ETA: 1s        ]9;4;1;12
+Indexing: 72/595 ETA: 1s        ]9;4;1;12
+Indexing: 73/595 ETA: 1s        ]9;4;1;12
+Indexing: 74/595 ETA: 1s        ]9;4;1;13
+Indexing: 75/595 ETA: 1s        ]9;4;1;13
+Indexing: 76/595 ETA: 1s        ]9;4;1;13
+Indexing: 77/595 ETA: 1s        ]9;4;1;13
+Indexing: 78/595 ETA: 1s        ]9;4;1;13
+Indexing: 79/595 ETA: 1s        ]9;4;1;13
+Indexing: 80/595 ETA: 1s        ]9;4;1;14
+Indexing: 81/595 ETA: 1s        ]9;4;1;14
+Indexing: 82/595 ETA: 1s        ]9;4;1;14
+Indexing: 83/595 ETA: 1s        ]9;4;1;14
+Indexing: 84/595 ETA: 1s        ]9;4;1;14
+Indexing: 85/595 ETA: 1s        ]9;4;1;14
+Indexing: 86/595 ETA: 1s        ]9;4;1;15
+Indexing: 87/595 ETA: 1s        ]9;4;1;15
+Indexing: 88/595 ETA: 1s        ]9;4;1;15
+Indexing: 89/595 ETA: 1s        ]9;4;1;15
+Indexing: 90/595 ETA: 1s        ]9;4;1;15
+Indexing: 91/595 ETA: 1s        ]9;4;1;15
+Indexing: 92/595 ETA: 1s        ]9;4;1;16
+Indexing: 93/595 ETA: 1s        ]9;4;1;16
+Indexing: 94/595 ETA: 1s        ]9;4;1;16
+Indexing: 95/595 ETA: 1s        ]9;4;1;16
+Indexing: 96/595 ETA: 1s        ]9;4;1;16
+Indexing: 97/595 ETA: 1s        ]9;4;1;16
+Indexing: 98/595 ETA: 1s        ]9;4;1;17
+Indexing: 99/595 ETA: 1s        ]9;4;1;17
+Indexing: 100/595 ETA: 1s        ]9;4;1;17
+Indexing: 101/595 ETA: 1s        ]9;4;1;17
+Indexing: 102/595 ETA: 1s        ]9;4;1;17
+Indexing: 103/595 ETA: 1s        ]9;4;1;17
+Indexing: 104/595 ETA: 1s        ]9;4;1;18
+Indexing: 105/595 ETA: 1s        ]9;4;1;18
+Indexing: 106/595 ETA: 1s        ]9;4;1;18
+Indexing: 107/595 ETA: 1s        ]9;4;1;18
+Indexing: 108/595 ETA: 1s        ]9;4;1;18
+Indexing: 109/595 ETA: 1s        ]9;4;1;18
+Indexing: 110/595 ETA: 1s        ]9;4;1;19
+Indexing: 111/595 ETA: 1s        ]9;4;1;19
+Indexing: 112/595 ETA: 1s        ]9;4;1;19
+Indexing: 113/595 ETA: 1s        ]9;4;1;19
+Indexing: 114/595 ETA: 1s        ]9;4;1;19
+Indexing: 115/595 ETA: 1s        ]9;4;1;19
+Indexing: 116/595 ETA: 1s        ]9;4;1;20
+Indexing: 117/595 ETA: 1s        ]9;4;1;20
+Indexing: 118/595 ETA: 1s        ]9;4;1;20
+Indexing: 119/595 ETA: 1s        ]9;4;1;20
+Indexing: 120/595 ETA: 1s        ]9;4;1;20
+Indexing: 121/595 ETA: 1s        ]9;4;1;21
+Indexing: 122/595 ETA: 1s        ]9;4;1;21
+Indexing: 123/595 ETA: 1s        ]9;4;1;21
+Indexing: 124/595 ETA: 1s        ]9;4;1;21
+Indexing: 125/595 ETA: 1s        ]9;4;1;21
+Indexing: 126/595 ETA: 1s        ]9;4;1;21
+Indexing: 127/595 ETA: 1s        ]9;4;1;22
+Indexing: 128/595 ETA: 1s        ]9;4;1;22
+Indexing: 129/595 ETA: 1s        ]9;4;1;22
+Indexing: 130/595 ETA: 1s        ]9;4;1;22
+Indexing: 131/595 ETA: 1s        ]9;4;1;22
+Indexing: 132/595 ETA: 1s        ]9;4;1;22
+Indexing: 133/595 ETA: 1s        ]9;4;1;23
+Indexing: 134/595 ETA: 1s        ]9;4;1;23
+Indexing: 135/595 ETA: 1s        ]9;4;1;23
+Indexing: 136/595 ETA: 1s        ]9;4;1;23
+Indexing: 137/595 ETA: 1s        ]9;4;1;23
+Indexing: 138/595 ETA: 1s        ]9;4;1;23
+Indexing: 139/595 ETA: 1s        ]9;4;1;24
+Indexing: 140/595 ETA: 1s        ]9;4;1;24
+Indexing: 141/595 ETA: 1s        ]9;4;1;24
+Indexing: 142/595 ETA: 1s        ]9;4;1;24
+Indexing: 143/595 ETA: 1s        ]9;4;1;24
+Indexing: 144/595 ETA: 1s        ]9;4;1;24
+Indexing: 145/595 ETA: 1s        ]9;4;1;25
+Indexing: 146/595 ETA: 1s        ]9;4;1;25
+Indexing: 147/595 ETA: 1s        ]9;4;1;25
+Indexing: 148/595 ETA: 1s        ]9;4;1;25
+Indexing: 149/595 ETA: 1s        ]9;4;1;25
+Indexing: 150/595 ETA: 1s        ]9;4;1;25
+Indexing: 151/595 ETA: 1s        ]9;4;1;26
+Indexing: 152/595 ETA: 1s        ]9;4;1;26
+Indexing: 153/595 ETA: 1s        ]9;4;1;26
+Indexing: 154/595 ETA: 1s        ]9;4;1;26
+Indexing: 155/595 ETA: 1s        ]9;4;1;26
+Indexing: 156/595 ETA: 1s        ]9;4;1;26
+Indexing: 157/595 ETA: 1s        ]9;4;1;27
+Indexing: 158/595 ETA: 1s        ]9;4;1;27
+Indexing: 159/595 ETA: 1s        ]9;4;1;27
+Indexing: 160/595 ETA: 1s        ]9;4;1;27
+Indexing: 161/595 ETA: 1s        ]9;4;1;27
+Indexing: 162/595 ETA: 1s        ]9;4;1;27
+Indexing: 163/595 ETA: 1s        ]9;4;1;28
+Indexing: 164/595 ETA: 1s        ]9;4;1;28
+Indexing: 165/595 ETA: 1s        ]9;4;1;28
+Indexing: 166/595 ETA: 1s        ]9;4;1;28
+Indexing: 167/595 ETA: 1s        ]9;4;1;28
+Indexing: 168/595 ETA: 1s        ]9;4;1;28
+Indexing: 169/595 ETA: 1s        ]9;4;1;29
+Indexing: 170/595 ETA: 1s        ]9;4;1;29
+Indexing: 171/595 ETA: 1s        ]9;4;1;29
+Indexing: 172/595 ETA: 1s        ]9;4;1;29
+Indexing: 173/595 ETA: 1s        ]9;4;1;29
+Indexing: 174/595 ETA: 1s        ]9;4;1;29
+Indexing: 175/595 ETA: 1s        ]9;4;1;30
+Indexing: 176/595 ETA: 1s        ]9;4;1;30
+Indexing: 177/595 ETA: 1s        ]9;4;1;30
+Indexing: 178/595 ETA: 1s        ]9;4;1;30
+Indexing: 179/595 ETA: 1s        ]9;4;1;30
+Indexing: 180/595 ETA: 1s        ]9;4;1;30
+Indexing: 181/595 ETA: 1s        ]9;4;1;31
+Indexing: 182/595 ETA: 1s        ]9;4;1;31
+Indexing: 183/595 ETA: 1s        ]9;4;1;31
+Indexing: 184/595 ETA: 1s        ]9;4;1;31
+Indexing: 185/595 ETA: 1s        ]9;4;1;31
+Indexing: 186/595 ETA: 1s        ]9;4;1;31
+Indexing: 187/595 ETA: 1s        ]9;4;1;32
+Indexing: 188/595 ETA: 1s        ]9;4;1;32
+Indexing: 189/595 ETA: 1s        ]9;4;1;32
+Indexing: 190/595 ETA: 1s        ]9;4;1;32
+Indexing: 191/595 ETA: 1s        ]9;4;1;32
+Indexing: 192/595 ETA: 1s        ]9;4;1;32
+Indexing: 193/595 ETA: 1s        ]9;4;1;33
+Indexing: 194/595 ETA: 1s        ]9;4;1;33
+Indexing: 195/595 ETA: 0s        ]9;4;1;33
+Indexing: 196/595 ETA: 0s        ]9;4;1;33
+Indexing: 197/595 ETA: 0s        ]9;4;1;33
+Indexing: 198/595 ETA: 0s        ]9;4;1;33
+Indexing: 199/595 ETA: 0s        ]9;4;1;34
+Indexing: 200/595 ETA: 0s        ]9;4;1;34
+Indexing: 201/595 ETA: 0s        ]9;4;1;34
+Indexing: 202/595 ETA: 0s        ]9;4;1;34
+Indexing: 203/595 ETA: 0s        ]9;4;1;34
+Indexing: 204/595 ETA: 0s        ]9;4;1;34
+Indexing: 205/595 ETA: 0s        ]9;4;1;35
+Indexing: 206/595 ETA: 0s        ]9;4;1;35
+Indexing: 207/595 ETA: 0s        ]9;4;1;35
+Indexing: 208/595 ETA: 0s        ]9;4;1;35
+Indexing: 209/595 ETA: 0s        ]9;4;1;35
+Indexing: 210/595 ETA: 0s        ]9;4;1;35
+Indexing: 211/595 ETA: 0s        ]9;4;1;36
+Indexing: 212/595 ETA: 0s        ]9;4;1;36
+Indexing: 213/595 ETA: 0s        ]9;4;1;36
+Indexing: 214/595 ETA: 0s        ]9;4;1;36
+Indexing: 215/595 ETA: 0s        ]9;4;1;36
+Indexing: 216/595 ETA: 0s        ]9;4;1;36
+Indexing: 217/595 ETA: 0s        ]9;4;1;37
+Indexing: 218/595 ETA: 0s        ]9;4;1;37
+Indexing: 219/595 ETA: 0s        ]9;4;1;37
+Indexing: 220/595 ETA: 0s        ]9;4;1;37
+Indexing: 221/595 ETA: 0s        ]9;4;1;37
+Indexing: 222/595 ETA: 0s        ]9;4;1;37
+Indexing: 223/595 ETA: 0s        ]9;4;1;38
+Indexing: 224/595 ETA: 0s        ]9;4;1;38
+Indexing: 225/595 ETA: 0s        ]9;4;1;38
+Indexing: 226/595 ETA: 0s        ]9;4;1;38
+Indexing: 227/595 ETA: 0s        ]9;4;1;38
+Indexing: 228/595 ETA: 0s        ]9;4;1;38
+Indexing: 229/595 ETA: 0s        ]9;4;1;39
+Indexing: 230/595 ETA: 0s        ]9;4;1;39
+Indexing: 231/595 ETA: 0s        ]9;4;1;39
+Indexing: 232/595 ETA: 0s        ]9;4;1;39
+Indexing: 233/595 ETA: 0s        ]9;4;1;39
+Indexing: 234/595 ETA: 0s        ]9;4;1;39
+Indexing: 235/595 ETA: 0s        ]9;4;1;40
+Indexing: 236/595 ETA: 0s        ]9;4;1;40
+Indexing: 237/595 ETA: 0s        ]9;4;1;40
+Indexing: 238/595 ETA: 0s        ]9;4;1;40
+Indexing: 239/595 ETA: 0s        ]9;4;1;40
+Indexing: 240/595 ETA: 0s        ]9;4;1;41
+Indexing: 241/595 ETA: 0s        ]9;4;1;41
+Indexing: 242/595 ETA: 0s        ]9;4;1;41
+Indexing: 243/595 ETA: 0s        ]9;4;1;41
+Indexing: 244/595 ETA: 0s        ]9;4;1;41
+Indexing: 245/595 ETA: 0s        ]9;4;1;41
+Indexing: 246/595 ETA: 0s        ]9;4;1;42
+Indexing: 247/595 ETA: 0s        ]9;4;1;42
+Indexing: 248/595 ETA: 0s        ]9;4;1;42
+Indexing: 249/595 ETA: 0s        ]9;4;1;42
+Indexing: 250/595 ETA: 0s        ]9;4;1;42
+Indexing: 251/595 ETA: 0s        ]9;4;1;42
+Indexing: 252/595 ETA: 0s        ]9;4;1;43
+Indexing: 253/595 ETA: 0s        ]9;4;1;43
+Indexing: 254/595 ETA: 0s        ]9;4;1;43
+Indexing: 255/595 ETA: 0s        ]9;4;1;43
+Indexing: 256/595 ETA: 0s        ]9;4;1;43
+Indexing: 257/595 ETA: 0s        ]9;4;1;43
+Indexing: 258/595 ETA: 0s        ]9;4;1;44
+Indexing: 259/595 ETA: 0s        ]9;4;1;44
+Indexing: 260/595 ETA: 0s        ]9;4;1;44
+Indexing: 261/595 ETA: 0s        ]9;4;1;44
+Indexing: 262/595 ETA: 0s        ]9;4;1;44
+Indexing: 263/595 ETA: 0s        ]9;4;1;44
+Indexing: 264/595 ETA: 0s        ]9;4;1;45
+Indexing: 265/595 ETA: 0s        ]9;4;1;45
+Indexing: 266/595 ETA: 0s        ]9;4;1;45
+Indexing: 267/595 ETA: 0s        ]9;4;1;45
+Indexing: 268/595 ETA: 0s        ]9;4;1;45
+Indexing: 269/595 ETA: 0s        ]9;4;1;45
+Indexing: 270/595 ETA: 0s        ]9;4;1;46
+Indexing: 271/595 ETA: 0s        ]9;4;1;46
+Indexing: 272/595 ETA: 0s        ]9;4;1;46
+Indexing: 273/595 ETA: 0s        ]9;4;1;46
+Indexing: 274/595 ETA: 0s        ]9;4;1;46
+Indexing: 275/595 ETA: 0s        ]9;4;1;46
+Indexing: 276/595 ETA: 0s        ]9;4;1;47
+Indexing: 277/595 ETA: 0s        ]9;4;1;47
+Indexing: 278/595 ETA: 0s        ]9;4;1;47
+Indexing: 279/595 ETA: 0s        ]9;4;1;47
+Indexing: 280/595 ETA: 0s        ]9;4;1;47
+Indexing: 281/595 ETA: 0s        ]9;4;1;47
+Indexing: 282/595 ETA: 0s        ]9;4;1;48
+Indexing: 283/595 ETA: 0s        ]9;4;1;48
+Indexing: 284/595 ETA: 0s        ]9;4;1;48
+Indexing: 285/595 ETA: 0s        ]9;4;1;48
+Indexing: 286/595 ETA: 0s        ]9;4;1;48
+Indexing: 287/595 ETA: 0s        ]9;4;1;48
+Indexing: 288/595 ETA: 0s        ]9;4;1;49
+Indexing: 289/595 ETA: 0s        ]9;4;1;49
+Indexing: 290/595 ETA: 0s        ]9;4;1;49
+Indexing: 291/595 ETA: 0s        ]9;4;1;49
+Indexing: 292/595 ETA: 0s        ]9;4;1;49
+Indexing: 293/595 ETA: 0s        ]9;4;1;49
+Indexing: 294/595 ETA: 0s        ]9;4;1;50
+Indexing: 295/595 ETA: 0s        ]9;4;1;50
+Indexing: 296/595 ETA: 0s        ]9;4;1;50
+Indexing: 297/595 ETA: 0s        ]9;4;1;50
+Indexing: 298/595 ETA: 0s        ]9;4;1;50
+Indexing: 299/595 ETA: 0s        ]9;4;1;50
+Indexing: 300/595 ETA: 0s        ]9;4;1;51
+Indexing: 301/595 ETA: 0s        ]9;4;1;51
+Indexing: 302/595 ETA: 0s        ]9;4;1;51
+Indexing: 303/595 ETA: 0s        ]9;4;1;51
+Indexing: 304/595 ETA: 0s        ]9;4;1;51
+Indexing: 305/595 ETA: 0s        ]9;4;1;51
+Indexing: 306/595 ETA: 0s        ]9;4;1;52
+Indexing: 307/595 ETA: 0s        ]9;4;1;52
+Indexing: 308/595 ETA: 0s        ]9;4;1;52
+Indexing: 309/595 ETA: 0s        ]9;4;1;52
+Indexing: 310/595 ETA: 0s        ]9;4;1;52
+Indexing: 311/595 ETA: 0s        ]9;4;1;52
+Indexing: 312/595 ETA: 0s        ]9;4;1;53
+Indexing: 313/595 ETA: 0s        ]9;4;1;53
+Indexing: 314/595 ETA: 0s        ]9;4;1;53
+Indexing: 315/595 ETA: 0s        ]9;4;1;53
+Indexing: 316/595 ETA: 0s        ]9;4;1;53
+Indexing: 317/595 ETA: 0s        ]9;4;1;53
+Indexing: 318/595 ETA: 0s        ]9;4;1;54
+Indexing: 319/595 ETA: 0s        ]9;4;1;54
+Indexing: 320/595 ETA: 0s        ]9;4;1;54
+Indexing: 321/595 ETA: 0s        ]9;4;1;54
+Indexing: 322/595 ETA: 0s        ]9;4;1;54
+Indexing: 323/595 ETA: 0s        ]9;4;1;54
+Indexing: 324/595 ETA: 0s        ]9;4;1;55
+Indexing: 325/595 ETA: 0s        ]9;4;1;55
+Indexing: 326/595 ETA: 0s        ]9;4;1;55
+Indexing: 327/595 ETA: 0s        ]9;4;1;55
+Indexing: 328/595 ETA: 0s        ]9;4;1;55
+Indexing: 329/595 ETA: 0s        ]9;4;1;55
+Indexing: 330/595 ETA: 0s        ]9;4;1;56
+Indexing: 331/595 ETA: 0s        ]9;4;1;56
+Indexing: 332/595 ETA: 0s        ]9;4;1;56
+Indexing: 333/595 ETA: 0s        ]9;4;1;56
+Indexing: 334/595 ETA: 0s        ]9;4;1;56
+Indexing: 335/595 ETA: 0s        ]9;4;1;56
+Indexing: 336/595 ETA: 0s        ]9;4;1;57
+Indexing: 337/595 ETA: 0s        ]9;4;1;57
+Indexing: 338/595 ETA: 0s        ]9;4;1;57
+Indexing: 339/595 ETA: 0s        ]9;4;1;57
+Indexing: 340/595 ETA: 0s        ]9;4;1;57
+Indexing: 341/595 ETA: 0s        ]9;4;1;57
+Indexing: 342/595 ETA: 0s        ]9;4;1;58
+Indexing: 343/595 ETA: 0s        ]9;4;1;58
+Indexing: 344/595 ETA: 0s        ]9;4;1;58
+Indexing: 345/595 ETA: 0s        ]9;4;1;58
+Indexing: 346/595 ETA: 0s        ]9;4;1;58
+Indexing: 347/595 ETA: 0s        ]9;4;1;58
+Indexing: 348/595 ETA: 0s        ]9;4;1;59
+Indexing: 349/595 ETA: 0s        ]9;4;1;59
+Indexing: 350/595 ETA: 0s        ]9;4;1;59
+Indexing: 351/595 ETA: 0s        ]9;4;1;59
+Indexing: 352/595 ETA: 0s        ]9;4;1;59
+Indexing: 353/595 ETA: 0s        ]9;4;1;59
+Indexing: 354/595 ETA: 0s        ]9;4;1;60
+Indexing: 355/595 ETA: 0s        ]9;4;1;60
+Indexing: 356/595 ETA: 0s        ]9;4;1;60
+Indexing: 357/595 ETA: 0s        ]9;4;1;60
+Indexing: 358/595 ETA: 0s        ]9;4;1;60
+Indexing: 359/595 ETA: 0s        ]9;4;1;61
+Indexing: 360/595 ETA: 0s        ]9;4;1;61
+Indexing: 361/595 ETA: 0s        ]9;4;1;61
+Indexing: 362/595 ETA: 0s        ]9;4;1;61
+Indexing: 363/595 ETA: 0s        ]9;4;1;61
+Indexing: 364/595 ETA: 0s        ]9;4;1;61
+Indexing: 365/595 ETA: 0s        ]9;4;1;62
+Indexing: 366/595 ETA: 0s        ]9;4;1;62
+Indexing: 367/595 ETA: 0s        ]9;4;1;62
+Indexing: 368/595 ETA: 0s        ]9;4;1;62
+Indexing: 369/595 ETA: 0s        ]9;4;1;62
+Indexing: 370/595 ETA: 0s        ]9;4;1;62
+Indexing: 371/595 ETA: 0s        ]9;4;1;63
+Indexing: 372/595 ETA: 0s        ]9;4;1;63
+Indexing: 373/595 ETA: 0s        ]9;4;1;63
+Indexing: 374/595 ETA: 0s        ]9;4;1;63
+Indexing: 375/595 ETA: 0s        ]9;4;1;63
+Indexing: 376/595 ETA: 0s        ]9;4;1;63
+Indexing: 377/595 ETA: 0s        ]9;4;1;64
+Indexing: 378/595 ETA: 0s        ]9;4;1;64
+Indexing: 379/595 ETA: 0s        ]9;4;1;64
+Indexing: 380/595 ETA: 0s        ]9;4;1;64
+Indexing: 381/595 ETA: 0s        ]9;4;1;64
+Indexing: 382/595 ETA: 0s        ]9;4;1;64
+Indexing: 383/595 ETA: 0s        ]9;4;1;65
+Indexing: 384/595 ETA: 0s        ]9;4;1;65
+Indexing: 385/595 ETA: 0s        ]9;4;1;65
+Indexing: 386/595 ETA: 0s        ]9;4;1;65
+Indexing: 387/595 ETA: 0s        ]9;4;1;65
+Indexing: 388/595 ETA: 0s        ]9;4;1;65
+Indexing: 389/595 ETA: 0s        ]9;4;1;66
+Indexing: 390/595 ETA: 0s        ]9;4;1;66
+Indexing: 391/595 ETA: 0s        ]9;4;1;66
+Indexing: 392/595 ETA: 0s        ]9;4;1;66
+Indexing: 393/595 ETA: 0s        ]9;4;1;66
+Indexing: 394/595 ETA: 0s        ]9;4;1;66
+Indexing: 395/595 ETA: 0s        ]9;4;1;67
+Indexing: 396/595 ETA: 0s        ]9;4;1;67
+Indexing: 397/595 ETA: 0s        ]9;4;1;67
+Indexing: 398/595 ETA: 0s        ]9;4;1;67
+Indexing: 399/595 ETA: 0s        ]9;4;1;67
+Indexing: 400/595 ETA: 0s        ]9;4;1;67
+Indexing: 401/595 ETA: 0s        ]9;4;1;68
+Indexing: 402/595 ETA: 0s        ]9;4;1;68
+Indexing: 403/595 ETA: 0s        ]9;4;1;68
+Indexing: 404/595 ETA: 0s        ]9;4;1;68
+Indexing: 405/595 ETA: 0s        ]9;4;1;68
+Indexing: 406/595 ETA: 0s        ]9;4;1;68
+Indexing: 407/595 ETA: 0s        ]9;4;1;69
+Indexing: 408/595 ETA: 0s        ]9;4;1;69
+Indexing: 409/595 ETA: 0s        ]9;4;1;69
+Indexing: 410/595 ETA: 0s        ]9;4;1;69
+Indexing: 411/595 ETA: 0s        ]9;4;1;69
+Indexing: 412/595 ETA: 0s        ]9;4;1;69
+Indexing: 413/595 ETA: 0s        ]9;4;1;70
+Indexing: 414/595 ETA: 0s        ]9;4;1;70
+Indexing: 415/595 ETA: 0s        ]9;4;1;70
+Indexing: 416/595 ETA: 0s        ]9;4;1;70
+Indexing: 417/595 ETA: 0s        ]9;4;1;70
+Indexing: 418/595 ETA: 0s        ]9;4;1;70
+Indexing: 419/595 ETA: 0s        ]9;4;1;71
+Indexing: 420/595 ETA: 0s        ]9;4;1;71
+Indexing: 421/595 ETA: 0s        ]9;4;1;71
+Indexing: 422/595 ETA: 0s        ]9;4;1;71
+Indexing: 423/595 ETA: 0s        ]9;4;1;71
+Indexing: 424/595 ETA: 0s        ]9;4;1;71
+Indexing: 425/595 ETA: 0s        ]9;4;1;72
+Indexing: 426/595 ETA: 0s        ]9;4;1;72
+Indexing: 427/595 ETA: 0s        ]9;4;1;72
+Indexing: 428/595 ETA: 0s        ]9;4;1;72
+Indexing: 429/595 ETA: 0s        ]9;4;1;72
+Indexing: 430/595 ETA: 0s        ]9;4;1;72
+Indexing: 431/595 ETA: 0s        ]9;4;1;73
+Indexing: 432/595 ETA: 0s        ]9;4;1;73
+Indexing: 433/595 ETA: 0s        ]9;4;1;73
+Indexing: 434/595 ETA: 0s        ]9;4;1;73
+Indexing: 435/595 ETA: 0s        ]9;4;1;73
+Indexing: 436/595 ETA: 0s        ]9;4;1;73
+Indexing: 437/595 ETA: 0s        ]9;4;1;74
+Indexing: 438/595 ETA: 0s        ]9;4;1;74
+Indexing: 439/595 ETA: 0s        ]9;4;1;74
+Indexing: 440/595 ETA: 0s        ]9;4;1;74
+Indexing: 441/595 ETA: 0s        ]9;4;1;74
+Indexing: 442/595 ETA: 0s        ]9;4;1;74
+Indexing: 443/595 ETA: 0s        ]9;4;1;75
+Indexing: 444/595 ETA: 0s        ]9;4;1;75
+Indexing: 445/595 ETA: 0s        ]9;4;1;75
+Indexing: 446/595 ETA: 0s        ]9;4;1;75
+Indexing: 447/595 ETA: 0s        ]9;4;1;75
+Indexing: 448/595 ETA: 0s        ]9;4;1;75
+Indexing: 449/595 ETA: 0s        ]9;4;1;76
+Indexing: 450/595 ETA: 0s        ]9;4;1;76
+Indexing: 451/595 ETA: 0s        ]9;4;1;76
+Indexing: 452/595 ETA: 0s        ]9;4;1;76
+Indexing: 453/595 ETA: 0s        ]9;4;1;76
+Indexing: 454/595 ETA: 0s        ]9;4;1;76
+Indexing: 455/595 ETA: 0s        ]9;4;1;77
+Indexing: 456/595 ETA: 0s        ]9;4;1;77
+Indexing: 457/595 ETA: 0s        ]9;4;1;77
+Indexing: 458/595 ETA: 0s        ]9;4;1;77
+Indexing: 459/595 ETA: 0s        ]9;4;1;77
+Indexing: 460/595 ETA: 0s        ]9;4;1;77
+Indexing: 461/595 ETA: 0s        ]9;4;1;78
+Indexing: 462/595 ETA: 0s        ]9;4;1;78
+Indexing: 463/595 ETA: 0s        ]9;4;1;78
+Indexing: 464/595 ETA: 0s        ]9;4;1;78
+Indexing: 465/595 ETA: 0s        ]9;4;1;78
+Indexing: 466/595 ETA: 0s        ]9;4;1;78
+Indexing: 467/595 ETA: 0s        ]9;4;1;79
+Indexing: 468/595 ETA: 0s        ]9;4;1;79
+Indexing: 469/595 ETA: 0s        ]9;4;1;79
+Indexing: 470/595 ETA: 0s        ]9;4;1;79
+Indexing: 471/595 ETA: 0s        ]9;4;1;79
+Indexing: 472/595 ETA: 0s        ]9;4;1;79
+Indexing: 473/595 ETA: 0s        ]9;4;1;80
+Indexing: 474/595 ETA: 0s        ]9;4;1;80
+Indexing: 475/595 ETA: 0s        ]9;4;1;80
+Indexing: 476/595 ETA: 0s        ]9;4;1;80
+Indexing: 477/595 ETA: 0s        ]9;4;1;80
+Indexing: 478/595 ETA: 0s        ]9;4;1;81
+Indexing: 479/595 ETA: 0s        ]9;4;1;81
+Indexing: 480/595 ETA: 0s        ]9;4;1;81
+Indexing: 481/595 ETA: 0s        ]9;4;1;81
+Indexing: 482/595 ETA: 0s        ]9;4;1;81
+Indexing: 483/595 ETA: 0s        ]9;4;1;81
+Indexing: 484/595 ETA: 0s        ]9;4;1;82
+Indexing: 485/595 ETA: 0s        ]9;4;1;82
+Indexing: 486/595 ETA: 0s        ]9;4;1;82
+Indexing: 487/595 ETA: 0s        ]9;4;1;82
+Indexing: 488/595 ETA: 0s        ]9;4;1;82
+Indexing: 489/595 ETA: 0s        ]9;4;1;82
+Indexing: 490/595 ETA: 0s        ]9;4;1;83
+Indexing: 491/595 ETA: 0s        ]9;4;1;83
+Indexing: 492/595 ETA: 0s        ]9;4;1;83
+Indexing: 493/595 ETA: 0s        ]9;4;1;83
+Indexing: 494/595 ETA: 0s        ]9;4;1;83
+Indexing: 495/595 ETA: 0s        ]9;4;1;83
+Indexing: 496/595 ETA: 0s        ]9;4;1;84
+Indexing: 497/595 ETA: 0s        ]9;4;1;84
+Indexing: 498/595 ETA: 0s        ]9;4;1;84
+Indexing: 499/595 ETA: 0s        ]9;4;1;84
+Indexing: 500/595 ETA: 0s        ]9;4;1;84
+Indexing: 501/595 ETA: 0s        ]9;4;1;84
+Indexing: 502/595 ETA: 0s        ]9;4;1;85
+Indexing: 503/595 ETA: 0s        ]9;4;1;85
+Indexing: 504/595 ETA: 0s        ]9;4;1;85
+Indexing: 505/595 ETA: 0s        ]9;4;1;85
+Indexing: 506/595 ETA: 0s        ]9;4;1;85
+Indexing: 507/595 ETA: 0s        ]9;4;1;85
+Indexing: 508/595 ETA: 0s        ]9;4;1;86
+Indexing: 509/595 ETA: 0s        ]9;4;1;86
+Indexing: 510/595 ETA: 0s        ]9;4;1;86
+Indexing: 511/595 ETA: 0s        ]9;4;1;86
+Indexing: 512/595 ETA: 0s        ]9;4;1;86
+Indexing: 513/595 ETA: 0s        ]9;4;1;86
+Indexing: 514/595 ETA: 0s        ]9;4;1;87
+Indexing: 515/595 ETA: 0s        ]9;4;1;87
+Indexing: 516/595 ETA: 0s        ]9;4;1;87
+Indexing: 517/595 ETA: 0s        ]9;4;1;87
+Indexing: 518/595 ETA: 0s        ]9;4;1;87
+Indexing: 519/595 ETA: 0s        ]9;4;1;87
+Indexing: 520/595 ETA: 0s        ]9;4;1;88
+Indexing: 521/595 ETA: 0s        ]9;4;1;88
+Indexing: 522/595 ETA: 0s        ]9;4;1;88
+Indexing: 523/595 ETA: 0s        ]9;4;1;88
+Indexing: 524/595 ETA: 0s        ]9;4;1;88
+Indexing: 525/595 ETA: 0s        ]9;4;1;88
+Indexing: 526/595 ETA: 0s        ]9;4;1;89
+Indexing: 527/595 ETA: 0s        ]9;4;1;89
+Indexing: 528/595 ETA: 0s        ]9;4;1;89
+Indexing: 529/595 ETA: 0s        ]9;4;1;89
+Indexing: 530/595 ETA: 0s        ]9;4;1;89
+Indexing: 531/595 ETA: 0s        ]9;4;1;89
+Indexing: 532/595 ETA: 0s        ]9;4;1;90
+Indexing: 533/595 ETA: 0s        ]9;4;1;90
+Indexing: 534/595 ETA: 0s        ]9;4;1;90
+Indexing: 535/595 ETA: 0s        ]9;4;1;90
+Indexing: 536/595 ETA: 0s        ]9;4;1;90
+Indexing: 537/595 ETA: 0s        ]9;4;1;90
+Indexing: 538/595 ETA: 0s        ]9;4;1;91
+Indexing: 539/595 ETA: 0s        ]9;4;1;91
+Indexing: 540/595 ETA: 0s        ]9;4;1;91
+Indexing: 541/595 ETA: 0s        ]9;4;1;91
+Indexing: 542/595 ETA: 0s        ]9;4;1;91
+Indexing: 543/595 ETA: 0s        ]9;4;1;91
+Indexing: 544/595 ETA: 0s        ]9;4;1;92
+Indexing: 545/595 ETA: 0s        ]9;4;1;92
+Indexing: 546/595 ETA: 0s        ]9;4;1;92
+Indexing: 547/595 ETA: 0s        ]9;4;1;92
+Indexing: 548/595 ETA: 0s        ]9;4;1;92
+Indexing: 549/595 ETA: 0s        ]9;4;1;92
+Indexing: 550/595 ETA: 0s        ]9;4;1;93
+Indexing: 551/595 ETA: 0s        ]9;4;1;93
+Indexing: 552/595 ETA: 0s        ]9;4;1;93
+Indexing: 553/595 ETA: 0s        ]9;4;1;93
+Indexing: 554/595 ETA: 0s        ]9;4;1;93
+Indexing: 555/595 ETA: 0s        ]9;4;1;93
+Indexing: 556/595 ETA: 0s        ]9;4;1;94
+Indexing: 557/595 ETA: 0s        ]9;4;1;94
+Indexing: 558/595 ETA: 0s        ]9;4;1;94
+Indexing: 559/595 ETA: 0s        ]9;4;1;94
+Indexing: 560/595 ETA: 0s        ]9;4;1;94
+Indexing: 561/595 ETA: 0s        ]9;4;1;94
+Indexing: 562/595 ETA: 0s        ]9;4;1;95
+Indexing: 563/595 ETA: 0s        ]9;4;1;95
+Indexing: 564/595 ETA: 0s        ]9;4;1;95
+Indexing: 565/595 ETA: 0s        ]9;4;1;95
+Indexing: 566/595 ETA: 0s        ]9;4;1;95
+Indexing: 567/595 ETA: 0s        ]9;4;1;95
+Indexing: 568/595 ETA: 0s        ]9;4;1;96
+Indexing: 569/595 ETA: 0s        ]9;4;1;96
+Indexing: 570/595 ETA: 0s        ]9;4;1;96
+Indexing: 571/595 ETA: 0s        ]9;4;1;96
+Indexing: 572/595 ETA: 0s        ]9;4;1;96
+Indexing: 573/595 ETA: 0s        ]9;4;1;96
+Indexing: 574/595 ETA: 0s        ]9;4;1;97
+Indexing: 575/595 ETA: 0s        ]9;4;1;97
+Indexing: 576/595 ETA: 0s        ]9;4;1;97
+Indexing: 577/595 ETA: 0s        ]9;4;1;97
+Indexing: 578/595 ETA: 0s        ]9;4;1;97
+Indexing: 579/595 ETA: 0s        ]9;4;1;97
+Indexing: 580/595 ETA: 0s        ]9;4;1;98
+Indexing: 581/595 ETA: 0s        ]9;4;1;98
+Indexing: 582/595 ETA: 0s        ]9;4;1;98
+Indexing: 583/595 ETA: 0s        ]9;4;1;98
+Indexing: 584/595 ETA: 0s        ]9;4;1;98
+Indexing: 585/595 ETA: 0s        ]9;4;1;98
+Indexing: 586/595 ETA: 0s        ]9;4;1;99
+Indexing: 587/595 ETA: 0s        ]9;4;1;99
+Indexing: 588/595 ETA: 0s        ]9;4;1;99
+Indexing: 589/595 ETA: 0s        ]9;4;1;99
+Indexing: 590/595 ETA: 0s        ]9;4;1;99
+Indexing: 591/595 ETA: 0s        ]9;4;1;99
+Indexing: 592/595 ETA: 0s        ]9;4;1;100
+Indexing: 593/595 ETA: 0s        ]9;4;1;100
+Indexing: 594/595 ETA: 0s        ]9;4;1;100
+Indexing: 595/595 ETA: 0s        ]9;4;0]9;4;3]9;4;1;5
+Indexing: 1/22        ]9;4;1;9
+Indexing: 2/22        ]9;4;1;14
+Indexing: 3/22 ETA: 0s        ]9;4;1;18
+Indexing: 4/22 ETA: 0s        ]9;4;1;23
+Indexing: 5/22 ETA: 0s        ]9;4;1;27
+Indexing: 6/22 ETA: 0s        ]9;4;1;32
+Indexing: 7/22 ETA: 0s        ]9;4;1;36
+Indexing: 8/22 ETA: 0s        ]9;4;1;41
+Indexing: 9/22 ETA: 0s        ]9;4;1;45
+Indexing: 10/22 ETA: 0s        ]9;4;1;50
+Indexing: 11/22 ETA: 0s        ]9;4;1;55
+Indexing: 12/22 ETA: 0s        ]9;4;1;59
+Indexing: 13/22 ETA: 0s        ]9;4;1;64
+Indexing: 14/22 ETA: 0s        ]9;4;1;68
+Indexing: 15/22 ETA: 0s        ]9;4;1;73
+Indexing: 16/22 ETA: 0s        ]9;4;1;77
+Indexing: 17/22 ETA: 0s        ]9;4;1;82
+Indexing: 18/22 ETA: 0s        ]9;4;1;86
+Indexing: 19/22 ETA: 0s        ]9;4;1;91
+Indexing: 20/22 ETA: 0s        ]9;4;1;95
+Indexing: 21/22 ETA: 0s        ]9;4;1;100
+Indexing: 22/22 ETA: 0s        ]9;4;0]9;4;3ENOENT: no such file or directory, open '/home/ubuntu/agents/data-pipeline-agent '
+    path: "/home/ubuntu/agents/data-pipeline-agent\u0000",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+
+Bun v1.3.8 (Linux x64)
+
+Running qmd embed (this takes 4-8 min)...
+qmd embed timed out
+Running qmd status...
+QMD Status
+
+Index: /home/ubuntu/.cache/qmd/index.sqlite
+Size:  13.5 MB
+
+Documents
+  Total:    617 files indexed
+  Vectors:  640 embedded
+  Pending:  370 need embedding (run 'qmd embed')
+  Updated:  1h ago
+
+Collections
+  clawd (qmd://clawd/)
+    Pattern:  **/*.md
+    Files:    595 (updated 1h ago)
+    Contexts: 1
+      /: Sophie's workspace - personal memory files, daily notes, ...
+  clawdbot-docs (qmd://clawdbot-docs/)
+    Pattern:  **/*.md
+    Files:    22 (updated 1d ago)
+    Contexts: 1
+      /: Clawdbot technical documentation - configuration, skills,...
+  memory-root-data-pipeline (qmd://memory-root-data-pipeline/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-data-pipeline (qmd://memory-alt-data-pipeline/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-data-pipeline (qmd://memory-dir-data-pipeline/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-devops (qmd://memory-root-devops/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-devops (qmd://memory-alt-devops/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-devops (qmd://memory-dir-devops/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-coder (qmd://memory-root-coder/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-coder (qmd://memory-alt-coder/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-coder (qmd://memory-dir-coder/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-research (qmd://memory-root-research/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-research (qmd://memory-alt-research/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-research (qmd://memory-dir-research/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-main (qmd://memory-root-main/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-main (qmd://memory-alt-main/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-main (qmd://memory-dir-main/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  learnings-main (qmd://learnings-main/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-neo (qmd://memory-root-neo/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-neo (qmd://memory-alt-neo/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-neo (qmd://memory-dir-neo/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-kvoth (qmd://memory-root-kvoth/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-kvoth (qmd://memory-alt-kvoth/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-kvoth (qmd://memory-dir-kvoth/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-michelangelo (qmd://memory-root-michelangelo/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-michelangelo (qmd://memory-alt-michelangelo/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-michelangelo (qmd://memory-dir-michelangelo/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-hemingway (qmd://memory-root-hemingway/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-hemingway (qmd://memory-alt-hemingway/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-hemingway (qmd://memory-dir-hemingway/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-viral (qmd://memory-root-viral/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-viral (qmd://memory-alt-viral/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-viral (qmd://memory-dir-viral/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-scrooge (qmd://memory-root-scrooge/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-scrooge (qmd://memory-alt-scrooge/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-scrooge (qmd://memory-dir-scrooge/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+
+Examples
+  # List files in a collection
+  qmd ls clawd
+  # Get a document
+  qmd get qmd://clawd/path/to/file.md
+  # Search within a collection
+  qmd search "query" -c clawd
+
+
+=== Summary ===
+Files updated: 0
+Chunks embedded: 0
+Errors: 2
+  - qmd update failed
+  - qmd embed failed

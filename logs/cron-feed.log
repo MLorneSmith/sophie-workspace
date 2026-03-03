@@ -12,3 +12,7 @@ Feeds fetched: 0
 New items added: 0
 Errors: 1
   - {'feedId': 'cml59ke2r0000p2w78jgrdhqx', 'url': 'https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml', 'error': '\nInvalid `prisma.feedItem.upsert()` invocation:\n\n\nSocket timeout (the database failed to respond to a query within the configured timeout).'}
+Refreshing Feed Monitor RSS feeds...
+Feeds fetched: 0
+New items added: 0
+Done!

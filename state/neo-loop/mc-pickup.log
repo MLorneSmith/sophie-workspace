@@ -276,3 +276,125 @@ Run: openclaw doctor --fix
 [2026-03-02 04:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
 [2026-03-02 04:30:02 UTC] Task #644 recently queued, skipping
 [2026-03-02 04:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 13:00:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 13:00:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 13:00:02 UTC] [neo] Run for 'PR#644-mc-task' expired (540m), clearing
+[2026-03-02 13:00:09 UTC] [neo] Wake sent: 🚨 neo cooldown: PR#644-mc-task failed 3x. Please investigate or reassign.
+[2026-03-02 13:00:09 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 13:00:09 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 13:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 13:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 13:30:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 13:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 14:00:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 14:00:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 14:00:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 14:00:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 14:30:01 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 14:30:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 14:30:01 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 14:30:01 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 15:00:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 15:00:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 15:00:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 15:00:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 15:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 15:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 15:30:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 15:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 16:00:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 16:00:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 16:00:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 16:00:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 16:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 16:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 16:30:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 16:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 17:00:07 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 17:00:07 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 17:00:07 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 17:00:07 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 17:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 17:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 17:30:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 17:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 18:00:08 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 18:00:08 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 18:00:08 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 18:00:08 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 18:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 18:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 18:30:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 18:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 19:00:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 19:00:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 19:00:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 19:00:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 19:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 19:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 19:30:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 19:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 20:00:01 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 20:00:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 20:00:01 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 20:00:01 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 20:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 20:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 20:30:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 20:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 21:00:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 21:00:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 21:00:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 21:00:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 21:30:01 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 21:30:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 21:30:01 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 21:30:01 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 22:00:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 22:00:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 22:00:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 22:00:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 22:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 22:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 22:30:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 22:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 23:00:01 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 23:00:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 23:00:01 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 23:00:01 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-02 23:30:02 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 23:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-02 23:30:02 UTC] [neo] 'PR#644-mc-task' hit daily cooldown, skipping
+[2026-03-02 23:30:02 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-03 00:00:01 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-03 00:00:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-03 00:00:01 UTC] [neo] Queued spawn: neo-mc-644 (PR#644-mc-task)
+[2026-03-03 00:00:05 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 00:00:05 UTC] Queued MC task #644: Extract shared agent-loop infrastructure from Neo Loop
+[2026-03-03 00:00:11 UTC] MC pickup complete: 1 task(s) queued from 3 found
+[2026-03-03 00:30:01 UTC] ⚠️ Task #629 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-03 00:30:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-03 00:30:01 UTC] Task #644 recently queued, skipping
+[2026-03-03 00:30:01 UTC] MC pickup complete: 0 task(s) queued from 3 found
+[2026-03-03 01:00:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-03 01:00:02 UTC] [neo] Queued spawn: neo-mc-644 (PR#644-mc-task)
+[2026-03-03 01:00:09 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 01:00:09 UTC] Queued MC task #644: Extract shared agent-loop infrastructure from Neo Loop
+[2026-03-03 01:00:15 UTC] MC pickup complete: 1 task(s) queued from 2 found
+[2026-03-03 01:30:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-03 01:30:01 UTC] [neo] Queued spawn: neo-mc-644 (MC#644)
+[2026-03-03 01:30:05 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 01:30:05 UTC] Queued MC task #644: Extract shared agent-loop infrastructure from Neo Loop
+[2026-03-03 01:30:10 UTC] MC pickup complete: 1 task(s) queued from 2 found
+[2026-03-03 02:00:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-03 02:00:01 UTC] MC pickup complete: 0 task(s) queued from 1 found
+[2026-03-03 02:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-03 02:30:02 UTC] MC pickup complete: 0 task(s) queued from 1 found
+[2026-03-03 03:00:01 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-03 03:00:01 UTC] MC pickup complete: 0 task(s) queued from 1 found
+[2026-03-03 03:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-03 03:30:02 UTC] MC pickup complete: 0 task(s) queued from 1 found
+[2026-03-03 04:00:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-03 04:00:02 UTC] MC pickup complete: 0 task(s) queued from 1 found
+[2026-03-03 04:30:02 UTC] ⚠️ Task #662 is Board 2 (product) — skipping. Must use Rabbit Plan (GitHub issue → CodeRabbit → Neo).
+[2026-03-03 04:30:02 UTC] MC pickup complete: 0 task(s) queued from 1 found
