@@ -19,7 +19,9 @@ function log(
 ) {
 	const timestamp = new Date().toISOString();
 	const logMessage = `${timestamp} ${NAMESPACE} ${message}`;
-	const output = meta ? `${logMessage} ${JSON.stringify(meta)}\n` : `${logMessage}\n`;
+	const output = meta
+		? `${logMessage} ${JSON.stringify(meta)}\n`
+		: `${logMessage}\n`;
 
 	if (level === "error") {
 		process.stderr.write(output);
