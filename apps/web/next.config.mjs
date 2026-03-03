@@ -162,6 +162,12 @@ function getImagesConfig() {
 		hostname: "media.slideheroes.com",
 	});
 
+	// Brandfetch CDN for company logos
+	remotePatterns.push({
+		protocol: "https",
+		hostname: "cdn.brandfetch.io",
+	});
+
 	if (IS_PRODUCTION) {
 		return {
 			remotePatterns,

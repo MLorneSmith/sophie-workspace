@@ -296,9 +296,7 @@ export default function PresentationsList(props: {
 												? p.audience_profiles.company &&
 													!p.audience_profiles.person_name
 														.toLowerCase()
-														.includes(
-															p.audience_profiles.company.toLowerCase(),
-														)
+														.includes(p.audience_profiles.company.toLowerCase())
 													? `${p.audience_profiles.person_name} at ${p.audience_profiles.company}`
 													: p.audience_profiles.person_name
 												: "No audience yet"}

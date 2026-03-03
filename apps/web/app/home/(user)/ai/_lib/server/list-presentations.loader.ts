@@ -8,8 +8,7 @@ import { cache } from "react";
 import type { Database } from "~/lib/database.types";
 
 type Client = SupabaseClient<Database>;
-type BasePresentationRow =
-	Database["public"]["Tables"]["presentations"]["Row"];
+type BasePresentationRow = Database["public"]["Tables"]["presentations"]["Row"];
 
 export type PresentationRow = BasePresentationRow & {
 	audience_profiles: {
