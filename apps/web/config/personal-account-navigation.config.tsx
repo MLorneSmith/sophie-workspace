@@ -1,6 +1,7 @@
 import { NavigationConfigSchema } from "@kit/ui/navigation-schema";
 import {
 	BookCheck,
+	BookOpen,
 	BrainIcon,
 	CreditCard,
 	GraduationCap,
@@ -60,6 +61,11 @@ function buildRoutes(enableCourses: boolean) {
 							Icon: <BookCheck className={iconClasses} />,
 						}
 					: undefined,
+				{
+					label: "common:routes.library",
+					path: pathsConfig.app.library,
+					Icon: <BookOpen className={iconClasses} />,
+				},
 			].filter((route) => !!route),
 		},
 		{
