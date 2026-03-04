@@ -12,9 +12,12 @@ export {
 	SLIDEHEROES_EMBEDDINGS_INDEX,
 } from "./rag/index";
 
-// Re-export filter types for metadata filtering
-export type { MetadataFilter, FilterOperator } from "./rag/types";
-export { isFilterOperator } from "./rag/types";
+// Re-export filter types for multi-tenant RAG
+export type {
+	RAGFilterOptions,
+	AuthorizedQueryContext,
+	EmbeddingMetadata,
+} from "./rag/types";
 
 // Re-export parser types and services for deep imports
 export {

@@ -1658,6 +1658,9 @@ importers:
       '@mastra/rag':
         specifier: ^2.1.0
         version: 2.1.2(@mastra/core@1.8.0(@standard-community/standard-json@0.3.5(@standard-schema/spec@1.1.0)(@types/json-schema@7.0.15)(quansync@0.2.11)(zod-to-json-schema@3.25.1(zod@4.3.6))(zod@4.3.6))(@standard-community/standard-openapi@0.2.9(@standard-community/standard-json@0.3.5(@standard-schema/spec@1.1.0)(@types/json-schema@7.0.15)(quansync@0.2.11)(zod-to-json-schema@3.25.1(zod@4.3.6))(zod@4.3.6))(@standard-schema/spec@1.1.0)(openapi-types@12.1.3)(zod@4.3.6))(@types/json-schema@7.0.15)(openapi-types@12.1.3)(zod@4.3.6))(zod@4.3.6)
+      '@supabase/supabase-js':
+        specifier: 2.86.2
+        version: 2.86.2
       openai:
         specifier: ^6.9.1
         version: 6.25.0(ws@8.19.0)(zod@4.3.6)
@@ -1665,9 +1668,6 @@ importers:
         specifier: ^4.1.13
         version: 4.3.6
     devDependencies:
-      tsx:
-        specifier: ^4.21.0
-        version: 4.21.0
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -18212,7 +18212,7 @@ snapshots:
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 24.10.1
+      '@types/node': 24.10.15
 
   '@types/cors@2.8.19':
     dependencies:
@@ -18360,7 +18360,7 @@ snapshots:
 
   '@types/mysql@2.15.26':
     dependencies:
-      '@types/node': 24.10.1
+      '@types/node': 24.10.15
 
   '@types/mysql@2.15.27':
     dependencies:
@@ -18421,7 +18421,7 @@ snapshots:
 
   '@types/pg@8.6.1':
     dependencies:
-      '@types/node': 24.10.1
+      '@types/node': 24.10.15
       pg-protocol: 1.12.0
       pg-types: 2.2.0
 
@@ -18462,7 +18462,7 @@ snapshots:
 
   '@types/tedious@4.0.14':
     dependencies:
-      '@types/node': 24.10.1
+      '@types/node': 24.10.15
 
   '@types/through@0.0.33':
     dependencies:
@@ -18483,7 +18483,7 @@ snapshots:
 
   '@types/ws@8.18.1':
     dependencies:
-      '@types/node': 24.10.1
+      '@types/node': 24.10.15
 
   '@types/yargs-parser@21.0.3': {}
 
@@ -18493,7 +18493,7 @@ snapshots:
 
   '@types/yauzl@2.10.3':
     dependencies:
-      '@types/node': 24.10.1
+      '@types/node': 24.10.15
     optional: true
 
   '@tyriar/fibonacci-heap@2.0.9': {}
@@ -23765,7 +23765,7 @@ snapshots:
 
   speedline-core@1.4.3:
     dependencies:
-      '@types/node': 24.10.1
+      '@types/node': 24.10.15
       image-ssim: 0.2.0
       jpeg-js: 0.4.4
 

@@ -13,19 +13,18 @@
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run --config ./vitest.config.ts",
-		"seed:playbooks": "tsx src/rag/seed-playbooks.ts"
+		"test": "vitest run --config ./vitest.config.ts"
 	},
 	"dependencies": {
 		"@mastra/core": "^1.7.0",
 		"@mastra/memory": "^1.5.1",
 		"@mastra/pg": "^1.6.1",
 		"@mastra/rag": "^2.1.0",
+		"@supabase/supabase-js": "2.86.2",
 		"openai": "^6.9.1",
 		"zod": "^4.1.13"
 	},
 	"devDependencies": {
-		"tsx": "^4.21.0",
 		"typescript": "^5.9.3"
 	}
 }

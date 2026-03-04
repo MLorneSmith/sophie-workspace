@@ -16,7 +16,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import { embedDocument, querySimilar } from "./index";
+import { embedDocument, querySimilarFiltered } from "./index";
 
 /**
  * Metadata for playbook embeddings
@@ -89,9 +89,11 @@ async function getPlaybookFiles(): Promise<PlaybookFile[]> {
  * Check if a playbook embedding already exists by querying for content with matching playbookId
  */
 async function playbookExists(playbookId: string): Promise<boolean> {
-	const results = await querySimilar("playbook content validation check", 1, {
-		contentTypes: ["playbook"],
-	});
+	const results = await querySimilarFiltered(
+		"playbook content validation check",
+		1,
+		{ contentType: ["playbook"] },
+	);
 
 	// If we get any results with matching metadata, the playbook already exists
 	const firstResult = results[0];

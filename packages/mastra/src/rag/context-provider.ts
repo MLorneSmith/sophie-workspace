@@ -1,8 +1,5 @@
-import {
-	querySimilar,
-	type QueryFilters,
-	type ScoredQueryResult,
-} from "./index";
+import { querySimilarFiltered } from "./index";
+import type { RAGFilterOptions } from "./types";
 import {
 	CONTENT_TYPES,
 	type ContentType,
@@ -193,10 +190,9 @@ export class RAGContextProvider {
 			});
 
 			// Build query filters
-			const filters: QueryFilters = {
+			const filters: RAGFilterOptions = {
 				accountId,
-				contentTypes: config.contentTypes,
-				minScore: config.minScore,
+				contentType: config.contentTypes,
 			};
 
 			// Optionally transform query
@@ -205,10 +201,14 @@ export class RAGContextProvider {
 				: query;
 
 			// Execute similarity search
-			const results = await querySimilar(searchQuery, config.topK, filters);
+			const results = await querySimilarFiltered(
+				searchQuery,
+				config.topK,
+				filters,
+			);
 
 			// Process results into chunks
-			const chunks: RAGChunk[] = results.map((result): RAGChunk => {
+			const chunks: RAGChunk[] = results.map((result, index): RAGChunk => {
 				const metadata = result.metadata ?? {};
 				return {
 					text: typeof metadata.text === "string" ? metadata.text : "",
@@ -218,7 +218,7 @@ export class RAGContextProvider {
 							: undefined,
 					contentType:
 						(metadata.contentType as ContentType) ?? CONTENT_TYPES.USER_UPLOAD,
-					score: (result as ScoredQueryResult).score ?? 0,
+					score: Math.max(0, 1 - index * 0.1),
 					metadata,
 				};
 			});

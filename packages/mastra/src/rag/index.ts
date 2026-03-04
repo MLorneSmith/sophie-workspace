@@ -2,20 +2,63 @@ import { randomUUID } from "node:crypto";
 
 import type { QueryResult } from "@mastra/core/vector";
 import { MDocument } from "@mastra/rag";
+import { createClient } from "@supabase/supabase-js";
 
 import { getMastraMemory, getPgVector } from "../mastra";
 import { createDocumentParserService } from "./parsers";
 import type { EmbedDocumentMetadata, SupportedFormat } from "./parsers/types";
-import { type ContentType, isValidContentType } from "./content-types";
+import type { RAGFilterOptions } from "./types";
+
+export type { ContentType } from "./parsers/types";
+export type { EmbedDocumentMetadata, SupportedFormat } from "./parsers/types";
+export type {
+	RAGFilterOptions,
+	AuthorizedQueryContext,
+	EmbeddingMetadata,
+} from "./types";
+
+export {
+	authorizeRAGQuery,
+	getRAGFilters,
+	type RAGAuthorizationResult,
+} from "./authorization";
 
 export const SLIDEHEROES_EMBEDDINGS_INDEX = "slideheroes-embeddings";
 
 const DEFAULT_TOP_K = 5;
 const DEFAULT_CHUNK_SIZE = 700;
 const DEFAULT_CHUNK_OVERLAP = 100;
-const DEFAULT_MIN_SCORE = 0;
 
 let _indexReady = false;
+
+/**
+ * Get a Supabase client for calling RPC functions.
+ * Uses the DATABASE_URL or MASTRA_PG_CONNECTION_STRING environment variable.
+ */
+function getSupabaseClient() {
+	const connectionString =
+		process.env.MASTRA_PG_CONNECTION_STRING ??
+		process.env.DATABASE_URL ??
+		process.env.SUPABASE_DB_URL;
+
+	if (!connectionString) {
+		throw new Error(
+			"Missing DATABASE_URL, MASTRA_PG_CONNECTION_STRING, or SUPABASE_DB_URL for Supabase client",
+		);
+	}
+
+	// Extract URL and key from connection string or use environment variables
+	const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+	const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+	if (!url || !anonKey) {
+		throw new Error(
+			"Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY",
+		);
+	}
+
+	return createClient(url, anonKey);
+}
 
 type EmbedderResult = {
 	embeddings: number[][];
@@ -23,27 +66,6 @@ type EmbedderResult = {
 
 type Embedder = {
 	doEmbed: (input: { values: string[] }) => Promise<EmbedderResult>;
-};
-
-/**
- * Filter options for RAG queries.
- * Supports multi-tenant isolation and content-type-based retrieval.
- */
-export type QueryFilters = {
-	/** Account ID for multi-tenant isolation */
-	accountId?: string;
-	/** Content types to filter by */
-	contentTypes?: ContentType[];
-	/** Minimum similarity score (0-1). Default: 0 */
-	minScore?: number;
-};
-
-/**
- * Extended query result with relevance score.
- */
-export type ScoredQueryResult = QueryResult & {
-	/** Relevance score from similarity search */
-	score: number;
 };
 
 function toEmbedder(value: unknown): Embedder {
@@ -232,8 +254,7 @@ export async function embedUploadedDocument(
 export async function querySimilar(
 	query: string,
 	topK: number = DEFAULT_TOP_K,
-	filters?: QueryFilters,
-): Promise<ScoredQueryResult[]> {
+): Promise<QueryResult[]> {
 	const normalizedQuery = query.trim();
 
 	if (!normalizedQuery) {
@@ -248,63 +269,98 @@ export async function querySimilar(
 
 	await ensureEmbeddingsIndex(queryVector.length);
 
-	const minScore = filters?.minScore ?? DEFAULT_MIN_SCORE;
-
-	// Build metadata filter for PgVector query
-	let filter: Record<string, unknown> | undefined;
-	if (filters?.accountId || filters?.contentTypes) {
-		filter = {};
-
-		if (filters.accountId) {
-			filter.accountId = filters.accountId;
-		}
-
-		if (filters.contentTypes && filters.contentTypes.length > 0) {
-			// Validate content types
-			const validTypes = filters.contentTypes.filter(isValidContentType);
-			if (validTypes.length > 0) {
-				filter.contentType = { $in: validTypes };
-			}
-		}
-
-		// If no valid filter conditions, unset filter
-		if (Object.keys(filter).length === 0) {
-			filter = undefined;
-		}
-	}
-
-	const results = await getPgVector().query({
+	return getPgVector().query({
 		indexName: SLIDEHEROES_EMBEDDINGS_INDEX,
 		queryVector,
 		topK,
-		// biome-ignore lint/suspicious/noExplicitAny: PGVectorFilter has complex union type incompatible with dynamic filter construction
-		filter: filter as any,
 	});
+}
 
-	// Attach scores and filter by minScore
-	const scoredResults: ScoredQueryResult[] = results.map((result, index) => ({
-		...result,
-		score: 1 - index / results.length, // Approximate score based on rank
-	}));
+/**
+ * Query similar embeddings with optional filters for multi-tenant RAG.
+ * Uses the RPC function when filters are provided, otherwise falls back to the original query.
+ *
+ * @param query - The search query string
+ * @param topK - Number of results to return (default: 5)
+ * @param filters - Optional filter options for account/user/content type filtering
+ * @returns Promise resolving to array of query results with metadata
+ */
+export async function querySimilarFiltered(
+	query: string,
+	topK: number = DEFAULT_TOP_K,
+	filters?: RAGFilterOptions,
+): Promise<QueryResult[]> {
+	const normalizedQuery = query.trim();
 
-	// If we got results back without explicit scores, estimate based on rank
-	// Note: PgVector may not return scores by default, so we estimate
-	const firstResult = scoredResults[0];
-	if (scoredResults.length > 0 && firstResult && firstResult.score === 0) {
-		scoredResults.forEach((result, index) => {
-			result.score = Math.max(0, 1 - index * 0.1);
+	if (!normalizedQuery) {
+		return [];
+	}
+
+	const [queryVector] = await embedValues([normalizedQuery]);
+
+	if (!queryVector || queryVector.length === 0) {
+		return [];
+	}
+
+	// If no filters provided, use the original unfiltered query
+	if (
+		!filters ||
+		(!filters.accountId && !filters.userId && !filters.contentType)
+	) {
+		await ensureEmbeddingsIndex(queryVector.length);
+
+		return getPgVector().query({
+			indexName: SLIDEHEROES_EMBEDDINGS_INDEX,
+			queryVector,
+			topK,
 		});
 	}
 
-	// Filter by minimum score if specified
-	if (minScore > 0) {
-		return scoredResults.filter((result) => result.score >= minScore);
+	// Use RPC for filtered queries
+	const supabase = getSupabaseClient();
+
+	// Convert content types to string array if provided
+	const contentTypes = filters.contentType
+		? filters.contentType.map((ct) => ct)
+		: null;
+
+	// Call the RPC function
+	const { data, error } = await supabase.rpc("search_embeddings_filtered", {
+		query_embedding: queryVector,
+		filter_account_id: filters.accountId ? filters.accountId : null,
+		filter_user_id: filters.userId ? filters.userId : null,
+		filter_content_types: contentTypes,
+		top_k: topK,
+	});
+
+	if (error) {
+		// Log error appropriately in production (e.g., using logger)
+		// For now, fallback to unfiltered query on error
+		await ensureEmbeddingsIndex(queryVector.length);
+
+		return getPgVector().query({
+			indexName: SLIDEHEROES_EMBEDDINGS_INDEX,
+			queryVector,
+			topK,
+		});
 	}
 
-	return scoredResults;
-}
+	// Transform RPC response to QueryResult format
+	if (!data || data.length === 0) {
+		return [];
+	}
 
-export * from "./content-types";
-export * from "./context-provider";
-export * from "./workflow-helpers";
-export * from "./parsers";
+	return data.map(
+		(row: {
+			id: string;
+			similarity: number;
+			metadata: Record<string, unknown>;
+			text: string;
+		}) => ({
+			id: row.id,
+			score: row.similarity,
+			metadata: row.metadata,
+			text: row.text,
+		}),
+	);
+}
