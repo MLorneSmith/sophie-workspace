@@ -1,12 +1,6 @@
 "use server";
 
-import {
-	type ChatCompletionOptions,
-	type ChatMessage,
-	ConfigManager,
-	createOpenAIOnlyConfig,
-	getChatCompletion,
-} from "@kit/ai-gateway";
+import { type ChatMessage, getChatCompletion } from "@kit/ai-gateway";
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { z } from "zod";
@@ -98,22 +92,13 @@ export const generateAdaptiveQuestionsAction = enhanceAction(
 			data.company,
 		);
 
-		const config = createOpenAIOnlyConfig({
-			userId: user.id,
-			context: "adaptive-questions",
-		});
-		const normalizedConfig = ConfigManager.normalizeConfig(config);
-
-		if (!normalizedConfig) {
-			throw new Error("Failed to normalize AI config");
-		}
-
 		try {
 			const response = await getChatCompletion(messages, {
-				config: normalizedConfig,
+				model: "gpt-4o",
+				virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
 				userId: user.id,
 				feature: "workflow-adaptive-questions",
-			} as ChatCompletionOptions);
+			});
 
 			const jsonMatch = response.content.match(/\{[\s\S]*\}/);
 			if (!jsonMatch) {

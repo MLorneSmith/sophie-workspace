@@ -1,12 +1,6 @@
 "use server";
 
-import {
-	type ChatCompletionOptions,
-	type ChatMessage,
-	ConfigManager,
-	createOpenAIOnlyConfig,
-	getChatCompletion,
-} from "@kit/ai-gateway";
+import { type ChatMessage, getChatCompletion } from "@kit/ai-gateway";
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
@@ -369,21 +363,12 @@ Instruction: Use audience preferences (tone, communication style, what to lead w
 			{ role: "user", content: userPrompt },
 		];
 
-		const config = createOpenAIOnlyConfig({
-			userId: user.id,
-			context: "storyboard-generation",
-		});
-		const normalizedConfig = ConfigManager.normalizeConfig(config);
-
-		if (!normalizedConfig) {
-			throw new Error("Failed to normalize AI config");
-		}
-
 		const response = await getChatCompletion(messages, {
-			config: normalizedConfig,
+			model: "gpt-4o",
+			virtualKey: process.env.BIFROST_VK_WORKFLOW_STORYBOARD,
 			userId: user.id,
 			feature: "workflow-storyboard-generation",
-		} as ChatCompletionOptions);
+		});
 
 		// Parse AI response
 		let slides: StoryboardSlide[];

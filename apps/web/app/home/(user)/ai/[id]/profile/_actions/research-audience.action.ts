@@ -1,12 +1,6 @@
 "use server";
 
-import {
-	type ChatCompletionOptions,
-	type ChatMessage,
-	ConfigManager,
-	createOpenAIOnlyConfig,
-	getChatCompletion,
-} from "@kit/ai-gateway";
+import { type ChatMessage, getChatCompletion } from "@kit/ai-gateway";
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
@@ -431,12 +425,22 @@ export const researchAudienceAction = enhanceAction(
 				);
 			}
 		} catch (companyErr) {
+			const compErrMsg =
+				companyErr instanceof Error ? companyErr.message : String(companyErr);
 			logger.warn(
 				ctx,
-				"Company brief research failed (non-blocking): %o",
-				companyErr,
+				"Company brief research failed (non-blocking): %s",
+				compErrMsg,
 			);
-			// Non-blocking — audience brief will still be generated without company context
+			try {
+				const fs = await import("node:fs");
+				fs.appendFileSync(
+					"/tmp/bifrost-debug.log",
+					`[${new Date().toISOString()}] COMPANY_BRIEF: ${compErrMsg}\n${companyErr instanceof Error ? companyErr.stack?.substring(0, 500) : ""}\n---\n`,
+				);
+			} catch {
+				/* ignore */
+			}
 		}
 
 		// Step 3: Generate Audience Brief via AI (now with company brief context)
@@ -450,29 +454,31 @@ export const researchAudienceAction = enhanceAction(
 			companyBrief,
 		);
 
-		const config = createOpenAIOnlyConfig({
-			userId: user.id,
-			context: "audience-brief-generation",
-		});
-		const normalizedConfig = ConfigManager.normalizeConfig(config);
-
-		if (!normalizedConfig) {
-			throw new Error("Failed to normalize AI config");
-		}
-
 		let briefStructured: Record<string, unknown> = {};
 		let briefText = "";
 
 		try {
 			const response = await withTimeout(
 				getChatCompletion(messages, {
-					config: normalizedConfig,
+					model: "gpt-4o",
+					virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
 					userId: user.id,
 					feature: "workflow-audience-research",
-				} as ChatCompletionOptions),
+				}),
 				30_000,
 				"AI brief generation",
 			);
+
+			// DEBUG: Log actual response content
+			try {
+				const fs = await import("node:fs");
+				fs.appendFileSync(
+					"/tmp/bifrost-debug.log",
+					`[${new Date().toISOString()}] AUDIENCE_BRIEF_RESPONSE content (first 500): ${response.content.substring(0, 500)}\nmetadata: ${JSON.stringify(response.metadata)}\n---\n`,
+				);
+			} catch {
+				/* ignore */
+			}
 
 			const jsonMatch = response.content.match(/\{[\s\S]*\}/);
 			if (!jsonMatch) {
@@ -481,7 +487,32 @@ export const researchAudienceAction = enhanceAction(
 			briefStructured = JSON.parse(jsonMatch[0]);
 			briefText = (briefStructured.briefSummary as string) ?? "";
 		} catch (aiError) {
-			logger.error(ctx, "AI brief generation failed: %o", aiError);
+			const errMsg =
+				aiError instanceof Error ? aiError.message : String(aiError);
+			const errStack = aiError instanceof Error ? aiError.stack : "";
+			logger.error(ctx, "AI brief generation failed: %s", errMsg);
+			logger.error(ctx, "AI brief error details: %o", {
+				name: aiError instanceof Error ? aiError.name : "unknown",
+				message: errMsg,
+				stack: errStack?.substring(0, 500),
+				virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH
+					? "SET"
+					: "NOT_SET",
+				bifrostUrl:
+					process.env.BIFROST_GATEWAY_URL ||
+					process.env.BIFROST_BASE_URL ||
+					"DEFAULT",
+			});
+			// Write to a debug file for inspection
+			try {
+				const fs = await import("node:fs");
+				fs.appendFileSync(
+					"/tmp/bifrost-debug.log",
+					`[${new Date().toISOString()}] ${errMsg}\n${errStack}\n---\n`,
+				);
+			} catch {
+				/* ignore fs errors */
+			}
 			// Still save enrichment data — user can regenerate the brief later
 			briefText = enrichment.personProfile
 				? `${enrichment.personProfile.headline ?? ""} — ${enrichment.personProfile.summary?.substring(0, 200) ?? ""}`
