@@ -223,8 +223,13 @@ export async function getChatCompletion(
 			checkUsageLimits: shouldCheckLimits = true,
 		} = options;
 
-		const model = options.model ?? "gpt-4o";
-		const temperature = options.temperature ?? 0.7;
+		const model = options.model ?? "openai/gpt-5";
+
+		// Reasoning models (o-series, gpt-5) only support temperature=1
+		const isReasoningModel = /\b(o1|o3|o4|gpt-5)\b/i.test(model);
+		const temperature = isReasoningModel
+			? undefined
+			: (options.temperature ?? 0.7);
 
 		// Read environment variable to determine if we should check usage limits
 		const checkUsageLimitsFlag = process.env.CHECK_AI_USAGE_LIMITS === "true";
@@ -272,35 +277,22 @@ export async function getChatCompletion(
 		const requestOptions: OpenAI.Chat.ChatCompletionCreateParams = {
 			messages,
 			model: bifrostModel,
-			temperature,
+			...(temperature !== undefined && { temperature }),
 		};
 
 		const response = await client.chat.completions.create(requestOptions);
 
-		// DEBUG: Log raw response to diagnose Bifrost issues
-		try {
-			const fs = await import("node:fs");
-			fs.appendFileSync(
-				"/tmp/bifrost-debug.log",
-				`[${new Date().toISOString()}] RAW_RESPONSE model=${bifrostModel}:\n${JSON.stringify(
-					{
-						id: response.id,
-						model: response.model,
-						choices: response.choices?.map((c) => ({
-							index: c.index,
-							finish_reason: c.finish_reason,
-							content_length: c.message?.content?.length ?? 0,
-							content_preview: c.message?.content?.substring(0, 200),
-							role: c.message?.role,
-						})),
-						usage: response.usage,
-					},
-					null,
-					2,
-				)}\n---\n`,
+		// Validate gateway response — empty responses indicate gateway misconfiguration
+		if (!response.choices?.length || !response.choices[0]?.message?.content) {
+			(await getLogger()).warn(
+				"Gateway returned empty response — no choices or content",
+				{
+					hasId: !!response.id,
+					choicesLength: response.choices?.length ?? 0,
+					model: bifrostModel,
+					feature,
+				},
 			);
-		} catch {
-			/* ignore */
 		}
 
 		// Extract response content
@@ -444,8 +436,13 @@ export async function* getStreamingChatCompletion(
 			checkUsageLimits: shouldCheckLimits = true,
 		} = options;
 
-		const model = options.model ?? "gpt-4o";
-		const temperature = options.temperature ?? 0.7;
+		const model = options.model ?? "openai/gpt-5";
+
+		// Reasoning models (o-series, gpt-5) only support temperature=1
+		const isReasoningModel = /\b(o1|o3|o4|gpt-5)\b/i.test(model);
+		const temperature = isReasoningModel
+			? undefined
+			: (options.temperature ?? 0.7);
 
 		// Read environment variable to determine if we should check usage limits
 		const checkUsageLimitsFlag = process.env.CHECK_AI_USAGE_LIMITS === "true";
@@ -496,7 +493,7 @@ export async function* getStreamingChatCompletion(
 		const requestOptions: OpenAI.Chat.ChatCompletionCreateParams = {
 			messages,
 			model: bifrostModel,
-			temperature,
+			...(temperature !== undefined && { temperature }),
 			stream: true,
 		};
 

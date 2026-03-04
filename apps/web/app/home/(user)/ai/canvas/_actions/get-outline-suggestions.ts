@@ -127,7 +127,7 @@ ${improvementFormat}`,
 			];
 
 			const result = await getChatCompletion(messages, {
-				model: "gpt-4o",
+				model: process.env.BIFROST_MODEL_CANVAS_QUALITY,
 				temperature: 0.3,
 				virtualKey: process.env.BIFROST_VK_CANVAS_QUALITY,
 				userId: user.id,

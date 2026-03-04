@@ -129,10 +129,8 @@ export async function _createGatewayClient(options: BifrostClientOptions = {}) {
 	// Determine the correct provider based on the model and get Bifrost-formatted model
 	const { provider, bifrostModel } = await getProviderForModel(model);
 
-	// When using virtual keys, Bifrost expects plain model names (e.g. "gpt-4o")
-	// because the VK config already defines provider routing.
-	// Without virtual keys, Bifrost needs provider-prefixed names (e.g. "openai/gpt-4o").
-	const resolvedModel = virtualKey ? model : bifrostModel;
+	// Bifrost always requires provider-prefixed model names (e.g. "openai/gpt-5")
+	const resolvedModel = bifrostModel;
 
 	(await getLogger()).info(`Creating gateway client for model: ${model}`, {
 		provider,

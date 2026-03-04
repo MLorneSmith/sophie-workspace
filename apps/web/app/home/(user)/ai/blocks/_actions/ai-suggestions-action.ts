@@ -139,7 +139,7 @@ export const getSuggestions = enhanceAction(
 
 			// Get completion from AI Gateway
 			const response = await getChatCompletion(messages, {
-				model: "gpt-4o-mini",
+				model: process.env.BIFROST_MODEL_CANVAS_SUGGESTIONS,
 				temperature,
 				virtualKey: process.env.BIFROST_VK_CANVAS_SUGGESTIONS,
 			});

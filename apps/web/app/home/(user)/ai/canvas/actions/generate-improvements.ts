@@ -84,7 +84,7 @@ ${improvementFormat}`,
 
 			// Get completion from AI Gateway
 			const response = await getChatCompletion(messages, {
-				model: "gpt-4o-mini",
+				model: process.env.BIFROST_MODEL_CANVAS_SUGGESTIONS,
 				temperature: 0.6,
 				virtualKey: process.env.BIFROST_VK_CANVAS_SUGGESTIONS,
 			});

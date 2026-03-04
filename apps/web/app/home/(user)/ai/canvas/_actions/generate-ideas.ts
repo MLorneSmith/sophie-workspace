@@ -85,7 +85,7 @@ ${improvementFormat}`,
 
 			// Get completion from AI Gateway
 			const response = await getChatCompletion(messages, {
-				model: "gpt-4o",
+				model: process.env.BIFROST_MODEL_CANVAS_IDEAS,
 				virtualKey: process.env.BIFROST_VK_CANVAS_IDEAS,
 				userId: user.id,
 				feature: `canvas-${data.type}-ideas`,

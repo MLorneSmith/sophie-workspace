@@ -94,7 +94,7 @@ export const generateAdaptiveQuestionsAction = enhanceAction(
 
 		try {
 			const response = await getChatCompletion(messages, {
-				model: "gpt-4o",
+				model: process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
 				virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
 				userId: user.id,
 				feature: "workflow-adaptive-questions",

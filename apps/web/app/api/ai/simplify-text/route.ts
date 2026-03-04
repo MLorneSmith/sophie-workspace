@@ -52,7 +52,7 @@ export const POST = enhanceRouteHandler(
 
 			// Get completion
 			const response = await getChatCompletion(compiledMessages, {
-				model: "gpt-4o",
+				model: process.env.BIFROST_MODEL_CANVAS_QUALITY,
 				temperature: 0.4,
 				virtualKey: process.env.BIFROST_VK_CANVAS_QUALITY,
 			});

@@ -364,7 +364,7 @@ Instruction: Use audience preferences (tone, communication style, what to lead w
 		];
 
 		const response = await getChatCompletion(messages, {
-			model: "gpt-4o",
+			model: process.env.BIFROST_MODEL_WORKFLOW_STORYBOARD,
 			virtualKey: process.env.BIFROST_VK_WORKFLOW_STORYBOARD,
 			userId: user.id,
 			feature: "workflow-storyboard-generation",
