@@ -28,3 +28,33 @@
 │        
 [2026-03-02 18:00:27 UTC]   📋 Wrote fallback notification for Sophie: viral-mc-670
 [2026-03-02 18:00:29 UTC] [viral] Queue empty.
+[2026-03-03 14:00:19 UTC] [viral] 1 task(s) in queue — processing FIRST only
+[2026-03-03 14:00:19 UTC]   [mc-seo] MC#670: viral-mc-670
+[2026-03-03 14:00:55 UTC]   ❌ Cron add failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth- │
+◇  Config ───────────────────────────────────────────────────╮
+│                                                            │
+│  Config invalid; doctor will run with best-effort config.  │
+│        
+[2026-03-03 14:00:55 UTC]   📋 Wrote fallback notification for Sophie: viral-mc-670
+[2026-03-03 14:01:05 UTC] [viral] Queue empty.
+[2026-03-03 16:00:06 UTC] [viral] 1 task(s) in queue — processing FIRST only
+[2026-03-03 16:00:06 UTC]   [mc-seo] MC#670: viral-mc-670
+[2026-03-03 16:00:25 UTC]   ❌ Cron add failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth- │
+◇  Config ───────────────────────────────────────────────────╮
+│                                                            │
+│  Config invalid; doctor will run with best-effort config.  │
+│        
+[2026-03-03 16:00:25 UTC]   📋 Wrote fallback notification for Sophie: viral-mc-670
+[2026-03-03 16:00:32 UTC] [viral] Queue empty.
+[2026-03-03 18:00:13 UTC] [viral] 1 task(s) in queue — processing FIRST only
+[2026-03-03 18:00:13 UTC]   [mc-seo] MC#670: viral-mc-670
+[2026-03-03 18:00:45 UTC]   ❌ Cron add failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth- │
+◇  Config ───────────────────────────────────────────────────╮
+│                                                            │
+│  Config invalid; doctor will run with best-effort config.  │
+│        
+[2026-03-03 18:00:45 UTC]   📋 Wrote fallback notification for Sophie: viral-mc-670
+[2026-03-03 18:00:55 UTC] [viral] Queue empty.

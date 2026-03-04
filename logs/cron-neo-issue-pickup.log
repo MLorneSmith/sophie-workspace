@@ -1299,3 +1299,436 @@ failed to update 1 issue
 [2026-03-03 04:50:01 UTC] Found 1 plan-me issues in slideheroes-internal-tools
 [2026-03-03 04:50:01 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
 [2026-03-03 04:50:01 UTC] Done. Spawned: 0
+[2026-03-03 13:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 13:00:02 UTC] Found 1 plan-me issues in 2025slideheroes
+[2026-03-03 13:00:02 UTC]   #2200 (2025slideheroes) already processed, skipping
+[2026-03-03 13:00:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 13:00:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 13:00:03 UTC] Done. Spawned: 0
+[2026-03-03 13:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 13:10:02 UTC] Found 1 plan-me issues in 2025slideheroes
+[2026-03-03 13:10:02 UTC]   #2200 (2025slideheroes) already processed, skipping
+[2026-03-03 13:10:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 13:10:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 13:10:02 UTC] Done. Spawned: 0
+[2026-03-03 13:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 13:20:01 UTC] Found 1 plan-me issues in 2025slideheroes
+[2026-03-03 13:20:01 UTC]   #2200 (2025slideheroes) already processed, skipping
+[2026-03-03 13:20:01 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 13:20:01 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 13:20:01 UTC] Done. Spawned: 0
+[2026-03-03 13:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 13:30:02 UTC] Found 1 plan-me issues in 2025slideheroes
+[2026-03-03 13:30:02 UTC]   #2200 (2025slideheroes) already processed, skipping
+[2026-03-03 13:30:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 13:30:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 13:30:02 UTC] Done. Spawned: 0
+[2026-03-03 13:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 13:40:02 UTC] Found 1 plan-me issues in 2025slideheroes
+[2026-03-03 13:40:02 UTC]   #2200 (2025slideheroes) already processed, skipping
+[2026-03-03 13:40:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 13:40:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 13:40:02 UTC] Done. Spawned: 0
+[2026-03-03 13:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 13:50:01 UTC] Found 1 plan-me issues in 2025slideheroes
+[2026-03-03 13:50:01 UTC]   #2200 (2025slideheroes) already processed, skipping
+[2026-03-03 13:50:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 13:50:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 13:50:02 UTC] Done. Spawned: 0
+[2026-03-03 14:00:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 14:00:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 14:00:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 14:00:03 UTC] Done. Spawned: 0
+[2026-03-03 14:10:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 14:10:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 14:10:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 14:10:02 UTC] Done. Spawned: 0
+[2026-03-03 14:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 14:20:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 14:20:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 14:20:02 UTC] Done. Spawned: 0
+[2026-03-03 14:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 14:30:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 14:30:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 14:30:02 UTC] Done. Spawned: 0
+[2026-03-03 14:40:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 14:40:02 UTC] Found 1 plan-me issues in 2025slideheroes
+[2026-03-03 14:40:03 UTC] [neo] Queued spawn: neo-issue-2216 (PR#2216-issue-pickup)
+[2026-03-03 14:40:04 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 14:40:04 UTC]   #2216 (2025slideheroes) queued for Neo: [Feature] Integration Testing & Portkey Cleanup
+[2026-03-03 14:40:08 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 14:40:08 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 14:40:08 UTC] Done. Spawned: 1
+[2026-03-03 14:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 14:50:02 UTC] Found 2 plan-me issues in 2025slideheroes
+[2026-03-03 14:50:02 UTC]   #2225 (2025slideheroes) no CodeRabbit plan yet, skipping
+[2026-03-03 14:50:02 UTC]   #2216 (2025slideheroes) already processed, skipping
+[2026-03-03 14:50:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 14:50:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 14:50:03 UTC] Done. Spawned: 0
+[2026-03-03 15:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 15:00:02 UTC] Found 1 plan-me issues in 2025slideheroes
+[2026-03-03 15:00:03 UTC] [neo] Queued spawn: neo-issue-2225 (PR#2225-issue-pickup)
+[2026-03-03 15:00:08 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 15:00:08 UTC]   #2225 (2025slideheroes) queued for Neo: Fix: Hex color normalization, gradient CSS, schema validation, and thumbnail rendering
+[2026-03-03 15:00:11 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 15:00:11 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 15:00:11 UTC] Done. Spawned: 1
+[2026-03-03 15:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 15:10:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 15:10:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 15:10:02 UTC] Done. Spawned: 0
+[2026-03-03 15:20:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 15:20:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 15:20:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 15:20:02 UTC] Done. Spawned: 0
+[2026-03-03 15:30:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 15:30:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 15:30:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 15:30:03 UTC] Done. Spawned: 0
+[2026-03-03 15:40:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 15:40:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 15:40:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 15:40:02 UTC] Done. Spawned: 0
+[2026-03-03 15:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 15:50:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 15:50:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 15:50:02 UTC] Done. Spawned: 0
+[2026-03-03 16:00:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 16:00:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 16:00:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 16:00:03 UTC] Done. Spawned: 0
+[2026-03-03 16:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 16:10:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 16:10:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 16:10:02 UTC] Done. Spawned: 0
+[2026-03-03 16:20:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 16:20:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 16:20:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 16:20:03 UTC] Done. Spawned: 0
+[2026-03-03 16:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 16:30:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 16:30:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 16:30:02 UTC] Done. Spawned: 0
+[2026-03-03 16:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 16:40:01 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 16:40:01 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 16:40:01 UTC] Done. Spawned: 0
+[2026-03-03 16:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 16:50:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 16:50:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 16:50:02 UTC] Done. Spawned: 0
+[2026-03-03 17:00:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 17:00:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 17:00:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 17:00:03 UTC] Done. Spawned: 0
+[2026-03-03 17:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 17:10:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 17:10:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 17:10:02 UTC] Done. Spawned: 0
+[2026-03-03 17:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 17:20:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 17:20:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 17:20:02 UTC] Done. Spawned: 0
+[2026-03-03 17:30:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 17:30:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 17:30:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 17:30:03 UTC] Done. Spawned: 0
+[2026-03-03 17:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 17:40:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 17:40:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 17:40:02 UTC] Done. Spawned: 0
+[2026-03-03 17:50:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 17:50:02 UTC] Found 1 plan-me issues in 2025slideheroes
+[2026-03-03 17:50:02 UTC]   #2230 (2025slideheroes) no CodeRabbit plan yet, skipping
+[2026-03-03 17:50:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 17:50:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 17:50:03 UTC] Done. Spawned: 0
+[2026-03-03 18:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 18:00:02 UTC] Found 1 plan-me issues in 2025slideheroes
+[2026-03-03 18:00:04 UTC] [neo] Queued spawn: neo-issue-2230 (PR#2230-issue-pickup)
+[2026-03-03 18:00:14 UTC] [neo] Discord notification failed: Command '['openclaw', 'message', 'send', '--channel', 'discord', '--target', 'channel:1477061196795478199', '--message', '🧑\u200d💻 **Neo queued:** neo-issue-2230']' timed out after 10 seconds
+[2026-03-03 18:00:14 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 18:00:14 UTC]   #2230 (2025slideheroes) queued for Neo: feat: Route Mastra agent LLM calls through Bifrost gateway (#501)
+[2026-03-03 18:00:19 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 18:00:19 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 18:00:19 UTC] Done. Spawned: 1
+[2026-03-03 18:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 18:10:01 UTC] Found 4 plan-me issues in 2025slideheroes
+[2026-03-03 18:10:02 UTC]   #2234 (2025slideheroes) no CodeRabbit plan yet, skipping
+[2026-03-03 18:10:02 UTC]   #2233 (2025slideheroes) no CodeRabbit plan yet, skipping
+[2026-03-03 18:10:03 UTC]   #2232 (2025slideheroes) no CodeRabbit plan yet, skipping
+[2026-03-03 18:10:04 UTC] [neo] Queued spawn: neo-issue-2231 (PR#2231-issue-pickup)
+[2026-03-03 18:10:05 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 18:10:05 UTC]   #2231 (2025slideheroes) queued for Neo: feat: Document parsing layer for RAG — PPTX + PDF extraction (#487 sub-1)
+[2026-03-03 18:10:07 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 18:10:07 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 18:10:07 UTC] Done. Spawned: 1
+[2026-03-03 18:20:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 18:20:02 UTC] Found 3 plan-me issues in 2025slideheroes
+[2026-03-03 18:20:03 UTC] [neo] Queued spawn: neo-issue-2234 (PR#2234-issue-pickup)
+[2026-03-03 18:20:05 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 18:20:05 UTC]   #2234 (2025slideheroes) queued for Neo: feat: Seed playbook knowledge base + deck history auto-embedding (#487 sub-4)
+[2026-03-03 18:20:07 UTC] [neo] Queued spawn: neo-issue-2233 (PR#2233-issue-pickup)
+[2026-03-03 18:20:09 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 18:20:09 UTC]   #2233 (2025slideheroes) queued for Neo: feat: Wire RAG context into Mastra agent prompts (#487 sub-3)
+[2026-03-03 18:20:11 UTC] [neo] Queued spawn: neo-issue-2232 (PR#2232-issue-pickup)
+[2026-03-03 18:20:13 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 18:20:13 UTC]   #2232 (2025slideheroes) queued for Neo: feat: Multi-tenant RAG with account-scoped retrieval (#487 sub-2)
+[2026-03-03 18:20:15 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 18:20:15 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 18:20:15 UTC] Done. Spawned: 3
+[2026-03-03 18:30:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 18:30:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 18:30:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 18:30:02 UTC] Done. Spawned: 0
+[2026-03-03 18:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 18:40:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 18:40:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 18:40:02 UTC] Done. Spawned: 0
+[2026-03-03 18:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 18:50:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 18:50:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 18:50:02 UTC] Done. Spawned: 0
+[2026-03-03 19:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 19:00:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 19:00:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 19:00:03 UTC] Done. Spawned: 0
+[2026-03-03 19:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 19:10:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 19:10:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 19:10:02 UTC] Done. Spawned: 0
+[2026-03-03 19:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 19:20:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 19:20:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 19:20:02 UTC] Done. Spawned: 0
+[2026-03-03 19:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 19:30:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 19:30:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 19:30:02 UTC] Done. Spawned: 0
+[2026-03-03 19:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 19:40:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 19:40:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 19:40:02 UTC] Done. Spawned: 0
+[2026-03-03 19:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 19:50:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 19:50:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 19:50:02 UTC] Done. Spawned: 0
+[2026-03-03 20:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 20:00:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 20:00:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 20:00:02 UTC] Done. Spawned: 0
+[2026-03-03 20:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 20:10:01 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 20:10:01 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 20:10:01 UTC] Done. Spawned: 0
+[2026-03-03 20:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 20:20:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 20:20:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 20:20:02 UTC] Done. Spawned: 0
+[2026-03-03 20:30:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 20:30:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 20:30:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 20:30:03 UTC] Done. Spawned: 0
+[2026-03-03 20:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 20:40:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 20:40:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 20:40:02 UTC] Done. Spawned: 0
+[2026-03-03 20:50:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 20:50:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 20:50:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 20:50:02 UTC] Done. Spawned: 0
+[2026-03-03 21:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 21:00:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 21:00:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 21:00:02 UTC] Done. Spawned: 0
+[2026-03-03 21:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 21:10:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 21:10:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 21:10:02 UTC] Done. Spawned: 0
+[2026-03-03 21:20:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 21:20:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 21:20:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 21:20:02 UTC] Done. Spawned: 0
+[2026-03-03 21:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 21:30:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 21:30:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 21:30:02 UTC] Done. Spawned: 0
+[2026-03-03 21:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 21:40:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 21:40:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 21:40:02 UTC] Done. Spawned: 0
+[2026-03-03 21:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 21:50:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 21:50:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 21:50:02 UTC] Done. Spawned: 0
+[2026-03-03 22:00:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 22:00:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 22:00:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 22:00:03 UTC] Done. Spawned: 0
+[2026-03-03 22:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 22:10:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 22:10:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 22:10:02 UTC] Done. Spawned: 0
+[2026-03-03 22:20:02 UTC] === Neo Issue Pickup ===
+[2026-03-03 22:20:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 22:20:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 22:20:03 UTC] Done. Spawned: 0
+[2026-03-03 22:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 22:30:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 22:30:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 22:30:03 UTC] Done. Spawned: 0
+[2026-03-03 22:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 22:40:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 22:40:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 22:40:02 UTC] Done. Spawned: 0
+[2026-03-03 22:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 22:50:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 22:50:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 22:50:02 UTC] Done. Spawned: 0
+[2026-03-03 23:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 23:00:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 23:00:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 23:00:02 UTC] Done. Spawned: 0
+[2026-03-03 23:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 23:10:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 23:10:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 23:10:02 UTC] Done. Spawned: 0
+[2026-03-03 23:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 23:20:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 23:20:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 23:20:02 UTC] Done. Spawned: 0
+[2026-03-03 23:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 23:30:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 23:30:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 23:30:02 UTC] Done. Spawned: 0
+[2026-03-03 23:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 23:40:01 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 23:40:01 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 23:40:01 UTC] Done. Spawned: 0
+[2026-03-03 23:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-03 23:50:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-03 23:50:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-03 23:50:02 UTC] Done. Spawned: 0
+[2026-03-04 00:00:02 UTC] === Neo Issue Pickup ===
+[2026-03-04 00:00:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 00:00:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 00:00:03 UTC] Done. Spawned: 0
+[2026-03-04 00:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 00:10:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 00:10:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 00:10:02 UTC] Done. Spawned: 0
+[2026-03-04 00:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 00:20:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 00:20:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 00:20:02 UTC] Done. Spawned: 0
+[2026-03-04 00:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 00:30:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 00:30:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 00:30:02 UTC] Done. Spawned: 0
+[2026-03-04 00:40:02 UTC] === Neo Issue Pickup ===
+[2026-03-04 00:40:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 00:40:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 00:40:02 UTC] Done. Spawned: 0
+[2026-03-04 00:50:02 UTC] === Neo Issue Pickup ===
+[2026-03-04 00:50:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 00:50:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 00:50:02 UTC] Done. Spawned: 0
+[2026-03-04 01:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 01:00:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 01:00:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 01:00:02 UTC] Done. Spawned: 0
+[2026-03-04 01:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 01:10:01 UTC] Found 1 plan-me issues in 2025slideheroes
+[2026-03-04 01:10:02 UTC]   #2241 (2025slideheroes) no CodeRabbit plan yet, skipping
+[2026-03-04 01:10:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 01:10:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 01:10:02 UTC] Done. Spawned: 0
+[2026-03-04 01:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 01:20:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 01:20:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 01:20:02 UTC] Done. Spawned: 0
+[2026-03-04 01:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 01:30:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 01:30:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 01:30:02 UTC] Done. Spawned: 0
+[2026-03-04 01:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 01:40:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 01:40:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 01:40:02 UTC] Done. Spawned: 0
+[2026-03-04 01:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 01:50:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 01:50:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 01:50:02 UTC] Done. Spawned: 0
+[2026-03-04 02:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 02:00:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 02:00:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 02:00:02 UTC] Done. Spawned: 0
+[2026-03-04 02:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 02:10:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 02:10:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 02:10:02 UTC] Done. Spawned: 0
+[2026-03-04 02:20:02 UTC] === Neo Issue Pickup ===
+[2026-03-04 02:20:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 02:20:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 02:20:02 UTC] Done. Spawned: 0
+[2026-03-04 02:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 02:30:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 02:30:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 02:30:02 UTC] Done. Spawned: 0
+[2026-03-04 02:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 02:40:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 02:40:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 02:40:02 UTC] Done. Spawned: 0
+[2026-03-04 02:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 02:50:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 02:50:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 02:50:02 UTC] Done. Spawned: 0
+[2026-03-04 03:00:02 UTC] === Neo Issue Pickup ===
+[2026-03-04 03:00:03 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 03:00:03 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 03:00:03 UTC] Done. Spawned: 0
+[2026-03-04 03:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 03:10:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 03:10:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 03:10:02 UTC] Done. Spawned: 0
+[2026-03-04 03:20:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 03:20:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 03:20:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 03:20:02 UTC] Done. Spawned: 0
+[2026-03-04 03:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 03:30:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 03:30:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 03:30:02 UTC] Done. Spawned: 0
+[2026-03-04 03:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 03:40:01 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 03:40:01 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 03:40:01 UTC] Done. Spawned: 0
+[2026-03-04 03:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 03:50:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 03:50:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 03:50:02 UTC] Done. Spawned: 0
+[2026-03-04 04:00:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 04:00:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 04:00:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 04:00:02 UTC] Done. Spawned: 0
+[2026-03-04 04:10:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 04:10:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 04:10:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 04:10:02 UTC] Done. Spawned: 0
+[2026-03-04 04:20:02 UTC] === Neo Issue Pickup ===
+[2026-03-04 04:20:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 04:20:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 04:20:02 UTC] Done. Spawned: 0
+[2026-03-04 04:30:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 04:30:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 04:30:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 04:30:02 UTC] Done. Spawned: 0
+[2026-03-04 04:40:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 04:40:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 04:40:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 04:40:02 UTC] Done. Spawned: 0
+[2026-03-04 04:50:01 UTC] === Neo Issue Pickup ===
+[2026-03-04 04:50:02 UTC] Found 1 plan-me issues in slideheroes-internal-tools
+[2026-03-04 04:50:02 UTC]   #22 (slideheroes-internal-tools) already processed, skipping
+[2026-03-04 04:50:02 UTC] Done. Spawned: 0

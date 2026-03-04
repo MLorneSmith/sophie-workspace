@@ -2123,3 +2123,448 @@ Run: openclaw doctor --fix
 [2026-03-03 04:50:01 UTC]   PR #2222: all checks passing ✅
 [2026-03-03 04:50:02 UTC]   PR #2221: all checks passing ✅
 [2026-03-03 04:50:02 UTC] Done. Spawned: 0
+[2026-03-03 13:00:01 UTC] === Neo CI Fix ===
+[2026-03-03 13:00:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 13:00:03 UTC]   PR #2222: all checks passing ✅
+[2026-03-03 13:00:03 UTC]   PR #2221: all checks passing ✅
+[2026-03-03 13:00:03 UTC] Done. Spawned: 0
+[2026-03-03 13:10:01 UTC] === Neo CI Fix ===
+[2026-03-03 13:10:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 13:10:02 UTC]   PR #2222: all checks passing ✅
+[2026-03-03 13:10:02 UTC]   PR #2221: all checks passing ✅
+[2026-03-03 13:10:02 UTC] Done. Spawned: 0
+[2026-03-03 13:20:01 UTC] === Neo CI Fix ===
+[2026-03-03 13:20:01 UTC] Checking CI on 2 open PRs
+[2026-03-03 13:20:01 UTC]   PR #2222: all checks passing ✅
+[2026-03-03 13:20:02 UTC]   PR #2221: all checks passing ✅
+[2026-03-03 13:20:02 UTC] Done. Spawned: 0
+[2026-03-03 13:30:01 UTC] === Neo CI Fix ===
+[2026-03-03 13:30:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 13:30:02 UTC]   PR #2222: all checks passing ✅
+[2026-03-03 13:30:03 UTC]   PR #2221: all checks passing ✅
+[2026-03-03 13:30:03 UTC] Done. Spawned: 0
+[2026-03-03 13:40:01 UTC] === Neo CI Fix ===
+[2026-03-03 13:40:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 13:40:02 UTC]   PR #2222: all checks passing ✅
+[2026-03-03 13:40:03 UTC]   PR #2221: all checks passing ✅
+[2026-03-03 13:40:03 UTC] Done. Spawned: 0
+[2026-03-03 13:50:01 UTC] === Neo CI Fix ===
+[2026-03-03 13:50:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 13:50:02 UTC]   PR #2222: all checks passing ✅
+[2026-03-03 13:50:02 UTC]   PR #2221: all checks passing ✅
+[2026-03-03 13:50:02 UTC] Done. Spawned: 0
+[2026-03-03 14:00:02 UTC] === Neo CI Fix ===
+[2026-03-03 14:00:03 UTC] Checking CI on 1 open PRs
+[2026-03-03 14:00:04 UTC]   PR #2222: 1 checks still running, waiting
+[2026-03-03 14:00:04 UTC] Done. Spawned: 0
+[2026-03-03 14:10:02 UTC] === Neo CI Fix ===
+[2026-03-03 14:10:02 UTC] No open PRs
+[2026-03-03 14:20:01 UTC] === Neo CI Fix ===
+[2026-03-03 14:20:01 UTC] No open PRs
+[2026-03-03 14:30:01 UTC] === Neo CI Fix ===
+[2026-03-03 14:30:01 UTC] No open PRs
+[2026-03-03 14:40:02 UTC] === Neo CI Fix ===
+[2026-03-03 14:40:02 UTC] No open PRs
+[2026-03-03 14:50:01 UTC] === Neo CI Fix ===
+[2026-03-03 14:50:02 UTC] Checking CI on 1 open PRs
+[2026-03-03 14:50:02 UTC]   PR #2226: 1 checks still running, waiting
+[2026-03-03 14:50:02 UTC] Done. Spawned: 0
+[2026-03-03 15:00:01 UTC] === Neo CI Fix ===
+[2026-03-03 15:00:02 UTC] No open PRs
+[2026-03-03 15:10:01 UTC] === Neo CI Fix ===
+[2026-03-03 15:10:02 UTC] Checking CI on 1 open PRs
+[2026-03-03 15:10:02 UTC]   PR #2228: 1 checks still running, waiting
+[2026-03-03 15:10:02 UTC] Done. Spawned: 0
+[2026-03-03 15:20:02 UTC] === Neo CI Fix ===
+[2026-03-03 15:20:02 UTC] Checking CI on 1 open PRs
+[2026-03-03 15:20:02 UTC]   PR #2228: all checks passing ✅
+[2026-03-03 15:20:02 UTC] Done. Spawned: 0
+[2026-03-03 15:30:01 UTC] === Neo CI Fix ===
+[2026-03-03 15:30:02 UTC] Checking CI on 1 open PRs
+[2026-03-03 15:30:03 UTC]   PR #2228: all checks passing ✅
+[2026-03-03 15:30:03 UTC] Done. Spawned: 0
+[2026-03-03 15:40:02 UTC] === Neo CI Fix ===
+[2026-03-03 15:40:02 UTC] Checking CI on 1 open PRs
+[2026-03-03 15:40:02 UTC]   PR #2228: all checks passing ✅
+[2026-03-03 15:40:02 UTC] Done. Spawned: 0
+[2026-03-03 15:50:01 UTC] === Neo CI Fix ===
+[2026-03-03 15:50:02 UTC] No open PRs
+[2026-03-03 16:00:02 UTC] === Neo CI Fix ===
+[2026-03-03 16:00:03 UTC] No open PRs
+[2026-03-03 16:10:01 UTC] === Neo CI Fix ===
+[2026-03-03 16:10:01 UTC] No open PRs
+[2026-03-03 16:20:01 UTC] === Neo CI Fix ===
+[2026-03-03 16:20:02 UTC] No open PRs
+[2026-03-03 16:30:01 UTC] === Neo CI Fix ===
+[2026-03-03 16:30:02 UTC] No open PRs
+[2026-03-03 16:40:01 UTC] === Neo CI Fix ===
+[2026-03-03 16:40:01 UTC] No open PRs
+[2026-03-03 16:50:01 UTC] === Neo CI Fix ===
+[2026-03-03 16:50:02 UTC] No open PRs
+[2026-03-03 17:00:02 UTC] === Neo CI Fix ===
+[2026-03-03 17:00:03 UTC] No open PRs
+[2026-03-03 17:10:01 UTC] === Neo CI Fix ===
+[2026-03-03 17:10:01 UTC] No open PRs
+[2026-03-03 17:20:01 UTC] === Neo CI Fix ===
+[2026-03-03 17:20:02 UTC] No open PRs
+[2026-03-03 17:30:02 UTC] === Neo CI Fix ===
+[2026-03-03 17:30:02 UTC] No open PRs
+[2026-03-03 17:40:01 UTC] === Neo CI Fix ===
+[2026-03-03 17:40:02 UTC] No open PRs
+[2026-03-03 17:50:02 UTC] === Neo CI Fix ===
+[2026-03-03 17:50:02 UTC] No open PRs
+[2026-03-03 18:00:01 UTC] === Neo CI Fix ===
+[2026-03-03 18:00:02 UTC] No open PRs
+[2026-03-03 18:10:01 UTC] === Neo CI Fix ===
+[2026-03-03 18:10:01 UTC] No open PRs
+[2026-03-03 18:20:02 UTC] === Neo CI Fix ===
+[2026-03-03 18:20:02 UTC] No open PRs
+[2026-03-03 18:30:02 UTC] === Neo CI Fix ===
+[2026-03-03 18:30:02 UTC] No open PRs
+[2026-03-03 18:40:01 UTC] === Neo CI Fix ===
+[2026-03-03 18:40:01 UTC] No open PRs
+[2026-03-03 18:50:01 UTC] === Neo CI Fix ===
+[2026-03-03 18:50:01 UTC] No open PRs
+[2026-03-03 19:00:01 UTC] === Neo CI Fix ===
+[2026-03-03 19:00:02 UTC] No open PRs
+[2026-03-03 19:10:01 UTC] === Neo CI Fix ===
+[2026-03-03 19:10:02 UTC] No open PRs
+[2026-03-03 19:20:01 UTC] === Neo CI Fix ===
+[2026-03-03 19:20:02 UTC] No open PRs
+[2026-03-03 19:30:01 UTC] === Neo CI Fix ===
+[2026-03-03 19:30:01 UTC] No open PRs
+[2026-03-03 19:40:01 UTC] === Neo CI Fix ===
+[2026-03-03 19:40:02 UTC] Checking CI on 1 open PRs
+[2026-03-03 19:40:02 UTC]   PR #2238: 1 failed check(s)
+[2026-03-03 19:40:04 UTC] [neo] Queued spawn: neo-ci-2238 (PR#2238-ci-fix)
+[2026-03-03 19:40:05 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 19:40:05 UTC] Done. Spawned: 1
+[2026-03-03 19:50:01 UTC] === Neo CI Fix ===
+[2026-03-03 19:50:02 UTC] Checking CI on 1 open PRs
+[2026-03-03 19:50:02 UTC]   PR #2238: 1 checks still running, waiting
+[2026-03-03 19:50:02 UTC] Done. Spawned: 0
+[2026-03-03 20:00:01 UTC] === Neo CI Fix ===
+[2026-03-03 20:00:02 UTC] Checking CI on 1 open PRs
+[2026-03-03 20:00:02 UTC]   PR #2238: 1 failed check(s)
+[2026-03-03 20:00:04 UTC] [neo] 'PR#2238-ci-fix' already has an active run, skipping
+[2026-03-03 20:00:04 UTC]   PR #2238: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-03 20:00:04 UTC] Done. Spawned: 0
+[2026-03-03 20:10:01 UTC] === Neo CI Fix ===
+[2026-03-03 20:10:01 UTC] Checking CI on 1 open PRs
+[2026-03-03 20:10:02 UTC]   PR #2238: 1 failed check(s)
+[2026-03-03 20:10:03 UTC] [neo] 'PR#2238-ci-fix' already has an active run, skipping
+[2026-03-03 20:10:03 UTC]   PR #2238: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-03 20:10:03 UTC] Done. Spawned: 0
+[2026-03-03 20:20:01 UTC] === Neo CI Fix ===
+[2026-03-03 20:20:01 UTC] Checking CI on 1 open PRs
+[2026-03-03 20:20:02 UTC]   PR #2238: 1 failed check(s)
+[2026-03-03 20:20:03 UTC] [neo] 'PR#2238-ci-fix' already has an active run, skipping
+[2026-03-03 20:20:03 UTC]   PR #2238: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-03 20:20:03 UTC] Done. Spawned: 0
+[2026-03-03 20:30:02 UTC] === Neo CI Fix ===
+[2026-03-03 20:30:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 20:30:03 UTC]   PR #2240: 1 checks still running, waiting
+[2026-03-03 20:30:03 UTC]   PR #2238: 1 failed check(s)
+[2026-03-03 20:30:05 UTC] [neo] Queued spawn: neo-ci-2238 (PR#2238-ci-fix)
+[2026-03-03 20:30:07 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 20:30:07 UTC] Done. Spawned: 1
+[2026-03-03 20:40:01 UTC] === Neo CI Fix ===
+[2026-03-03 20:40:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 20:40:02 UTC]   PR #2240: 1 failed check(s)
+[2026-03-03 20:40:03 UTC] [neo] Queued spawn: neo-ci-2240 (PR#2240-ci-fix)
+[2026-03-03 20:40:05 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 20:40:05 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 20:40:05 UTC] Done. Spawned: 1
+[2026-03-03 20:50:02 UTC] === Neo CI Fix ===
+[2026-03-03 20:50:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 20:50:02 UTC]   PR #2240: SHA 401af5fa already attempted fix, skipping
+[2026-03-03 20:50:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 20:50:02 UTC] Done. Spawned: 0
+[2026-03-03 21:00:01 UTC] === Neo CI Fix ===
+[2026-03-03 21:00:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 21:00:02 UTC]   PR #2240: SHA 401af5fa already attempted fix, skipping
+[2026-03-03 21:00:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 21:00:02 UTC] Done. Spawned: 0
+[2026-03-03 21:10:01 UTC] === Neo CI Fix ===
+[2026-03-03 21:10:01 UTC] Checking CI on 2 open PRs
+[2026-03-03 21:10:01 UTC]   PR #2240: SHA 401af5fa already attempted fix, skipping
+[2026-03-03 21:10:01 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 21:10:01 UTC] Done. Spawned: 0
+[2026-03-03 21:20:02 UTC] === Neo CI Fix ===
+[2026-03-03 21:20:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 21:20:02 UTC]   PR #2240: SHA 401af5fa already attempted fix, skipping
+[2026-03-03 21:20:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 21:20:02 UTC] Done. Spawned: 0
+[2026-03-03 21:30:01 UTC] === Neo CI Fix ===
+[2026-03-03 21:30:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 21:30:02 UTC]   PR #2240: SHA 401af5fa already attempted fix, skipping
+[2026-03-03 21:30:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 21:30:02 UTC] Done. Spawned: 0
+[2026-03-03 21:40:01 UTC] === Neo CI Fix ===
+[2026-03-03 21:40:05 UTC] Checking CI on 2 open PRs
+[2026-03-03 21:40:06 UTC]   PR #2240: 1 checks still running, waiting
+[2026-03-03 21:40:06 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 21:40:06 UTC] Done. Spawned: 0
+[2026-03-03 21:50:01 UTC] === Neo CI Fix ===
+[2026-03-03 21:50:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 21:50:02 UTC]   PR #2240: 2 failed check(s)
+[2026-03-03 21:50:03 UTC] [neo] Queued spawn: neo-ci-2240 (PR#2240-ci-fix)
+[2026-03-03 21:50:05 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 21:50:05 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 21:50:05 UTC] Done. Spawned: 1
+[2026-03-03 22:00:02 UTC] === Neo CI Fix ===
+[2026-03-03 22:00:03 UTC] Checking CI on 2 open PRs
+[2026-03-03 22:00:03 UTC]   PR #2240: 3 failed check(s)
+[2026-03-03 22:00:05 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-03 22:00:05 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-03 22:00:05 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 22:00:05 UTC] Done. Spawned: 0
+[2026-03-03 22:10:01 UTC] === Neo CI Fix ===
+[2026-03-03 22:10:01 UTC] Checking CI on 2 open PRs
+[2026-03-03 22:10:02 UTC]   PR #2240: 3 failed check(s)
+[2026-03-03 22:10:03 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-03 22:10:03 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-03 22:10:03 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 22:10:03 UTC] Done. Spawned: 0
+[2026-03-03 22:20:02 UTC] === Neo CI Fix ===
+[2026-03-03 22:20:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 22:20:03 UTC]   PR #2240: 3 failed check(s)
+[2026-03-03 22:20:04 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-03 22:20:04 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-03 22:20:04 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 22:20:04 UTC] Done. Spawned: 0
+[2026-03-03 22:30:01 UTC] === Neo CI Fix ===
+[2026-03-03 22:30:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 22:30:02 UTC]   PR #2240: 3 failed check(s)
+[2026-03-03 22:30:04 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-03 22:30:04 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-03 22:30:04 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 22:30:04 UTC] Done. Spawned: 0
+[2026-03-03 22:40:01 UTC] === Neo CI Fix ===
+[2026-03-03 22:40:01 UTC] Checking CI on 2 open PRs
+[2026-03-03 22:40:02 UTC]   PR #2240: 3 failed check(s)
+[2026-03-03 22:40:03 UTC] [neo] Run for 'PR#2240-ci-fix' expired (50m), clearing
+[2026-03-03 22:40:03 UTC] [neo] Queued spawn: neo-ci-2240 (PR#2240-ci-fix)
+[2026-03-03 22:40:05 UTC] [neo] Spawn queue processor triggered
+[2026-03-03 22:40:05 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 22:40:05 UTC] Done. Spawned: 1
+[2026-03-03 22:50:01 UTC] === Neo CI Fix ===
+[2026-03-03 22:50:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 22:50:02 UTC]   PR #2240: 4 failed check(s)
+[2026-03-03 22:50:03 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-03 22:50:03 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-03 22:50:03 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 22:50:03 UTC] Done. Spawned: 0
+[2026-03-03 23:00:01 UTC] === Neo CI Fix ===
+[2026-03-03 23:00:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 23:00:02 UTC]   PR #2240: 4 failed check(s)
+[2026-03-03 23:00:04 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-03 23:00:04 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-03 23:00:04 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 23:00:04 UTC] Done. Spawned: 0
+[2026-03-03 23:10:01 UTC] === Neo CI Fix ===
+[2026-03-03 23:10:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 23:10:02 UTC]   PR #2240: 4 failed check(s)
+[2026-03-03 23:10:03 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-03 23:10:03 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-03 23:10:03 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 23:10:03 UTC] Done. Spawned: 0
+[2026-03-03 23:20:01 UTC] === Neo CI Fix ===
+[2026-03-03 23:20:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 23:20:02 UTC]   PR #2240: 4 failed check(s)
+[2026-03-03 23:20:03 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-03 23:20:03 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-03 23:20:03 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 23:20:03 UTC] Done. Spawned: 0
+[2026-03-03 23:30:01 UTC] === Neo CI Fix ===
+[2026-03-03 23:30:01 UTC] Checking CI on 2 open PRs
+[2026-03-03 23:30:02 UTC]   PR #2240: 4 failed check(s)
+[2026-03-03 23:30:08 UTC] [neo] Wake sent: 🚨 neo cooldown: PR#2240-ci-fix failed 3x. Please investigate or reassign.
+[2026-03-03 23:30:08 UTC] [neo] 'PR#2240-ci-fix' hit daily cooldown, skipping
+[2026-03-03 23:30:08 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-03 23:30:08 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 23:30:08 UTC] Done. Spawned: 0
+[2026-03-03 23:40:01 UTC] === Neo CI Fix ===
+[2026-03-03 23:40:01 UTC] Checking CI on 2 open PRs
+[2026-03-03 23:40:02 UTC]   PR #2240: 1 checks still running, waiting
+[2026-03-03 23:40:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 23:40:02 UTC] Done. Spawned: 0
+[2026-03-03 23:50:01 UTC] === Neo CI Fix ===
+[2026-03-03 23:50:02 UTC] Checking CI on 2 open PRs
+[2026-03-03 23:50:03 UTC]   PR #2240: 4 failed check(s)
+[2026-03-03 23:50:04 UTC] [neo] 'PR#2240-ci-fix' hit daily cooldown, skipping
+[2026-03-03 23:50:04 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-03 23:50:04 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-03 23:50:04 UTC] Done. Spawned: 0
+[2026-03-04 00:00:02 UTC] === Neo CI Fix ===
+[2026-03-04 00:00:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 00:00:03 UTC]   PR #2240: 4 failed check(s)
+[2026-03-04 00:00:04 UTC] [neo] Queued spawn: neo-ci-2240 (PR#2240-ci-fix)
+[2026-03-04 00:00:06 UTC] [neo] Spawn queue processor triggered
+[2026-03-04 00:00:06 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 00:00:06 UTC] Done. Spawned: 1
+[2026-03-04 00:10:01 UTC] === Neo CI Fix ===
+[2026-03-04 00:10:01 UTC] Checking CI on 2 open PRs
+[2026-03-04 00:10:02 UTC]   PR #2240: 3 failed check(s)
+[2026-03-04 00:10:03 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-04 00:10:03 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-04 00:10:03 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 00:10:03 UTC] Done. Spawned: 0
+[2026-03-04 00:20:01 UTC] === Neo CI Fix ===
+[2026-03-04 00:20:01 UTC] Checking CI on 2 open PRs
+[2026-03-04 00:20:02 UTC]   PR #2240: 3 failed check(s)
+[2026-03-04 00:20:03 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-04 00:20:03 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-04 00:20:03 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 00:20:03 UTC] Done. Spawned: 0
+[2026-03-04 00:30:01 UTC] === Neo CI Fix ===
+[2026-03-04 00:30:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 00:30:02 UTC]   PR #2240: 3 failed check(s)
+[2026-03-04 00:30:04 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-04 00:30:04 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-04 00:30:04 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 00:30:04 UTC] Done. Spawned: 0
+[2026-03-04 00:40:02 UTC] === Neo CI Fix ===
+[2026-03-04 00:40:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 00:40:03 UTC]   PR #2240: 3 failed check(s)
+[2026-03-04 00:40:04 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-04 00:40:04 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-04 00:40:04 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 00:40:04 UTC] Done. Spawned: 0
+[2026-03-04 00:50:02 UTC] === Neo CI Fix ===
+[2026-03-04 00:50:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 00:50:02 UTC]   PR #2240: 3 failed check(s)
+[2026-03-04 00:50:04 UTC] [neo] Run for 'PR#2240-ci-fix' expired (50m), clearing
+[2026-03-04 00:50:04 UTC] [neo] Queued spawn: neo-ci-2240 (PR#2240-ci-fix)
+[2026-03-04 00:50:05 UTC] [neo] Spawn queue processor triggered
+[2026-03-04 00:50:05 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 00:50:05 UTC] Done. Spawned: 1
+[2026-03-04 01:00:01 UTC] === Neo CI Fix ===
+[2026-03-04 01:00:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 01:00:02 UTC]   PR #2240: 1 checks still running, waiting
+[2026-03-04 01:00:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 01:00:02 UTC] Done. Spawned: 0
+[2026-03-04 01:10:01 UTC] === Neo CI Fix ===
+[2026-03-04 01:10:01 UTC] Checking CI on 2 open PRs
+[2026-03-04 01:10:02 UTC]   PR #2240: 2 failed check(s)
+[2026-03-04 01:10:03 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-04 01:10:03 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-04 01:10:03 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 01:10:03 UTC] Done. Spawned: 0
+[2026-03-04 01:20:01 UTC] === Neo CI Fix ===
+[2026-03-04 01:20:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 01:20:02 UTC]   PR #2240: 2 failed check(s)
+[2026-03-04 01:20:03 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-04 01:20:03 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-04 01:20:03 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 01:20:03 UTC] Done. Spawned: 0
+[2026-03-04 01:30:01 UTC] === Neo CI Fix ===
+[2026-03-04 01:30:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 01:30:02 UTC]   PR #2240: 2 failed check(s)
+[2026-03-04 01:30:03 UTC] [neo] 'PR#2240-ci-fix' already has an active run, skipping
+[2026-03-04 01:30:03 UTC]   PR #2240: queue failed, SHA NOT marked (will retry next cycle)
+[2026-03-04 01:30:03 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 01:30:03 UTC] Done. Spawned: 0
+[2026-03-04 01:40:01 UTC] === Neo CI Fix ===
+[2026-03-04 01:40:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 01:40:02 UTC]   PR #2240: 2 failed check(s)
+[2026-03-04 01:40:03 UTC] [neo] Run for 'PR#2240-ci-fix' expired (50m), clearing
+[2026-03-04 01:40:03 UTC] [neo] Queued spawn: neo-ci-2240 (PR#2240-ci-fix)
+[2026-03-04 01:40:04 UTC] [neo] Spawn queue processor triggered
+[2026-03-04 01:40:04 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 01:40:04 UTC] Done. Spawned: 1
+[2026-03-04 01:50:01 UTC] === Neo CI Fix ===
+[2026-03-04 01:50:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 01:50:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 01:50:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 01:50:02 UTC] Done. Spawned: 0
+[2026-03-04 02:00:01 UTC] === Neo CI Fix ===
+[2026-03-04 02:00:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 02:00:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 02:00:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 02:00:02 UTC] Done. Spawned: 0
+[2026-03-04 02:10:01 UTC] === Neo CI Fix ===
+[2026-03-04 02:10:01 UTC] Checking CI on 2 open PRs
+[2026-03-04 02:10:01 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 02:10:01 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 02:10:01 UTC] Done. Spawned: 0
+[2026-03-04 02:20:02 UTC] === Neo CI Fix ===
+[2026-03-04 02:20:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 02:20:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 02:20:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 02:20:02 UTC] Done. Spawned: 0
+[2026-03-04 02:30:01 UTC] === Neo CI Fix ===
+[2026-03-04 02:30:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 02:30:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 02:30:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 02:30:02 UTC] Done. Spawned: 0
+[2026-03-04 02:40:01 UTC] === Neo CI Fix ===
+[2026-03-04 02:40:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 02:40:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 02:40:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 02:40:02 UTC] Done. Spawned: 0
+[2026-03-04 02:50:01 UTC] === Neo CI Fix ===
+[2026-03-04 02:50:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 02:50:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 02:50:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 02:50:02 UTC] Done. Spawned: 0
+[2026-03-04 03:00:02 UTC] === Neo CI Fix ===
+[2026-03-04 03:00:03 UTC] Checking CI on 2 open PRs
+[2026-03-04 03:00:03 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 03:00:03 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 03:00:03 UTC] Done. Spawned: 0
+[2026-03-04 03:10:01 UTC] === Neo CI Fix ===
+[2026-03-04 03:10:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 03:10:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 03:10:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 03:10:02 UTC] Done. Spawned: 0
+[2026-03-04 03:20:01 UTC] === Neo CI Fix ===
+[2026-03-04 03:20:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 03:20:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 03:20:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 03:20:02 UTC] Done. Spawned: 0
+[2026-03-04 03:30:01 UTC] === Neo CI Fix ===
+[2026-03-04 03:30:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 03:30:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 03:30:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 03:30:02 UTC] Done. Spawned: 0
+[2026-03-04 03:40:01 UTC] === Neo CI Fix ===
+[2026-03-04 03:40:01 UTC] Checking CI on 2 open PRs
+[2026-03-04 03:40:01 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 03:40:01 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 03:40:01 UTC] Done. Spawned: 0
+[2026-03-04 03:50:01 UTC] === Neo CI Fix ===
+[2026-03-04 03:50:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 03:50:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 03:50:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 03:50:02 UTC] Done. Spawned: 0
+[2026-03-04 04:00:01 UTC] === Neo CI Fix ===
+[2026-03-04 04:00:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 04:00:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 04:00:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 04:00:02 UTC] Done. Spawned: 0
+[2026-03-04 04:10:01 UTC] === Neo CI Fix ===
+[2026-03-04 04:10:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 04:10:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 04:10:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 04:10:02 UTC] Done. Spawned: 0
+[2026-03-04 04:20:02 UTC] === Neo CI Fix ===
+[2026-03-04 04:20:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 04:20:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 04:20:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 04:20:02 UTC] Done. Spawned: 0
+[2026-03-04 04:30:01 UTC] === Neo CI Fix ===
+[2026-03-04 04:30:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 04:30:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 04:30:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 04:30:02 UTC] Done. Spawned: 0
+[2026-03-04 04:40:01 UTC] === Neo CI Fix ===
+[2026-03-04 04:40:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 04:40:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 04:40:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 04:40:02 UTC] Done. Spawned: 0
+[2026-03-04 04:50:01 UTC] === Neo CI Fix ===
+[2026-03-04 04:50:02 UTC] Checking CI on 2 open PRs
+[2026-03-04 04:50:02 UTC]   PR #2240: SHA b2883eae already attempted fix, skipping
+[2026-03-04 04:50:02 UTC]   PR #2238: SHA a34b6dea already attempted fix, skipping
+[2026-03-04 04:50:02 UTC] Done. Spawned: 0

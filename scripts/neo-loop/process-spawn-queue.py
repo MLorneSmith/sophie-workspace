@@ -268,7 +268,7 @@ def spawn_acp_session(task: str, label: str, timeout_seconds: int = 1800) -> boo
         try:
             with open(out_file) as f:
                 for line in f:
-                    if '"type":"done"' in line:
+                    if '"type":"done"' in line or '"stopReason":"end_turn"' in line:
                         done_count += 1
         except IOError:
             pass

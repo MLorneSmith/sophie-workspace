@@ -182,3 +182,77 @@
 [2026-03-03 02:20:07 UTC]   Spawning acpx exec for neo-issue-slideheroes-internal-tools-25 (sync, timeout 1800s)...
 [2026-03-03 02:30:28 UTC]   ✅ Session exit code 0 but PR was created — marking success
 [2026-03-03 02:30:29 UTC] Queue empty.
+[2026-03-03 14:40:05 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-03 14:40:05 UTC]   [issue-pickup] PR #2216: neo-issue-2216
+[2026-03-03 14:40:06 UTC]   Spawning acpx exec for neo-issue-2216 (sync, timeout 1800s)...
+[2026-03-03 14:48:57 UTC]   ❌ Session failed for neo-issue-2216 (exit 0) Running as unit: run-r346da5c35e4b4062ad90b146c878831d.scope; invocation ID: 5239263f7da343ec932d456b1db4a908
+[2026-03-03 14:49:01 UTC]   🔄 Reset #2216 label to plan-me for retry
+[2026-03-03 14:49:01 UTC]   🔄 #2216 attempt 1/3 — will retry on next pickup cycle
+[2026-03-03 14:49:01 UTC] Queue empty.
+[2026-03-03 15:00:09 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-03 15:00:09 UTC]   [issue-pickup] PR #2225: neo-issue-2225
+[2026-03-03 15:00:12 UTC]   Spawning acpx exec for neo-issue-2225 (sync, timeout 1800s)...
+[2026-03-03 15:07:55 UTC]   ✅ Session exit code 0 but PR was created — marking success
+[2026-03-03 15:07:57 UTC] Queue empty.
+[2026-03-03 18:00:15 UTC] ACP session already running — skipping this cycle.
+[2026-03-03 18:10:05 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-03 18:10:05 UTC]   [issue-pickup] PR #2231: neo-issue-2231
+[2026-03-03 18:10:07 UTC]   Spawning acpx exec for neo-issue-2231 (sync, timeout 1800s)...
+[2026-03-03 18:20:05 UTC] ACP session already running — skipping this cycle.
+[2026-03-03 18:20:09 UTC] ACP session already running — skipping this cycle.
+[2026-03-03 18:20:13 UTC] ACP session already running — skipping this cycle.
+[2026-03-03 18:30:43 UTC]   ❌ Session failed for neo-issue-2231 (exit 0) Running as unit: run-r8f332263ac59475b9069fe8839308542.scope; invocation ID: b0e980e7c77140568db933c941d10ea2
+[2026-03-03 18:30:47 UTC]   🔄 Reset #2231 label to plan-me for retry
+[2026-03-03 18:30:47 UTC]   🔄 #2231 attempt 1/3 — will retry on next pickup cycle
+[2026-03-03 18:30:47 UTC] Queue empty.
+[2026-03-03 18:38:57 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-03 18:38:57 UTC]   [issue-pickup] PR #2231: neo-issue-2231
+[2026-03-03 18:39:01 UTC]   Spawning acpx exec for neo-issue-2231 (sync, timeout 1800s)...
+[2026-03-03 18:39:04 UTC] ACP session already running — skipping this cycle.
+[2026-03-03 18:48:31 UTC]   ✅ Session completed for neo-issue-2231 (exit 0)
+[2026-03-03 18:48:35 UTC] Queue empty.
+[2026-03-03 19:40:05 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-03 19:40:05 UTC]   [ci-fix] PR #2238: neo-ci-2238
+[2026-03-03 19:40:07 UTC]   Spawning acpx exec for neo-ci-2238 (sync, timeout 1800s)...
+[2026-03-03 19:48:27 UTC]   ✅ Session completed for neo-ci-2238 (exit 0)
+[2026-03-03 19:48:29 UTC] Queue empty.
+[2026-03-03 20:08:23 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-03 20:08:23 UTC]   [issue-pickup] PR #2230: neo-issue-2230
+[2026-03-03 20:08:27 UTC]   Spawning acpx exec for neo-issue-2230 (sync, timeout 1800s)...
+[2026-03-03 20:27:14 UTC]   ✅ Session completed for neo-issue-2230 (exit 0)
+[2026-03-03 20:27:21 UTC] Queue empty.
+[2026-03-03 20:30:07 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-03 20:30:07 UTC]   [ci-fix] PR #2238: neo-ci-2238
+[2026-03-03 20:30:12 UTC]   Spawning acpx exec for neo-ci-2238 (sync, timeout 1800s)...
+[2026-03-03 20:33:34 UTC]   ✅ Session completed for neo-ci-2238 (exit 0)
+[2026-03-03 20:33:35 UTC] Queue empty.
+[2026-03-03 20:40:05 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-03 20:40:05 UTC]   [ci-fix] PR #2240: neo-ci-2240
+[2026-03-03 20:40:06 UTC]   Spawning acpx exec for neo-ci-2240 (sync, timeout 1800s)...
+[2026-03-03 20:43:27 UTC]   ❌ Session failed for neo-ci-2240 (exit -15) Running as unit: run-rfe91422b327c43fca0295cc8246cd69a.scope; invocation ID: 9f6a0cb752f446de84c26302b67b0c24
+[2026-03-03 20:43:30 UTC] Queue empty.
+[2026-03-03 21:50:05 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-03 21:50:05 UTC]   [ci-fix] PR #2240: neo-ci-2240
+[2026-03-03 21:50:06 UTC]   Spawning acpx exec for neo-ci-2240 (sync, timeout 1800s)...
+[2026-03-03 21:55:49 UTC]   ✅ Session completed for neo-ci-2240 (exit 0)
+[2026-03-03 21:55:50 UTC] Queue empty.
+[2026-03-03 22:40:05 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-03 22:40:05 UTC]   [ci-fix] PR #2240: neo-ci-2240
+[2026-03-03 22:40:06 UTC]   Spawning acpx exec for neo-ci-2240 (sync, timeout 1800s)...
+[2026-03-03 22:46:23 UTC]   ✅ Session completed for neo-ci-2240 (exit 0)
+[2026-03-03 22:46:24 UTC] Queue empty.
+[2026-03-04 00:00:06 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-04 00:00:06 UTC]   [ci-fix] PR #2240: neo-ci-2240
+[2026-03-04 00:00:11 UTC]   Spawning acpx exec for neo-ci-2240 (sync, timeout 1800s)...
+[2026-03-04 00:03:40 UTC]   ✅ Session completed for neo-ci-2240 (exit 0)
+[2026-03-04 00:03:42 UTC] Queue empty.
+[2026-03-04 00:50:05 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-04 00:50:05 UTC]   [ci-fix] PR #2240: neo-ci-2240
+[2026-03-04 00:50:07 UTC]   Spawning acpx exec for neo-ci-2240 (sync, timeout 1800s)...
+[2026-03-04 00:58:44 UTC]   ✅ Session completed for neo-ci-2240 (exit 0)
+[2026-03-04 00:58:45 UTC] Queue empty.
+[2026-03-04 01:40:05 UTC] 1 task(s) in queue — processing FIRST only (serial execution)
+[2026-03-04 01:40:05 UTC]   [ci-fix] PR #2240: neo-ci-2240
+[2026-03-04 01:40:06 UTC]   Spawning acpx exec for neo-ci-2240 (sync, timeout 1800s)...
+[2026-03-04 01:45:16 UTC]   ✅ Session completed for neo-ci-2240 (exit 0)
+[2026-03-04 01:45:18 UTC] Queue empty.

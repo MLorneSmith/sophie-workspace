@@ -474,3 +474,103 @@ Stored pipeline results in Mission Control
 === Pipeline Complete ===
 Downloaded=8 Uploaded=8 Failed=2
 Evaluated=93 Kept=10 Deleted=83 MC Synced=0
+Traceback (most recent call last):
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 463, in <module>
+    main()
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 421, in main
+    s3_client = get_s3_client()
+                ^^^^^^^^^^^^^^^
+  File "/home/ubuntu/clawd/projects/presentation-examples/scripts/evaluate-presentations.py", line 129, in get_s3_client
+    raise ValueError("Missing R2 environment variables")
+ValueError: Missing R2 environment variables
+
+=== Nightly Presentation Pipeline ===
+Started at: 2026-03-04 03:00:01
+Limit: 10 | Threshold: 3.5/5
+
+== PHASE 1: Download & Upload to R2 ==
+Unprocessed: 10 selected for download
+
+--- [1/10] Kearney Global State of Luxury 2024 ---
+    Source: kearney
+    Downloading...
+    Downloaded: 3063 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/kearney/kearney-Kearney Global State of Luxury 2024.pdf
+    UPLOADED: to-be-evaluated/kearney/kearney-Kearney Global State of Luxury 2024.pdf
+
+--- [2/10] Kearney Resurgent in a World at Risk: 2024 Global Cities Report ---
+    Source: kearney
+    Downloading...
+    Downloaded: 5988 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/kearney/kearney-Kearney Resurgent in a World at Risk_ 2024 Global Cities Report.pdf
+    UPLOADED: to-be-evaluated/kearney/kearney-Kearney Resurgent in a World at Risk_ 2024 Global Cities Report.pdf
+
+--- [3/10] Harvard Business School Management Consulting Club Case Interview Guide ---
+    Source: academic_case_studies
+    Downloading...
+    Downloaded: 3000 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/academic_case_studies/academic_case_studies-Harvard Business School Management Consulting Club Case Interview Guide.pdf
+    UPLOADED: to-be-evaluated/academic_case_studies/academic_case_studies-Harvard Business School Management Consulting Club Case Interview Guide.pdf
+
+--- [4/10] Wharton Consulting Club Casebook 2017 ---
+    Source: academic_case_studies
+    Downloading...
+    Downloaded: 2902 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/academic_case_studies/academic_case_studies-Wharton Consulting Club Casebook 2017.pdf
+    UPLOADED: to-be-evaluated/academic_case_studies/academic_case_studies-Wharton Consulting Club Casebook 2017.pdf
+
+--- [5/10] Wharton Consulting Club Casebook 2022-2023 ---
+    Source: academic_case_studies
+    Downloading...
+    FAILED: HTTP 403
+
+--- [6/10] INSEAD Consulting Club Handbook 2011 ---
+    Source: academic_case_studies
+    Downloading...
+    Downloaded: 1213 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/academic_case_studies/academic_case_studies-INSEAD Consulting Club Handbook 2011.pdf
+    UPLOADED: to-be-evaluated/academic_case_studies/academic_case_studies-INSEAD Consulting Club Handbook 2011.pdf
+
+--- [7/10] INSEAD Family Business at INSEAD ---
+    Source: academic_case_studies
+    Downloading...
+    FAILED: HTTP 403
+
+--- [8/10] Nestle Full-Year Results 2025 Investor Presentation ---
+    Source: nestle
+    Downloading...
+    Downloaded: 5061 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/nestle/nestle-Nestle Full-Year Results 2025 Investor Presentation.pdf
+    UPLOADED: to-be-evaluated/nestle/nestle-Nestle Full-Year Results 2025 Investor Presentation.pdf
+
+--- [9/10] Teck Investor Presentation (Oct 2025) ---
+    Source: teck
+    Downloading...
+    Downloaded: 3607 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/teck/teck-Teck Investor Presentation _Oct 2025_.pdf
+    UPLOADED: to-be-evaluated/teck/teck-Teck Investor Presentation _Oct 2025_.pdf
+
+--- [10/10] Annaly Q4 2025 Investor Presentation ---
+    Source: annaly
+    Downloading...
+    Downloaded: 1604 KB (application/pdf)
+    Uploading to R2: to-be-evaluated/annaly/annaly-Annaly Q4 2025 Investor Presentation.pdf
+    UPLOADED: to-be-evaluated/annaly/annaly-Annaly Q4 2025 Investor Presentation.pdf
+
+Phase 1 complete: Downloaded=8 Uploaded=8 Failed=2
+
+== PHASE 2: AI Evaluation ==
+Available for evaluation: 36
+Evaluating 10 presentations (threshold: 3.5/5)
+Manifest: 178 total, 36 ready to evaluate
+Connecting to R2...
+
+
+Total kept: 10 | Total deleted: 83
+
+Syncing kept presentations to Mission Control...
+Stored pipeline results in Mission Control
+
+=== Pipeline Complete ===
+Downloaded=8 Uploaded=8 Failed=2
+Evaluated=93 Kept=10 Deleted=83 MC Synced=0

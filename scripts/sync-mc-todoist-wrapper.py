@@ -18,6 +18,10 @@ import re
 from pathlib import Path
 from datetime import datetime
 
+# Import session helper
+sys.path.insert(0, str(Path(__file__).parent))
+from openclaw_session_helper import get_session_id_for_channel, send_via_agent
+
 DISCORD_CHANNEL = "1466532593754312899"  # #general
 SYNC_SCRIPT = Path.home() / "clawd" / "scripts" / "sync-mc-todoist.sh"
 
@@ -152,20 +156,28 @@ def format_discord_message(summary: dict) -> str:
 
 
 def notify_discord(message: str) -> bool:
-    """Send notification to Discord."""
-    try:
-        result = subprocess.run(
-            ["openclaw", "message", "send",
-             "--channel", "discord",
-             "--target", DISCORD_CHANNEL,
-             "--message", message],
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
-        return result.returncode == 0
-    except subprocess.SubprocessError:
-        return False
+    """Send notification to Discord via existing session (reuses session to avoid creating new ones)."""
+    # Find existing session for the channel
+    session_id = get_session_id_for_channel(DISCORD_CHANNEL)
+    if session_id:
+        print(f"Using existing session {session_id} for Discord notification")
+        return send_via_agent(session_id, message, channel="discord", target=DISCORD_CHANNEL)
+    else:
+        print(f"No existing session found, creating new one")
+        # Fallback to message send (creates new session)
+        try:
+            result = subprocess.run(
+                ["openclaw", "message", "send",
+                 "--channel", "discord",
+                 "--target", DISCORD_CHANNEL,
+                 "--message", message],
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            return result.returncode == 0
+        except subprocess.SubprocessError:
+            return False
 
 
 def main():

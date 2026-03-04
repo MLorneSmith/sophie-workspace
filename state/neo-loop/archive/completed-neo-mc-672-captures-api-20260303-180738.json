@@ -1,0 +1,10 @@
+{
+  "task_type": "mc-task",
+  "label": "neo-mc-672-captures-api",
+  "pr_number": 672,
+  "issue_number": null,
+  "timeout_seconds": 1800,
+  "task": "You are working on the slideheroes-internal-tools repo at ~/clawd/slideheroes-internal-tools/app.\n\nMC Task #672: [Capture v2] Step 1 \u2014 MC data model + API endpoints for captures.\n\nBuild the data model and API endpoints for the captures system. Check existing code in the repo for context on the current task/practices models.\n\nAfter changes:\n1. Run: pnpm build (from the app/ directory)\n2. Create a feature branch, commit, push, and open a PR\n",
+  "result": "failed",
+  "completed_at": "2026-03-03T18:07:38.041192+00:00"
+}

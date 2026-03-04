@@ -13,3 +13,19 @@
 [2026-03-02 20:00:01 UTC] [hemingway] Skipped (safety check): Blog: Presentation Surgery — TBD Consultancy not BCG
 [2026-03-02 22:00:02 UTC] [hemingway] 'MC#657' hit daily cooldown, skipping
 [2026-03-02 22:00:02 UTC] [hemingway] Skipped (safety check): Blog: Presentation Surgery — TBD Consultancy not BCG
+[2026-03-03 14:00:08 UTC] [hemingway] Queued spawn: hemingway-mc-657 (MC#657)
+[2026-03-03 14:00:18 UTC] [hemingway] Spawn queue processor triggered
+[2026-03-03 14:00:18 UTC] [hemingway] Queued: Blog: Presentation Surgery — TBD Consultancy not BCG
+[2026-03-03 16:00:03 UTC] [hemingway] Run for 'MC#657' expired (120m), clearing
+[2026-03-03 16:00:03 UTC] [hemingway] Queued spawn: hemingway-mc-657 (MC#657)
+[2026-03-03 16:00:08 UTC] [hemingway] Spawn queue processor triggered
+[2026-03-03 16:00:08 UTC] [hemingway] Queued: Blog: Presentation Surgery — TBD Consultancy not BCG
+[2026-03-03 18:00:04 UTC] [hemingway] Run for 'MC#657' expired (120m), clearing
+[2026-03-03 18:00:14 UTC] [hemingway] Discord notification failed: Command '['openclaw', 'message', 'send', '--channel', 'discord', '--target', 'channel:1477845417717792768', '--message', '⚠️ **Cooldown hit:** MC#657 failed 2x today. Needs manual intervention.']' timed out after 10 seconds
+[2026-03-03 18:00:24 UTC] [hemingway] Wake failed: Command '['openclaw', 'cron', 'wake', '--text', '🚨 hemingway cooldown: MC#657 failed 2x. Please investigate or reassign.', '--mode', 'now']' timed out after 10 seconds
+[2026-03-03 18:00:24 UTC] [hemingway] 'MC#657' hit daily cooldown, skipping
+[2026-03-03 18:00:24 UTC] [hemingway] Skipped (safety check): Blog: Presentation Surgery — TBD Consultancy not BCG
+[2026-03-03 20:00:03 UTC] [hemingway] 'MC#657' hit daily cooldown, skipping
+[2026-03-03 20:00:03 UTC] [hemingway] Skipped (safety check): Blog: Presentation Surgery — TBD Consultancy not BCG
+[2026-03-03 22:00:04 UTC] [hemingway] 'MC#657' hit daily cooldown, skipping
+[2026-03-03 22:00:04 UTC] [hemingway] Skipped (safety check): Blog: Presentation Surgery — TBD Consultancy not BCG

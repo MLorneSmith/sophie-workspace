@@ -66,3 +66,9 @@
 - [2026-03-02] **Neo Loop: Failed spawns must reset labels for retry** — `process-spawn-queue.py` now resets `status:in-progress` → `plan-me` on failure, removes from processed list, and tracks retry count (max 3). After 3 failures, escalates to `status:blocked` + Discord notification. Prevents tasks from getting stuck in limbo.
 - [2026-03-02] **CodeRabbit: New repos need `issue_enrichment.planning` config** — PR review config alone won't generate coding plans from `plan-me` labeled issues. Must explicitly add `issue_enrichment.planning.auto_planning` with label triggers to `.coderabbit.yaml`.
 - [2026-03-02] **Neo Loop: Multi-repo checklist** — When adding a new repo to Neo's pipeline: (1) add to `WATCHED_REPOS` in common.py, (2) ensure `.coderabbit.yaml` has `issue_enrichment.planning`, (3) create `plan-me`, `status:in-progress`, `status:blocked` labels, (4) verify CodeRabbit GitHub App is installed on the repo.
+
+## Bifrost
+- [2026-03-03] Bifrost stores plugin config in SQLite DB (`/etc/bifrost/config.db`, table `config_plugins`). DB overrides `config.json` on restart. Must update BOTH when changing plugin config.
+- [2026-03-03] `fetch-secrets-env.sh` must run as ubuntu user (has `aws --profile openclaw`). Running as root writes 0 vars and wipes the env file. Bifrost systemd uses `ExecStartPre=/bin/su - ubuntu -c /path/to/script`.
+- [2026-03-03] Bifrost requires `provider/model` format for model names (e.g., `openai/gpt-4o-mini`, `anthropic/claude-sonnet-4-20250514`).
+- [2026-03-03] Bifrost has no pre-built binaries. Build from source: clone repo, `npm install && npm run build` in `ui/`, then `go build` in `transports/` with local replace directives for all plugin modules.

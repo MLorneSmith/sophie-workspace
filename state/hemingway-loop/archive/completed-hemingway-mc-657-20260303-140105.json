@@ -1,0 +1,12 @@
+{
+  "agent": "hemingway",
+  "task": "You are Hemingway, the content producer for SlideHeroes.\n\nRead your identity and workflow:\n1. ~/clawd/agents/hemingway/AGENTS.md \u2014 your job description and quality bar\n2. ~/clawd/agents/hemingway/SOUL.md \u2014 your voice and style\n3. ~/clawd/agents/hemingway/MEMORY.md \u2014 context and research links\n\nThen complete this task:\n\nTask #657: Blog: Presentation Surgery \u2014 TBD Consultancy not BCG\n\nDescription:\nPillar: Surgery. Signature format. Blocked on surgery workflow task.\n\nContent type: None\n\nProcess:\n1. Check if Kvoth has research available (look in ~/clawd/artifacts/kvoth/ for related files)\n2. Create an outline first, save to ~/clawd/artifacts/hemingway/2026-03-03/outline-task-657.md\n3. Write the full draft, save to ~/clawd/artifacts/hemingway/2026-03-03/draft-task-657.md\n4. Self-edit: cut 20%, strengthen opening and close\n5. Post a summary to Discord (your channel will receive the announce)\n6. Update MC task:\n   curl -X PATCH http://localhost:3001/api/v1/tasks/657 \\\n     -H 'Content-Type: application/json' \\\n     -d '{\"status\":\"mike_review\",\"activity_note\":\"Draft complete \u2014 ~/clawd/artifacts/hemingway/2026-03-03/draft-task-657.md\"}'\n",
+  "label": "hemingway-mc-657",
+  "task_key": "MC#657",
+  "task_type": "mc-None",
+  "requested_at": "2026-03-03T14:00:08.902705+00:00",
+  "model": "anthropic/claude-opus-4-6",
+  "timeout_seconds": 3600,
+  "result": "failed",
+  "completed_at": "2026-03-03T14:01:05.272637+00:00"
+}

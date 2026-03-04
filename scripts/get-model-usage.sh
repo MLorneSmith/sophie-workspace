@@ -12,11 +12,12 @@
 YESTERDAY="${YESTERDAY:-$(TZ=America/Toronto date -d "yesterday" +%Y-%m-%d)}"
 
 # Day boundaries: yesterday 6:00 AM ET → today 6:00 AM ET
-DAY_START_ET="${YESTERDAY}T06:00:00"
-DAY_END_ET="$(TZ=America/Toronto date -d "$YESTERDAY + 1 day" +%Y-%m-%d)T06:00:00"
-# Convert to UTC ISO timestamps
-DAY_START_UTC=$(TZ=America/Toronto date -d "$DAY_START_ET" -u +%Y-%m-%dT%H:%M:%S)
-DAY_END_UTC=$(TZ=America/Toronto date -d "$DAY_END_ET" -u +%Y-%m-%dT%H:%M:%S)
+# Convert to UTC ISO timestamps for comparison with session timestamps (stored in UTC)
+# Note: Must use TZ="America/Toronto" inside the date string so the input is parsed as ET.
+# This handles EST/EDT transitions automatically.
+NEXT_DAY="$(TZ=America/Toronto date -d "$YESTERDAY + 1 day" +%Y-%m-%d)"
+DAY_START_UTC=$(date -d "TZ=\"America/Toronto\" ${YESTERDAY}T06:00:00" -u +%Y-%m-%dT%H:%M:%S)
+DAY_END_UTC=$(date -d "TZ=\"America/Toronto\" ${NEXT_DAY}T06:00:00" -u +%Y-%m-%dT%H:%M:%S)
 SESSION_BASE="/home/ubuntu/.openclaw/agents"
 CONFIG_FILE="/home/ubuntu/.openclaw/openclaw.json"
 

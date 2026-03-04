@@ -94,14 +94,16 @@ curl -X PATCH "https://internal.slideheroes.com/api/v1/tasks/{id}" \
 ## Deployment Reminders
 
 ### slideheroes-internal-tools
-**Always push after committing!** Deployed on AWS EC2 (not Railway). Push to origin triggers deployment.
+**Always push after committing!** Deployed on AWS EC2. Auto-deploy cron runs every 5 minutes — checks for new commits on main, pulls, builds, and restarts pm2.
 
 After any work on this repo:
 ```bash
 git push origin main
 ```
 
-Sub-agents often forget this step — if spawning a task for this repo, remind them to push or verify yourself after.
+Deploy is automatic (no manual pull needed). Monitor: `tail ~/clawd/slideheroes-internal-tools/deploy.log`
+
+Sub-agents often forget to push — if spawning a task for this repo, remind them to push or verify yourself after.
 
 ---
 

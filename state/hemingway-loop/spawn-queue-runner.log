@@ -22,3 +22,23 @@
 │        
 [2026-03-02 16:00:23 UTC]   📋 Wrote fallback notification for Sophie: hemingway-mc-657
 [2026-03-02 16:00:27 UTC] [hemingway] Queue empty.
+[2026-03-03 14:00:18 UTC] [hemingway] 1 task(s) in queue — processing FIRST only
+[2026-03-03 14:00:18 UTC]   [mc-None] MC#657: hemingway-mc-657
+[2026-03-03 14:00:55 UTC]   ❌ Cron add failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth- │
+◇  Config ───────────────────────────────────────────────────╮
+│                                                            │
+│  Config invalid; doctor will run with best-effort config.  │
+│        
+[2026-03-03 14:00:55 UTC]   📋 Wrote fallback notification for Sophie: hemingway-mc-657
+[2026-03-03 14:01:05 UTC] [hemingway] Queue empty.
+[2026-03-03 16:00:08 UTC] [hemingway] 1 task(s) in queue — processing FIRST only
+[2026-03-03 16:00:08 UTC]   [mc-None] MC#657: hemingway-mc-657
+[2026-03-03 16:00:27 UTC]   ❌ Cron add failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth- │
+◇  Config ───────────────────────────────────────────────────╮
+│                                                            │
+│  Config invalid; doctor will run with best-effort config.  │
+│        
+[2026-03-03 16:00:27 UTC]   📋 Wrote fallback notification for Sophie: hemingway-mc-657
+[2026-03-03 16:00:34 UTC] [hemingway] Queue empty.

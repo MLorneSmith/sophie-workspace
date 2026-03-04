@@ -1,0 +1,10 @@
+{
+  "task_type": "mc-task",
+  "label": "neo-mc-684-content-board",
+  "pr_number": 684,
+  "issue_number": null,
+  "timeout_seconds": 1800,
+  "task": "You are working on the slideheroes-internal-tools repo at ~/clawd/slideheroes-internal-tools/app.\n\nMC Task #684: Consolidate Content Board into Main Task Board (single Kanban).\n\nResearch the current board structure in the codebase, then consolidate the Content Board into the main Mission Control task board. This should be a single unified Kanban view.\n\nAfter changes:\n1. Run: pnpm build (from the app/ directory)  \n2. Create a feature branch, commit, push, and open a PR\n",
+  "result": "failed",
+  "completed_at": "2026-03-03T17:54:09.327090+00:00"
+}

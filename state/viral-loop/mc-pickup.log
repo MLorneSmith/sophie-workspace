@@ -10,3 +10,17 @@
 [2026-03-02 20:00:08 UTC] [viral] Wake sent: 🚨 viral cooldown: MC#670 failed 3x. Please investigate or reassign.
 [2026-03-02 20:00:08 UTC] [viral] 'MC#670' hit daily cooldown, skipping
 [2026-03-02 22:00:02 UTC] [viral] 'MC#670' hit daily cooldown, skipping
+[2026-03-03 14:00:08 UTC] [viral] Queued spawn: viral-mc-670 (MC#670)
+[2026-03-03 14:00:18 UTC] [viral] Discord notification failed: Command '['openclaw', 'message', 'send', '--channel', 'discord', '--target', 'channel:1477848160746475623', '--message', '🚀 **Viral queued:** viral-mc-670']' timed out after 10 seconds
+[2026-03-03 14:00:19 UTC] [viral] Spawn queue processor triggered
+[2026-03-03 16:00:02 UTC] [viral] Run for 'MC#670' expired (120m), clearing
+[2026-03-03 16:00:02 UTC] [viral] Queued spawn: viral-mc-670 (MC#670)
+[2026-03-03 16:00:06 UTC] [viral] Spawn queue processor triggered
+[2026-03-03 18:00:02 UTC] [viral] Run for 'MC#670' expired (120m), clearing
+[2026-03-03 18:00:02 UTC] [viral] Queued spawn: viral-mc-670 (MC#670)
+[2026-03-03 18:00:13 UTC] [viral] Discord notification failed: Command '['openclaw', 'message', 'send', '--channel', 'discord', '--target', 'channel:1477848160746475623', '--message', '🚀 **Viral queued:** viral-mc-670']' timed out after 10 seconds
+[2026-03-03 18:00:13 UTC] [viral] Spawn queue processor triggered
+[2026-03-03 20:00:02 UTC] [viral] Run for 'MC#670' expired (120m), clearing
+[2026-03-03 20:00:06 UTC] [viral] Wake sent: 🚨 viral cooldown: MC#670 failed 3x. Please investigate or reassign.
+[2026-03-03 20:00:06 UTC] [viral] 'MC#670' hit daily cooldown, skipping
+[2026-03-03 22:00:04 UTC] [viral] 'MC#670' hit daily cooldown, skipping

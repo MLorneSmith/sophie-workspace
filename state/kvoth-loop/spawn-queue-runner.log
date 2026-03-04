@@ -76,3 +76,63 @@
 [2026-03-02 17:00:34 UTC]   📋 Wrote fallback notification for Sophie: kvoth-mc-661
 [2026-03-02 17:00:34 UTC] [kvoth] 3 task(s) remaining.
 [2026-03-02 17:00:37 UTC] [kvoth] 3 task(s) remaining.
+[2026-03-03 14:00:19 UTC] [kvoth] 5 task(s) in queue — processing FIRST only
+[2026-03-03 14:00:19 UTC]   [mc-research] MC#660: kvoth-mc-660
+[2026-03-03 14:00:29 UTC] [kvoth] 5 task(s) in queue — processing FIRST only
+[2026-03-03 14:00:29 UTC]   [mc-research] MC#660: kvoth-mc-660
+[2026-03-03 14:00:55 UTC]   ❌ Cron add failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth- │
+◇  Config ───────────────────────────────────────────────────╮
+│                                                            │
+│  Config invalid; doctor will run with best-effort config.  │
+│        
+[2026-03-03 14:00:55 UTC]   📋 Wrote fallback notification for Sophie: kvoth-mc-660
+[2026-03-03 14:00:59 UTC]   ❌ Cron add failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth- │
+◇  Config ───────────────────────────────────────────────────╮
+│                                                            │
+│  Config invalid; doctor will run with best-effort config.  │
+│        
+[2026-03-03 14:00:59 UTC]   📋 Wrote fallback notification for Sophie: kvoth-mc-660
+[2026-03-03 14:01:05 UTC] [kvoth] 4 task(s) remaining.
+[2026-03-03 14:01:08 UTC] [kvoth] 4 task(s) remaining.
+[2026-03-03 16:00:08 UTC] [kvoth] 6 task(s) in queue — processing FIRST only
+[2026-03-03 16:00:08 UTC]   [mc-research] MC#661: kvoth-mc-661
+[2026-03-03 16:00:19 UTC] [kvoth] 6 task(s) in queue — processing FIRST only
+[2026-03-03 16:00:19 UTC]   [mc-research] MC#661: kvoth-mc-661
+[2026-03-03 16:00:27 UTC]   ❌ Cron add failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth- │
+◇  Config ───────────────────────────────────────────────────╮
+│                                                            │
+│  Config invalid; doctor will run with best-effort config.  │
+│        
+[2026-03-03 16:00:27 UTC]   📋 Wrote fallback notification for Sophie: kvoth-mc-661
+[2026-03-03 16:00:34 UTC] [kvoth] 5 task(s) remaining.
+[2026-03-03 16:00:34 UTC]   ❌ Cron add failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth- │
+◇  Config ───────────────────────────────────────────────────╮
+│                                                            │
+│  Config invalid; doctor will run with best-effort config.  │
+│        
+[2026-03-03 16:00:34 UTC]   📋 Wrote fallback notification for Sophie: kvoth-mc-661
+[2026-03-03 16:00:36 UTC] [kvoth] 5 task(s) remaining.
+[2026-03-03 18:00:13 UTC] [kvoth] 7 task(s) in queue — processing FIRST only
+[2026-03-03 18:00:13 UTC]   [mc-research] MC#660: kvoth-mc-660
+[2026-03-03 18:00:23 UTC] [kvoth] 7 task(s) in queue — processing FIRST only
+[2026-03-03 18:00:23 UTC]   [mc-research] MC#660: kvoth-mc-660
+[2026-03-03 18:00:45 UTC]   ❌ Cron add failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth- │
+◇  Config ───────────────────────────────────────────────────╮
+│                                                            │
+│  Config invalid; doctor will run with best-effort config.  │
+│        
+[2026-03-03 18:00:45 UTC]   📋 Wrote fallback notification for Sophie: kvoth-mc-660
+[2026-03-03 18:00:48 UTC]   ❌ Cron add failed: Failed to read config at /home/ubuntu/.openclaw/openclaw.json MissingEnvVarError: Missing env var "OPENAI_API_KEY" referenced at config path: plugins.entries.openclaw-mem0.config.oss.embedder.config.api_key
+    at substituteString (file:///home/ubuntu/.npm-global/lib/node_modules/openclaw/dist/auth- │
+◇  Config ───────────────────────────────────────────────────╮
+│                                                            │
+│  Config invalid; doctor will run with best-effort config.  │
+│        
+[2026-03-03 18:00:48 UTC]   📋 Wrote fallback notification for Sophie: kvoth-mc-660
+[2026-03-03 18:00:55 UTC] [kvoth] 6 task(s) remaining.
+[2026-03-03 18:00:56 UTC] [kvoth] 6 task(s) remaining.

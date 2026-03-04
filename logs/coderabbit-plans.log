@@ -8,3 +8,6 @@
 [coderabbit-plans] New plan on #2213: [Feature] Bifrost Gateway Deployment on EC2 with Cloudflare Tunnel
 [coderabbit-plans] New plan on #2216: [Feature] Integration Testing & Portkey Cleanup
 [coderabbit-plans] New plan on #2216: [Feature] Integration Testing & Portkey Cleanup
+[coderabbit-plans] New plan on #2225: Fix: Hex color normalization, gradient CSS, schema validation, and thumbnail rendering
+[coderabbit-plans] New plan on #2230: feat: Route Mastra agent LLM calls through Bifrost gateway (#501)
+[coderabbit-plans] New plan on #2233: feat: Wire RAG context into Mastra agent prompts (#487 sub-3)

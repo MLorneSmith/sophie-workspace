@@ -4870,3 +4870,913 @@
 [2026-03-03T04:00:01-05:00]   Exported: 0, Skipped: 0
 [2026-03-03T04:00:05-05:00] === TTL enforcement complete: 0 killed, 313 spared, 0 errors ===
 [2026-03-03T04:00:05-05:00] === TTL enforcement complete: 0 killed, 313 spared, 0 errors ===
+[2026-03-03T06:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T06:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T06:00:01-05:00] Exporting sessions to database...
+[2026-03-03T06:00:01-05:00] Exporting sessions to database...
+[2026-03-03T06:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T06:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T06:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T06:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T06:00:01-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T06:00:01-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T06:00:01-05:00]   (marking as TTL kill)
+[2026-03-03T06:00:01-05:00]   (marking as TTL kill)
+[2026-03-03T06:00:01-05:00]   ✓ 6c520b8f-67ea-46d7-aa88-0... 1 models, 0K tokens
+[2026-03-03T06:00:01-05:00]   ✓ 6c520b8f-67ea-46d7-aa88-0... 1 models, 0K tokens
+[2026-03-03T06:00:01-05:00]   ✓ ef177f86-c4de-41e7-aeeb-3... 1 models, 20K tokens
+[2026-03-03T06:00:01-05:00]   ✓ ef177f86-c4de-41e7-aeeb-3... 1 models, 20K tokens
+[2026-03-03T06:00:01-05:00]   
+[2026-03-03T06:00:01-05:00]   
+[2026-03-03T06:00:01-05:00]   Exported: 2, Skipped: 0
+[2026-03-03T06:00:01-05:00]   Exported: 2, Skipped: 0
+[2026-03-03T06:00:05-05:00] === TTL enforcement complete: 0 killed, 315 spared, 0 errors ===
+[2026-03-03T06:00:05-05:00] === TTL enforcement complete: 0 killed, 315 spared, 0 errors ===
+[2026-03-03T08:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T08:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T08:00:01-05:00] Exporting sessions to database...
+[2026-03-03T08:00:01-05:00] Exporting sessions to database...
+[2026-03-03T08:00:02-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T08:00:02-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T08:00:02-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T08:00:02-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T08:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T08:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T08:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T08:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T08:00:02-05:00]   ✓ b3743b23-6d2f-4b85-a361-6... 2 models, 0K tokens
+[2026-03-03T08:00:02-05:00]   ✓ b3743b23-6d2f-4b85-a361-6... 2 models, 0K tokens
+[2026-03-03T08:00:02-05:00]   
+[2026-03-03T08:00:02-05:00]   
+[2026-03-03T08:00:02-05:00]   Exported: 1, Skipped: 0
+[2026-03-03T08:00:02-05:00]   Exported: 1, Skipped: 0
+[2026-03-03T08:00:07-05:00] === TTL enforcement complete: 0 killed, 316 spared, 0 errors ===
+[2026-03-03T08:00:07-05:00] === TTL enforcement complete: 0 killed, 316 spared, 0 errors ===
+[2026-03-03T10:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T10:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T10:00:01-05:00] Exporting sessions to database...
+[2026-03-03T10:00:01-05:00] Exporting sessions to database...
+[2026-03-03T10:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T10:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T10:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T10:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T10:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T10:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T10:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T10:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T10:00:02-05:00]   ✓ 0095ca36-8b10-48f3-ae66-5... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 0095ca36-8b10-48f3-ae66-5... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 024c7aca-74d3-4822-a27d-c... 1 models, 1K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 024c7aca-74d3-4822-a27d-c... 1 models, 1K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 1171fb22-f7cd-46bc-be7b-1... 1 models, 1K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 1171fb22-f7cd-46bc-be7b-1... 1 models, 1K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 1f0c86e8-7a5c-4c52-8584-4... 2 models, 16K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 1f0c86e8-7a5c-4c52-8584-4... 2 models, 16K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 5381b3ab-0432-464e-9585-5... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 5381b3ab-0432-464e-9585-5... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 547fa141-cb32-46b5-abd8-5... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 547fa141-cb32-46b5-abd8-5... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 6833ef85-d30f-4236-b933-e... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 6833ef85-d30f-4236-b933-e... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 8840b19c-d5b1-4839-bae6-7... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 8840b19c-d5b1-4839-bae6-7... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 8e638b45-f5b4-46b8-a2c4-a... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ 8e638b45-f5b4-46b8-a2c4-a... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ b9857311-288e-4afa-91ae-a... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ b9857311-288e-4afa-91ae-a... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ bdee4850-7ae1-48a3-862c-b... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   ✓ bdee4850-7ae1-48a3-862c-b... 1 models, 0K tokens
+[2026-03-03T10:00:02-05:00]   
+[2026-03-03T10:00:02-05:00]   
+[2026-03-03T10:00:02-05:00]   Exported: 11, Skipped: 0
+[2026-03-03T10:00:02-05:00]   Exported: 11, Skipped: 0
+[2026-03-03T10:00:02-05:00] === TTL enforcement complete: 0 killed, 12 spared, 0 errors ===
+[2026-03-03T10:00:02-05:00] === TTL enforcement complete: 0 killed, 12 spared, 0 errors ===
+[2026-03-03T12:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T12:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T12:00:01-05:00] Exporting sessions to database...
+[2026-03-03T12:00:01-05:00] Exporting sessions to database...
+[2026-03-03T12:00:02-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T12:00:02-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T12:00:02-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T12:00:02-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T12:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T12:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T12:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T12:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T12:00:02-05:00]   ✓ 0686c6a5-fa76-4912-9782-3... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 0686c6a5-fa76-4912-9782-3... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 1795cc3e-f584-45dd-ba30-3... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 1795cc3e-f584-45dd-ba30-3... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 1a307629-f733-4f79-9d94-8... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 1a307629-f733-4f79-9d94-8... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 320233f4-91a9-4ebe-a6fa-9... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 320233f4-91a9-4ebe-a6fa-9... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 64f1b708-b58f-4548-9082-d... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 64f1b708-b58f-4548-9082-d... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 80b62ec9-4608-44cd-b347-0... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 80b62ec9-4608-44cd-b347-0... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 88c71c9c-9c3a-4904-bddd-1... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 88c71c9c-9c3a-4904-bddd-1... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 8be4dd93-9c76-468f-9db0-1... 1 models, 1K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 8be4dd93-9c76-468f-9db0-1... 1 models, 1K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 8d533d66-c830-4b8e-8e17-8... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 8d533d66-c830-4b8e-8e17-8... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 8dc8865e-f5bf-463d-b518-b... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ 8dc8865e-f5bf-463d-b518-b... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ a8751fb4-4d32-4eae-b6ef-8... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ a8751fb4-4d32-4eae-b6ef-8... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ c6ba7f0b-4872-4df6-a5d2-3... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ c6ba7f0b-4872-4df6-a5d2-3... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ ce4e70c3-3294-46d4-928c-3... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ ce4e70c3-3294-46d4-928c-3... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ d01a7578-24be-49d9-a24c-5... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ d01a7578-24be-49d9-a24c-5... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ dd743ceb-0a64-45c6-bdc4-0... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ dd743ceb-0a64-45c6-bdc4-0... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ ded50fd8-c19a-4c9e-a701-2... 2 models, 47K tokens
+[2026-03-03T12:00:02-05:00]   ✓ ded50fd8-c19a-4c9e-a701-2... 2 models, 47K tokens
+[2026-03-03T12:00:02-05:00]   ✓ e8aa3ca1-a444-4d91-96ab-5... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ e8aa3ca1-a444-4d91-96ab-5... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ ed153538-be21-4dd3-a1f7-c... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   ✓ ed153538-be21-4dd3-a1f7-c... 1 models, 0K tokens
+[2026-03-03T12:00:02-05:00]   
+[2026-03-03T12:00:02-05:00]   
+[2026-03-03T12:00:02-05:00]   Exported: 18, Skipped: 0
+[2026-03-03T12:00:02-05:00]   Exported: 18, Skipped: 0
+[2026-03-03T12:00:03-05:00] === TTL enforcement complete: 0 killed, 26 spared, 0 errors ===
+[2026-03-03T12:00:03-05:00] === TTL enforcement complete: 0 killed, 26 spared, 0 errors ===
+[2026-03-03T14:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T14:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T14:00:01-05:00] Exporting sessions to database...
+[2026-03-03T14:00:01-05:00] Exporting sessions to database...
+[2026-03-03T14:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T14:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T14:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T14:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T14:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T14:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T14:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T14:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T14:00:02-05:00]   ✓ 081f0f42-e460-4a4e-b555-e... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 081f0f42-e460-4a4e-b555-e... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 1b871c26-ac3a-442f-beb4-5... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 1b871c26-ac3a-442f-beb4-5... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 1d52fce8-c87a-404d-bf65-5... 1 models, 2K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 1d52fce8-c87a-404d-bf65-5... 1 models, 2K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 3b691ba0-565a-4b84-958f-9... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 3b691ba0-565a-4b84-958f-9... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 42759204-9ee2-42a8-a3fe-3... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 42759204-9ee2-42a8-a3fe-3... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 56531557-2def-4bed-8cea-8... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 56531557-2def-4bed-8cea-8... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 5858a7e6-5bf0-458b-bb3b-4... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 5858a7e6-5bf0-458b-bb3b-4... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 59f1a325-c9b5-4cef-aff7-c... 1 models, 2K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 59f1a325-c9b5-4cef-aff7-c... 1 models, 2K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 5e5d61ad-b6fc-4847-83da-9... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 5e5d61ad-b6fc-4847-83da-9... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 69c4bc05-fd54-4de6-a17d-0... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 69c4bc05-fd54-4de6-a17d-0... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 770ef39d-9ced-4810-8040-e... 1 models, 1K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 770ef39d-9ced-4810-8040-e... 1 models, 1K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 796005a1-2357-4931-baa5-c... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 796005a1-2357-4931-baa5-c... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 7d7c25fc-2494-4287-b2ca-c... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 7d7c25fc-2494-4287-b2ca-c... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 8a2e9f17-983e-4432-9403-b... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 8a2e9f17-983e-4432-9403-b... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 929c20f7-85c5-4395-bc0d-4... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 929c20f7-85c5-4395-bc0d-4... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 9768970b-bdd1-459f-ab35-d... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 9768970b-bdd1-459f-ab35-d... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 9839cc7b-cf6e-42b4-a28e-d... 1 models, 2K tokens
+[2026-03-03T14:00:02-05:00]   ✓ 9839cc7b-cf6e-42b4-a28e-d... 1 models, 2K tokens
+[2026-03-03T14:00:02-05:00]   ✓ a4cbb48c-38a2-4426-ac3c-c... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ a4cbb48c-38a2-4426-ac3c-c... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ ade35976-b75a-43d4-8bdd-b... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ ade35976-b75a-43d4-8bdd-b... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ b6f323ef-68d0-41b1-8b7f-b... 1 models, 2K tokens
+[2026-03-03T14:00:02-05:00]   ✓ b6f323ef-68d0-41b1-8b7f-b... 1 models, 2K tokens
+[2026-03-03T14:00:02-05:00]   ✓ bdca8fb1-9a00-4e56-b2b5-7... 1 models, 2K tokens
+[2026-03-03T14:00:02-05:00]   ✓ bdca8fb1-9a00-4e56-b2b5-7... 1 models, 2K tokens
+[2026-03-03T14:00:02-05:00]   ✓ becb2a40-9ce9-4136-9cbd-b... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ becb2a40-9ce9-4136-9cbd-b... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ c13ffa1b-36ec-4299-9d2b-6... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ c13ffa1b-36ec-4299-9d2b-6... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ c79d9abb-327f-434b-b9de-0... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ c79d9abb-327f-434b-b9de-0... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ c7d8fecf-a6ad-4d76-8e43-5... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ c7d8fecf-a6ad-4d76-8e43-5... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ cc5ef955-27eb-45b4-a3b0-c... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ cc5ef955-27eb-45b4-a3b0-c... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ e62946ba-8738-4c54-a521-4... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ e62946ba-8738-4c54-a521-4... 1 models, 0K tokens
+[2026-03-03T14:00:02-05:00]   ✓ fbf7de52-14de-4b65-9589-3... 2 models, 39K tokens
+[2026-03-03T14:00:02-05:00]   ✓ fbf7de52-14de-4b65-9589-3... 2 models, 39K tokens
+[2026-03-03T14:00:02-05:00]   
+[2026-03-03T14:00:02-05:00]   
+[2026-03-03T14:00:02-05:00]   Exported: 28, Skipped: 0
+[2026-03-03T14:00:02-05:00]   Exported: 28, Skipped: 0
+[2026-03-03T14:00:04-05:00] === TTL enforcement complete: 0 killed, 52 spared, 0 errors ===
+[2026-03-03T14:00:04-05:00] === TTL enforcement complete: 0 killed, 52 spared, 0 errors ===
+[2026-03-03T16:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T16:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T16:00:01-05:00] Exporting sessions to database...
+[2026-03-03T16:00:01-05:00] Exporting sessions to database...
+[2026-03-03T16:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T16:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T16:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T16:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T16:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T16:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T16:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T16:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T16:00:02-05:00]   ✓ 0b388c89-f7fe-4db6-b144-5... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 0b388c89-f7fe-4db6-b144-5... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 14611ab7-f378-414f-af3f-f... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 14611ab7-f378-414f-af3f-f... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 15e7d253-5d43-4edf-b574-f... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 15e7d253-5d43-4edf-b574-f... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 242d5e4d-aa39-4652-af5a-f... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 242d5e4d-aa39-4652-af5a-f... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 25fe3bd3-7a9e-4a96-a64b-d... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 25fe3bd3-7a9e-4a96-a64b-d... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 2ecc279a-bfc9-4561-8712-0... 1 models, 2K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 2ecc279a-bfc9-4561-8712-0... 1 models, 2K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 2f8f5e0c-cdfb-4802-8125-0... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 2f8f5e0c-cdfb-4802-8125-0... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 3b78766d-ca34-4b4d-96ea-9... 1 models, 2K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 3b78766d-ca34-4b4d-96ea-9... 1 models, 2K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 45abf52d-2791-4d74-96cc-6... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 45abf52d-2791-4d74-96cc-6... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 47b6b936-fcb1-461f-9e6d-4... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 47b6b936-fcb1-461f-9e6d-4... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 4f389284-e287-41d7-b15d-b... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 4f389284-e287-41d7-b15d-b... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 54361d30-bf5c-4385-a536-9... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 54361d30-bf5c-4385-a536-9... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 58b0bade-3dac-4d39-8780-d... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 58b0bade-3dac-4d39-8780-d... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 5ac711f4-a67d-48a7-8918-8... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 5ac711f4-a67d-48a7-8918-8... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 60021689-635c-4283-b38a-f... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 60021689-635c-4283-b38a-f... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 622600cb-ad34-4d48-af56-4... 1 models, 3K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 622600cb-ad34-4d48-af56-4... 1 models, 3K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 64f40ceb-dc0f-41ce-a9eb-0... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 64f40ceb-dc0f-41ce-a9eb-0... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 6a7f361b-ce5d-49c8-8b29-1... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 6a7f361b-ce5d-49c8-8b29-1... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 71813b99-3ad3-429a-9aca-6... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 71813b99-3ad3-429a-9aca-6... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 73c6a641-2449-47ea-a5d3-8... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 73c6a641-2449-47ea-a5d3-8... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 7e5a9669-50c9-47d3-acf5-2... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 7e5a9669-50c9-47d3-acf5-2... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 80c1c783-4ff7-4830-a31c-b... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 80c1c783-4ff7-4830-a31c-b... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 80d5c3f4-cba1-4dbc-a2bc-3... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 80d5c3f4-cba1-4dbc-a2bc-3... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 817eaa9f-f430-4674-9f67-8... 1 models, 2K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 817eaa9f-f430-4674-9f67-8... 1 models, 2K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 84395026-2eda-45e2-9c2f-4... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 84395026-2eda-45e2-9c2f-4... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 8aef7ad0-b38e-4bab-b0e4-5... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 8aef7ad0-b38e-4bab-b0e4-5... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 8d76eadb-7ded-4c85-93a9-d... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 8d76eadb-7ded-4c85-93a9-d... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 903dd3ce-de47-472f-b5f0-5... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 903dd3ce-de47-472f-b5f0-5... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 925c085c-a629-481b-87f1-a... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 925c085c-a629-481b-87f1-a... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 9762306b-90e0-4a16-bbeb-4... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 9762306b-90e0-4a16-bbeb-4... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 9cfdf75d-65bf-4333-ab8b-8... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 9cfdf75d-65bf-4333-ab8b-8... 1 models, 0K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 9cfe7bdb-cfcf-49c3-b819-7... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ 9cfe7bdb-cfcf-49c3-b819-7... 1 models, 1K tokens
+[2026-03-03T16:00:02-05:00]   ✓ a04cbc0c-abd4-4296-8049-6... 1 models, 2K tokens
+[2026-03-03T16:00:02-05:00]   ✓ a04cbc0c-abd4-4296-8049-6... 1 models, 2K tokens
+[2026-03-03T16:00:03-05:00]   ✓ a53b38de-6a1a-4f1c-b2df-4... 1 models, 2K tokens
+[2026-03-03T16:00:03-05:00]   ✓ a53b38de-6a1a-4f1c-b2df-4... 1 models, 2K tokens
+[2026-03-03T16:00:03-05:00]   ✓ a7a37f34-0709-4ec7-8adb-c... 1 models, 0K tokens
+[2026-03-03T16:00:03-05:00]   ✓ a7a37f34-0709-4ec7-8adb-c... 1 models, 0K tokens
+[2026-03-03T16:00:03-05:00]   ✓ a94c034c-a256-4b4f-ab8e-9... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ a94c034c-a256-4b4f-ab8e-9... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ b4965de1-c638-4494-9be9-5... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ b4965de1-c638-4494-9be9-5... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ b687af61-e3d9-43d7-b343-f... 1 models, 0K tokens
+[2026-03-03T16:00:03-05:00]   ✓ b687af61-e3d9-43d7-b343-f... 1 models, 0K tokens
+[2026-03-03T16:00:03-05:00]   ✓ cc7e9b39-e925-42d2-b749-7... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ cc7e9b39-e925-42d2-b749-7... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ d40e9953-1699-4ec7-9a3f-f... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ d40e9953-1699-4ec7-9a3f-f... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ d7e23e6c-7add-4c3f-a5ae-2... 1 models, 0K tokens
+[2026-03-03T16:00:03-05:00]   ✓ d7e23e6c-7add-4c3f-a5ae-2... 1 models, 0K tokens
+[2026-03-03T16:00:03-05:00]   ✓ d7ecf809-99e9-4a44-b8f8-7... 1 models, 0K tokens
+[2026-03-03T16:00:03-05:00]   ✓ d7ecf809-99e9-4a44-b8f8-7... 1 models, 0K tokens
+[2026-03-03T16:00:03-05:00]   ✓ da29daed-d04e-4cb6-8aea-9... 1 models, 2K tokens
+[2026-03-03T16:00:03-05:00]   ✓ da29daed-d04e-4cb6-8aea-9... 1 models, 2K tokens
+[2026-03-03T16:00:03-05:00]   ✓ da347173-8df5-4ef8-bb24-3... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ da347173-8df5-4ef8-bb24-3... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ daed0d93-f740-4491-972d-3... 1 models, 0K tokens
+[2026-03-03T16:00:03-05:00]   ✓ daed0d93-f740-4491-972d-3... 1 models, 0K tokens
+[2026-03-03T16:00:03-05:00]   ✓ edf21d56-20bc-44ef-b23c-9... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ edf21d56-20bc-44ef-b23c-9... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ effe2868-8fca-47f5-9320-1... 1 models, 0K tokens
+[2026-03-03T16:00:03-05:00]   ✓ effe2868-8fca-47f5-9320-1... 1 models, 0K tokens
+[2026-03-03T16:00:03-05:00]   ✓ f43070d8-911c-494c-8305-4... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ f43070d8-911c-494c-8305-4... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ f9632ffb-ee3c-4763-adb0-9... 1 models, 0K tokens
+[2026-03-03T16:00:03-05:00]   ✓ f9632ffb-ee3c-4763-adb0-9... 1 models, 0K tokens
+[2026-03-03T16:00:03-05:00]   ✓ f996db00-c8bc-426c-9c4c-3... 1 models, 3K tokens
+[2026-03-03T16:00:03-05:00]   ✓ f996db00-c8bc-426c-9c4c-3... 1 models, 3K tokens
+[2026-03-03T16:00:03-05:00]   ✓ fa331fa0-c164-46f9-87e3-0... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   ✓ fa331fa0-c164-46f9-87e3-0... 1 models, 1K tokens
+[2026-03-03T16:00:03-05:00]   
+[2026-03-03T16:00:03-05:00]   
+[2026-03-03T16:00:03-05:00]   Exported: 51, Skipped: 0
+[2026-03-03T16:00:03-05:00]   Exported: 51, Skipped: 0
+[2026-03-03T16:00:05-05:00] === TTL enforcement complete: 0 killed, 103 spared, 0 errors ===
+[2026-03-03T16:00:05-05:00] === TTL enforcement complete: 0 killed, 103 spared, 0 errors ===
+[2026-03-03T18:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T18:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T18:00:01-05:00] Exporting sessions to database...
+[2026-03-03T18:00:01-05:00] Exporting sessions to database...
+[2026-03-03T18:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T18:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T18:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T18:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T18:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T18:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T18:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T18:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T18:00:02-05:00]   ✓ 045e0eb4-17f1-4ad7-8902-9... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 045e0eb4-17f1-4ad7-8902-9... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 1246e6b3-30d7-4dc5-90cc-f... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 1246e6b3-30d7-4dc5-90cc-f... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 1a5dacd3-d2be-4557-a64d-f... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 1a5dacd3-d2be-4557-a64d-f... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 2189115d-42da-44b5-ad35-4... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 2189115d-42da-44b5-ad35-4... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 2d31c340-56df-4a5d-9ed9-f... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 2d31c340-56df-4a5d-9ed9-f... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 304cecae-69a6-400c-836a-d... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 304cecae-69a6-400c-836a-d... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 30bd5c46-6f1f-4782-b321-2... 1 models, 2K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 30bd5c46-6f1f-4782-b321-2... 1 models, 2K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 326e8a8e-4c1e-4690-8b22-2... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 326e8a8e-4c1e-4690-8b22-2... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 32b9a27a-af04-489c-8cac-2... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 32b9a27a-af04-489c-8cac-2... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 43638599-4612-44e9-9e0d-5... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 43638599-4612-44e9-9e0d-5... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 4505091a-978d-4daa-94cb-4... 1 models, 2K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 4505091a-978d-4daa-94cb-4... 1 models, 2K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 4507167a-e27c-4bf5-80e4-c... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 4507167a-e27c-4bf5-80e4-c... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 49bac965-372c-43bb-a9fd-a... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 49bac965-372c-43bb-a9fd-a... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 4a9b886d-5cfe-45e2-9a4d-8... 1 models, 2K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 4a9b886d-5cfe-45e2-9a4d-8... 1 models, 2K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 4bf45aac-4a30-4275-80db-9... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 4bf45aac-4a30-4275-80db-9... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 544ab802-e8ee-4577-b5db-0... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 544ab802-e8ee-4577-b5db-0... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 5632f72b-4441-4b8f-a32c-1... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 5632f72b-4441-4b8f-a32c-1... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 592ace30-b3a7-4a63-a247-7... 1 models, 2K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 592ace30-b3a7-4a63-a247-7... 1 models, 2K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 8bfed1ef-9c67-489c-b5a5-a... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 8bfed1ef-9c67-489c-b5a5-a... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 912951d8-aa28-47ad-8adc-8... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ 912951d8-aa28-47ad-8adc-8... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ b0059449-4042-472f-a51e-9... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ b0059449-4042-472f-a51e-9... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ bd5cd850-4559-4996-bead-3... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ bd5cd850-4559-4996-bead-3... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ c24b847a-655e-4a4c-8f03-2... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ c24b847a-655e-4a4c-8f03-2... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ ca0b658f-4920-426d-b6d3-0... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ ca0b658f-4920-426d-b6d3-0... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ cea7d0fc-054a-47f9-bd06-b... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ cea7d0fc-054a-47f9-bd06-b... 1 models, 1K tokens
+[2026-03-03T18:00:02-05:00]   ✓ dc4123f4-4b97-42b5-a30e-6... 1 models, 3K tokens
+[2026-03-03T18:00:02-05:00]   ✓ dc4123f4-4b97-42b5-a30e-6... 1 models, 3K tokens
+[2026-03-03T18:00:02-05:00]   ✓ dd7d0def-c989-4376-9de3-9... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ dd7d0def-c989-4376-9de3-9... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ dd9cac52-49e1-494f-8b5d-7... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ dd9cac52-49e1-494f-8b5d-7... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ e43a0f32-2c1a-4606-818f-a... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ e43a0f32-2c1a-4606-818f-a... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ efde8e2f-3d9b-4a96-a1f9-b... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ efde8e2f-3d9b-4a96-a1f9-b... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ f5442002-a57c-4432-8da6-6... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ f5442002-a57c-4432-8da6-6... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ fc5b2300-e935-420e-868a-7... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   ✓ fc5b2300-e935-420e-868a-7... 1 models, 0K tokens
+[2026-03-03T18:00:02-05:00]   
+[2026-03-03T18:00:02-05:00]   
+[2026-03-03T18:00:02-05:00]   Exported: 32, Skipped: 0
+[2026-03-03T18:00:02-05:00]   Exported: 32, Skipped: 0
+[2026-03-03T18:00:04-05:00] === TTL enforcement complete: 0 killed, 135 spared, 0 errors ===
+[2026-03-03T18:00:04-05:00] === TTL enforcement complete: 0 killed, 135 spared, 0 errors ===
+[2026-03-03T20:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T20:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T20:00:01-05:00] Exporting sessions to database...
+[2026-03-03T20:00:01-05:00] Exporting sessions to database...
+[2026-03-03T20:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T20:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T20:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T20:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T20:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T20:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T20:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T20:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T20:00:02-05:00]   ✓ 004ae4f4-a777-4aef-9f40-d... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 004ae4f4-a777-4aef-9f40-d... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 117e7d87-b2f6-463b-ac57-4... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 117e7d87-b2f6-463b-ac57-4... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 39dd305b-e90f-422a-b43b-b... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 39dd305b-e90f-422a-b43b-b... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 3c7d88a0-c437-44b7-9197-8... 1 models, 2K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 3c7d88a0-c437-44b7-9197-8... 1 models, 2K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 46e891f5-b014-47b6-9cca-4... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 46e891f5-b014-47b6-9cca-4... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 56eb5379-2a64-46a0-88c2-6... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 56eb5379-2a64-46a0-88c2-6... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 646b3353-ffda-4b42-82aa-2... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 646b3353-ffda-4b42-82aa-2... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 841b28aa-cf78-4d62-870a-6... 2 models, 14K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 841b28aa-cf78-4d62-870a-6... 2 models, 14K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 9912bcb8-211e-46d8-a74d-4... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ 9912bcb8-211e-46d8-a74d-4... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ a105d108-9555-4bf4-87eb-f... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ a105d108-9555-4bf4-87eb-f... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ be7f49cf-91ed-4228-8482-7... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ be7f49cf-91ed-4228-8482-7... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ c347d314-ab77-43f9-9604-0... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ c347d314-ab77-43f9-9604-0... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ c5f1f53b-7d3a-423b-8014-1... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ c5f1f53b-7d3a-423b-8014-1... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ cf482f46-8751-4b15-97ff-0... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ cf482f46-8751-4b15-97ff-0... 1 models, 0K tokens
+[2026-03-03T20:00:02-05:00]   ✓ fe9834c2-1b56-4fbf-a61e-d... 1 models, 1K tokens
+[2026-03-03T20:00:02-05:00]   ✓ fe9834c2-1b56-4fbf-a61e-d... 1 models, 1K tokens
+[2026-03-03T20:00:02-05:00]   
+[2026-03-03T20:00:02-05:00]   
+[2026-03-03T20:00:02-05:00]   Exported: 15, Skipped: 0
+[2026-03-03T20:00:02-05:00]   Exported: 15, Skipped: 0
+[2026-03-03T20:00:04-05:00] === TTL enforcement complete: 0 killed, 149 spared, 0 errors ===
+[2026-03-03T20:00:04-05:00] === TTL enforcement complete: 0 killed, 149 spared, 0 errors ===
+[2026-03-03T22:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T22:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-03T22:00:01-05:00] Exporting sessions to database...
+[2026-03-03T22:00:01-05:00] Exporting sessions to database...
+[2026-03-03T22:00:02-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T22:00:02-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-03T22:00:02-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T22:00:02-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-03T22:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T22:00:02-05:00]   Exporting token sessions for 2026-03-03
+[2026-03-03T22:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T22:00:02-05:00]   (marking as TTL kill)
+[2026-03-03T22:00:02-05:00]   ✓ 0b4f77c7-4736-4cee-b5cc-4... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 0b4f77c7-4736-4cee-b5cc-4... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 2e687b5a-3645-4bc8-9a2d-d... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 2e687b5a-3645-4bc8-9a2d-d... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 53ef288b-7f98-4f9d-baf5-a... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 53ef288b-7f98-4f9d-baf5-a... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 5771c730-e804-47a4-92f9-9... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 5771c730-e804-47a4-92f9-9... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 5c8666e4-fee2-4073-8ab9-b... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 5c8666e4-fee2-4073-8ab9-b... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 5d951933-1e28-45d7-81f7-6... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 5d951933-1e28-45d7-81f7-6... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 6b7d3c0c-8fac-4314-8430-f... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 6b7d3c0c-8fac-4314-8430-f... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 9069325f-be8f-4590-a923-a... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ 9069325f-be8f-4590-a923-a... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ a457ab81-fffc-45e8-8403-1... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ a457ab81-fffc-45e8-8403-1... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ bb29fa87-ff7c-4a48-98bd-9... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ bb29fa87-ff7c-4a48-98bd-9... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ d43efdc1-bf01-42d6-8966-6... 1 models, 1K tokens
+[2026-03-03T22:00:02-05:00]   ✓ d43efdc1-bf01-42d6-8966-6... 1 models, 1K tokens
+[2026-03-03T22:00:02-05:00]   ✓ e295e96e-7255-4384-9f95-6... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ e295e96e-7255-4384-9f95-6... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ eae3d515-1c20-4c51-8068-6... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ eae3d515-1c20-4c51-8068-6... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ f4990e9f-472c-4567-bbb5-e... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   ✓ f4990e9f-472c-4567-bbb5-e... 1 models, 0K tokens
+[2026-03-03T22:00:02-05:00]   
+[2026-03-03T22:00:02-05:00]   
+[2026-03-03T22:00:02-05:00]   Exported: 14, Skipped: 0
+[2026-03-03T22:00:02-05:00]   Exported: 14, Skipped: 0
+[2026-03-03T22:00:04-05:00] === TTL enforcement complete: 0 killed, 163 spared, 0 errors ===
+[2026-03-03T22:00:04-05:00] === TTL enforcement complete: 0 killed, 163 spared, 0 errors ===
+[2026-03-04T00:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-04T00:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-04T00:00:01-05:00] Exporting sessions to database...
+[2026-03-04T00:00:01-05:00] Exporting sessions to database...
+[2026-03-04T00:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-04T00:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-04T00:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-04T00:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-04T00:00:02-05:00]   Exporting token sessions for 2026-03-04
+[2026-03-04T00:00:02-05:00]   Exporting token sessions for 2026-03-04
+[2026-03-04T00:00:02-05:00]   (marking as TTL kill)
+[2026-03-04T00:00:02-05:00]   (marking as TTL kill)
+[2026-03-04T00:00:02-05:00]   ✓ 004ae4f4-a777-4aef-9f40-d... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 004ae4f4-a777-4aef-9f40-d... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 0095ca36-8b10-48f3-ae66-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 0095ca36-8b10-48f3-ae66-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 045e0eb4-17f1-4ad7-8902-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 045e0eb4-17f1-4ad7-8902-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 0686c6a5-fa76-4912-9782-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 0686c6a5-fa76-4912-9782-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 081f0f42-e460-4a4e-b555-e... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 081f0f42-e460-4a4e-b555-e... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 0b388c89-f7fe-4db6-b144-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 0b388c89-f7fe-4db6-b144-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 0b4f77c7-4736-4cee-b5cc-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 0b4f77c7-4736-4cee-b5cc-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 117e7d87-b2f6-463b-ac57-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 117e7d87-b2f6-463b-ac57-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 1246e6b3-30d7-4dc5-90cc-f... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 1246e6b3-30d7-4dc5-90cc-f... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 14611ab7-f378-414f-af3f-f... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 14611ab7-f378-414f-af3f-f... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 15e7d253-5d43-4edf-b574-f... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 15e7d253-5d43-4edf-b574-f... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 1795cc3e-f584-45dd-ba30-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 1795cc3e-f584-45dd-ba30-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 19cc8eed-7759-48d6-b0e1-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 19cc8eed-7759-48d6-b0e1-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 1a307629-f733-4f79-9d94-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 1a307629-f733-4f79-9d94-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 1a5dacd3-d2be-4557-a64d-f... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 1a5dacd3-d2be-4557-a64d-f... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 1b871c26-ac3a-442f-beb4-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 1b871c26-ac3a-442f-beb4-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 1d52fce8-c87a-404d-bf65-5... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 1d52fce8-c87a-404d-bf65-5... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 1d5d9541-0fd1-4219-b16d-2... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 1d5d9541-0fd1-4219-b16d-2... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 2189115d-42da-44b5-ad35-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 2189115d-42da-44b5-ad35-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 242d5e4d-aa39-4652-af5a-f... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 242d5e4d-aa39-4652-af5a-f... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 25fe3bd3-7a9e-4a96-a64b-d... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 25fe3bd3-7a9e-4a96-a64b-d... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 2841bb32-2c1d-470f-a37e-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 2841bb32-2c1d-470f-a37e-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 2d31c340-56df-4a5d-9ed9-f... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 2d31c340-56df-4a5d-9ed9-f... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 2e687b5a-3645-4bc8-9a2d-d... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 2e687b5a-3645-4bc8-9a2d-d... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 2ecc279a-bfc9-4561-8712-0... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 2ecc279a-bfc9-4561-8712-0... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 2f8f5e0c-cdfb-4802-8125-0... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 2f8f5e0c-cdfb-4802-8125-0... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 304cecae-69a6-400c-836a-d... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 304cecae-69a6-400c-836a-d... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 30bd5c46-6f1f-4782-b321-2... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 30bd5c46-6f1f-4782-b321-2... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 320233f4-91a9-4ebe-a6fa-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 320233f4-91a9-4ebe-a6fa-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 326e8a8e-4c1e-4690-8b22-2... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 326e8a8e-4c1e-4690-8b22-2... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 32b9a27a-af04-489c-8cac-2... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 32b9a27a-af04-489c-8cac-2... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 3319106a-02cd-4180-9924-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 3319106a-02cd-4180-9924-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 39dd305b-e90f-422a-b43b-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 39dd305b-e90f-422a-b43b-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 3b691ba0-565a-4b84-958f-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 3b691ba0-565a-4b84-958f-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 3b78766d-ca34-4b4d-96ea-9... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 3b78766d-ca34-4b4d-96ea-9... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 3c7d88a0-c437-44b7-9197-8... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 3c7d88a0-c437-44b7-9197-8... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 42759204-9ee2-42a8-a3fe-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 42759204-9ee2-42a8-a3fe-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 43638599-4612-44e9-9e0d-5... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 43638599-4612-44e9-9e0d-5... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 4505091a-978d-4daa-94cb-4... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 4505091a-978d-4daa-94cb-4... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 4507167a-e27c-4bf5-80e4-c... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 4507167a-e27c-4bf5-80e4-c... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 45abf52d-2791-4d74-96cc-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 45abf52d-2791-4d74-96cc-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 46e891f5-b014-47b6-9cca-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 46e891f5-b014-47b6-9cca-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 47b6b936-fcb1-461f-9e6d-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 47b6b936-fcb1-461f-9e6d-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 49bac965-372c-43bb-a9fd-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 49bac965-372c-43bb-a9fd-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 4a7e1e02-0791-4db2-8e7e-c... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 4a7e1e02-0791-4db2-8e7e-c... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 4a9b886d-5cfe-45e2-9a4d-8... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 4a9b886d-5cfe-45e2-9a4d-8... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 4bf45aac-4a30-4275-80db-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 4bf45aac-4a30-4275-80db-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 4f389284-e287-41d7-b15d-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 4f389284-e287-41d7-b15d-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5381b3ab-0432-464e-9585-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5381b3ab-0432-464e-9585-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 53ef288b-7f98-4f9d-baf5-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 53ef288b-7f98-4f9d-baf5-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 54361d30-bf5c-4385-a536-9... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 54361d30-bf5c-4385-a536-9... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 544ab802-e8ee-4577-b5db-0... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 544ab802-e8ee-4577-b5db-0... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 547fa141-cb32-46b5-abd8-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 547fa141-cb32-46b5-abd8-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5632f72b-4441-4b8f-a32c-1... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5632f72b-4441-4b8f-a32c-1... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 56531557-2def-4bed-8cea-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 56531557-2def-4bed-8cea-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 56eb5379-2a64-46a0-88c2-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 56eb5379-2a64-46a0-88c2-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5771c730-e804-47a4-92f9-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5771c730-e804-47a4-92f9-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5858a7e6-5bf0-458b-bb3b-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5858a7e6-5bf0-458b-bb3b-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 58b0bade-3dac-4d39-8780-d... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 58b0bade-3dac-4d39-8780-d... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 592ace30-b3a7-4a63-a247-7... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 592ace30-b3a7-4a63-a247-7... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 59f1a325-c9b5-4cef-aff7-c... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 59f1a325-c9b5-4cef-aff7-c... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5ac711f4-a67d-48a7-8918-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5ac711f4-a67d-48a7-8918-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5c8666e4-fee2-4073-8ab9-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5c8666e4-fee2-4073-8ab9-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5d951933-1e28-45d7-81f7-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5d951933-1e28-45d7-81f7-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5e5d61ad-b6fc-4847-83da-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 5e5d61ad-b6fc-4847-83da-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 60021689-635c-4283-b38a-f... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 60021689-635c-4283-b38a-f... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 622600cb-ad34-4d48-af56-4... 1 models, 3K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 622600cb-ad34-4d48-af56-4... 1 models, 3K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 646b3353-ffda-4b42-82aa-2... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 646b3353-ffda-4b42-82aa-2... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 64f1b708-b58f-4548-9082-d... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 64f1b708-b58f-4548-9082-d... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 64f40ceb-dc0f-41ce-a9eb-0... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 64f40ceb-dc0f-41ce-a9eb-0... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 6833ef85-d30f-4236-b933-e... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 6833ef85-d30f-4236-b933-e... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 69c4bc05-fd54-4de6-a17d-0... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 69c4bc05-fd54-4de6-a17d-0... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 6a7f361b-ce5d-49c8-8b29-1... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 6a7f361b-ce5d-49c8-8b29-1... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 6b7d3c0c-8fac-4314-8430-f... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 6b7d3c0c-8fac-4314-8430-f... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 6e8f8010-077a-4362-b93f-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 6e8f8010-077a-4362-b93f-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 71813b99-3ad3-429a-9aca-6... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 71813b99-3ad3-429a-9aca-6... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 73c6a641-2449-47ea-a5d3-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 73c6a641-2449-47ea-a5d3-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 770ef39d-9ced-4810-8040-e... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 770ef39d-9ced-4810-8040-e... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 796005a1-2357-4931-baa5-c... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 796005a1-2357-4931-baa5-c... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 7d7c25fc-2494-4287-b2ca-c... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 7d7c25fc-2494-4287-b2ca-c... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 7e5a9669-50c9-47d3-acf5-2... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 7e5a9669-50c9-47d3-acf5-2... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 80b62ec9-4608-44cd-b347-0... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 80b62ec9-4608-44cd-b347-0... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 80c1c783-4ff7-4830-a31c-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 80c1c783-4ff7-4830-a31c-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 80d5c3f4-cba1-4dbc-a2bc-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 80d5c3f4-cba1-4dbc-a2bc-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 817eaa9f-f430-4674-9f67-8... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 817eaa9f-f430-4674-9f67-8... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 841b28aa-cf78-4d62-870a-6... 2 models, 31K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 841b28aa-cf78-4d62-870a-6... 2 models, 31K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 84395026-2eda-45e2-9c2f-4... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 84395026-2eda-45e2-9c2f-4... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 8840b19c-d5b1-4839-bae6-7... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 8840b19c-d5b1-4839-bae6-7... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 88c71c9c-9c3a-4904-bddd-1... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 88c71c9c-9c3a-4904-bddd-1... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 8a2e9f17-983e-4432-9403-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 8a2e9f17-983e-4432-9403-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 8aef7ad0-b38e-4bab-b0e4-5... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 8aef7ad0-b38e-4bab-b0e4-5... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 8bfed1ef-9c67-489c-b5a5-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 8bfed1ef-9c67-489c-b5a5-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 8d533d66-c830-4b8e-8e17-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 8d533d66-c830-4b8e-8e17-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 8d76eadb-7ded-4c85-93a9-d... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 8d76eadb-7ded-4c85-93a9-d... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 8dc8865e-f5bf-463d-b518-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 8dc8865e-f5bf-463d-b518-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 903dd3ce-de47-472f-b5f0-5... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 903dd3ce-de47-472f-b5f0-5... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 9069325f-be8f-4590-a923-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 9069325f-be8f-4590-a923-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 912951d8-aa28-47ad-8adc-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 912951d8-aa28-47ad-8adc-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 925c085c-a629-481b-87f1-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 925c085c-a629-481b-87f1-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 929c20f7-85c5-4395-bc0d-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 929c20f7-85c5-4395-bc0d-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 9762306b-90e0-4a16-bbeb-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 9762306b-90e0-4a16-bbeb-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 9768970b-bdd1-459f-ab35-d... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 9768970b-bdd1-459f-ab35-d... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 9839cc7b-cf6e-42b4-a28e-d... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 9839cc7b-cf6e-42b4-a28e-d... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 9912bcb8-211e-46d8-a74d-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 9912bcb8-211e-46d8-a74d-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 9cfdf75d-65bf-4333-ab8b-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 9cfdf75d-65bf-4333-ab8b-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 9cfe7bdb-cfcf-49c3-b819-7... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ 9cfe7bdb-cfcf-49c3-b819-7... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a04cbc0c-abd4-4296-8049-6... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a04cbc0c-abd4-4296-8049-6... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a105d108-9555-4bf4-87eb-f... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a105d108-9555-4bf4-87eb-f... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a457ab81-fffc-45e8-8403-1... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a457ab81-fffc-45e8-8403-1... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a4cbb48c-38a2-4426-ac3c-c... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a4cbb48c-38a2-4426-ac3c-c... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a53b38de-6a1a-4f1c-b2df-4... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a53b38de-6a1a-4f1c-b2df-4... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a7a37f34-0709-4ec7-8adb-c... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a7a37f34-0709-4ec7-8adb-c... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a8751fb4-4d32-4eae-b6ef-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a8751fb4-4d32-4eae-b6ef-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a94c034c-a256-4b4f-ab8e-9... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ a94c034c-a256-4b4f-ab8e-9... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ ade35976-b75a-43d4-8bdd-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ ade35976-b75a-43d4-8bdd-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ b0059449-4042-472f-a51e-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ b0059449-4042-472f-a51e-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ b11ce7c3-004e-4311-9297-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ b11ce7c3-004e-4311-9297-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ b4965de1-c638-4494-9be9-5... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ b4965de1-c638-4494-9be9-5... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ b687af61-e3d9-43d7-b343-f... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ b687af61-e3d9-43d7-b343-f... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ b6f323ef-68d0-41b1-8b7f-b... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ b6f323ef-68d0-41b1-8b7f-b... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ b9857311-288e-4afa-91ae-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ b9857311-288e-4afa-91ae-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ bab98d36-68a3-489a-8438-e... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ bab98d36-68a3-489a-8438-e... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ bb29fa87-ff7c-4a48-98bd-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ bb29fa87-ff7c-4a48-98bd-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ bd5cd850-4559-4996-bead-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ bd5cd850-4559-4996-bead-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ bdca8fb1-9a00-4e56-b2b5-7... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ bdca8fb1-9a00-4e56-b2b5-7... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ bdee4850-7ae1-48a3-862c-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ bdee4850-7ae1-48a3-862c-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ be7f49cf-91ed-4228-8482-7... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ be7f49cf-91ed-4228-8482-7... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ becb2a40-9ce9-4136-9cbd-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ becb2a40-9ce9-4136-9cbd-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ c13ffa1b-36ec-4299-9d2b-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ c13ffa1b-36ec-4299-9d2b-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ c24b847a-655e-4a4c-8f03-2... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ c24b847a-655e-4a4c-8f03-2... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ c347d314-ab77-43f9-9604-0... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ c347d314-ab77-43f9-9604-0... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ c5f1f53b-7d3a-423b-8014-1... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ c5f1f53b-7d3a-423b-8014-1... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ c6ba7f0b-4872-4df6-a5d2-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ c6ba7f0b-4872-4df6-a5d2-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ c79d9abb-327f-434b-b9de-0... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ c79d9abb-327f-434b-b9de-0... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ c7d8fecf-a6ad-4d76-8e43-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ c7d8fecf-a6ad-4d76-8e43-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ ca0b658f-4920-426d-b6d3-0... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ ca0b658f-4920-426d-b6d3-0... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ cc5ef955-27eb-45b4-a3b0-c... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ cc5ef955-27eb-45b4-a3b0-c... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ cc7e9b39-e925-42d2-b749-7... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ cc7e9b39-e925-42d2-b749-7... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ ce4e70c3-3294-46d4-928c-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ ce4e70c3-3294-46d4-928c-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ cea7d0fc-054a-47f9-bd06-b... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ cea7d0fc-054a-47f9-bd06-b... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ cf482f46-8751-4b15-97ff-0... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ cf482f46-8751-4b15-97ff-0... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ d01a7578-24be-49d9-a24c-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ d01a7578-24be-49d9-a24c-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ d40e9953-1699-4ec7-9a3f-f... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ d40e9953-1699-4ec7-9a3f-f... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ d43efdc1-bf01-42d6-8966-6... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ d43efdc1-bf01-42d6-8966-6... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ d6074599-797d-43e7-a7b6-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ d6074599-797d-43e7-a7b6-8... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ d7e23e6c-7add-4c3f-a5ae-2... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ d7e23e6c-7add-4c3f-a5ae-2... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ d7ecf809-99e9-4a44-b8f8-7... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ d7ecf809-99e9-4a44-b8f8-7... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ da29daed-d04e-4cb6-8aea-9... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ da29daed-d04e-4cb6-8aea-9... 1 models, 2K tokens
+[2026-03-04T00:00:02-05:00]   ✓ da347173-8df5-4ef8-bb24-3... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ da347173-8df5-4ef8-bb24-3... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ daed0d93-f740-4491-972d-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ daed0d93-f740-4491-972d-3... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ dc4123f4-4b97-42b5-a30e-6... 1 models, 3K tokens
+[2026-03-04T00:00:02-05:00]   ✓ dc4123f4-4b97-42b5-a30e-6... 1 models, 3K tokens
+[2026-03-04T00:00:02-05:00]   ✓ dd743ceb-0a64-45c6-bdc4-0... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ dd743ceb-0a64-45c6-bdc4-0... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ dd7d0def-c989-4376-9de3-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ dd7d0def-c989-4376-9de3-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ dd9cac52-49e1-494f-8b5d-7... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ dd9cac52-49e1-494f-8b5d-7... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ e295e96e-7255-4384-9f95-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ e295e96e-7255-4384-9f95-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ e3212104-6c1c-46da-98c2-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ e3212104-6c1c-46da-98c2-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ e43a0f32-2c1a-4606-818f-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ e43a0f32-2c1a-4606-818f-a... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ e62946ba-8738-4c54-a521-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ e62946ba-8738-4c54-a521-4... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ e8aa3ca1-a444-4d91-96ab-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ e8aa3ca1-a444-4d91-96ab-5... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ ea44a87b-3c50-4781-a682-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ ea44a87b-3c50-4781-a682-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ eae3d515-1c20-4c51-8068-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ eae3d515-1c20-4c51-8068-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ ed153538-be21-4dd3-a1f7-c... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ ed153538-be21-4dd3-a1f7-c... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ edf21d56-20bc-44ef-b23c-9... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ edf21d56-20bc-44ef-b23c-9... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ ef177f86-c4de-41e7-aeeb-3... 1 models, 674K tokens
+[2026-03-04T00:00:02-05:00]   ✓ ef177f86-c4de-41e7-aeeb-3... 1 models, 674K tokens
+[2026-03-04T00:00:02-05:00]   ✓ efde8e2f-3d9b-4a96-a1f9-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ efde8e2f-3d9b-4a96-a1f9-b... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ effe2868-8fca-47f5-9320-1... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ effe2868-8fca-47f5-9320-1... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ f43070d8-911c-494c-8305-4... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ f43070d8-911c-494c-8305-4... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ f4990e9f-472c-4567-bbb5-e... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ f4990e9f-472c-4567-bbb5-e... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ f5442002-a57c-4432-8da6-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ f5442002-a57c-4432-8da6-6... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ f9632ffb-ee3c-4763-adb0-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ f9632ffb-ee3c-4763-adb0-9... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ f996db00-c8bc-426c-9c4c-3... 1 models, 3K tokens
+[2026-03-04T00:00:02-05:00]   ✓ f996db00-c8bc-426c-9c4c-3... 1 models, 3K tokens
+[2026-03-04T00:00:02-05:00]   ✓ fa331fa0-c164-46f9-87e3-0... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ fa331fa0-c164-46f9-87e3-0... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ fc5b2300-e935-420e-868a-7... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ fc5b2300-e935-420e-868a-7... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ fd3d6239-9a26-471c-bee4-2... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ fd3d6239-9a26-471c-bee4-2... 1 models, 0K tokens
+[2026-03-04T00:00:02-05:00]   ✓ fe9834c2-1b56-4fbf-a61e-d... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   ✓ fe9834c2-1b56-4fbf-a61e-d... 1 models, 1K tokens
+[2026-03-04T00:00:02-05:00]   
+[2026-03-04T00:00:02-05:00]   
+[2026-03-04T00:00:02-05:00]   Exported: 175, Skipped: 0
+[2026-03-04T00:00:02-05:00]   Exported: 175, Skipped: 0
+[2026-03-04T00:00:04-05:00] === TTL enforcement complete: 0 killed, 175 spared, 0 errors ===
+[2026-03-04T00:00:04-05:00] === TTL enforcement complete: 0 killed, 175 spared, 0 errors ===
+[2026-03-04T02:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-04T02:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-04T02:00:01-05:00] Exporting sessions to database...
+[2026-03-04T02:00:01-05:00] Exporting sessions to database...
+[2026-03-04T02:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-04T02:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-04T02:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-04T02:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-04T02:00:01-05:00]   Exporting token sessions for 2026-03-04
+[2026-03-04T02:00:01-05:00]   Exporting token sessions for 2026-03-04
+[2026-03-04T02:00:01-05:00]   (marking as TTL kill)
+[2026-03-04T02:00:01-05:00]   (marking as TTL kill)
+[2026-03-04T02:00:01-05:00]   
+[2026-03-04T02:00:01-05:00]   
+[2026-03-04T02:00:01-05:00]   Exported: 0, Skipped: 0
+[2026-03-04T02:00:01-05:00]   Exported: 0, Skipped: 0
+[2026-03-04T02:00:03-05:00] === TTL enforcement complete: 0 killed, 175 spared, 0 errors ===
+[2026-03-04T02:00:03-05:00] === TTL enforcement complete: 0 killed, 175 spared, 0 errors ===
+[2026-03-04T04:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-04T04:00:01-05:00] === Session TTL enforcement starting (threshold: 6h) ===
+[2026-03-04T04:00:01-05:00] Exporting sessions to database...
+[2026-03-04T04:00:01-05:00] Exporting sessions to database...
+[2026-03-04T04:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-04T04:00:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-04T04:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-04T04:00:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-04T04:00:02-05:00]   Exporting token sessions for 2026-03-04
+[2026-03-04T04:00:02-05:00]   Exporting token sessions for 2026-03-04
+[2026-03-04T04:00:02-05:00]   (marking as TTL kill)
+[2026-03-04T04:00:02-05:00]   (marking as TTL kill)
+[2026-03-04T04:00:02-05:00]   
+[2026-03-04T04:00:02-05:00]   
+[2026-03-04T04:00:02-05:00]   Exported: 0, Skipped: 0
+[2026-03-04T04:00:02-05:00]   Exported: 0, Skipped: 0
+[2026-03-04T04:00:04-05:00] === TTL enforcement complete: 0 killed, 176 spared, 0 errors ===
+[2026-03-04T04:00:04-05:00] === TTL enforcement complete: 0 killed, 176 spared, 0 errors ===

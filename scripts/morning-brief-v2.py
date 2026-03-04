@@ -21,6 +21,10 @@ import hmac
 import hashlib
 import base64
 
+# Import session helper
+sys.path.insert(0, str(Path(__file__).parent))
+from openclaw_session_helper import get_session_id_for_channel, send_via_agent
+
 # ─── Config ──────────────────────────────────────────────────
 TEMPLATE = Path.home() / "clawd" / "templates" / "morning-brief-v2.html"
 OUTPUT = Path("/tmp/morning-brief-v2.html")
@@ -654,12 +658,22 @@ def post_discord_summary():
 
     summary = "\n".join(lines)
 
-    # Use openclaw message send
-    result = run_cmd(
-        f"openclaw message send --channel discord -t 1466532593754312899 -m '{summary.replace(chr(39), chr(39)+chr(92)+chr(39)+chr(39))}'",
-        timeout=15
-    )
-    if result is not None:
+    # Use session helper to reuse existing session
+    channel_id = "1466532593754312899"
+    session_id = get_session_id_for_channel(channel_id)
+    if session_id:
+        log(f"Using existing session {session_id} for Discord post")
+        success = send_via_agent(session_id, summary, channel="discord", target=channel_id)
+    else:
+        log("No existing session found, creating new one")
+        # Fallback to message send (creates new session)
+        result = run_cmd(
+            f"openclaw message send --channel discord -t {channel_id} -m '{summary.replace(chr(39), chr(39)+chr(92)+chr(39)+chr(39))}'",
+            timeout=15
+        )
+        success = result is not None
+
+    if success:
         log("✅ Discord posted")
     else:
         # Fallback: just print it

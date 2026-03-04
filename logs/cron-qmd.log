@@ -3366,3 +3366,811 @@ Chunks embedded: 0
 Errors: 2
   - qmd update failed
   - qmd embed failed
+=== qmd Index Refresh ===
+Started at: 2026-03-04 04:00:01
+
+Ensuring swap is active...
+Killing stale qmd processes...
+Running qmd update...
+Updating 36 collection(s)...
+
+[1/36] clawd (**/*.md)
+Collection: /home/ubuntu/clawd (**/*.md)
+
+Indexed: 10 new, 4 updated, 591 unchanged, 0 removed
+Cleaned up 4 orphaned content hash(es)
+
+[2/36] clawdbot-docs (**/*.md)
+Collection: /home/ubuntu/clawd/docs (**/*.md)
+
+Indexed: 0 new, 0 updated, 22 unchanged, 0 removed
+
+[3/36] memory-root-data-pipeline (MEMORY.md)
+Collection: /home/ubuntu/agents/data-pipeline-agent (MEMORY.md)
+No files found matching pattern.
+
+[4/36] memory-alt-data-pipeline (memory.md)
+Collection: /home/ubuntu/agents/data-pipeline-agent (memory.md)
+No files found matching pattern.
+
+[5/36] memory-dir-data-pipeline (**/*.md)
+Collection: /home/ubuntu/agents/data-pipeline-agent/memory (**/*.md)
+]9;4;3]9;4;1;0
+Indexing: 1/605        ]9;4;1;0
+Indexing: 2/605        ]9;4;1;0
+Indexing: 3/605 ETA: 2s        ]9;4;1;1
+Indexing: 4/605 ETA: 2s        ]9;4;1;1
+Indexing: 5/605 ETA: 1s        ]9;4;1;1
+Indexing: 6/605 ETA: 1s        ]9;4;1;1
+Indexing: 7/605 ETA: 2s        ]9;4;1;1
+Indexing: 8/605 ETA: 2s        ]9;4;1;1
+Indexing: 9/605 ETA: 2s        ]9;4;1;2
+Indexing: 10/605 ETA: 2s        ]9;4;1;2
+Indexing: 11/605 ETA: 2s        ]9;4;1;2
+Indexing: 12/605 ETA: 1s        ]9;4;1;2
+Indexing: 13/605 ETA: 1s        ]9;4;1;2
+Indexing: 14/605 ETA: 1s        ]9;4;1;2
+Indexing: 15/605 ETA: 1s        ]9;4;1;3
+Indexing: 16/605 ETA: 1s        ]9;4;1;3
+Indexing: 17/605 ETA: 1s        ]9;4;1;3
+Indexing: 18/605 ETA: 1s        ]9;4;1;3
+Indexing: 19/605 ETA: 1s        ]9;4;1;3
+Indexing: 20/605 ETA: 1s        ]9;4;1;3
+Indexing: 21/605 ETA: 1s        ]9;4;1;4
+Indexing: 22/605 ETA: 1s        ]9;4;1;4
+Indexing: 23/605 ETA: 1s        ]9;4;1;4
+Indexing: 24/605 ETA: 1s        ]9;4;1;4
+Indexing: 25/605 ETA: 1s        ]9;4;1;4
+Indexing: 26/605 ETA: 1s        ]9;4;1;4
+Indexing: 27/605 ETA: 1s        ]9;4;1;5
+Indexing: 28/605 ETA: 1s        ]9;4;1;5
+Indexing: 29/605 ETA: 1s        ]9;4;1;5
+Indexing: 30/605 ETA: 1s        ]9;4;1;5
+Indexing: 31/605 ETA: 1s        ]9;4;1;5
+Indexing: 32/605 ETA: 1s        ]9;4;1;5
+Indexing: 33/605 ETA: 1s        ]9;4;1;6
+Indexing: 34/605 ETA: 1s        ]9;4;1;6
+Indexing: 35/605 ETA: 1s        ]9;4;1;6
+Indexing: 36/605 ETA: 1s        ]9;4;1;6
+Indexing: 37/605 ETA: 1s        ]9;4;1;6
+Indexing: 38/605 ETA: 1s        ]9;4;1;6
+Indexing: 39/605 ETA: 1s        ]9;4;1;7
+Indexing: 40/605 ETA: 1s        ]9;4;1;7
+Indexing: 41/605 ETA: 1s        ]9;4;1;7
+Indexing: 42/605 ETA: 0s        ]9;4;1;7
+Indexing: 43/605 ETA: 0s        ]9;4;1;7
+Indexing: 44/605 ETA: 0s        ]9;4;1;7
+Indexing: 45/605 ETA: 0s        ]9;4;1;8
+Indexing: 46/605 ETA: 0s        ]9;4;1;8
+Indexing: 47/605 ETA: 0s        ]9;4;1;8
+Indexing: 48/605 ETA: 0s        ]9;4;1;8
+Indexing: 49/605 ETA: 1s        ]9;4;1;8
+Indexing: 50/605 ETA: 1s        ]9;4;1;8
+Indexing: 51/605 ETA: 1s        ]9;4;1;9
+Indexing: 52/605 ETA: 1s        ]9;4;1;9
+Indexing: 53/605 ETA: 1s        ]9;4;1;9
+Indexing: 54/605 ETA: 1s        ]9;4;1;9
+Indexing: 55/605 ETA: 1s        ]9;4;1;9
+Indexing: 56/605 ETA: 1s        ]9;4;1;9
+Indexing: 57/605 ETA: 1s        ]9;4;1;10
+Indexing: 58/605 ETA: 1s        ]9;4;1;10
+Indexing: 59/605 ETA: 1s        ]9;4;1;10
+Indexing: 60/605 ETA: 1s        ]9;4;1;10
+Indexing: 61/605 ETA: 1s        ]9;4;1;10
+Indexing: 62/605 ETA: 1s        ]9;4;1;10
+Indexing: 63/605 ETA: 1s        ]9;4;1;11
+Indexing: 64/605 ETA: 1s        ]9;4;1;11
+Indexing: 65/605 ETA: 1s        ]9;4;1;11
+Indexing: 66/605 ETA: 1s        ]9;4;1;11
+Indexing: 67/605 ETA: 1s        ]9;4;1;11
+Indexing: 68/605 ETA: 1s        ]9;4;1;11
+Indexing: 69/605 ETA: 1s        ]9;4;1;12
+Indexing: 70/605 ETA: 1s        ]9;4;1;12
+Indexing: 71/605 ETA: 1s        ]9;4;1;12
+Indexing: 72/605 ETA: 1s        ]9;4;1;12
+Indexing: 73/605 ETA: 1s        ]9;4;1;12
+Indexing: 74/605 ETA: 1s        ]9;4;1;12
+Indexing: 75/605 ETA: 1s        ]9;4;1;13
+Indexing: 76/605 ETA: 1s        ]9;4;1;13
+Indexing: 77/605 ETA: 1s        ]9;4;1;13
+Indexing: 78/605 ETA: 1s        ]9;4;1;13
+Indexing: 79/605 ETA: 1s        ]9;4;1;13
+Indexing: 80/605 ETA: 1s        ]9;4;1;13
+Indexing: 81/605 ETA: 1s        ]9;4;1;14
+Indexing: 82/605 ETA: 1s        ]9;4;1;14
+Indexing: 83/605 ETA: 1s        ]9;4;1;14
+Indexing: 84/605 ETA: 1s        ]9;4;1;14
+Indexing: 85/605 ETA: 1s        ]9;4;1;14
+Indexing: 86/605 ETA: 1s        ]9;4;1;14
+Indexing: 87/605 ETA: 1s        ]9;4;1;15
+Indexing: 88/605 ETA: 1s        ]9;4;1;15
+Indexing: 89/605 ETA: 1s        ]9;4;1;15
+Indexing: 90/605 ETA: 1s        ]9;4;1;15
+Indexing: 91/605 ETA: 1s        ]9;4;1;15
+Indexing: 92/605 ETA: 1s        ]9;4;1;15
+Indexing: 93/605 ETA: 1s        ]9;4;1;16
+Indexing: 94/605 ETA: 1s        ]9;4;1;16
+Indexing: 95/605 ETA: 1s        ]9;4;1;16
+Indexing: 96/605 ETA: 1s        ]9;4;1;16
+Indexing: 97/605 ETA: 1s        ]9;4;1;16
+Indexing: 98/605 ETA: 1s        ]9;4;1;16
+Indexing: 99/605 ETA: 1s        ]9;4;1;17
+Indexing: 100/605 ETA: 1s        ]9;4;1;17
+Indexing: 101/605 ETA: 1s        ]9;4;1;17
+Indexing: 102/605 ETA: 1s        ]9;4;1;17
+Indexing: 103/605 ETA: 1s        ]9;4;1;17
+Indexing: 104/605 ETA: 1s        ]9;4;1;17
+Indexing: 105/605 ETA: 1s        ]9;4;1;18
+Indexing: 106/605 ETA: 1s        ]9;4;1;18
+Indexing: 107/605 ETA: 1s        ]9;4;1;18
+Indexing: 108/605 ETA: 1s        ]9;4;1;18
+Indexing: 109/605 ETA: 1s        ]9;4;1;18
+Indexing: 110/605 ETA: 1s        ]9;4;1;18
+Indexing: 111/605 ETA: 1s        ]9;4;1;19
+Indexing: 112/605 ETA: 1s        ]9;4;1;19
+Indexing: 113/605 ETA: 1s        ]9;4;1;19
+Indexing: 114/605 ETA: 1s        ]9;4;1;19
+Indexing: 115/605 ETA: 1s        ]9;4;1;19
+Indexing: 116/605 ETA: 1s        ]9;4;1;19
+Indexing: 117/605 ETA: 1s        ]9;4;1;20
+Indexing: 118/605 ETA: 1s        ]9;4;1;20
+Indexing: 119/605 ETA: 1s        ]9;4;1;20
+Indexing: 120/605 ETA: 1s        ]9;4;1;20
+Indexing: 121/605 ETA: 1s        ]9;4;1;20
+Indexing: 122/605 ETA: 1s        ]9;4;1;20
+Indexing: 123/605 ETA: 1s        ]9;4;1;20
+Indexing: 124/605 ETA: 1s        ]9;4;1;21
+Indexing: 125/605 ETA: 1s        ]9;4;1;21
+Indexing: 126/605 ETA: 1s        ]9;4;1;21
+Indexing: 127/605 ETA: 1s        ]9;4;1;21
+Indexing: 128/605 ETA: 1s        ]9;4;1;21
+Indexing: 129/605 ETA: 1s        ]9;4;1;21
+Indexing: 130/605 ETA: 1s        ]9;4;1;22
+Indexing: 131/605 ETA: 1s        ]9;4;1;22
+Indexing: 132/605 ETA: 1s        ]9;4;1;22
+Indexing: 133/605 ETA: 1s        ]9;4;1;22
+Indexing: 134/605 ETA: 1s        ]9;4;1;22
+Indexing: 135/605 ETA: 1s        ]9;4;1;22
+Indexing: 136/605 ETA: 1s        ]9;4;1;23
+Indexing: 137/605 ETA: 1s        ]9;4;1;23
+Indexing: 138/605 ETA: 1s        ]9;4;1;23
+Indexing: 139/605 ETA: 1s        ]9;4;1;23
+Indexing: 140/605 ETA: 1s        ]9;4;1;23
+Indexing: 141/605 ETA: 1s        ]9;4;1;23
+Indexing: 142/605 ETA: 1s        ]9;4;1;24
+Indexing: 143/605 ETA: 1s        ]9;4;1;24
+Indexing: 144/605 ETA: 1s        ]9;4;1;24
+Indexing: 145/605 ETA: 1s        ]9;4;1;24
+Indexing: 146/605 ETA: 1s        ]9;4;1;24
+Indexing: 147/605 ETA: 1s        ]9;4;1;24
+Indexing: 148/605 ETA: 1s        ]9;4;1;25
+Indexing: 149/605 ETA: 1s        ]9;4;1;25
+Indexing: 150/605 ETA: 1s        ]9;4;1;25
+Indexing: 151/605 ETA: 1s        ]9;4;1;25
+Indexing: 152/605 ETA: 1s        ]9;4;1;25
+Indexing: 153/605 ETA: 1s        ]9;4;1;25
+Indexing: 154/605 ETA: 1s        ]9;4;1;26
+Indexing: 155/605 ETA: 1s        ]9;4;1;26
+Indexing: 156/605 ETA: 1s        ]9;4;1;26
+Indexing: 157/605 ETA: 1s        ]9;4;1;26
+Indexing: 158/605 ETA: 1s        ]9;4;1;26
+Indexing: 159/605 ETA: 1s        ]9;4;1;26
+Indexing: 160/605 ETA: 1s        ]9;4;1;27
+Indexing: 161/605 ETA: 1s        ]9;4;1;27
+Indexing: 162/605 ETA: 1s        ]9;4;1;27
+Indexing: 163/605 ETA: 1s        ]9;4;1;27
+Indexing: 164/605 ETA: 1s        ]9;4;1;27
+Indexing: 165/605 ETA: 1s        ]9;4;1;27
+Indexing: 166/605 ETA: 1s        ]9;4;1;28
+Indexing: 167/605 ETA: 1s        ]9;4;1;28
+Indexing: 168/605 ETA: 1s        ]9;4;1;28
+Indexing: 169/605 ETA: 1s        ]9;4;1;28
+Indexing: 170/605 ETA: 1s        ]9;4;1;28
+Indexing: 171/605 ETA: 1s        ]9;4;1;28
+Indexing: 172/605 ETA: 1s        ]9;4;1;29
+Indexing: 173/605 ETA: 1s        ]9;4;1;29
+Indexing: 174/605 ETA: 1s        ]9;4;1;29
+Indexing: 175/605 ETA: 1s        ]9;4;1;29
+Indexing: 176/605 ETA: 1s        ]9;4;1;29
+Indexing: 177/605 ETA: 1s        ]9;4;1;29
+Indexing: 178/605 ETA: 1s        ]9;4;1;30
+Indexing: 179/605 ETA: 1s        ]9;4;1;30
+Indexing: 180/605 ETA: 1s        ]9;4;1;30
+Indexing: 181/605 ETA: 1s        ]9;4;1;30
+Indexing: 182/605 ETA: 1s        ]9;4;1;30
+Indexing: 183/605 ETA: 1s        ]9;4;1;30
+Indexing: 184/605 ETA: 1s        ]9;4;1;31
+Indexing: 185/605 ETA: 1s        ]9;4;1;31
+Indexing: 186/605 ETA: 1s        ]9;4;1;31
+Indexing: 187/605 ETA: 1s        ]9;4;1;31
+Indexing: 188/605 ETA: 1s        ]9;4;1;31
+Indexing: 189/605 ETA: 1s        ]9;4;1;31
+Indexing: 190/605 ETA: 1s        ]9;4;1;32
+Indexing: 191/605 ETA: 1s        ]9;4;1;32
+Indexing: 192/605 ETA: 1s        ]9;4;1;32
+Indexing: 193/605 ETA: 1s        ]9;4;1;32
+Indexing: 194/605 ETA: 1s        ]9;4;1;32
+Indexing: 195/605 ETA: 1s        ]9;4;1;32
+Indexing: 196/605 ETA: 1s        ]9;4;1;33
+Indexing: 197/605 ETA: 1s        ]9;4;1;33
+Indexing: 198/605 ETA: 1s        ]9;4;1;33
+Indexing: 199/605 ETA: 1s        ]9;4;1;33
+Indexing: 200/605 ETA: 1s        ]9;4;1;33
+Indexing: 201/605 ETA: 1s        ]9;4;1;33
+Indexing: 202/605 ETA: 1s        ]9;4;1;34
+Indexing: 203/605 ETA: 1s        ]9;4;1;34
+Indexing: 204/605 ETA: 1s        ]9;4;1;34
+Indexing: 205/605 ETA: 1s        ]9;4;1;34
+Indexing: 206/605 ETA: 1s        ]9;4;1;34
+Indexing: 207/605 ETA: 1s        ]9;4;1;34
+Indexing: 208/605 ETA: 1s        ]9;4;1;35
+Indexing: 209/605 ETA: 1s        ]9;4;1;35
+Indexing: 210/605 ETA: 1s        ]9;4;1;35
+Indexing: 211/605 ETA: 1s        ]9;4;1;35
+Indexing: 212/605 ETA: 1s        ]9;4;1;35
+Indexing: 213/605 ETA: 1s        ]9;4;1;35
+Indexing: 214/605 ETA: 1s        ]9;4;1;36
+Indexing: 215/605 ETA: 1s        ]9;4;1;36
+Indexing: 216/605 ETA: 1s        ]9;4;1;36
+Indexing: 217/605 ETA: 1s        ]9;4;1;36
+Indexing: 218/605 ETA: 1s        ]9;4;1;36
+Indexing: 219/605 ETA: 1s        ]9;4;1;36
+Indexing: 220/605 ETA: 1s        ]9;4;1;37
+Indexing: 221/605 ETA: 1s        ]9;4;1;37
+Indexing: 222/605 ETA: 1s        ]9;4;1;37
+Indexing: 223/605 ETA: 1s        ]9;4;1;37
+Indexing: 224/605 ETA: 1s        ]9;4;1;37
+Indexing: 225/605 ETA: 1s        ]9;4;1;37
+Indexing: 226/605 ETA: 1s        ]9;4;1;38
+Indexing: 227/605 ETA: 1s        ]9;4;1;38
+Indexing: 228/605 ETA: 1s        ]9;4;1;38
+Indexing: 229/605 ETA: 1s        ]9;4;1;38
+Indexing: 230/605 ETA: 1s        ]9;4;1;38
+Indexing: 231/605 ETA: 1s        ]9;4;1;38
+Indexing: 232/605 ETA: 1s        ]9;4;1;39
+Indexing: 233/605 ETA: 1s        ]9;4;1;39
+Indexing: 234/605 ETA: 1s        ]9;4;1;39
+Indexing: 235/605 ETA: 1s        ]9;4;1;39
+Indexing: 236/605 ETA: 1s        ]9;4;1;39
+Indexing: 237/605 ETA: 1s        ]9;4;1;39
+Indexing: 238/605 ETA: 1s        ]9;4;1;40
+Indexing: 239/605 ETA: 1s        ]9;4;1;40
+Indexing: 240/605 ETA: 1s        ]9;4;1;40
+Indexing: 241/605 ETA: 1s        ]9;4;1;40
+Indexing: 242/605 ETA: 1s        ]9;4;1;40
+Indexing: 243/605 ETA: 1s        ]9;4;1;40
+Indexing: 244/605 ETA: 1s        ]9;4;1;40
+Indexing: 245/605 ETA: 1s        ]9;4;1;41
+Indexing: 246/605 ETA: 1s        ]9;4;1;41
+Indexing: 247/605 ETA: 1s        ]9;4;1;41
+Indexing: 248/605 ETA: 1s        ]9;4;1;41
+Indexing: 249/605 ETA: 1s        ]9;4;1;41
+Indexing: 250/605 ETA: 1s        ]9;4;1;41
+Indexing: 251/605 ETA: 1s        ]9;4;1;42
+Indexing: 252/605 ETA: 0s        ]9;4;1;42
+Indexing: 253/605 ETA: 0s        ]9;4;1;42
+Indexing: 254/605 ETA: 0s        ]9;4;1;42
+Indexing: 255/605 ETA: 0s        ]9;4;1;42
+Indexing: 256/605 ETA: 0s        ]9;4;1;42
+Indexing: 257/605 ETA: 0s        ]9;4;1;43
+Indexing: 258/605 ETA: 0s        ]9;4;1;43
+Indexing: 259/605 ETA: 0s        ]9;4;1;43
+Indexing: 260/605 ETA: 0s        ]9;4;1;43
+Indexing: 261/605 ETA: 0s        ]9;4;1;43
+Indexing: 262/605 ETA: 0s        ]9;4;1;43
+Indexing: 263/605 ETA: 0s        ]9;4;1;44
+Indexing: 264/605 ETA: 0s        ]9;4;1;44
+Indexing: 265/605 ETA: 0s        ]9;4;1;44
+Indexing: 266/605 ETA: 0s        ]9;4;1;44
+Indexing: 267/605 ETA: 0s        ]9;4;1;44
+Indexing: 268/605 ETA: 0s        ]9;4;1;44
+Indexing: 269/605 ETA: 0s        ]9;4;1;45
+Indexing: 270/605 ETA: 0s        ]9;4;1;45
+Indexing: 271/605 ETA: 0s        ]9;4;1;45
+Indexing: 272/605 ETA: 0s        ]9;4;1;45
+Indexing: 273/605 ETA: 0s        ]9;4;1;45
+Indexing: 274/605 ETA: 0s        ]9;4;1;45
+Indexing: 275/605 ETA: 0s        ]9;4;1;46
+Indexing: 276/605 ETA: 0s        ]9;4;1;46
+Indexing: 277/605 ETA: 0s        ]9;4;1;46
+Indexing: 278/605 ETA: 0s        ]9;4;1;46
+Indexing: 279/605 ETA: 0s        ]9;4;1;46
+Indexing: 280/605 ETA: 0s        ]9;4;1;46
+Indexing: 281/605 ETA: 0s        ]9;4;1;47
+Indexing: 282/605 ETA: 0s        ]9;4;1;47
+Indexing: 283/605 ETA: 0s        ]9;4;1;47
+Indexing: 284/605 ETA: 0s        ]9;4;1;47
+Indexing: 285/605 ETA: 0s        ]9;4;1;47
+Indexing: 286/605 ETA: 0s        ]9;4;1;47
+Indexing: 287/605 ETA: 0s        ]9;4;1;48
+Indexing: 288/605 ETA: 0s        ]9;4;1;48
+Indexing: 289/605 ETA: 0s        ]9;4;1;48
+Indexing: 290/605 ETA: 0s        ]9;4;1;48
+Indexing: 291/605 ETA: 0s        ]9;4;1;48
+Indexing: 292/605 ETA: 0s        ]9;4;1;48
+Indexing: 293/605 ETA: 0s        ]9;4;1;49
+Indexing: 294/605 ETA: 0s        ]9;4;1;49
+Indexing: 295/605 ETA: 0s        ]9;4;1;49
+Indexing: 296/605 ETA: 0s        ]9;4;1;49
+Indexing: 297/605 ETA: 0s        ]9;4;1;49
+Indexing: 298/605 ETA: 0s        ]9;4;1;49
+Indexing: 299/605 ETA: 0s        ]9;4;1;50
+Indexing: 300/605 ETA: 0s        ]9;4;1;50
+Indexing: 301/605 ETA: 0s        ]9;4;1;50
+Indexing: 302/605 ETA: 0s        ]9;4;1;50
+Indexing: 303/605 ETA: 0s        ]9;4;1;50
+Indexing: 304/605 ETA: 0s        ]9;4;1;50
+Indexing: 305/605 ETA: 0s        ]9;4;1;51
+Indexing: 306/605 ETA: 0s        ]9;4;1;51
+Indexing: 307/605 ETA: 0s        ]9;4;1;51
+Indexing: 308/605 ETA: 0s        ]9;4;1;51
+Indexing: 309/605 ETA: 0s        ]9;4;1;51
+Indexing: 310/605 ETA: 0s        ]9;4;1;51
+Indexing: 311/605 ETA: 0s        ]9;4;1;52
+Indexing: 312/605 ETA: 0s        ]9;4;1;52
+Indexing: 313/605 ETA: 0s        ]9;4;1;52
+Indexing: 314/605 ETA: 0s        ]9;4;1;52
+Indexing: 315/605 ETA: 0s        ]9;4;1;52
+Indexing: 316/605 ETA: 0s        ]9;4;1;52
+Indexing: 317/605 ETA: 0s        ]9;4;1;53
+Indexing: 318/605 ETA: 0s        ]9;4;1;53
+Indexing: 319/605 ETA: 0s        ]9;4;1;53
+Indexing: 320/605 ETA: 0s        ]9;4;1;53
+Indexing: 321/605 ETA: 0s        ]9;4;1;53
+Indexing: 322/605 ETA: 0s        ]9;4;1;53
+Indexing: 323/605 ETA: 0s        ]9;4;1;54
+Indexing: 324/605 ETA: 0s        ]9;4;1;54
+Indexing: 325/605 ETA: 0s        ]9;4;1;54
+Indexing: 326/605 ETA: 0s        ]9;4;1;54
+Indexing: 327/605 ETA: 0s        ]9;4;1;54
+Indexing: 328/605 ETA: 0s        ]9;4;1;54
+Indexing: 329/605 ETA: 0s        ]9;4;1;55
+Indexing: 330/605 ETA: 0s        ]9;4;1;55
+Indexing: 331/605 ETA: 0s        ]9;4;1;55
+Indexing: 332/605 ETA: 0s        ]9;4;1;55
+Indexing: 333/605 ETA: 0s        ]9;4;1;55
+Indexing: 334/605 ETA: 0s        ]9;4;1;55
+Indexing: 335/605 ETA: 0s        ]9;4;1;56
+Indexing: 336/605 ETA: 0s        ]9;4;1;56
+Indexing: 337/605 ETA: 0s        ]9;4;1;56
+Indexing: 338/605 ETA: 0s        ]9;4;1;56
+Indexing: 339/605 ETA: 0s        ]9;4;1;56
+Indexing: 340/605 ETA: 0s        ]9;4;1;56
+Indexing: 341/605 ETA: 0s        ]9;4;1;57
+Indexing: 342/605 ETA: 0s        ]9;4;1;57
+Indexing: 343/605 ETA: 0s        ]9;4;1;57
+Indexing: 344/605 ETA: 0s        ]9;4;1;57
+Indexing: 345/605 ETA: 0s        ]9;4;1;57
+Indexing: 346/605 ETA: 0s        ]9;4;1;57
+Indexing: 347/605 ETA: 0s        ]9;4;1;58
+Indexing: 348/605 ETA: 0s        ]9;4;1;58
+Indexing: 349/605 ETA: 0s        ]9;4;1;58
+Indexing: 350/605 ETA: 0s        ]9;4;1;58
+Indexing: 351/605 ETA: 0s        ]9;4;1;58
+Indexing: 352/605 ETA: 0s        ]9;4;1;58
+Indexing: 353/605 ETA: 0s        ]9;4;1;59
+Indexing: 354/605 ETA: 0s        ]9;4;1;59
+Indexing: 355/605 ETA: 0s        ]9;4;1;59
+Indexing: 356/605 ETA: 0s        ]9;4;1;59
+Indexing: 357/605 ETA: 0s        ]9;4;1;59
+Indexing: 358/605 ETA: 0s        ]9;4;1;59
+Indexing: 359/605 ETA: 0s        ]9;4;1;60
+Indexing: 360/605 ETA: 0s        ]9;4;1;60
+Indexing: 361/605 ETA: 0s        ]9;4;1;60
+Indexing: 362/605 ETA: 0s        ]9;4;1;60
+Indexing: 363/605 ETA: 0s        ]9;4;1;60
+Indexing: 364/605 ETA: 0s        ]9;4;1;60
+Indexing: 365/605 ETA: 0s        ]9;4;1;60
+Indexing: 366/605 ETA: 0s        ]9;4;1;61
+Indexing: 367/605 ETA: 0s        ]9;4;1;61
+Indexing: 368/605 ETA: 0s        ]9;4;1;61
+Indexing: 369/605 ETA: 0s        ]9;4;1;61
+Indexing: 370/605 ETA: 0s        ]9;4;1;61
+Indexing: 371/605 ETA: 0s        ]9;4;1;61
+Indexing: 372/605 ETA: 0s        ]9;4;1;62
+Indexing: 373/605 ETA: 0s        ]9;4;1;62
+Indexing: 374/605 ETA: 0s        ]9;4;1;62
+Indexing: 375/605 ETA: 0s        ]9;4;1;62
+Indexing: 376/605 ETA: 0s        ]9;4;1;62
+Indexing: 377/605 ETA: 0s        ]9;4;1;62
+Indexing: 378/605 ETA: 0s        ]9;4;1;63
+Indexing: 379/605 ETA: 0s        ]9;4;1;63
+Indexing: 380/605 ETA: 0s        ]9;4;1;63
+Indexing: 381/605 ETA: 0s        ]9;4;1;63
+Indexing: 382/605 ETA: 0s        ]9;4;1;63
+Indexing: 383/605 ETA: 0s        ]9;4;1;63
+Indexing: 384/605 ETA: 0s        ]9;4;1;64
+Indexing: 385/605 ETA: 0s        ]9;4;1;64
+Indexing: 386/605 ETA: 0s        ]9;4;1;64
+Indexing: 387/605 ETA: 0s        ]9;4;1;64
+Indexing: 388/605 ETA: 0s        ]9;4;1;64
+Indexing: 389/605 ETA: 0s        ]9;4;1;64
+Indexing: 390/605 ETA: 0s        ]9;4;1;65
+Indexing: 391/605 ETA: 0s        ]9;4;1;65
+Indexing: 392/605 ETA: 0s        ]9;4;1;65
+Indexing: 393/605 ETA: 0s        ]9;4;1;65
+Indexing: 394/605 ETA: 0s        ]9;4;1;65
+Indexing: 395/605 ETA: 0s        ]9;4;1;65
+Indexing: 396/605 ETA: 0s        ]9;4;1;66
+Indexing: 397/605 ETA: 0s        ]9;4;1;66
+Indexing: 398/605 ETA: 0s        ]9;4;1;66
+Indexing: 399/605 ETA: 0s        ]9;4;1;66
+Indexing: 400/605 ETA: 0s        ]9;4;1;66
+Indexing: 401/605 ETA: 0s        ]9;4;1;66
+Indexing: 402/605 ETA: 0s        ]9;4;1;67
+Indexing: 403/605 ETA: 0s        ]9;4;1;67
+Indexing: 404/605 ETA: 0s        ]9;4;1;67
+Indexing: 405/605 ETA: 0s        ]9;4;1;67
+Indexing: 406/605 ETA: 0s        ]9;4;1;67
+Indexing: 407/605 ETA: 0s        ]9;4;1;67
+Indexing: 408/605 ETA: 0s        ]9;4;1;68
+Indexing: 409/605 ETA: 0s        ]9;4;1;68
+Indexing: 410/605 ETA: 0s        ]9;4;1;68
+Indexing: 411/605 ETA: 0s        ]9;4;1;68
+Indexing: 412/605 ETA: 0s        ]9;4;1;68
+Indexing: 413/605 ETA: 0s        ]9;4;1;68
+Indexing: 414/605 ETA: 0s        ]9;4;1;69
+Indexing: 415/605 ETA: 0s        ]9;4;1;69
+Indexing: 416/605 ETA: 0s        ]9;4;1;69
+Indexing: 417/605 ETA: 0s        ]9;4;1;69
+Indexing: 418/605 ETA: 0s        ]9;4;1;69
+Indexing: 419/605 ETA: 0s        ]9;4;1;69
+Indexing: 420/605 ETA: 0s        ]9;4;1;70
+Indexing: 421/605 ETA: 0s        ]9;4;1;70
+Indexing: 422/605 ETA: 0s        ]9;4;1;70
+Indexing: 423/605 ETA: 0s        ]9;4;1;70
+Indexing: 424/605 ETA: 0s        ]9;4;1;70
+Indexing: 425/605 ETA: 0s        ]9;4;1;70
+Indexing: 426/605 ETA: 0s        ]9;4;1;71
+Indexing: 427/605 ETA: 0s        ]9;4;1;71
+Indexing: 428/605 ETA: 0s        ]9;4;1;71
+Indexing: 429/605 ETA: 0s        ]9;4;1;71
+Indexing: 430/605 ETA: 0s        ]9;4;1;71
+Indexing: 431/605 ETA: 0s        ]9;4;1;71
+Indexing: 432/605 ETA: 0s        ]9;4;1;72
+Indexing: 433/605 ETA: 0s        ]9;4;1;72
+Indexing: 434/605 ETA: 0s        ]9;4;1;72
+Indexing: 435/605 ETA: 0s        ]9;4;1;72
+Indexing: 436/605 ETA: 0s        ]9;4;1;72
+Indexing: 437/605 ETA: 0s        ]9;4;1;72
+Indexing: 438/605 ETA: 0s        ]9;4;1;73
+Indexing: 439/605 ETA: 0s        ]9;4;1;73
+Indexing: 440/605 ETA: 0s        ]9;4;1;73
+Indexing: 441/605 ETA: 0s        ]9;4;1;73
+Indexing: 442/605 ETA: 0s        ]9;4;1;73
+Indexing: 443/605 ETA: 0s        ]9;4;1;73
+Indexing: 444/605 ETA: 0s        ]9;4;1;74
+Indexing: 445/605 ETA: 0s        ]9;4;1;74
+Indexing: 446/605 ETA: 0s        ]9;4;1;74
+Indexing: 447/605 ETA: 0s        ]9;4;1;74
+Indexing: 448/605 ETA: 0s        ]9;4;1;74
+Indexing: 449/605 ETA: 0s        ]9;4;1;74
+Indexing: 450/605 ETA: 0s        ]9;4;1;75
+Indexing: 451/605 ETA: 0s        ]9;4;1;75
+Indexing: 452/605 ETA: 0s        ]9;4;1;75
+Indexing: 453/605 ETA: 0s        ]9;4;1;75
+Indexing: 454/605 ETA: 0s        ]9;4;1;75
+Indexing: 455/605 ETA: 0s        ]9;4;1;75
+Indexing: 456/605 ETA: 0s        ]9;4;1;76
+Indexing: 457/605 ETA: 0s        ]9;4;1;76
+Indexing: 458/605 ETA: 0s        ]9;4;1;76
+Indexing: 459/605 ETA: 0s        ]9;4;1;76
+Indexing: 460/605 ETA: 0s        ]9;4;1;76
+Indexing: 461/605 ETA: 0s        ]9;4;1;76
+Indexing: 462/605 ETA: 0s        ]9;4;1;77
+Indexing: 463/605 ETA: 0s        ]9;4;1;77
+Indexing: 464/605 ETA: 0s        ]9;4;1;77
+Indexing: 465/605 ETA: 0s        ]9;4;1;77
+Indexing: 466/605 ETA: 0s        ]9;4;1;77
+Indexing: 467/605 ETA: 0s        ]9;4;1;77
+Indexing: 468/605 ETA: 0s        ]9;4;1;78
+Indexing: 469/605 ETA: 0s        ]9;4;1;78
+Indexing: 470/605 ETA: 0s        ]9;4;1;78
+Indexing: 471/605 ETA: 0s        ]9;4;1;78
+Indexing: 472/605 ETA: 0s        ]9;4;1;78
+Indexing: 473/605 ETA: 0s        ]9;4;1;78
+Indexing: 474/605 ETA: 0s        ]9;4;1;79
+Indexing: 475/605 ETA: 0s        ]9;4;1;79
+Indexing: 476/605 ETA: 0s        ]9;4;1;79
+Indexing: 477/605 ETA: 0s        ]9;4;1;79
+Indexing: 478/605 ETA: 0s        ]9;4;1;79
+Indexing: 479/605 ETA: 0s        ]9;4;1;79
+Indexing: 480/605 ETA: 0s        ]9;4;1;80
+Indexing: 481/605 ETA: 0s        ]9;4;1;80
+Indexing: 482/605 ETA: 0s        ]9;4;1;80
+Indexing: 483/605 ETA: 0s        ]9;4;1;80
+Indexing: 484/605 ETA: 0s        ]9;4;1;80
+Indexing: 485/605 ETA: 0s        ]9;4;1;80
+Indexing: 486/605 ETA: 0s        ]9;4;1;80
+Indexing: 487/605 ETA: 0s        ]9;4;1;81
+Indexing: 488/605 ETA: 0s        ]9;4;1;81
+Indexing: 489/605 ETA: 0s        ]9;4;1;81
+Indexing: 490/605 ETA: 0s        ]9;4;1;81
+Indexing: 491/605 ETA: 0s        ]9;4;1;81
+Indexing: 492/605 ETA: 0s        ]9;4;1;81
+Indexing: 493/605 ETA: 0s        ]9;4;1;82
+Indexing: 494/605 ETA: 0s        ]9;4;1;82
+Indexing: 495/605 ETA: 0s        ]9;4;1;82
+Indexing: 496/605 ETA: 0s        ]9;4;1;82
+Indexing: 497/605 ETA: 0s        ]9;4;1;82
+Indexing: 498/605 ETA: 0s        ]9;4;1;82
+Indexing: 499/605 ETA: 0s        ]9;4;1;83
+Indexing: 500/605 ETA: 0s        ]9;4;1;83
+Indexing: 501/605 ETA: 0s        ]9;4;1;83
+Indexing: 502/605 ETA: 0s        ]9;4;1;83
+Indexing: 503/605 ETA: 0s        ]9;4;1;83
+Indexing: 504/605 ETA: 0s        ]9;4;1;83
+Indexing: 505/605 ETA: 0s        ]9;4;1;84
+Indexing: 506/605 ETA: 0s        ]9;4;1;84
+Indexing: 507/605 ETA: 0s        ]9;4;1;84
+Indexing: 508/605 ETA: 0s        ]9;4;1;84
+Indexing: 509/605 ETA: 0s        ]9;4;1;84
+Indexing: 510/605 ETA: 0s        ]9;4;1;84
+Indexing: 511/605 ETA: 0s        ]9;4;1;85
+Indexing: 512/605 ETA: 0s        ]9;4;1;85
+Indexing: 513/605 ETA: 0s        ]9;4;1;85
+Indexing: 514/605 ETA: 0s        ]9;4;1;85
+Indexing: 515/605 ETA: 0s        ]9;4;1;85
+Indexing: 516/605 ETA: 0s        ]9;4;1;85
+Indexing: 517/605 ETA: 0s        ]9;4;1;86
+Indexing: 518/605 ETA: 0s        ]9;4;1;86
+Indexing: 519/605 ETA: 0s        ]9;4;1;86
+Indexing: 520/605 ETA: 0s        ]9;4;1;86
+Indexing: 521/605 ETA: 0s        ]9;4;1;86
+Indexing: 522/605 ETA: 0s        ]9;4;1;86
+Indexing: 523/605 ETA: 0s        ]9;4;1;87
+Indexing: 524/605 ETA: 0s        ]9;4;1;87
+Indexing: 525/605 ETA: 0s        ]9;4;1;87
+Indexing: 526/605 ETA: 0s        ]9;4;1;87
+Indexing: 527/605 ETA: 0s        ]9;4;1;87
+Indexing: 528/605 ETA: 0s        ]9;4;1;87
+Indexing: 529/605 ETA: 0s        ]9;4;1;88
+Indexing: 530/605 ETA: 0s        ]9;4;1;88
+Indexing: 531/605 ETA: 0s        ]9;4;1;88
+Indexing: 532/605 ETA: 0s        ]9;4;1;88
+Indexing: 533/605 ETA: 0s        ]9;4;1;88
+Indexing: 534/605 ETA: 0s        ]9;4;1;88
+Indexing: 535/605 ETA: 0s        ]9;4;1;89
+Indexing: 536/605 ETA: 0s        ]9;4;1;89
+Indexing: 537/605 ETA: 0s        ]9;4;1;89
+Indexing: 538/605 ETA: 0s        ]9;4;1;89
+Indexing: 539/605 ETA: 0s        ]9;4;1;89
+Indexing: 540/605 ETA: 0s        ]9;4;1;89
+Indexing: 541/605 ETA: 0s        ]9;4;1;90
+Indexing: 542/605 ETA: 0s        ]9;4;1;90
+Indexing: 543/605 ETA: 0s        ]9;4;1;90
+Indexing: 544/605 ETA: 0s        ]9;4;1;90
+Indexing: 545/605 ETA: 0s        ]9;4;1;90
+Indexing: 546/605 ETA: 0s        ]9;4;1;90
+Indexing: 547/605 ETA: 0s        ]9;4;1;91
+Indexing: 548/605 ETA: 0s        ]9;4;1;91
+Indexing: 549/605 ETA: 0s        ]9;4;1;91
+Indexing: 550/605 ETA: 0s        ]9;4;1;91
+Indexing: 551/605 ETA: 0s        ]9;4;1;91
+Indexing: 552/605 ETA: 0s        ]9;4;1;91
+Indexing: 553/605 ETA: 0s        ]9;4;1;92
+Indexing: 554/605 ETA: 0s        ]9;4;1;92
+Indexing: 555/605 ETA: 0s        ]9;4;1;92
+Indexing: 556/605 ETA: 0s        ]9;4;1;92
+Indexing: 557/605 ETA: 0s        ]9;4;1;92
+Indexing: 558/605 ETA: 0s        ]9;4;1;92
+Indexing: 559/605 ETA: 0s        ]9;4;1;93
+Indexing: 560/605 ETA: 0s        ]9;4;1;93
+Indexing: 561/605 ETA: 0s        ]9;4;1;93
+Indexing: 562/605 ETA: 0s        ]9;4;1;93
+Indexing: 563/605 ETA: 0s        ]9;4;1;93
+Indexing: 564/605 ETA: 0s        ]9;4;1;93
+Indexing: 565/605 ETA: 0s        ]9;4;1;94
+Indexing: 566/605 ETA: 0s        ]9;4;1;94
+Indexing: 567/605 ETA: 0s        ]9;4;1;94
+Indexing: 568/605 ETA: 0s        ]9;4;1;94
+Indexing: 569/605 ETA: 0s        ]9;4;1;94
+Indexing: 570/605 ETA: 0s        ]9;4;1;94
+Indexing: 571/605 ETA: 0s        ]9;4;1;95
+Indexing: 572/605 ETA: 0s        ]9;4;1;95
+Indexing: 573/605 ETA: 0s        ]9;4;1;95
+Indexing: 574/605 ETA: 0s        ]9;4;1;95
+Indexing: 575/605 ETA: 0s        ]9;4;1;95
+Indexing: 576/605 ETA: 0s        ]9;4;1;95
+Indexing: 577/605 ETA: 0s        ]9;4;1;96
+Indexing: 578/605 ETA: 0s        ]9;4;1;96
+Indexing: 579/605 ETA: 0s        ]9;4;1;96
+Indexing: 580/605 ETA: 0s        ]9;4;1;96
+Indexing: 581/605 ETA: 0s        ]9;4;1;96
+Indexing: 582/605 ETA: 0s        ]9;4;1;96
+Indexing: 583/605 ETA: 0s        ]9;4;1;97
+Indexing: 584/605 ETA: 0s        ]9;4;1;97
+Indexing: 585/605 ETA: 0s        ]9;4;1;97
+Indexing: 586/605 ETA: 0s        ]9;4;1;97
+Indexing: 587/605 ETA: 0s        ]9;4;1;97
+Indexing: 588/605 ETA: 0s        ]9;4;1;97
+Indexing: 589/605 ETA: 0s        ]9;4;1;98
+Indexing: 590/605 ETA: 0s        ]9;4;1;98
+Indexing: 591/605 ETA: 0s        ]9;4;1;98
+Indexing: 592/605 ETA: 0s        ]9;4;1;98
+Indexing: 593/605 ETA: 0s        ]9;4;1;98
+Indexing: 594/605 ETA: 0s        ]9;4;1;98
+Indexing: 595/605 ETA: 0s        ]9;4;1;99
+Indexing: 596/605 ETA: 0s        ]9;4;1;99
+Indexing: 597/605 ETA: 0s        ]9;4;1;99
+Indexing: 598/605 ETA: 0s        ]9;4;1;99
+Indexing: 599/605 ETA: 0s        ]9;4;1;99
+Indexing: 600/605 ETA: 0s        ]9;4;1;99
+Indexing: 601/605 ETA: 0s        ]9;4;1;100
+Indexing: 602/605 ETA: 0s        ]9;4;1;100
+Indexing: 603/605 ETA: 0s        ]9;4;1;100
+Indexing: 604/605 ETA: 0s        ]9;4;1;100
+Indexing: 605/605 ETA: 0s        ]9;4;0]9;4;3]9;4;1;5
+Indexing: 1/22        ]9;4;1;9
+Indexing: 2/22        ]9;4;1;14
+Indexing: 3/22 ETA: 0s        ]9;4;1;18
+Indexing: 4/22 ETA: 0s        ]9;4;1;23
+Indexing: 5/22 ETA: 0s        ]9;4;1;27
+Indexing: 6/22 ETA: 0s        ]9;4;1;32
+Indexing: 7/22 ETA: 0s        ]9;4;1;36
+Indexing: 8/22 ETA: 0s        ]9;4;1;41
+Indexing: 9/22 ETA: 0s        ]9;4;1;45
+Indexing: 10/22 ETA: 0s        ]9;4;1;50
+Indexing: 11/22 ETA: 0s        ]9;4;1;55
+Indexing: 12/22 ETA: 0s        ]9;4;1;59
+Indexing: 13/22 ETA: 0s        ]9;4;1;64
+Indexing: 14/22 ETA: 0s        ]9;4;1;68
+Indexing: 15/22 ETA: 0s        ]9;4;1;73
+Indexing: 16/22 ETA: 0s        ]9;4;1;77
+Indexing: 17/22 ETA: 0s        ]9;4;1;82
+Indexing: 18/22 ETA: 0s        ]9;4;1;86
+Indexing: 19/22 ETA: 0s        ]9;4;1;91
+Indexing: 20/22 ETA: 0s        ]9;4;1;95
+Indexing: 21/22 ETA: 0s        ]9;4;1;100
+Indexing: 22/22 ETA: 0s        ]9;4;0]9;4;3]9;4;0]9;4;3]9;4;0]9;4;3ENOENT: no such file or directory, open '/home/ubuntu/agents/data-pipeline-agent/memory '
+    path: "/home/ubuntu/agents/data-pipeline-agent/memory\u0000",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+
+Bun v1.3.8 (Linux x64)
+
+Running qmd embed (this takes 4-8 min)...
+qmd embed timed out
+Running qmd status...
+QMD Status
+
+Index: /home/ubuntu/.cache/qmd/index.sqlite
+Size:  13.9 MB
+
+Documents
+  Total:    627 files indexed
+  Vectors:  800 embedded
+  Pending:  323 need embedding (run 'qmd embed')
+  Updated:  1h ago
+
+Collections
+  clawd (qmd://clawd/)
+    Pattern:  **/*.md
+    Files:    605 (updated 1h ago)
+    Contexts: 1
+      /: Sophie's workspace - personal memory files, daily notes, ...
+  clawdbot-docs (qmd://clawdbot-docs/)
+    Pattern:  **/*.md
+    Files:    22 (updated 2d ago)
+    Contexts: 1
+      /: Clawdbot technical documentation - configuration, skills,...
+  memory-root-data-pipeline (qmd://memory-root-data-pipeline/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-data-pipeline (qmd://memory-alt-data-pipeline/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-data-pipeline (qmd://memory-dir-data-pipeline/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-devops (qmd://memory-root-devops/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-devops (qmd://memory-alt-devops/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-devops (qmd://memory-dir-devops/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-coder (qmd://memory-root-coder/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-coder (qmd://memory-alt-coder/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-coder (qmd://memory-dir-coder/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-research (qmd://memory-root-research/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-research (qmd://memory-alt-research/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-research (qmd://memory-dir-research/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-main (qmd://memory-root-main/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-main (qmd://memory-alt-main/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-main (qmd://memory-dir-main/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  learnings-main (qmd://learnings-main/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-neo (qmd://memory-root-neo/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-neo (qmd://memory-alt-neo/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-neo (qmd://memory-dir-neo/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-kvoth (qmd://memory-root-kvoth/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-kvoth (qmd://memory-alt-kvoth/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-kvoth (qmd://memory-dir-kvoth/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-michelangelo (qmd://memory-root-michelangelo/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-michelangelo (qmd://memory-alt-michelangelo/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-michelangelo (qmd://memory-dir-michelangelo/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-hemingway (qmd://memory-root-hemingway/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-hemingway (qmd://memory-alt-hemingway/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-hemingway (qmd://memory-dir-hemingway/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-viral (qmd://memory-root-viral/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-viral (qmd://memory-alt-viral/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-viral (qmd://memory-dir-viral/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+  memory-root-scrooge (qmd://memory-root-scrooge/)
+    Pattern:  MEMORY.md
+    Files:    0 (updated never)
+  memory-alt-scrooge (qmd://memory-alt-scrooge/)
+    Pattern:  memory.md
+    Files:    0 (updated never)
+  memory-dir-scrooge (qmd://memory-dir-scrooge/)
+    Pattern:  **/*.md
+    Files:    0 (updated never)
+
+Examples
+  # List files in a collection
+  qmd ls clawd
+  # Get a document
+  qmd get qmd://clawd/path/to/file.md
+  # Search within a collection
+  qmd search "query" -c clawd
+
+
+=== Summary ===
+Files updated: 0
+Chunks embedded: 0
+Errors: 2
+  - qmd update failed
+  - qmd embed failed

@@ -1,0 +1,10 @@
+{
+  "task_type": "pr-review-fix",
+  "label": "neo-pr26-cron-analytics-fix",
+  "pr_number": 26,
+  "issue_number": 25,
+  "timeout_seconds": 1200,
+  "task": "You are working on the slideheroes-internal-tools repo at ~/clawd/slideheroes-internal-tools/app.\n\nFix the CodeRabbit review comment on PR #26:\n- In app/src/app/cron-analytics/page.tsx, change lg:grid-cols-6 to lg:grid-cols-7 (now 7 stat cards with Skipped)\n- Check for any NaN bugs in the skipped runs display\n\nAfter fixing:\n1. Run: pnpm build (from the app/ directory)\n2. Commit with message: \"fix: adjust grid cols for skipped card + NaN guard\"\n3. Push to the existing branch\n",
+  "result": "failed",
+  "completed_at": "2026-03-03T17:37:49.002679+00:00"
+}

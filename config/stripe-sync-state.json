@@ -2,31 +2,31 @@
   "objects": {
     "customers": {
       "last_created": 1768407700,
-      "last_sync_iso": "2026-03-02T11:01:55.054697+00:00"
+      "last_sync_iso": "2026-03-03T11:01:36.357692+00:00"
     },
     "products": {
       "last_created": 1765896372,
-      "last_sync_iso": "2026-03-02T11:02:01.768847+00:00"
+      "last_sync_iso": "2026-03-03T11:01:42.214039+00:00"
     },
     "prices": {
       "last_created": 1765896373,
-      "last_sync_iso": "2026-03-02T11:02:07.002623+00:00"
+      "last_sync_iso": "2026-03-03T11:01:46.701910+00:00"
     },
     "subscriptions": {
       "last_created": 1768407700,
-      "last_sync_iso": "2026-03-02T11:02:13.074277+00:00"
+      "last_sync_iso": "2026-03-03T11:01:53.829020+00:00"
     },
     "invoices": {
       "last_created": 1771355149,
-      "last_sync_iso": "2026-03-02T11:02:17.697051+00:00"
+      "last_sync_iso": "2026-03-03T11:01:59.390653+00:00"
     },
     "payment_intents": {
       "last_created": 1771358804,
-      "last_sync_iso": "2026-03-02T11:02:24.970959+00:00"
+      "last_sync_iso": "2026-03-03T11:02:04.890431+00:00"
     },
     "charges": {
       "last_created": 1771358806,
-      "last_sync_iso": "2026-03-02T11:02:32.068563+00:00"
+      "last_sync_iso": "2026-03-03T11:02:12.025116+00:00"
     }
   }
 }

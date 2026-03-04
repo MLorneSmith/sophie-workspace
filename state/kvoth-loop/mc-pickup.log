@@ -188,3 +188,52 @@
 [2026-03-02 23:00:05 UTC] [kvoth] 'MC#661' hit daily cooldown, skipping
 [2026-03-02 23:00:05 UTC] [kvoth] 'MC#660' hit daily cooldown, skipping
 [2026-03-02 23:00:05 UTC] [kvoth] MC pickup complete: 0 queued from 2 found
+[2026-03-03 14:00:08 UTC] [kvoth] Queued spawn: kvoth-mc-661 (MC#661)
+[2026-03-03 14:00:18 UTC] [kvoth] Discord notification failed: Command '['openclaw', 'message', 'send', '--channel', 'discord', '--target', 'channel:1477840192240091189', '--message', '🔍 **Kvoth queued:** kvoth-mc-661']' timed out after 10 seconds
+[2026-03-03 14:00:18 UTC] [kvoth] Spawn queue processor triggered
+[2026-03-03 14:00:18 UTC] [kvoth] Queued spawn: kvoth-mc-660 (MC#660)
+[2026-03-03 14:00:29 UTC] [kvoth] Discord notification failed: Command '['openclaw', 'message', 'send', '--channel', 'discord', '--target', 'channel:1477840192240091189', '--message', '🔍 **Kvoth queued:** kvoth-mc-660']' timed out after 10 seconds
+[2026-03-03 14:00:29 UTC] [kvoth] Spawn queue processor triggered
+[2026-03-03 14:00:29 UTC] [kvoth] MC pickup complete: 2 queued from 2 found
+[2026-03-03 15:00:02 UTC] [kvoth] Run for 'MC#661' expired (60m), clearing
+[2026-03-03 15:00:02 UTC] [kvoth] 'MC#661' already queued in last 60m, skipping
+[2026-03-03 15:00:02 UTC] [kvoth] Run for 'MC#660' expired (60m), clearing
+[2026-03-03 15:00:02 UTC] [kvoth] 'MC#660' already queued in last 60m, skipping
+[2026-03-03 15:00:02 UTC] [kvoth] MC pickup complete: 0 queued from 2 found
+[2026-03-03 16:00:03 UTC] [kvoth] Queued spawn: kvoth-mc-661 (MC#661)
+[2026-03-03 16:00:08 UTC] [kvoth] Spawn queue processor triggered
+[2026-03-03 16:00:08 UTC] [kvoth] Queued spawn: kvoth-mc-660 (MC#660)
+[2026-03-03 16:00:18 UTC] [kvoth] Discord notification failed: Command '['openclaw', 'message', 'send', '--channel', 'discord', '--target', 'channel:1477840192240091189', '--message', '🔍 **Kvoth queued:** kvoth-mc-660']' timed out after 10 seconds
+[2026-03-03 16:00:18 UTC] [kvoth] Spawn queue processor triggered
+[2026-03-03 16:00:18 UTC] [kvoth] MC pickup complete: 2 queued from 2 found
+[2026-03-03 17:00:02 UTC] [kvoth] Run for 'MC#661' expired (60m), clearing
+[2026-03-03 17:00:02 UTC] [kvoth] 'MC#661' already queued in last 60m, skipping
+[2026-03-03 17:00:02 UTC] [kvoth] Run for 'MC#660' expired (60m), clearing
+[2026-03-03 17:00:02 UTC] [kvoth] 'MC#660' already queued in last 60m, skipping
+[2026-03-03 17:00:02 UTC] [kvoth] MC pickup complete: 0 queued from 2 found
+[2026-03-03 18:00:02 UTC] [kvoth] Queued spawn: kvoth-mc-661 (MC#661)
+[2026-03-03 18:00:12 UTC] [kvoth] Discord notification failed: Command '['openclaw', 'message', 'send', '--channel', 'discord', '--target', 'channel:1477840192240091189', '--message', '🔍 **Kvoth queued:** kvoth-mc-661']' timed out after 10 seconds
+[2026-03-03 18:00:12 UTC] [kvoth] Spawn queue processor triggered
+[2026-03-03 18:00:12 UTC] [kvoth] Queued spawn: kvoth-mc-660 (MC#660)
+[2026-03-03 18:00:22 UTC] [kvoth] Discord notification failed: Command '['openclaw', 'message', 'send', '--channel', 'discord', '--target', 'channel:1477840192240091189', '--message', '🔍 **Kvoth queued:** kvoth-mc-660']' timed out after 10 seconds
+[2026-03-03 18:00:22 UTC] [kvoth] Spawn queue processor triggered
+[2026-03-03 18:00:22 UTC] [kvoth] MC pickup complete: 2 queued from 2 found
+[2026-03-03 19:00:02 UTC] [kvoth] Run for 'MC#661' expired (60m), clearing
+[2026-03-03 19:00:08 UTC] [kvoth] Wake sent: 🚨 kvoth cooldown: MC#661 failed 3x. Please investigate or reassign.
+[2026-03-03 19:00:08 UTC] [kvoth] 'MC#661' hit daily cooldown, skipping
+[2026-03-03 19:00:08 UTC] [kvoth] Run for 'MC#660' expired (60m), clearing
+[2026-03-03 19:00:14 UTC] [kvoth] Wake sent: 🚨 kvoth cooldown: MC#660 failed 3x. Please investigate or reassign.
+[2026-03-03 19:00:14 UTC] [kvoth] 'MC#660' hit daily cooldown, skipping
+[2026-03-03 19:00:14 UTC] [kvoth] MC pickup complete: 0 queued from 2 found
+[2026-03-03 20:00:02 UTC] [kvoth] 'MC#661' hit daily cooldown, skipping
+[2026-03-03 20:00:02 UTC] [kvoth] 'MC#660' hit daily cooldown, skipping
+[2026-03-03 20:00:02 UTC] [kvoth] MC pickup complete: 0 queued from 2 found
+[2026-03-03 21:00:02 UTC] [kvoth] 'MC#661' hit daily cooldown, skipping
+[2026-03-03 21:00:02 UTC] [kvoth] 'MC#660' hit daily cooldown, skipping
+[2026-03-03 21:00:02 UTC] [kvoth] MC pickup complete: 0 queued from 2 found
+[2026-03-03 22:00:02 UTC] [kvoth] 'MC#661' hit daily cooldown, skipping
+[2026-03-03 22:00:02 UTC] [kvoth] 'MC#660' hit daily cooldown, skipping
+[2026-03-03 22:00:02 UTC] [kvoth] MC pickup complete: 0 queued from 2 found
+[2026-03-03 23:00:01 UTC] [kvoth] 'MC#661' hit daily cooldown, skipping
+[2026-03-03 23:00:01 UTC] [kvoth] 'MC#660' hit daily cooldown, skipping
+[2026-03-03 23:00:01 UTC] [kvoth] MC pickup complete: 0 queued from 2 found

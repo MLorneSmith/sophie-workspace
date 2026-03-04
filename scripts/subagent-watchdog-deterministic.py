@@ -27,6 +27,10 @@ import time
 from pathlib import Path
 from typing import Any
 
+# Import session helper
+sys.path.insert(0, str(Path(__file__).parent))
+from openclaw_session_helper import get_session_id_for_channel, send_via_agent
+
 # Configuration
 THRESHOLD_MINUTES = 5
 DISCORD_CHANNEL = "1466532593754312899"  # #general
@@ -141,22 +145,29 @@ def kill_process(pid: int) -> bool:
 
 
 def notify_discord(message: str) -> bool:
-    """Send notification to Discord via message tool (using subprocess)."""
-    try:
-        # Use the openclaw message CLI if available
-        result = subprocess.run(
-            ["openclaw", "message", "send", 
-             "--channel", "discord",
-             "--target", DISCORD_CHANNEL,
-             "--message", message],
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
-        return result.returncode == 0
-    except subprocess.SubprocessError as e:
-        print(f"Discord notification failed: {e}", file=sys.stderr)
-        return False
+    """Send notification to Discord via existing session (reuses session to avoid creating new ones)."""
+    # Find existing session for the channel
+    session_id = get_session_id_for_channel(DISCORD_CHANNEL)
+    if session_id:
+        print(f"Using existing session {session_id} for Discord notification")
+        return send_via_agent(session_id, message, channel="discord", target=DISCORD_CHANNEL)
+    else:
+        print(f"No existing session found, creating new one")
+        # Fallback to message send (creates new session)
+        try:
+            result = subprocess.run(
+                ["openclaw", "message", "send",
+                 "--channel", "discord",
+                 "--target", DISCORD_CHANNEL,
+                 "--message", message],
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            return result.returncode == 0
+        except subprocess.SubprocessError as e:
+            print(f"Discord notification failed: {e}", file=sys.stderr)
+            return False
 
 
 def extract_agent_label(cmdline: str) -> str:

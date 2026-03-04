@@ -5304,3 +5304,63 @@
 [2026-03-03T03:30:07-05:00]   Deleted
 [2026-03-03T03:30:07-05:00] === Cleanup complete: 142 removed, 313 kept, 0 errors ===
 [2026-03-03T03:30:07-05:00] === Cleanup complete: 142 removed, 313 kept, 0 errors ===
+/bin/bash: line 1: openclaw: command not found
+/bin/bash: line 1: openclaw: command not found
+/bin/bash: line 1: openclaw: command not found
+/bin/bash: line 1: openclaw: command not found
+/bin/bash: line 1: openclaw: command not found
+/bin/bash: line 1: openclaw: command not found
+/bin/bash: line 1: openclaw: command not found
+/bin/bash: line 1: openclaw: command not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+[2026-03-04T03:30:01-05:00] === Session cleanup starting (threshold: 72h) ===
+[2026-03-04T03:30:01-05:00] === Session cleanup starting (threshold: 72h) ===
+[2026-03-04T03:30:01-05:00] Exporting sessions to database...
+[2026-03-04T03:30:01-05:00] Exporting sessions to database...
+[2026-03-04T03:30:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-04T03:30:01-05:00]   /home/ubuntu/clawd/scripts/export-token-sessions.py:96: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+[2026-03-04T03:30:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-04T03:30:01-05:00]   now = datetime.utcnow().isoformat()
+[2026-03-04T03:30:02-05:00]   Exporting token sessions for 2026-03-04
+[2026-03-04T03:30:02-05:00]   Exporting token sessions for 2026-03-04
+[2026-03-04T03:30:02-05:00]   (marking as zombie cleanup)
+[2026-03-04T03:30:02-05:00]   (marking as zombie cleanup)
+[2026-03-04T03:30:02-05:00]   ✓ 714472f8-0a2c-46fe-a017-7... 1 models, 0K tokens
+[2026-03-04T03:30:02-05:00]   ✓ 714472f8-0a2c-46fe-a017-7... 1 models, 0K tokens
+[2026-03-04T03:30:02-05:00]   
+[2026-03-04T03:30:02-05:00]   
+[2026-03-04T03:30:02-05:00]   Exported: 1, Skipped: 0
+[2026-03-04T03:30:02-05:00]   Exported: 1, Skipped: 0
+[2026-03-04T03:30:03-05:00] === Cleanup complete: 0 removed, 176 kept, 0 errors ===
+[2026-03-04T03:30:03-05:00] === Cleanup complete: 0 removed, 176 kept, 0 errors ===
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
+/bin/sh: 1: openclaw: not found
