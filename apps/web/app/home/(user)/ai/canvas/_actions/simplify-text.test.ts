@@ -266,7 +266,7 @@ describe("simplifyTextAction", () => {
 					},
 				],
 				expect.objectContaining({
-					model: "gpt-4o",
+					model: process.env.BIFROST_MODEL_CANVAS_QUALITY,
 					temperature: 0.4,
 				}),
 			);
@@ -327,7 +327,7 @@ describe("simplifyTextAction", () => {
 					},
 				],
 				expect.objectContaining({
-					model: "gpt-4o",
+					model: process.env.BIFROST_MODEL_CANVAS_QUALITY,
 					temperature: 0.4,
 				}),
 			);
