@@ -170,7 +170,7 @@ async function executeAgentCall<T>(params: {
 	};
 
 	// Pass Langfuse trace headers through generation options for gateway
-	generationOptions["headers"] = {
+	generationOptions.headers = {
 		"x-langfuse-trace-name": params.agentId,
 		"x-langfuse-session-id": params.sessionId,
 		"x-langfuse-metadata": JSON.stringify({
