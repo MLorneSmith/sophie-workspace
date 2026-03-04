@@ -160,7 +160,7 @@ If `{target}` is not explicitly provided in the request, the command will ask wh
 
 This skill creates and updates a Mission Control task to track content progress.
 
-**Board:** `board_id = 6` (Create Content)
+**Board:** `board_id = 1` (Business OS) with `contentType` field set
 
 ### Task creation (during `/blog-strategy`)
 
@@ -171,7 +171,7 @@ curl -s -X POST "http://localhost:3001/api/v1/tasks" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Blog Post: [slug]",
-    "board_id": 6,
+    "board_id": 1,
     "contentType": "blog_post",
     "contentPhase": "ideation",
     "priority": "medium"
@@ -189,7 +189,7 @@ Store the returned `id` in the strategy YAML:
 ```yaml
 mission_control:
   task_id: 123
-  board_id: 6
+  board_id: 1
   created_at: "2026-02-05T12:34:56Z"
 ```
 

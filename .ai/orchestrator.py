@@ -133,7 +133,8 @@ def detect_agent(task: Dict) -> str:
         return "coder"
     if board_id == 4:  # AI Systems
         return "coder"
-    if board_id == 6:  # Audience
+    # Route content tasks to writer (contentType set on Board 1 for content)
+    if task.get("contentType"):
         return "writer"
     return "planner"
 
