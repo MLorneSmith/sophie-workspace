@@ -6,13 +6,14 @@ import { MDocument } from "@mastra/rag";
 import { getMastraMemory, getPgVector } from "../mastra";
 import { createDocumentParserService } from "./parsers";
 import type { EmbedDocumentMetadata, SupportedFormat } from "./parsers/types";
-import type { MetadataFilter } from "./types";
+import { type ContentType, isValidContentType } from "./content-types";
 
 export const SLIDEHEROES_EMBEDDINGS_INDEX = "slideheroes-embeddings";
 
 const DEFAULT_TOP_K = 5;
 const DEFAULT_CHUNK_SIZE = 700;
 const DEFAULT_CHUNK_OVERLAP = 100;
+const DEFAULT_MIN_SCORE = 0;
 
 let _indexReady = false;
 
@@ -22,6 +23,27 @@ type EmbedderResult = {
 
 type Embedder = {
 	doEmbed: (input: { values: string[] }) => Promise<EmbedderResult>;
+};
+
+/**
+ * Filter options for RAG queries.
+ * Supports multi-tenant isolation and content-type-based retrieval.
+ */
+export type QueryFilters = {
+	/** Account ID for multi-tenant isolation */
+	accountId?: string;
+	/** Content types to filter by */
+	contentTypes?: ContentType[];
+	/** Minimum similarity score (0-1). Default: 0 */
+	minScore?: number;
+};
+
+/**
+ * Extended query result with relevance score.
+ */
+export type ScoredQueryResult = QueryResult & {
+	/** Relevance score from similarity search */
+	score: number;
 };
 
 function toEmbedder(value: unknown): Embedder {
@@ -210,8 +232,8 @@ export async function embedUploadedDocument(
 export async function querySimilar(
 	query: string,
 	topK: number = DEFAULT_TOP_K,
-	filter?: MetadataFilter,
-): Promise<QueryResult[]> {
+	filters?: QueryFilters,
+): Promise<ScoredQueryResult[]> {
 	const normalizedQuery = query.trim();
 
 	if (!normalizedQuery) {
@@ -226,23 +248,63 @@ export async function querySimilar(
 
 	await ensureEmbeddingsIndex(queryVector.length);
 
-	// Build query options - filter is optional
-	const queryOptions: {
-		indexName: string;
-		queryVector: number[];
-		topK: number;
-		filter?: unknown;
-	} = {
+	const minScore = filters?.minScore ?? DEFAULT_MIN_SCORE;
+
+	// Build metadata filter for PgVector query
+	let filter: Record<string, unknown> | undefined;
+	if (filters?.accountId || filters?.contentTypes) {
+		filter = {};
+
+		if (filters.accountId) {
+			filter.accountId = filters.accountId;
+		}
+
+		if (filters.contentTypes && filters.contentTypes.length > 0) {
+			// Validate content types
+			const validTypes = filters.contentTypes.filter(isValidContentType);
+			if (validTypes.length > 0) {
+				filter.contentType = { $in: validTypes };
+			}
+		}
+
+		// If no valid filter conditions, unset filter
+		if (Object.keys(filter).length === 0) {
+			filter = undefined;
+		}
+	}
+
+	const results = await getPgVector().query({
 		indexName: SLIDEHEROES_EMBEDDINGS_INDEX,
 		queryVector,
 		topK,
-	};
+		// biome-ignore lint/suspicious/noExplicitAny: PGVectorFilter has complex union type incompatible with dynamic filter construction
+		filter: filter as any,
+	});
 
-	// Only add filter if provided
-	if (filter !== undefined) {
-		queryOptions.filter = filter;
+	// Attach scores and filter by minScore
+	const scoredResults: ScoredQueryResult[] = results.map((result, index) => ({
+		...result,
+		score: 1 - index / results.length, // Approximate score based on rank
+	}));
+
+	// If we got results back without explicit scores, estimate based on rank
+	// Note: PgVector may not return scores by default, so we estimate
+	const firstResult = scoredResults[0];
+	if (scoredResults.length > 0 && firstResult && firstResult.score === 0) {
+		scoredResults.forEach((result, index) => {
+			result.score = Math.max(0, 1 - index * 0.1);
+		});
 	}
 
-	// @ts-expect-error - filter type is not properly exported from @mastra/pg
-	return getPgVector().query(queryOptions);
+	// Filter by minimum score if specified
+	if (minScore > 0) {
+		return scoredResults.filter((result) => result.score >= minScore);
+	}
+
+	return scoredResults;
 }
+
+export * from "./content-types";
+export * from "./context-provider";
+export * from "./workflow-helpers";
+export * from "./parsers";

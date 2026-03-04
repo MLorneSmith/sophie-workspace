@@ -1,3 +1,4 @@
+/// <reference path="./vendor.d.ts" />
 import {
 	MIN_CHARS_PER_PAGE,
 	type DocumentChunk,
