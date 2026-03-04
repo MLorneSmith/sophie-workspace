@@ -14,7 +14,8 @@
  */
 
 import { readdir, readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { embedDocument, querySimilarFiltered } from "./index";
 
@@ -50,7 +51,8 @@ interface PlaybookFile {
  * Get all playbook content files from the playbook-content directory
  */
 async function getPlaybookFiles(): Promise<PlaybookFile[]> {
-	const playbookContentDir = join(__dirname, "playbook-content");
+	const currentDir = dirname(fileURLToPath(import.meta.url));
+	const playbookContentDir = join(currentDir, "playbook-content");
 
 	const files = await readdir(playbookContentDir).catch(() => []);
 
@@ -205,8 +207,12 @@ export async function seedPlaybooks(): Promise<{
 }
 
 /**
- * Force reseed all playbooks - deletes existing and re-embeds
- * Use with caution - this will create new embedding IDs
+ * Force reseed all playbooks by re-embedding all content.
+ *
+ * WARNING: This does NOT delete existing embeddings first.
+ * Each call creates NEW embeddings with new IDs, resulting in duplicates.
+ * Use only for development/testing or when you plan to manually purge
+ * old playbook embeddings from the vector store beforehand.
  */
 export async function reseedPlaybooks(): Promise<{
 	total: number;

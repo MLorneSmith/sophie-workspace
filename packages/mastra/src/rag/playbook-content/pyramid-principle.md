@@ -73,7 +73,7 @@ When presenting multiple supporting points, use parallel language and structure.
 **Top**: We should approve the $2M digital transformation project.
 
 **Supporting**:
-1. Market dynamics require it (competitors are数字化)
+1. Market dynamics require it (competitors are digitizing)
 2. ROI analysis shows positive returns within 18 months
 3. We have the team and technology to execute
 

@@ -118,7 +118,7 @@ Divide your slide into a 3x3 grid. Place key elements along the lines or at inte
 
 ### Common Layouts
 - **Title + body**: Simple, effective
-- **Two columns**: Comparison or并列
+- **Two columns**: Comparison or side-by-side content
 - **Image + text**: Visual + explanation
 - **Centered**: Emphasis on single element
 
