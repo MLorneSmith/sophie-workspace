@@ -21,7 +21,9 @@
 		"@mastra/pg": "^1.6.1",
 		"@mastra/rag": "^2.1.0",
 		"@supabase/supabase-js": "2.86.2",
+		"officeparser": "^6.0.4",
 		"openai": "^6.9.1",
+		"pdf.js-extract": "^0.2.1",
 		"zod": "^4.1.13"
 	},
 	"devDependencies": {
