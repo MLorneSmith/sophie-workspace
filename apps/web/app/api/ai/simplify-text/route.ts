@@ -1,9 +1,7 @@
 // export const runtime = "edge";
 
 import {
-	type ChatCompletionOptions,
 	type ChatMessage,
-	createReasoningOptimizedConfig,
 	getChatCompletion,
 	PromptManager,
 	textSimplificationTemplate,
@@ -42,13 +40,6 @@ export const POST = enhanceRouteHandler(
 				runtime: "edge",
 			});
 
-			// Create config with cache namespacing
-			const config = createReasoningOptimizedConfig({
-				userId: data.userId,
-				presentationId: data.canvasId,
-				context: `simplify-${data.sectionType}`,
-			});
-
 			// Compile the template with variables
 			const compiledMessages = textSimplificationTemplate.map(
 				(message: ChatMessage) => ({
@@ -60,14 +51,10 @@ export const POST = enhanceRouteHandler(
 			);
 
 			// Get completion
-			const options: ChatCompletionOptions = {
-				model: "gpt-4",
-				temperature: 0.7,
-			};
-
 			const response = await getChatCompletion(compiledMessages, {
-				config,
-				...options,
+				model: "gpt-4o",
+				temperature: 0.4,
+				virtualKey: process.env.BIFROST_VK_CANVAS_QUALITY,
 			});
 
 			// Calculate duration for monitoring

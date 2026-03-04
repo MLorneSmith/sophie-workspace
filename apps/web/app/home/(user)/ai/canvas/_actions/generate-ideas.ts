@@ -2,10 +2,7 @@
 
 import {
 	baseInstructions,
-	type ChatCompletionOptions,
 	type ChatMessage,
-	ConfigManager,
-	createOpenAIOnlyConfig,
 	getChatCompletion,
 	ideasCreatorSystem,
 	improvementFormat,
@@ -61,17 +58,6 @@ export const generateIdeasAction = enhanceAction(
 				type: data.type,
 			});
 
-			// Create and normalize config using OpenAI-only config to avoid authentication issues
-			const config = createOpenAIOnlyConfig({
-				userId: user.id,
-				context: `${data.type}-ideas`,
-			});
-			const normalizedConfig = ConfigManager.normalizeConfig(config);
-
-			if (!normalizedConfig) {
-				throw new Error("Failed to normalize config");
-			}
-
 			// Generate messages using partials
 			const messages: ChatMessage[] = [
 				{
@@ -99,11 +85,12 @@ ${improvementFormat}`,
 
 			// Get completion from AI Gateway
 			const response = await getChatCompletion(messages, {
-				config: normalizedConfig,
+				model: "gpt-4o",
+				virtualKey: process.env.BIFROST_VK_CANVAS_IDEAS,
 				userId: user.id,
 				feature: `canvas-${data.type}-ideas`,
-				sessionId: data.sessionId, // Include session ID for cost tracking
-			} as ChatCompletionOptions);
+				sessionId: data.sessionId,
+			});
 
 			// Calculate duration for monitoring
 			const _duration = performance.now() - startTime;

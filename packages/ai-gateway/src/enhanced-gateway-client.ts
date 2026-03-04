@@ -6,13 +6,14 @@ const { getLogger } = createServiceLogger("AI-GATEWAY");
 
 // Define the Bifrost Gateway URL
 const BIFROST_GATEWAY_URL =
-	process.env.BIFROST_GATEWAY_URL || "https://bifrost.slideheroes.com/v1";
+	process.env.BIFROST_GATEWAY_URL ||
+	process.env.BIFROST_BASE_URL ||
+	"https://bifrost.slideheroes.com/v1";
 const OPENAI_DIRECT_URL = "https://api.openai.com/v1";
 
 function isBifrostConfigured(): boolean {
 	return Boolean(
-		process.env.BIFROST_GATEWAY_URL &&
-			process.env.BIFROST_CF_ACCESS_CLIENT_ID &&
+		process.env.BIFROST_CF_ACCESS_CLIENT_ID &&
 			process.env.BIFROST_CF_ACCESS_CLIENT_SECRET,
 	);
 }
@@ -78,8 +79,9 @@ async function _createBifrostHeaders(options: {
 	teamId?: string;
 	feature?: string;
 	sessionId?: string;
+	virtualKey?: string;
 }) {
-	const { userId, teamId, feature, sessionId } = options;
+	const { userId, teamId, feature, sessionId, virtualKey } = options;
 
 	const headers: Record<string, string> = {
 		"CF-Access-Client-Id": process.env.BIFROST_CF_ACCESS_CLIENT_ID || "",
@@ -87,8 +89,10 @@ async function _createBifrostHeaders(options: {
 			process.env.BIFROST_CF_ACCESS_CLIENT_SECRET || "",
 	};
 
-	// Add tracking metadata as custom headers (for local tracking, not sent to Bifrost)
-	// Note: Bifrost may not forward these headers, so we store them for local usage tracking
+	// Add virtual key header if provided
+	if (virtualKey) headers["x-bf-vk"] = virtualKey;
+
+	// Add tracking metadata as custom headers
 	if (userId) headers["x-bifrost-user-id"] = userId;
 	if (teamId) headers["x-bifrost-team-id"] = teamId;
 	if (feature) headers["x-bifrost-feature"] = feature;
@@ -102,8 +106,8 @@ interface BifrostClientOptions {
 	teamId?: string;
 	feature?: string;
 	sessionId?: string;
-	config?: string | Record<string, unknown>; // Kept for backward compatibility but not used
-	model?: string; // Added model parameter to determine provider
+	virtualKey?: string;
+	model?: string;
 }
 
 /**
@@ -118,15 +122,22 @@ export async function _createGatewayClient(options: BifrostClientOptions = {}) {
 		teamId,
 		feature,
 		sessionId,
+		virtualKey,
 		model = "gpt-3.5-turbo",
 	} = options;
 
 	// Determine the correct provider based on the model and get Bifrost-formatted model
 	const { provider, bifrostModel } = await getProviderForModel(model);
 
+	// When using virtual keys, Bifrost expects plain model names (e.g. "gpt-4o")
+	// because the VK config already defines provider routing.
+	// Without virtual keys, Bifrost needs provider-prefixed names (e.g. "openai/gpt-4o").
+	const resolvedModel = virtualKey ? model : bifrostModel;
+
 	(await getLogger()).info(`Creating gateway client for model: ${model}`, {
 		provider,
-		bifrostModel,
+		resolvedModel,
+		hasVirtualKey: !!virtualKey,
 	});
 
 	// When Bifrost is not configured, call providers directly
@@ -162,17 +173,21 @@ export async function _createGatewayClient(options: BifrostClientOptions = {}) {
 		teamId,
 		feature,
 		sessionId,
+		virtualKey,
 	});
 
 	// Log the complete headers for debugging
 	(await getLogger()).info("Complete Bifrost headers:", { data: headers });
 
+	// When a virtual key is provided, use it as the apiKey so the SDK sends
+	// "Authorization: Bearer sk-bf-..." which Bifrost recognizes natively.
+	// An empty apiKey causes "Authorization: Bearer " which Bifrost rejects.
 	const client = new OpenAI({
-		apiKey: "",
+		apiKey: virtualKey || "bifrost-proxy",
 		baseURL: BIFROST_GATEWAY_URL,
 		defaultHeaders: headers,
 	});
 
-	// Return both client and transformed model name
-	return { client, bifrostModel };
+	// Return both client and resolved model name
+	return { client, bifrostModel: resolvedModel };
 }
