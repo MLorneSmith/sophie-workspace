@@ -122,8 +122,8 @@ function extractInternalLinks(html: string, domain: string): string[] {
 	const links: string[] = [];
 	const domainLower = domain.toLowerCase();
 
-	let match: RegExpExecArray | null;
-	while ((match = linkPattern.exec(html)) !== null) {
+	let match: RegExpExecArray | null = linkPattern.exec(html);
+	while (match !== null) {
 		const href = match[1];
 		if (!href) continue;
 
@@ -144,6 +144,8 @@ function extractInternalLinks(html: string, domain: string): string[] {
 		if (path && path.startsWith("/")) {
 			links.push(path);
 		}
+
+		match = linkPattern.exec(html);
 	}
 
 	return [...new Set(links)];
@@ -178,8 +180,8 @@ function extractJobPostings(html: string): string[] {
 
 	// Extract from h2 and h3 elements (common job listing patterns)
 	const headingPattern = /<(?:h2|h3)[^>]*>([^<]+)<\/[h2h3]>/gi;
-	let match: RegExpExecArray | null;
-	while ((match = headingPattern.exec(html)) !== null) {
+	let match: RegExpExecArray | null = headingPattern.exec(html);
+	while (match !== null) {
 		const matchedText = match[1];
 		if (!matchedText) continue;
 		const text = stripHtmlToText(matchedText).trim();
@@ -193,18 +195,23 @@ function extractJobPostings(html: string): string[] {
 		) {
 			titles.push(text);
 		}
+
+		match = headingPattern.exec(html);
 	}
 
 	// Look for common job listing patterns
 	const jobLinkPattern =
 		/<(?:a|span|div)[^>]*class=["'][^"']*(?:job|title|position|role)[^"']*["'][^>]*>([^<]+)<\/(?:a|span|div)>/gi;
-	while ((match = jobLinkPattern.exec(html)) !== null) {
+	match = jobLinkPattern.exec(html);
+	while (match !== null) {
 		const matchedText = match[1];
 		if (!matchedText) continue;
 		const text = stripHtmlToText(matchedText).trim();
 		if (text.length > 5 && text.length < 150) {
 			titles.push(text);
 		}
+
+		match = jobLinkPattern.exec(html);
 	}
 
 	// Dedupe and limit
@@ -219,9 +226,9 @@ function extractPressReleaseTitles(html: string): string[] {
 
 	// Look for article headings and headlines
 	const headingPattern = /<(?:h1|h2|h3|a)[^>]*>([^<]{10,150})<\/[h123a]>/gi;
-	let match: RegExpExecArray | null;
+	let match: RegExpExecArray | null = headingPattern.exec(html);
 
-	while ((match = headingPattern.exec(html)) !== null) {
+	while (match !== null) {
 		const matchedText = match[1];
 		if (!matchedText) continue;
 		const text = stripHtmlToText(matchedText).trim();
@@ -235,18 +242,23 @@ function extractPressReleaseTitles(html: string): string[] {
 		) {
 			titles.push(text);
 		}
+
+		match = headingPattern.exec(html);
 	}
 
 	// Also look for article patterns with dates
 	const articlePattern =
 		/<article[^>]*>[\s\S]*?<h[1-3][^>]*>([^<]+)<\/h[1-3]>[\s\S]*?<\/article>/gi;
-	while ((match = articlePattern.exec(html)) !== null) {
+	match = articlePattern.exec(html);
+	while (match !== null) {
 		const matchedText = match[1];
 		if (!matchedText) continue;
 		const text = stripHtmlToText(matchedText).trim();
 		if (text.length > 10 && text.length < 200) {
 			titles.push(text);
 		}
+
+		match = articlePattern.exec(html);
 	}
 
 	// Dedupe and limit
