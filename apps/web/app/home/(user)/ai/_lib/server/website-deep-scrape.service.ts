@@ -78,6 +78,10 @@ function isAbortError(error: unknown): boolean {
 	return error instanceof Error && error.name === "AbortError";
 }
 
+/**
+ * Creates an abort controller with timeout and workflow signal handling
+ * Returns the controller and a cleanup function to clear timers
+ */
 function createRequestAbortController(
 	workflowSignal: AbortSignal,
 	deadlineMs: number,
@@ -98,6 +102,9 @@ function createRequestAbortController(
 	};
 }
 
+/**
+ * Parse robots.txt content into structured groups with user agents and rules
+ */
 function parseRobotsTxt(text: string): RobotsGroup[] {
 	const groups: RobotsGroup[] = [];
 	let currentUserAgents: string[] = [];
@@ -161,6 +168,10 @@ function parseRobotsTxt(text: string): RobotsGroup[] {
 	return groups;
 }
 
+/**
+ * Check if a path is allowed based on parsed robots.txt groups
+ * Uses wildcard (*) rules when no user-agent specific rules exist
+ */
 function isPathAllowedByGroups(path: string, groups: RobotsGroup[]): boolean {
 	const wildcardRules = groups
 		.filter((group) => group.userAgents.includes("*"))
@@ -192,6 +203,10 @@ function isPathAllowedByGroups(path: string, groups: RobotsGroup[]): boolean {
 	return matchedRule.type === "allow";
 }
 
+/**
+ * Check if a path is allowed to be scraped by fetching and parsing robots.txt
+ * Returns true by default on any failure (graceful degradation)
+ */
 async function checkRobotsTxt(
 	domain: string,
 	path: string,
