@@ -83,7 +83,7 @@ export function TemplatePicker({
 										className="h-full w-full"
 										style={{
 											background: templateData
-												? `linear-gradient(135deg, ${templateData.colors[0]!.startsWith("#") ? templateData.colors[0] : `#${templateData.colors[0]}`} 0%, ${templateData.colors[3]!.startsWith("#") ? templateData.colors[3] : `#${templateData.colors[3]}`} 100%)`
+												? `linear-gradient(135deg, ${templateData.colors[0]?.startsWith("#") ? templateData.colors[0] : `#${templateData.colors[0]}`} 0%, ${templateData.colors[3]?.startsWith("#") ? templateData.colors[3] : `#${templateData.colors[3]}`} 100%)`
 												: "#e5e7eb",
 										}}
 									/>
