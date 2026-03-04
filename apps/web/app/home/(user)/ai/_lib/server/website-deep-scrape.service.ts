@@ -47,6 +47,21 @@ const PATH_PATTERNS: Record<keyof WebsiteDeepScrapeResult["pages"], string[]> =
 		investors: ["/investors", "/investor-relations", "/ir", "/shareholders"],
 	};
 
+interface FetchedPage {
+	html: string;
+	text: string;
+}
+
+interface RobotsRule {
+	type: "allow" | "disallow";
+	path: string;
+}
+
+interface RobotsGroup {
+	userAgents: string[];
+	rules: RobotsRule[];
+}
+
 // ---------------------------------------------------------------------------
 // Utility Functions
 // ---------------------------------------------------------------------------
@@ -55,50 +70,161 @@ const PATH_PATTERNS: Record<keyof WebsiteDeepScrapeResult["pages"], string[]> =
  * Check if a path is allowed by robots.txt
  * Returns true by default on any failure (graceful degradation)
  */
-async function checkRobotsTxt(domain: string, path: string): Promise<boolean> {
+function isAbortError(error: unknown): boolean {
+	if (error instanceof DOMException) {
+		return error.name === "AbortError";
+	}
+
+	return error instanceof Error && error.name === "AbortError";
+}
+
+function createRequestAbortController(
+	workflowSignal: AbortSignal,
+	deadlineMs: number,
+): { controller: AbortController; cleanup: () => void } {
+	const controller = new AbortController();
+	const remainingMs = Math.max(1, deadlineMs - Date.now());
+	const timeoutMs = Math.min(PAGE_TIMEOUT_MS, remainingMs);
+	const timer = setTimeout(() => controller.abort(), timeoutMs);
+	const onWorkflowAbort = () => controller.abort();
+	workflowSignal.addEventListener("abort", onWorkflowAbort, { once: true });
+
+	return {
+		controller,
+		cleanup: () => {
+			clearTimeout(timer);
+			workflowSignal.removeEventListener("abort", onWorkflowAbort);
+		},
+	};
+}
+
+function parseRobotsTxt(text: string): RobotsGroup[] {
+	const groups: RobotsGroup[] = [];
+	let currentUserAgents: string[] = [];
+	let currentRules: RobotsRule[] = [];
+	let hasRulesForCurrentGroup = false;
+
+	for (const rawLine of text.split("\n")) {
+		const withoutComment = rawLine.split("#")[0]?.trim().toLowerCase() ?? "";
+		if (!withoutComment) {
+			continue;
+		}
+
+		const separatorIndex = withoutComment.indexOf(":");
+		if (separatorIndex === -1) {
+			continue;
+		}
+
+		const directive = withoutComment.slice(0, separatorIndex).trim();
+		const value = withoutComment.slice(separatorIndex + 1).trim();
+
+		if (directive === "user-agent") {
+			if (currentUserAgents.length > 0 && hasRulesForCurrentGroup) {
+				groups.push({
+					userAgents: currentUserAgents,
+					rules: currentRules,
+				});
+				currentUserAgents = [];
+				currentRules = [];
+				hasRulesForCurrentGroup = false;
+			}
+
+			if (value.length > 0) {
+				currentUserAgents.push(value);
+			}
+			continue;
+		}
+
+		if (
+			(directive === "allow" || directive === "disallow") &&
+			currentUserAgents.length > 0
+		) {
+			hasRulesForCurrentGroup = true;
+			if (directive === "disallow" && value.length === 0) {
+				continue;
+			}
+
+			currentRules.push({
+				type: directive,
+				path: value,
+			});
+		}
+	}
+
+	if (currentUserAgents.length > 0) {
+		groups.push({
+			userAgents: currentUserAgents,
+			rules: currentRules,
+		});
+	}
+
+	return groups;
+}
+
+function isPathAllowedByGroups(path: string, groups: RobotsGroup[]): boolean {
+	const wildcardRules = groups
+		.filter((group) => group.userAgents.includes("*"))
+		.flatMap((group) => group.rules);
+
+	if (wildcardRules.length === 0) {
+		return true;
+	}
+
+	let matchedRule: RobotsRule | null = null;
+	for (const rule of wildcardRules) {
+		if (!path.startsWith(rule.path)) {
+			continue;
+		}
+
+		if (
+			!matchedRule ||
+			rule.path.length > matchedRule.path.length ||
+			(rule.path.length === matchedRule.path.length && rule.type === "allow")
+		) {
+			matchedRule = rule;
+		}
+	}
+
+	if (!matchedRule) {
+		return true;
+	}
+
+	return matchedRule.type === "allow";
+}
+
+async function checkRobotsTxt(
+	domain: string,
+	path: string,
+	workflowSignal: AbortSignal,
+	deadlineMs: number,
+): Promise<boolean> {
 	try {
+		if (workflowSignal.aborted) {
+			throw new DOMException("Total scrape timed out", "AbortError");
+		}
+
 		const robotsUrl = `https://${domain}/robots.txt`;
-		const controller = new AbortController();
-		const timer = setTimeout(() => controller.abort(), PAGE_TIMEOUT_MS);
+		const { controller, cleanup } = createRequestAbortController(
+			workflowSignal,
+			deadlineMs,
+		);
 
 		const res = await fetch(robotsUrl, {
 			signal: controller.signal,
+			cache: "no-store",
 		});
 
-		clearTimeout(timer);
+		cleanup();
 
 		if (!res.ok) return true;
 
 		const text = await res.text();
-		const lines = text.split("\n");
-
-		let userAgent = "";
-		const disallows: string[] = [];
-
-		for (const line of lines) {
-			const trimmed = line.trim().toLowerCase();
-			if (trimmed.startsWith("user-agent:")) {
-				const agent = trimmed.substring("user-agent:".length).trim();
-				if (agent === "*" || agent === "") {
-					userAgent = agent;
-				}
-			} else if (trimmed.startsWith("disallow:")) {
-				const disallowPath = trimmed.substring("disallow:".length).trim();
-				if (userAgent === "*" && disallowPath) {
-					disallows.push(disallowPath);
-				}
-			}
+		return isPathAllowedByGroups(path, parseRobotsTxt(text));
+	} catch (error) {
+		if (isAbortError(error)) {
+			throw error;
 		}
 
-		// Check if path matches any disallow rule
-		for (const disallow of disallows) {
-			if (path.startsWith(disallow) || disallow === "/") {
-				return false;
-			}
-		}
-
-		return true;
-	} catch {
 		// Graceful degradation - allow on any failure
 		return true;
 	}
@@ -140,8 +266,8 @@ function extractInternalLinks(html: string, domain: string): string[] {
 		}
 
 		// Normalize path
-		const path = href.replace(/^https?:\/\/[^/]+/, "").split("?")[0];
-		if (path && path.startsWith("/")) {
+		const path = href.replace(/^https?:\/\/[^/]+/, "").split("?")[0] ?? "";
+		if (path.startsWith("/")) {
 			links.push(path);
 		}
 
@@ -179,7 +305,7 @@ function extractJobPostings(html: string): string[] {
 	const titles: string[] = [];
 
 	// Extract from h2 and h3 elements (common job listing patterns)
-	const headingPattern = /<(?:h2|h3)[^>]*>([^<]+)<\/[h2h3]>/gi;
+	const headingPattern = /<(?:h2|h3)[^>]*>([^<]+)<\/(?:h2|h3)>/gi;
 	let match: RegExpExecArray | null = headingPattern.exec(html);
 	while (match !== null) {
 		const matchedText = match[1];
@@ -225,7 +351,8 @@ function extractPressReleaseTitles(html: string): string[] {
 	const titles: string[] = [];
 
 	// Look for article headings and headlines
-	const headingPattern = /<(?:h1|h2|h3|a)[^>]*>([^<]{10,150})<\/[h123a]>/gi;
+	const headingPattern =
+		/<(?:h1|h2|h3|a)[^>]*>([^<]{10,150})<\/(?:h1|h2|h3|a)>/gi;
 	let match: RegExpExecArray | null = headingPattern.exec(html);
 
 	while (match !== null) {
@@ -268,23 +395,42 @@ function extractPressReleaseTitles(html: string): string[] {
 /**
  * Fetch a single page with timeout
  */
-async function fetchPage(domain: string, path: string): Promise<string | null> {
+async function fetchPage(
+	domain: string,
+	path: string,
+	workflowSignal: AbortSignal,
+	deadlineMs: number,
+): Promise<FetchedPage | null> {
 	try {
+		if (workflowSignal.aborted) {
+			throw new DOMException("Total scrape timed out", "AbortError");
+		}
+
 		const url = `https://${domain}${path}`;
-		const controller = new AbortController();
-		const timer = setTimeout(() => controller.abort(), PAGE_TIMEOUT_MS);
+		const { controller, cleanup } = createRequestAbortController(
+			workflowSignal,
+			deadlineMs,
+		);
 
 		const res = await fetch(url, {
 			signal: controller.signal,
+			cache: "no-store",
 		});
 
-		clearTimeout(timer);
+		cleanup();
 
 		if (!res.ok) return null;
 
 		const html = await res.text();
-		return stripHtmlToText(html).substring(0, 2000);
-	} catch {
+		return {
+			html,
+			text: stripHtmlToText(html).substring(0, 2000),
+		};
+	} catch (error) {
+		if (isAbortError(error)) {
+			throw error;
+		}
+
 		return null;
 	}
 }
@@ -318,29 +464,53 @@ export async function scrapeWebsiteDeep(
 		.replace(/^https?:\/\//, "")
 		.replace(/\/$/, "");
 
+	const workflowAbortController = new AbortController();
+	const workflowTimer = setTimeout(
+		() => workflowAbortController.abort(),
+		TOTAL_TIMEOUT_MS,
+	);
+	const deadlineMs = Date.now() + TOTAL_TIMEOUT_MS;
+
 	try {
 		// Step 1: Fetch homepage to extract internal links
-		const homepageHtml = await fetchPage(normalizedDomain, "/");
-		if (!homepageHtml) {
+		const homepage = await fetchPage(
+			normalizedDomain,
+			"/",
+			workflowAbortController.signal,
+			deadlineMs,
+		);
+		if (!homepage) {
 			return result;
 		}
 
-		const internalLinks = extractInternalLinks(homepageHtml, normalizedDomain);
+		const internalLinks = extractInternalLinks(homepage.html, normalizedDomain);
 
 		// Step 2: Find matching links for each category
 		const pagePromises: Array<{
 			category: keyof WebsiteDeepScrapeResult["pages"];
-			promise: Promise<{ content: string | null; path: string }>;
+			promise: Promise<{
+				page: FetchedPage | null;
+				path: string;
+			}>;
 		}> = [];
 
 		for (const [category, patterns] of Object.entries(PATH_PATTERNS)) {
+			if (workflowAbortController.signal.aborted) {
+				throw new DOMException("Total scrape timed out", "AbortError");
+			}
+
 			// First try to find from extracted links
 			let targetPath = findMatchingLink(internalLinks, patterns);
 
 			// If no match, try common paths directly
 			if (!targetPath) {
 				for (const pattern of patterns) {
-					const allowed = await checkRobotsTxt(normalizedDomain, pattern);
+					const allowed = await checkRobotsTxt(
+						normalizedDomain,
+						pattern,
+						workflowAbortController.signal,
+						deadlineMs,
+					);
 					if (allowed) {
 						targetPath = pattern;
 						break;
@@ -350,7 +520,12 @@ export async function scrapeWebsiteDeep(
 
 			// Check robots.txt before fetching
 			if (targetPath) {
-				const allowed = await checkRobotsTxt(normalizedDomain, targetPath);
+				const allowed = await checkRobotsTxt(
+					normalizedDomain,
+					targetPath,
+					workflowAbortController.signal,
+					deadlineMs,
+				);
 				if (!allowed) {
 					continue;
 				}
@@ -359,52 +534,49 @@ export async function scrapeWebsiteDeep(
 				pagePromises.push({
 					category: category as keyof WebsiteDeepScrapeResult["pages"],
 					promise: (async () => {
-						const content = await fetchPage(normalizedDomain, pathToFetch);
-						return { content, path: pathToFetch };
+						const page = await fetchPage(
+							normalizedDomain,
+							pathToFetch,
+							workflowAbortController.signal,
+							deadlineMs,
+						);
+						return { page, path: pathToFetch };
 					})(),
 				});
 			}
 		}
 
-		// Step 3: Fetch all pages in parallel with timeout
-		const fetchPromise = Promise.all(
+		// Step 3: Fetch all pages in parallel
+		const pageResults = await Promise.all(
 			pagePromises.map(async (p) => {
-				try {
-					const result = await p.promise;
-					return { category: p.category, ...result };
-				} catch {
-					return { category: p.category, content: null, path: "" };
-				}
+				const pageResult = await p.promise;
+				return { category: p.category, ...pageResult };
 			}),
 		);
-
-		const timeoutPromise = new Promise<never>((_, reject) =>
-			setTimeout(
-				() => reject(new Error("Total scrape timed out")),
-				TOTAL_TIMEOUT_MS,
-			),
-		);
-
-		const pageResults = await Promise.race([fetchPromise, timeoutPromise]);
 
 		// Step 4: Populate results
 		for (const pageResult of pageResults) {
 			const category = pageResult.category;
-			result.pages[category] = pageResult.content;
+			result.pages[category] = pageResult.page?.text ?? null;
 
 			// Extract structured data from relevant pages
-			if (pageResult.content && category === "careers") {
-				result.jobPostings = extractJobPostings(pageResult.content);
+			if (pageResult.page?.html && category === "careers") {
+				result.jobPostings = extractJobPostings(pageResult.page.html);
 			}
 
-			if (pageResult.content && category === "newsroom") {
+			if (pageResult.page?.html && category === "newsroom") {
 				result.recentPressReleases = extractPressReleaseTitles(
-					pageResult.content,
+					pageResult.page.html,
 				);
 			}
 		}
-	} catch {
-		// Return result with null pages on catastrophic failure
+	} catch (error) {
+		if (!isAbortError(error)) {
+			// Return result with null pages on catastrophic failure
+		}
+	} finally {
+		clearTimeout(workflowTimer);
+		workflowAbortController.abort();
 	}
 
 	return result;
