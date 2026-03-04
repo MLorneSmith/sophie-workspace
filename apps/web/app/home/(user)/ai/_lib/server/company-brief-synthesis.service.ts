@@ -37,6 +37,11 @@ export interface CompanyBrief {
 		relevantBenchmarks: string[];
 		avoidTopics: string[];
 	};
+	/**
+	 * List of data sources that contributed to this brief.
+	 * Expected values: "apollo", "netrows", "braveSearch", "websiteDeepScrape", "alphaVantage", "secEdgar"
+	 */
+	dataSourcesUsed: string[];
 }
 
 export interface ApolloDataInput {
@@ -60,6 +65,50 @@ export interface WebsiteDeepScrapeInput {
 	recentPressReleases: string[];
 }
 
+/**
+ * Financial data from Alpha Vantage API for public companies.
+ * All fields optional to handle partial API responses.
+ */
+export interface AlphaVantageDataInput {
+	// Company overview
+	revenue?: number | null;
+	grossMargin?: number | null;
+	operatingMargin?: number | null;
+	stockPrice?: number | null;
+	week52High?: number | null;
+	week52Low?: number | null;
+
+	// Analyst ratings
+	analystConsensus?: string | null;
+	analystBuyCount?: number | null;
+	analystHoldCount?: number | null;
+	analystSellCount?: number | null;
+
+	// Valuation
+	peRatio?: number | null;
+	industryAvgPeRatio?: number | null;
+	beta?: number | null;
+}
+
+/**
+ * Regulatory filing data from SEC EDGAR.
+ * All fields optional since not all companies have recent filings.
+ */
+export interface SecEdgarDataInput {
+	/** Risk factors from the most recent 10-K filing */
+	riskFactors?: string[];
+	/** Management Discussion & Analysis summary */
+	mdaSummary?: string;
+	/** Historical revenue by fiscal year */
+	revenueByYear?: Array<{ year: number; amount: number }>;
+	/** Recent 8-K events (filing date, event type, summary) */
+	recentEightKEvents?: Array<{
+		date: string;
+		type: string;
+		summary: string;
+	}>;
+}
+
 export interface CompanyResearchInput {
 	companyName: string;
 	industry?: string;
@@ -77,6 +126,10 @@ export interface CompanyResearchInput {
 	industryResults?: Array<{ title: string; url: string; snippet: string }>;
 	websiteContent?: string | null;
 	websiteDeepScrape?: WebsiteDeepScrapeInput;
+	/** Financial data from Alpha Vantage API (for public companies) */
+	alphaVantageData?: AlphaVantageDataInput;
+	/** Regulatory filing data from SEC EDGAR */
+	secEdgarData?: SecEdgarDataInput;
 }
 
 // ---------------------------------------------------------------------------
@@ -181,6 +234,61 @@ ${investorsContent.substring(0, 800)}`);
 	const deepScrapeSection =
 		deepScrapeSections.length > 0 ? deepScrapeSections.join("\n") : "";
 
+	// Alpha Vantage financial data section
+	const alphaVantageSection = input.alphaVantageData
+		? `
+## Financial Data (Alpha Vantage)
+- Revenue: ${input.alphaVantageData.revenue != null ? `$${input.alphaVantageData.revenue.toLocaleString()}` : "N/A"}
+- Gross Margin: ${input.alphaVantageData.grossMargin != null ? `${input.alphaVantageData.grossMargin}%` : "N/A"}
+- Operating Margin: ${input.alphaVantageData.operatingMargin != null ? `${input.alphaVantageData.operatingMargin}%` : "N/A"}
+- Stock Price: ${input.alphaVantageData.stockPrice != null ? `$${input.alphaVantageData.stockPrice}` : "N/A"}
+- 52-Week Range: $${input.alphaVantageData.week52Low ?? "N/A"} - $${input.alphaVantageData.week52High ?? "N/A"}
+- Analyst Consensus: ${input.alphaVantageData.analystConsensus ?? "N/A"}
+  - Buy: ${input.alphaVantageData.analystBuyCount ?? "N/A"}, Hold: ${input.alphaVantageData.analystHoldCount ?? "N/A"}, Sell: ${input.alphaVantageData.analystSellCount ?? "N/A"}
+- P/E Ratio: ${input.alphaVantageData.peRatio ?? "N/A"} (Industry Avg: ${input.alphaVantageData.industryAvgPeRatio ?? "N/A"})
+- Beta: ${input.alphaVantageData.beta ?? "N/A"}`
+		: "";
+
+	// SEC EDGAR filing data section
+	const secEdgarSection = input.secEdgarData
+		? `
+## SEC Filings (EDGAR)
+${
+	input.secEdgarData.riskFactors && input.secEdgarData.riskFactors.length > 0
+		? `### Key Risk Factors
+${input.secEdgarData.riskFactors
+	.slice(0, 5)
+	.map((r) => `- ${r}`)
+	.join("\n")}`
+		: ""
+}
+${
+	input.secEdgarData.mdaSummary
+		? `### Management Discussion & Analysis
+${input.secEdgarData.mdaSummary.substring(0, 800)}`
+		: ""
+}
+${
+	input.secEdgarData.revenueByYear &&
+	input.secEdgarData.revenueByYear.length > 0
+		? `### Historical Revenue
+${input.secEdgarData.revenueByYear
+	.map((r) => `- ${r.year}: $${r.amount.toLocaleString()}`)
+	.join("\n")}`
+		: ""
+}
+${
+	input.secEdgarData.recentEightKEvents &&
+	input.secEdgarData.recentEightKEvents.length > 0
+		? `### Recent 8-K Events
+${input.secEdgarData.recentEightKEvents
+	.slice(0, 5)
+	.map((e) => `- **${e.date}** [${e.type}]: ${e.summary.substring(0, 150)}`)
+	.join("\n")}`
+		: ""
+}`
+		: "";
+
 	const systemPrompt = `You are an expert business analyst specializing in presentation strategy. Given research data about a company, generate a structured Company Brief that helps a presenter understand the organizational context.
 
 When interpreting website deep scrape data:
@@ -189,6 +297,22 @@ When interpreting website deep scrape data:
 - Newsroom/press releases are the PRIMARY source for recent company developments (prefer over Brave Search snippets)
 - Blog content shows thought leadership topics and public narrative
 - Investor relations content reveals strategic priorities and financial health
+
+When interpreting financial data (Alpha Vantage):
+- Use revenue trends and margins to assess company growth and profitability
+- Stock price and 52-week range indicate market confidence and volatility
+- Analyst consensus and P/E ratio help gauge market expectations relative to fundamentals
+- Beta measures stock volatility relative to the market — high beta = higher risk/reward
+
+When interpreting SEC filings (EDGAR):
+- Risk factors reveal what the company considers its biggest threats
+- MD&A provides management's perspective on performance and strategy
+- 8-K events show recent material developments requiring disclosure
+
+Synthesize across all available sources:
+- Cross-reference financial health from Alpha Vantage with strategic priorities from EDGAR filings
+- Look for corroborating signals (e.g., strong revenue + aggressive hiring = growth phase)
+- Flag disconnects (e.g., declining revenue but positive forward guidance)
 
 Output valid JSON matching this exact schema:
 {
@@ -215,7 +339,8 @@ Output valid JSON matching this exact schema:
     "topicsToAcknowledge": ["string — things the audience already knows about", "..."],
     "relevantBenchmarks": ["string — data points worth referencing", "..."],
     "avoidTopics": ["string — sensitive areas to steer clear of", "..."]
-  }
+  },
+  "dataSourcesUsed": ["string — source identifiers: 'apollo', 'netrows', 'braveSearch', 'websiteDeepScrape', 'alphaVantage', 'secEdgar'"]
 }
 
 Be specific and actionable. Draw inferences from the data available. If information is sparse, make reasonable inferences based on what you know and note them. Focus on what matters for someone preparing a presentation to people at this company.`;
@@ -231,6 +356,8 @@ ${newsSection}
 ${industrySection}
 ${websiteSection}
 ${deepScrapeSection}
+${alphaVantageSection}
+${secEdgarSection}
 
 Respond with ONLY the JSON object, no markdown fences.`;
 
@@ -313,6 +440,30 @@ export async function synthesizeCompanyBrief(
 	}
 
 	const brief = JSON.parse(jsonMatch[0]) as CompanyBrief;
+
+	// Populate dataSourcesUsed based on which input data was provided
+	const dataSourcesUsed: string[] = [];
+
+	if (input.apolloData) {
+		dataSourcesUsed.push("apollo");
+	}
+	if (input.netrowsData) {
+		dataSourcesUsed.push("netrows");
+	}
+	if (input.newsResults && input.newsResults.length > 0) {
+		dataSourcesUsed.push("braveSearch");
+	}
+	if (input.websiteDeepScrape) {
+		dataSourcesUsed.push("websiteDeepScrape");
+	}
+	if (input.alphaVantageData) {
+		dataSourcesUsed.push("alphaVantage");
+	}
+	if (input.secEdgarData) {
+		dataSourcesUsed.push("secEdgar");
+	}
+
+	brief.dataSourcesUsed = dataSourcesUsed;
 
 	logger.info(
 		ctx,
