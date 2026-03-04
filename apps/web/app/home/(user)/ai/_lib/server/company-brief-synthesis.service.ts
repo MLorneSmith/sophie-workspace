@@ -50,6 +50,16 @@ export interface ApolloDataInput {
 	keyExecutives?: Array<{ name: string; title: string }>;
 }
 
+export interface WebsiteDeepScrapeInput {
+	aboutContent: string | null;
+	newsroomContent: string | null;
+	careersContent: string | null;
+	blogContent: string | null;
+	investorsContent: string | null;
+	jobPostings: string[];
+	recentPressReleases: string[];
+}
+
 export interface CompanyResearchInput {
 	companyName: string;
 	industry?: string;
@@ -66,6 +76,7 @@ export interface CompanyResearchInput {
 	newsResults?: Array<{ title: string; url: string; snippet: string }>;
 	industryResults?: Array<{ title: string; url: string; snippet: string }>;
 	websiteContent?: string | null;
+	websiteDeepScrape?: WebsiteDeepScrapeInput;
 }
 
 // ---------------------------------------------------------------------------
@@ -118,7 +129,66 @@ ${input.industryResults.map((r) => `- **${r.title}**: ${r.snippet}`).join("\n")}
 ${input.websiteContent.substring(0, 2000)}`
 		: "";
 
+	// Website Deep Scrape sections
+	const deepScrapeSections: string[] = [];
+
+	if (input.websiteDeepScrape) {
+		const {
+			aboutContent,
+			newsroomContent,
+			careersContent,
+			blogContent,
+			investorsContent,
+			jobPostings,
+			recentPressReleases,
+		} = input.websiteDeepScrape;
+
+		if (aboutContent) {
+			deepScrapeSections.push(`
+## About Page Content
+${aboutContent.substring(0, 1000)}`);
+		}
+
+		if (careersContent || jobPostings.length > 0) {
+			const careersSection = `
+## Careers Page & Job Postings
+${careersContent ? `Page Content: ${careersContent.substring(0, 800)}` : ""}
+${jobPostings.length > 0 ? `Open Positions: ${jobPostings.slice(0, 10).join("; ")}` : ""}`;
+			deepScrapeSections.push(careersSection);
+		}
+
+		if (newsroomContent || recentPressReleases.length > 0) {
+			const newsroomSection = `
+## Newsroom & Press Releases
+${newsroomContent ? `Page Content: ${newsroomContent.substring(0, 800)}` : ""}
+${recentPressReleases.length > 0 ? `Recent Press: ${recentPressReleases.slice(0, 8).join("; ")}` : ""}`;
+			deepScrapeSections.push(newsroomSection);
+		}
+
+		if (blogContent) {
+			deepScrapeSections.push(`
+## Blog / Insights
+${blogContent.substring(0, 800)}`);
+		}
+
+		if (investorsContent) {
+			deepScrapeSections.push(`
+## Investor Relations
+${investorsContent.substring(0, 800)}`);
+		}
+	}
+
+	const deepScrapeSection =
+		deepScrapeSections.length > 0 ? deepScrapeSections.join("\n") : "";
+
 	const systemPrompt = `You are an expert business analyst specializing in presentation strategy. Given research data about a company, generate a structured Company Brief that helps a presenter understand the organizational context.
+
+When interpreting website deep scrape data:
+- About page content reveals company positioning, values, and culture signals
+- Job postings are strategic signals — heavy hiring in AI/ML suggests technology transformation focus, sales expansion indicates market capture, R&D investment signals innovation priority
+- Newsroom/press releases are the PRIMARY source for recent company developments (prefer over Brave Search snippets)
+- Blog content shows thought leadership topics and public narrative
+- Investor relations content reveals strategic priorities and financial health
 
 Output valid JSON matching this exact schema:
 {
@@ -160,6 +230,7 @@ ${netrowsSection}
 ${newsSection}
 ${industrySection}
 ${websiteSection}
+${deepScrapeSection}
 
 Respond with ONLY the JSON object, no markdown fences.`;
 

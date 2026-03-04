@@ -19,6 +19,7 @@ import {
 	synthesizeCompanyBrief,
 } from "../../../_lib/server/company-brief-synthesis.service";
 import { researchCompany } from "../../../_lib/server/company-research.service";
+import { scrapeWebsiteDeep } from "../../../_lib/server/website-deep-scrape.service";
 import {
 	enrichCompany,
 	extractDomain,
@@ -322,22 +323,39 @@ export const researchAudienceAction = enhanceAction(
 						?.replace(/^https?:\/\//, "")
 						.replace(/\/.*$/, "") ?? undefined;
 
-				// Run web research AND Apollo enrichment in parallel
-				const [webResearch, apolloResult] = await Promise.all([
-					withTimeout(
-						researchCompany(data.company, industry, domain),
-						15_000,
-						"Company web research",
-					),
-					apolloPromise.catch((apolloErr) => {
-						logger.warn(
-							ctx,
-							"Apollo enrichment failed (non-blocking): %o",
-							apolloErr,
-						);
-						return null;
-					}),
-				]);
+				// Run web research, Apollo enrichment, and website deep scrape in parallel
+				const websiteDeepScrapePromise = domain
+					? withTimeout(
+							scrapeWebsiteDeep(domain),
+							15_000,
+							"Website deep scrape",
+						)
+					: Promise.resolve(null);
+
+				const [webResearch, apolloResult, websiteDeepScrape] =
+					await Promise.all([
+						withTimeout(
+							researchCompany(data.company, industry, domain),
+							15_000,
+							"Company web research",
+						),
+						apolloPromise.catch((apolloErr) => {
+							logger.warn(
+								ctx,
+								"Apollo enrichment failed (non-blocking): %o",
+								apolloErr,
+							);
+							return null;
+						}),
+						websiteDeepScrapePromise.catch((deepScrapeErr) => {
+							logger.warn(
+								ctx,
+								"Website deep scrape failed (non-blocking): %o",
+								deepScrapeErr,
+							);
+							return null;
+						}),
+					]);
 
 				apolloEnrichment = apolloResult;
 				if (apolloEnrichment?.success && apolloEnrichment.organization) {
@@ -400,6 +418,17 @@ export const researchAudienceAction = enhanceAction(
 					newsResults: webResearch.newsResults,
 					industryResults: webResearch.industryResults,
 					websiteContent: webResearch.websiteContent,
+					websiteDeepScrape: websiteDeepScrape
+						? {
+								aboutContent: websiteDeepScrape.pages.about,
+								newsroomContent: websiteDeepScrape.pages.newsroom,
+								careersContent: websiteDeepScrape.pages.careers,
+								blogContent: websiteDeepScrape.pages.blog,
+								investorsContent: websiteDeepScrape.pages.investors,
+								jobPostings: websiteDeepScrape.jobPostings,
+								recentPressReleases: websiteDeepScrape.recentPressReleases,
+							}
+						: undefined,
 				};
 
 				companyBrief = await withTimeout(
