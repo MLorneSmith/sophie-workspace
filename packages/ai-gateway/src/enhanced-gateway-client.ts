@@ -101,6 +101,9 @@ async function _createBifrostHeaders(options: {
 	return headers;
 }
 
+/** Maximum time (ms) for any single HTTP request to the gateway / provider. */
+const DEFAULT_REQUEST_TIMEOUT_MS = 120_000; // 2 minutes
+
 interface BifrostClientOptions {
 	userId?: string;
 	teamId?: string;
@@ -108,6 +111,8 @@ interface BifrostClientOptions {
 	sessionId?: string;
 	virtualKey?: string;
 	model?: string;
+	/** Per-request timeout in ms. Defaults to DEFAULT_REQUEST_TIMEOUT_MS. */
+	timeout?: number;
 }
 
 /**
@@ -124,6 +129,7 @@ export async function _createGatewayClient(options: BifrostClientOptions = {}) {
 		sessionId,
 		virtualKey,
 		model = "gpt-3.5-turbo",
+		timeout = DEFAULT_REQUEST_TIMEOUT_MS,
 	} = options;
 
 	// Determine the correct provider based on the model and get Bifrost-formatted model
@@ -150,6 +156,7 @@ export async function _createGatewayClient(options: BifrostClientOptions = {}) {
 			const client = new OpenAI({
 				apiKey: process.env.ANTHROPIC_API_KEY || "",
 				baseURL: "https://api.anthropic.com/v1",
+				timeout,
 				defaultHeaders: {
 					"anthropic-version": "2023-06-01",
 				},
@@ -161,6 +168,7 @@ export async function _createGatewayClient(options: BifrostClientOptions = {}) {
 		const client = new OpenAI({
 			apiKey: process.env.OPENAI_API_KEY || "",
 			baseURL: OPENAI_DIRECT_URL,
+			timeout,
 		});
 		return { client, bifrostModel: model }; // Return original model for direct calls
 	}
@@ -183,6 +191,7 @@ export async function _createGatewayClient(options: BifrostClientOptions = {}) {
 	const client = new OpenAI({
 		apiKey: virtualKey || "bifrost-proxy",
 		baseURL: BIFROST_GATEWAY_URL,
+		timeout,
 		defaultHeaders: headers,
 	});
 

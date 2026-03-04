@@ -478,16 +478,26 @@ export const researchAudienceAction = enhanceAction(
 		let briefText = "";
 
 		try {
+			const briefAbort = new AbortController();
+			const briefTimeoutId = setTimeout(
+				() => briefAbort.abort("AI brief generation timed out after 90s"),
+				90_000,
+			);
+
 			const response = await withTimeout(
 				getChatCompletion(messages, {
 					model: process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
 					virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
 					userId: user.id,
 					feature: "workflow-audience-research",
+					timeout: 90_000,
+					signal: briefAbort.signal,
 				}),
 				90_000,
 				"AI brief generation",
 			);
+
+			clearTimeout(briefTimeoutId);
 
 			const jsonMatch = response.content.match(/\{[\s\S]*\}/);
 			if (!jsonMatch) {
@@ -523,7 +533,11 @@ export const researchAudienceAction = enhanceAction(
 		// Ensure Apollo promise is settled (may already be awaited in synthesis path)
 		if (!apolloEnrichment) {
 			try {
-				apolloEnrichment = await apolloPromise;
+				apolloEnrichment = await withTimeout(
+					apolloPromise,
+					15_000,
+					"Apollo enrichment (final await)",
+				);
 			} catch (apolloErr) {
 				logger.warn(
 					ctx,

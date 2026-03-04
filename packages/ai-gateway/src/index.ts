@@ -172,6 +172,10 @@ export interface ChatCompletionOptions {
 	sessionId?: string;
 	checkUsageLimits?: boolean;
 	bypassCredits?: boolean;
+	/** Per-request timeout in ms. Applied at the HTTP client level. */
+	timeout?: number;
+	/** AbortSignal to cancel the request externally (e.g. from a timeout wrapper). */
+	signal?: AbortSignal;
 }
 
 export interface CompletionResult {
@@ -221,6 +225,8 @@ export async function getChatCompletion(
 			sessionId,
 			virtualKey,
 			checkUsageLimits: shouldCheckLimits = true,
+			timeout: requestTimeout,
+			signal,
 		} = options;
 
 		const model = options.model ?? "openai/gpt-5";
@@ -271,6 +277,7 @@ export async function getChatCompletion(
 			sessionId,
 			virtualKey,
 			model,
+			timeout: requestTimeout,
 		});
 
 		// Configure request options
@@ -280,7 +287,9 @@ export async function getChatCompletion(
 			...(temperature !== undefined && { temperature }),
 		};
 
-		const response = await client.chat.completions.create(requestOptions);
+		const response = await client.chat.completions.create(requestOptions, {
+			...(signal && { signal }),
+		});
 
 		// Validate gateway response — empty responses indicate gateway misconfiguration
 		if (!response.choices?.length || !response.choices[0]?.message?.content) {

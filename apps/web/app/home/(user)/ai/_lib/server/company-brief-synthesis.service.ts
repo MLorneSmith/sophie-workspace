@@ -282,16 +282,30 @@ export async function synthesizeCompanyBrief(
 
 	const messages = buildCompanyBriefPrompt(input);
 
-	const response = await withTimeout(
-		getChatCompletion(messages, {
-			model: process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
-			virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
-			userId,
-			feature: "workflow-company-research",
-		}),
+	const synthesisAbort = new AbortController();
+	const synthesisTimeoutId = setTimeout(
+		() =>
+			synthesisAbort.abort("Company brief synthesis timed out after 90s"),
 		90_000,
-		"Company brief synthesis",
 	);
+
+	let response: Awaited<ReturnType<typeof getChatCompletion>>;
+	try {
+		response = await withTimeout(
+			getChatCompletion(messages, {
+				model: process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
+				virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
+				userId,
+				feature: "workflow-company-research",
+				timeout: 90_000,
+				signal: synthesisAbort.signal,
+			}),
+			90_000,
+			"Company brief synthesis",
+		);
+	} finally {
+		clearTimeout(synthesisTimeoutId);
+	}
 
 	const jsonMatch = response.content.match(/\{[\s\S]*\}/);
 	if (!jsonMatch) {
