@@ -27,15 +27,31 @@ export interface RAGAuthorizationResult {
 
 /**
  * Get Supabase client for authorization checks
+ * @param useServiceRole - If true, uses service role key for admin access
  */
-function getSupabaseClient() {
+function getSupabaseClient(useServiceRole: boolean = false) {
 	const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-	const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-	if (!url || !anonKey) {
-		throw new Error(
-			"Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY",
-		);
+	if (!url) {
+		throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL");
+	}
+
+	if (useServiceRole) {
+		const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+		if (!serviceKey) {
+			throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY");
+		}
+		return createClient(url, serviceKey, {
+			auth: {
+				autoRefreshToken: false,
+				persistSession: false,
+			},
+		});
+	}
+
+	const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+	if (!anonKey) {
+		throw new Error("Missing NEXT_PUBLIC_SUPABASE_ANON_KEY");
 	}
 
 	return createClient(url, anonKey);
@@ -43,7 +59,7 @@ function getSupabaseClient() {
 
 /**
  * Check if a user has any role on an account
- * Uses the database function has_role_on_account
+ * Queries the account_user table directly using service role for explicit authorization
  *
  * @param userId - The user ID to check
  * @param accountId - The account ID to check access for
@@ -53,19 +69,27 @@ async function userHasRoleOnAccount(
 	userId: string,
 	accountId: string,
 ): Promise<boolean> {
-	const supabase = getSupabaseClient();
+	// Use service role client to query account_user table directly
+	const supabase = getSupabaseClient(true);
 
-	const { data, error } = await supabase.rpc("has_role_on_account", {
-		account_id: accountId,
-		account_role: null, // Any role
-	});
+	const { data, error } = await supabase
+		.from("account_user")
+		.select("id")
+		.eq("account_id", accountId)
+		.eq("user_id", userId)
+		.limit(1);
 
 	if (error) {
-		// Log error appropriately in production
+		// biome-ignore lint/suspicious/noConsole: RAG authorization - intentional console usage
+		console.error("[RAG Auth] Account membership check failed", {
+			accountId,
+			userId,
+			error,
+		});
 		return false;
 	}
 
-	return data ?? false;
+	return (data?.length ?? 0) > 0;
 }
 
 /**
@@ -194,8 +218,24 @@ export async function getRAGFilters(
 		filters.accountId = authorization.accountId;
 	}
 
-	// Add user ID for personal content
-	filters.userId = userId;
+	// Add user ID filter for personal content types or when no content types specified.
+	// Personal content types require userId filtering: user-upload, deck-history
+	// Account-scoped content (research-corpus) and global content (playbook) should not be filtered by userId.
+	// When contentTypes is undefined/null, we MUST apply userId filter as a safety default
+	// to prevent unfiltered cross-tenant queries.
+	const personalContentTypes = ["user-upload", "deck-history"];
+	const hasExplicitTypes =
+		contentTypes !== undefined &&
+		contentTypes !== null &&
+		contentTypes.length > 0;
+	const includesPersonalType = hasExplicitTypes
+		? contentTypes.some((type) => personalContentTypes.includes(type))
+		: true; // Treat unspecified content types as potentially personal
+
+	// Set userId filter when content types are unspecified or include personal types
+	if (includesPersonalType) {
+		filters.userId = userId;
+	}
 
 	// Add content type filter if specified
 	if (contentTypes && contentTypes.length > 0) {

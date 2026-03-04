@@ -284,8 +284,7 @@ export async function synthesizeCompanyBrief(
 
 	const synthesisAbort = new AbortController();
 	const synthesisTimeoutId = setTimeout(
-		() =>
-			synthesisAbort.abort("Company brief synthesis timed out after 90s"),
+		() => synthesisAbort.abort("Company brief synthesis timed out after 90s"),
 		90_000,
 	);
 

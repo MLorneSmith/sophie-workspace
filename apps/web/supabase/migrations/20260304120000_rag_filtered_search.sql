@@ -31,10 +31,27 @@ RETURNS TABLE (
 	text text
 )
 LANGUAGE plpgsql
-SECURITY INVOKER
+SECURITY DEFINER
 SET search_path = ''
 AS $$
 BEGIN
+	-- Defense-in-depth: verify user has access to the requested account
+	-- This runs as SECURITY DEFINER so it can query account_user regardless of caller role
+	IF filter_account_id IS NOT NULL AND filter_user_id IS NOT NULL THEN
+		IF NOT EXISTS (
+			SELECT 1 FROM public.account_user au
+			WHERE au.account_id = filter_account_id
+			AND au.user_id = filter_user_id
+		) AND NOT EXISTS (
+			SELECT 1 FROM public.accounts a
+			WHERE a.id = filter_account_id
+			AND a.primary_owner_user_id = filter_user_id
+		) THEN
+			-- User has no access to account: return empty results (fail-closed)
+			RETURN;
+		END IF;
+	END IF;
+
 	-- Return filtered results based on metadata
 	-- Handle NULL filters to return all results when filter is not specified
 	-- Special handling for global content: playbooks are accessible to all users
@@ -47,16 +64,18 @@ BEGIN
 		(e.metadata->>'text')::text AS text
 	FROM "slideheroes-embeddings" e
 	WHERE
-		-- Apply account ID filter (skip if NULL)
+		-- Apply account ID filter (fail-closed: require explicit match unless playbook)
 		(
-			filter_account_id IS NULL
-			OR e.metadata->>'accountId' = filter_account_id::text
-			-- Global content (playbooks) is accessible regardless of account
-			OR e.metadata->>'contentType' = 'playbook'
+			e.metadata->>'contentType' = 'playbook'
+			OR (
+				filter_account_id IS NOT NULL
+				AND e.metadata->>'accountId' = filter_account_id::text
+			)
 		)
-		-- Apply user ID filter (skip if NULL)
+		-- Apply user ID filter only to personal content types
 		AND (
 			filter_user_id IS NULL
+			OR e.metadata->>'contentType' NOT IN ('user-upload', 'deck-history')
 			OR e.metadata->>'userId' = filter_user_id::text
 		)
 		-- Apply content type filter (skip if NULL or empty)
@@ -71,11 +90,11 @@ END;
 $$;
 
 -- Grant execute permissions to authenticated and service_role roles
-GRANT EXECUTE ON FUNCTION public.search_embeddings_filtered TO authenticated;
-GRANT EXECUTE ON FUNCTION public.search_embeddings_filtered TO service_role;
+GRANT EXECUTE ON FUNCTION public.search_embeddings_filtered(vector(1536), uuid, uuid, text[], int) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.search_embeddings_filtered(vector(1536), uuid, uuid, text[], int) TO service_role;
 
 -- Add comment for documentation
-COMMENT ON FUNCTION public.search_embeddings_filtered IS
+COMMENT ON FUNCTION public.search_embeddings_filtered(vector(1536), uuid, uuid, text[], int) IS
 'Performs vector similarity search with metadata filtering for multi-tenant RAG.
 Supports filtering by accountId, userId, and contentType.
 Playbook content is globally accessible regardless of account.

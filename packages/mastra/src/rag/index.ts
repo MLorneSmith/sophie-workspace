@@ -33,21 +33,8 @@ let _indexReady = false;
 
 /**
  * Get a Supabase client for calling RPC functions.
- * Uses the DATABASE_URL or MASTRA_PG_CONNECTION_STRING environment variable.
  */
 function getSupabaseClient() {
-	const connectionString =
-		process.env.MASTRA_PG_CONNECTION_STRING ??
-		process.env.DATABASE_URL ??
-		process.env.SUPABASE_DB_URL;
-
-	if (!connectionString) {
-		throw new Error(
-			"Missing DATABASE_URL, MASTRA_PG_CONNECTION_STRING, or SUPABASE_DB_URL for Supabase client",
-		);
-	}
-
-	// Extract URL and key from connection string or use environment variables
 	const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 	const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -334,15 +321,17 @@ export async function querySimilarFiltered(
 	});
 
 	if (error) {
-		// Log error appropriately in production (e.g., using logger)
-		// For now, fallback to unfiltered query on error
-		await ensureEmbeddingsIndex(queryVector.length);
-
-		return getPgVector().query({
-			indexName: SLIDEHEROES_EMBEDDINGS_INDEX,
-			queryVector,
-			topK,
+		// Fail-closed: throw error instead of falling back to unfiltered query
+		// This prevents cross-tenant data leakage when the RPC has issues
+		// biome-ignore lint/suspicious/noConsole: RAG search - intentional console usage
+		console.error("[RAG] Filtered search RPC failed", {
+			accountId: filters.accountId ?? null,
+			userId: filters.userId ?? null,
+			error,
 		});
+		throw new Error(
+			"RAG filtered search failed. Cannot return unfiltered results for security reasons.",
+		);
 	}
 
 	// Transform RPC response to QueryResult format
