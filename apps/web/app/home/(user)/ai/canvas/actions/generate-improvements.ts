@@ -2,10 +2,7 @@
 
 import {
 	baseInstructions,
-	type ChatCompletionOptions,
 	type ChatMessage,
-	ConfigManager,
-	createBalancedOptimizedConfig,
 	getChatCompletion,
 	improvementFormat,
 	improvementProcess,
@@ -56,17 +53,6 @@ export const generateImprovementsAction = enhanceAction(
 				type: data.type,
 			});
 
-			// Create and normalize config
-			const config = createBalancedOptimizedConfig({
-				userId: user.id,
-				context: `${data.type}-improvements`,
-			});
-			const normalizedConfig = ConfigManager.normalizeConfig(config);
-
-			if (!normalizedConfig) {
-				throw new Error("Failed to normalize config");
-			}
-
 			// Start timing for performance monitoring
 			const startTime = performance.now();
 
@@ -98,8 +84,10 @@ ${improvementFormat}`,
 
 			// Get completion from AI Gateway
 			const response = await getChatCompletion(messages, {
-				config: normalizedConfig,
-			} as ChatCompletionOptions);
+				model: "gpt-4o-mini",
+				temperature: 0.6,
+				virtualKey: process.env.BIFROST_VK_CANVAS_SUGGESTIONS,
+			});
 
 			// Calculate duration for monitoring
 			const _duration = performance.now() - startTime;

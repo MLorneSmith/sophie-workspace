@@ -1,20 +1,12 @@
 import { createServiceLogger } from "@kit/shared/logger";
 import { OpenAI } from "openai";
 import { z } from "zod";
-import {
-	ConfigManager,
-	mergeWithUseCase,
-	normalizeConfig,
-	overrideWithPortkey,
-} from "./configs/config-manager";
-import type { Config } from "./configs/types";
 import { _createGatewayClient } from "./enhanced-gateway-client";
 import { initializeAiGatewayDatabase } from "./utils/db-init";
 import { getSupabaseClient } from "./utils/supabase-client";
 import {
 	_calculateCost,
 	_checkUsageLimits,
-	_extractCostFromHeaders,
 	estimateCost,
 	recordApiUsage,
 } from "./utils/usage-tracking";
@@ -173,7 +165,7 @@ const ChatMessagesSchema = z.array(ChatMessageSchema);
 export interface ChatCompletionOptions {
 	model?: string;
 	temperature?: number;
-	config?: string | Config;
+	virtualKey?: string;
 	userId?: string;
 	teamId?: string;
 	feature?: string;
@@ -223,16 +215,16 @@ export async function getChatCompletion(
 		ChatMessagesSchema.parse(messages);
 
 		const {
-			model = "gpt-3.5-turbo",
-			temperature = 0.7,
 			userId,
 			teamId,
 			feature,
 			sessionId,
+			virtualKey,
 			checkUsageLimits: shouldCheckLimits = true,
-			bypassCredits: _bypassCredits = false,
-			config,
 		} = options;
+
+		const model = options.model ?? "gpt-4o";
+		const temperature = options.temperature ?? 0.7;
 
 		// Read environment variable to determine if we should check usage limits
 		const checkUsageLimitsFlag = process.env.CHECK_AI_USAGE_LIMITS === "true";
@@ -256,7 +248,6 @@ export async function getChatCompletion(
 				);
 			}
 		} else {
-			// Log that we're skipping the check
 			(await getLogger()).info("Skipping AI usage limits check:", {
 				reason: !checkUsageLimitsFlag
 					? "feature disabled by environment"
@@ -267,26 +258,50 @@ export async function getChatCompletion(
 			});
 		}
 
-		// Create client with tracking metadata, config, and model info
+		// Create client with tracking metadata and virtual key
 		const { client, bifrostModel } = await _createGatewayClient({
 			userId,
 			teamId,
 			feature,
 			sessionId,
-			config, // Pass config to client creation
-			model, // Pass model to determine the correct provider
+			virtualKey,
+			model,
 		});
 
-		// Configure request options WITHOUT the config parameter
+		// Configure request options
 		const requestOptions: OpenAI.Chat.ChatCompletionCreateParams = {
 			messages,
-			model: bifrostModel, // Use Bifrost-formatted model name
+			model: bifrostModel,
 			temperature,
 		};
 
-		// No longer need to add config to requestOptions
-
 		const response = await client.chat.completions.create(requestOptions);
+
+		// DEBUG: Log raw response to diagnose Bifrost issues
+		try {
+			const fs = await import("node:fs");
+			fs.appendFileSync(
+				"/tmp/bifrost-debug.log",
+				`[${new Date().toISOString()}] RAW_RESPONSE model=${bifrostModel}:\n${JSON.stringify(
+					{
+						id: response.id,
+						model: response.model,
+						choices: response.choices?.map((c) => ({
+							index: c.index,
+							finish_reason: c.finish_reason,
+							content_length: c.message?.content?.length ?? 0,
+							content_preview: c.message?.content?.substring(0, 200),
+							role: c.message?.role,
+						})),
+						usage: response.usage,
+					},
+					null,
+					2,
+				)}\n---\n`,
+			);
+		} catch {
+			/* ignore */
+		}
 
 		// Extract response content
 		const content = response.choices?.[0]?.message?.content || "";
@@ -299,60 +314,7 @@ export async function getChatCompletion(
 			total_tokens: 0,
 		};
 
-		// Log and analyze all response headers to debug cost extraction
-		// @ts-expect-error - Access the headers property
-		const headers = response.headers || {};
-
-		// Log all headers to see what Portkey is actually sending
-		(await getLogger()).info("All Portkey response headers:", {
-			data: {
-				headers:
-					typeof headers === "object"
-						? JSON.stringify(headers)
-						: String(headers),
-				hasHeaders: Object.keys(headers).length > 0,
-				headerKeys: Object.keys(headers),
-			},
-		});
-
-		// Try to find any header related to cost (might have different naming)
-		const costRelatedHeaders = Object.entries(headers)
-			.filter(
-				([key]) =>
-					key.toLowerCase().includes("cost") ||
-					key.toLowerCase().includes("token"),
-			)
-			.reduce(
-				(obj, [key, value]) => {
-					// Convert value to string to handle unknown type
-					obj[key] = typeof value === "string" ? value : String(value ?? "");
-					return obj;
-				},
-				{} as Record<string, string>,
-			);
-
-		if (Object.keys(costRelatedHeaders).length > 0) {
-			(await getLogger()).info("Found potential cost-related headers:", {
-				data: costRelatedHeaders,
-			});
-		} else {
-			(await getLogger()).info("No cost-related headers found in response");
-		}
-
-		// Proceed with normal extraction
-		let cost = await _extractCostFromHeaders(headers);
-
-		// Log the result of extraction
-		(await getLogger()).info("Cost extraction result:", {
-			data: {
-				extractedCost: cost,
-				extractionMethod: cost > 0 ? "from header" : "will use fallback",
-				specificHeader:
-					typeof headers["x-portkey-cost"] === "string"
-						? headers["x-portkey-cost"]
-						: String(headers["x-portkey-cost"] || "not found"),
-			},
-		});
+		let cost = 0;
 
 		// Track usage if database access is available (fail gracefully on permission issues)
 		try {
@@ -474,16 +436,16 @@ export async function* getStreamingChatCompletion(
 		ChatMessagesSchema.parse(messages);
 
 		const {
-			model = "gpt-3.5-turbo",
-			temperature = 0.7,
 			userId,
 			teamId,
 			feature,
 			sessionId,
+			virtualKey,
 			checkUsageLimits: shouldCheckLimits = true,
-			bypassCredits: _bypassCredits = false,
-			config,
 		} = options;
+
+		const model = options.model ?? "gpt-4o";
+		const temperature = options.temperature ?? 0.7;
 
 		// Read environment variable to determine if we should check usage limits
 		const checkUsageLimitsFlag = process.env.CHECK_AI_USAGE_LIMITS === "true";
@@ -507,7 +469,6 @@ export async function* getStreamingChatCompletion(
 				);
 			}
 		} else {
-			// Log that we're skipping the check
 			(await getLogger()).info(
 				"Skipping AI usage limits check for streaming:",
 				{
@@ -521,25 +482,23 @@ export async function* getStreamingChatCompletion(
 			);
 		}
 
-		// Create client with tracking metadata, config, and model info
+		// Create client with tracking metadata and virtual key
 		const { client, bifrostModel } = await _createGatewayClient({
 			userId,
 			teamId,
 			feature,
 			sessionId,
-			config, // Pass config to client creation
-			model, // Pass model to determine the correct provider
+			virtualKey,
+			model,
 		});
 
-		// Configure request options WITHOUT the config parameter
+		// Configure request options
 		const requestOptions: OpenAI.Chat.ChatCompletionCreateParams = {
 			messages,
-			model: bifrostModel, // Use Bifrost-formatted model name
+			model: bifrostModel,
 			temperature,
 			stream: true,
 		};
-
-		// No longer need to add config to requestOptions
 
 		// Get the streaming response
 		// Using unknown type to avoid TypeScript errors with streaming
@@ -676,25 +635,6 @@ export async function* getStreamingChatCompletion(
 	}
 }
 
-// Export config manager functions and classes for external use
-export {
-	ConfigManager,
-	mergeWithUseCase,
-	overrideWithPortkey,
-	normalizeConfig,
-};
-
-export * from "./configs/templates";
-// Export templates config
-export * from "./configs/templates";
-// Export config templates
-export { createBalancedOptimizedConfig } from "./configs/templates/balanced-optimized";
-export { createOpenAIOnlyConfig } from "./configs/templates/openai-only";
-// Export types
-export type { Config } from "./configs/types";
-// Export use cases
-export { createAudienceSuggestionsConfig } from "./configs/use-cases/audience-suggestions/config";
-export { createTitleSuggestionsConfig } from "./configs/use-cases/title-suggestions/config";
 // Export messages
 export { ideasCreatorSystem } from "./prompts/messages/system/ideas-creator";
 // Export prompt partials

@@ -3,7 +3,6 @@
 import {
 	baseInstructions,
 	type ChatMessage,
-	createQualityOptimizedConfig,
 	getChatCompletion,
 	improvementFormat,
 	outlineRewriteInstructions,
@@ -94,12 +93,6 @@ export const getOutlineSuggestionsAction = enhanceAction(
 				throw new Error("Failed to fetch submission data");
 			}
 
-			// Create a quality-optimized config for structured output
-			const config = createQualityOptimizedConfig({
-				userId: user.id,
-				context: "outline-suggestions",
-			});
-
 			// Parse Tiptap documents and extract text content
 			const situationContent = getTextContent(
 				parseTiptapDocument(submission.situation),
@@ -134,7 +127,9 @@ ${improvementFormat}`,
 			];
 
 			const result = await getChatCompletion(messages, {
-				config,
+				model: "gpt-4o",
+				temperature: 0.3,
+				virtualKey: process.env.BIFROST_VK_CANVAS_QUALITY,
 				userId: user.id,
 				feature: "outline-suggestions",
 				sessionId: data.submissionId,

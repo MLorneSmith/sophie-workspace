@@ -94,26 +94,26 @@ export function WorkflowShell(props: {
 
 			<div
 				className={cn(
-					"mx-auto grid gap-0 px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10",
-					showAgentRail
-						? "max-w-7xl grid-cols-[1fr_48px]"
-						: "max-w-5xl grid-cols-1",
+					"mx-auto grid max-w-7xl gap-0 px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10",
+					showAgentRail ? "grid-cols-[1fr_48px]" : "grid-cols-1",
 				)}
 			>
 				<div className="min-w-0">
 					<div className="rounded-xl border border-white/10 bg-white/5 p-6 sm:p-8 backdrop-blur-xl">
 						{props.children}
 
-						<ContinueButton
-							enabled={props.completedSteps.includes(currentStep)}
-							hint={
-								STEP_HINTS[currentStep] ?? "Complete this step to continue."
-							}
-							onContinue={() => {
-								const next = getNextStep(currentStep);
-								router.push(`/home/ai/${props.presentationId}/${next}`);
-							}}
-						/>
+						{currentStep !== "profile" && (
+							<ContinueButton
+								enabled={props.completedSteps.includes(currentStep)}
+								hint={
+									STEP_HINTS[currentStep] ?? "Complete this step to continue."
+								}
+								onContinue={() => {
+									const next = getNextStep(currentStep);
+									router.push(`/home/ai/${props.presentationId}/${next}`);
+								}}
+							/>
+						)}
 					</div>
 				</div>
 

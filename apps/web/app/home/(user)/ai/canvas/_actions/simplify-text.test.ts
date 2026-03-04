@@ -6,10 +6,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ActionResult } from "@/test/test-types";
 
-// Setup mocks - all exports from the main module
+// Setup mocks
 vi.mock("@kit/ai-gateway", () => ({
 	getChatCompletion: vi.fn(),
-	createReasoningOptimizedConfig: vi.fn(),
 	PromptManager: {
 		compileTemplate: vi.fn(),
 	},
@@ -43,11 +42,7 @@ vi.mock("@kit/next/actions", () => ({
 }));
 
 // Import after mocks are set up
-import {
-	createReasoningOptimizedConfig,
-	getChatCompletion,
-	PromptManager,
-} from "@kit/ai-gateway";
+import { getChatCompletion, PromptManager } from "@kit/ai-gateway";
 import { expectError } from "../../../../../../test/test-helpers";
 import { simplifyTextAction } from "./simplify-text";
 
@@ -73,15 +68,6 @@ function createMockCompletionResult(content: string) {
 describe("simplifyTextAction", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-
-		// Setup default mock returns
-		vi.mocked(createReasoningOptimizedConfig).mockReturnValue({
-			provider: "openai",
-			override_params: {
-				model: "gpt-4",
-				temperature: 0.7,
-			},
-		});
 
 		vi.mocked(PromptManager.compileTemplate).mockImplementation(
 			(template: string, variables: Record<string, unknown>) => {
@@ -279,10 +265,10 @@ describe("simplifyTextAction", () => {
 						content: `Simplify this text: ${content}`,
 					},
 				],
-				{
-					model: "gpt-4",
-					temperature: 0.7,
-				},
+				expect.objectContaining({
+					model: "gpt-4o",
+					temperature: 0.4,
+				}),
 			);
 		});
 	});
@@ -340,10 +326,10 @@ describe("simplifyTextAction", () => {
 						content: "Simplify this text: Test content",
 					},
 				],
-				{
-					model: "gpt-4",
-					temperature: 0.7,
-				},
+				expect.objectContaining({
+					model: "gpt-4o",
+					temperature: 0.4,
+				}),
 			);
 		});
 
@@ -420,15 +406,11 @@ describe("simplifyTextAction", () => {
 			});
 		});
 
-		it("should handle config creation failures", async () => {
+		it("should handle template compilation failures in getChatCompletion", async () => {
 			// Arrange
-			const configError = new Error("Config creation failed");
-
-			// Reset the mock and make it throw
-			vi.mocked(createReasoningOptimizedConfig).mockReset();
-			vi.mocked(createReasoningOptimizedConfig).mockImplementation(() => {
-				throw configError;
-			});
+			vi.mocked(getChatCompletion).mockRejectedValue(
+				new Error("Completion failed"),
+			);
 
 			const input = {
 				content: "Test content",
@@ -443,7 +425,7 @@ describe("simplifyTextAction", () => {
 			// Assert
 			expect(result).toEqual({
 				success: false,
-				error: "Config creation failed",
+				error: "Completion failed",
 			});
 		});
 

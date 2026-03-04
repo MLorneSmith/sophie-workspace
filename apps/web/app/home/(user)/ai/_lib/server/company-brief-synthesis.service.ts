@@ -1,12 +1,6 @@
 import "server-only";
 
-import {
-	type ChatCompletionOptions,
-	type ChatMessage,
-	ConfigManager,
-	createOpenAIOnlyConfig,
-	getChatCompletion,
-} from "@kit/ai-gateway";
+import { type ChatMessage, getChatCompletion } from "@kit/ai-gateway";
 import { getLogger } from "@kit/shared/logger";
 
 // ---------------------------------------------------------------------------
@@ -217,25 +211,27 @@ export async function synthesizeCompanyBrief(
 
 	const messages = buildCompanyBriefPrompt(input);
 
-	const config = createOpenAIOnlyConfig({
-		userId,
-		context: "company-brief-synthesis",
-	});
-	const normalizedConfig = ConfigManager.normalizeConfig(config);
-
-	if (!normalizedConfig) {
-		throw new Error("Failed to normalize AI config");
-	}
-
 	const response = await withTimeout(
 		getChatCompletion(messages, {
-			config: normalizedConfig,
+			model: "gpt-4o",
+			virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
 			userId,
 			feature: "workflow-company-research",
-		} as ChatCompletionOptions),
+		}),
 		30_000,
 		"Company brief synthesis",
 	);
+
+	// DEBUG: Log actual response content to diagnose Bifrost issues
+	try {
+		const fs = await import("node:fs");
+		fs.appendFileSync(
+			"/tmp/bifrost-debug.log",
+			`[${new Date().toISOString()}] COMPANY_BRIEF_RESPONSE content (first 500): ${response.content.substring(0, 500)}\nmetadata: ${JSON.stringify(response.metadata)}\n---\n`,
+		);
+	} catch {
+		/* ignore */
+	}
 
 	const jsonMatch = response.content.match(/\{[\s\S]*\}/);
 	if (!jsonMatch) {
