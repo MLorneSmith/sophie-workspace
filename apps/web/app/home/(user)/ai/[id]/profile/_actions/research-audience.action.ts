@@ -433,7 +433,7 @@ export const researchAudienceAction = enhanceAction(
 
 				companyBrief = await withTimeout(
 					synthesizeCompanyBrief(synthesisInput, user.id),
-					35_000,
+					120_000,
 					"Company brief synthesis",
 				);
 
@@ -461,15 +461,6 @@ export const researchAudienceAction = enhanceAction(
 				"Company brief research failed (non-blocking): %s",
 				compErrMsg,
 			);
-			try {
-				const fs = await import("node:fs");
-				fs.appendFileSync(
-					"/tmp/bifrost-debug.log",
-					`[${new Date().toISOString()}] COMPANY_BRIEF: ${compErrMsg}\n${companyErr instanceof Error ? companyErr.stack?.substring(0, 500) : ""}\n---\n`,
-				);
-			} catch {
-				/* ignore */
-			}
 		}
 
 		// Step 3: Generate Audience Brief via AI (now with company brief context)
@@ -489,25 +480,14 @@ export const researchAudienceAction = enhanceAction(
 		try {
 			const response = await withTimeout(
 				getChatCompletion(messages, {
-					model: "gpt-4o",
+					model: process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
 					virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
 					userId: user.id,
 					feature: "workflow-audience-research",
 				}),
-				30_000,
+				90_000,
 				"AI brief generation",
 			);
-
-			// DEBUG: Log actual response content
-			try {
-				const fs = await import("node:fs");
-				fs.appendFileSync(
-					"/tmp/bifrost-debug.log",
-					`[${new Date().toISOString()}] AUDIENCE_BRIEF_RESPONSE content (first 500): ${response.content.substring(0, 500)}\nmetadata: ${JSON.stringify(response.metadata)}\n---\n`,
-				);
-			} catch {
-				/* ignore */
-			}
 
 			const jsonMatch = response.content.match(/\{[\s\S]*\}/);
 			if (!jsonMatch) {
@@ -518,12 +498,14 @@ export const researchAudienceAction = enhanceAction(
 		} catch (aiError) {
 			const errMsg =
 				aiError instanceof Error ? aiError.message : String(aiError);
-			const errStack = aiError instanceof Error ? aiError.stack : "";
 			logger.error(ctx, "AI brief generation failed: %s", errMsg);
 			logger.error(ctx, "AI brief error details: %o", {
 				name: aiError instanceof Error ? aiError.name : "unknown",
 				message: errMsg,
-				stack: errStack?.substring(0, 500),
+				stack: (aiError instanceof Error ? aiError.stack : "")?.substring(
+					0,
+					500,
+				),
 				virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH
 					? "SET"
 					: "NOT_SET",
@@ -532,16 +514,6 @@ export const researchAudienceAction = enhanceAction(
 					process.env.BIFROST_BASE_URL ||
 					"DEFAULT",
 			});
-			// Write to a debug file for inspection
-			try {
-				const fs = await import("node:fs");
-				fs.appendFileSync(
-					"/tmp/bifrost-debug.log",
-					`[${new Date().toISOString()}] ${errMsg}\n${errStack}\n---\n`,
-				);
-			} catch {
-				/* ignore fs errors */
-			}
 			// Still save enrichment data — user can regenerate the brief later
 			briefText = enrichment.personProfile
 				? `${enrichment.personProfile.headline ?? ""} — ${enrichment.personProfile.summary?.substring(0, 200) ?? ""}`

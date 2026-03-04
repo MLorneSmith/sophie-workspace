@@ -284,25 +284,14 @@ export async function synthesizeCompanyBrief(
 
 	const response = await withTimeout(
 		getChatCompletion(messages, {
-			model: "gpt-4o",
+			model: process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
 			virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
 			userId,
 			feature: "workflow-company-research",
 		}),
-		30_000,
+		90_000,
 		"Company brief synthesis",
 	);
-
-	// DEBUG: Log actual response content to diagnose Bifrost issues
-	try {
-		const fs = await import("node:fs");
-		fs.appendFileSync(
-			"/tmp/bifrost-debug.log",
-			`[${new Date().toISOString()}] COMPANY_BRIEF_RESPONSE content (first 500): ${response.content.substring(0, 500)}\nmetadata: ${JSON.stringify(response.metadata)}\n---\n`,
-		);
-	} catch {
-		/* ignore */
-	}
 
 	const jsonMatch = response.content.match(/\{[\s\S]*\}/);
 	if (!jsonMatch) {
