@@ -1,18 +1,11 @@
 /**
- * RAG utilities for document embedding and similarity search.
+ * Document Parsers for RAG
  *
- * This is a deep-import module to avoid bundling RAG dependencies
- * in client-side code. Import via "@kit/mastra/rag".
+ * This module provides document parsing capabilities for PPTX and PDF files,
+ * with LlamaParse fallback for complex documents.
  */
 
-export {
-	embedDocument,
-	querySimilar,
-	embedUploadedDocument,
-	SLIDEHEROES_EMBEDDINGS_INDEX,
-} from "./rag/index";
-
-// Re-export parser types and services for deep imports
+// Types and interfaces
 export {
 	type DocumentChunk,
 	type DocumentMetadata,
@@ -32,8 +25,16 @@ export {
 	ParserTypeSchema,
 	SupportedFormatSchema,
 	MIN_CHARS_PER_PAGE,
+} from "./types";
+
+// Service factory and main class
+export {
 	createDocumentParserService,
 	DocumentParserService,
+} from "./document-parser";
+
+// LlamaParse fallback
+export {
 	LlamaParseParserStrategy,
 	createLlamaParseParser,
-} from "./rag/parsers";
+} from "./llamaparse-fallback";

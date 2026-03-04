@@ -4,6 +4,8 @@ import type { QueryResult } from "@mastra/core/vector";
 import { MDocument } from "@mastra/rag";
 
 import { getMastraMemory, getPgVector } from "../mastra";
+import { createDocumentParserService } from "./parsers";
+import type { EmbedDocumentMetadata, SupportedFormat } from "./parsers/types";
 
 export const SLIDEHEROES_EMBEDDINGS_INDEX = "slideheroes-embeddings";
 
@@ -115,6 +117,92 @@ export async function embedDocument(
 	return {
 		ids,
 		chunks: chunkTexts.length,
+	};
+}
+
+/**
+ * Embed an uploaded document (PPTX or PDF) into the vector store.
+ * Parses the document into chunks and embeds each chunk with rich metadata.
+ *
+ * @param fileBuffer - The document file buffer
+ * @param format - Document format ("pptx" or "pdf")
+ * @param metadata - Embedding metadata (accountId, userId, contentType, filename)
+ * @returns Promise resolving to embedded document result with IDs and chunk count
+ */
+export async function embedUploadedDocument(
+	fileBuffer: Buffer,
+	format: SupportedFormat,
+	metadata: EmbedDocumentMetadata,
+): Promise<{ ids: string[]; chunks: number }> {
+	const parser = createDocumentParserService();
+	const parseResult = await parser.parseDocument(fileBuffer, format);
+
+	if (parseResult.chunks.length === 0) {
+		return { ids: [], chunks: 0 };
+	}
+
+	// Filter out empty chunks
+	const nonEmptyChunks = parseResult.chunks.filter(
+		(chunk) => chunk.text.trim().length > 0,
+	);
+
+	if (nonEmptyChunks.length === 0) {
+		return { ids: [], chunks: 0 };
+	}
+
+	const chunkTexts = nonEmptyChunks.map((chunk) => chunk.text);
+	const embeddings = await embedValues(chunkTexts);
+	const firstVector = embeddings[0];
+
+	if (!firstVector || firstVector.length === 0) {
+		throw new Error("Embedding model returned empty vectors");
+	}
+
+	await ensureEmbeddingsIndex(firstVector.length);
+
+	// Build chunk metadata with rich information for filtering
+	const chunkMetadata = nonEmptyChunks.map((chunk, index) => ({
+		// Base metadata from upload
+		accountId: metadata.accountId,
+		userId: metadata.userId,
+		contentType: metadata.contentType,
+		filename: metadata.filename,
+
+		// Parsed document metadata
+		text: chunk.text,
+		chunkIndex: index,
+
+		// Slide/page information
+		slideNumber: format === "pptx" ? chunk.pageOrSlide : undefined,
+		pageNumber: format === "pdf" ? chunk.pageOrSlide : undefined,
+
+		// Slide/page title
+		slideTitle: format === "pptx" ? chunk.title : undefined,
+		sectionTitle: format === "pdf" ? chunk.title : undefined,
+
+		// Speaker notes (PPTX only)
+		speakerNotes: format === "pptx" ? chunk.speakerNotes : undefined,
+
+		// Document info
+		documentFormat: parseResult.metadata.format,
+		documentPageCount: parseResult.metadata.pageCount,
+		parserUsed: parseResult.metadata.parsedBy,
+		documentTitle: parseResult.metadata.title,
+		documentAuthor: parseResult.metadata.author,
+	}));
+
+	const ids = chunkTexts.map(() => randomUUID());
+
+	await getPgVector().upsert({
+		indexName: SLIDEHEROES_EMBEDDINGS_INDEX,
+		ids,
+		vectors: embeddings,
+		metadata: chunkMetadata,
+	});
+
+	return {
+		ids,
+		chunks: nonEmptyChunks.length,
 	};
 }
 
