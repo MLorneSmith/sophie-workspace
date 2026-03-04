@@ -6,6 +6,7 @@ import { MDocument } from "@mastra/rag";
 import { getMastraMemory, getPgVector } from "../mastra";
 import { createDocumentParserService } from "./parsers";
 import type { EmbedDocumentMetadata, SupportedFormat } from "./parsers/types";
+import type { MetadataFilter } from "./types";
 
 export const SLIDEHEROES_EMBEDDINGS_INDEX = "slideheroes-embeddings";
 
@@ -209,6 +210,7 @@ export async function embedUploadedDocument(
 export async function querySimilar(
 	query: string,
 	topK: number = DEFAULT_TOP_K,
+	filter?: MetadataFilter,
 ): Promise<QueryResult[]> {
 	const normalizedQuery = query.trim();
 
@@ -224,9 +226,23 @@ export async function querySimilar(
 
 	await ensureEmbeddingsIndex(queryVector.length);
 
-	return getPgVector().query({
+	// Build query options - filter is optional
+	const queryOptions: {
+		indexName: string;
+		queryVector: number[];
+		topK: number;
+		filter?: unknown;
+	} = {
 		indexName: SLIDEHEROES_EMBEDDINGS_INDEX,
 		queryVector,
 		topK,
-	});
+	};
+
+	// Only add filter if provided
+	if (filter !== undefined) {
+		queryOptions.filter = filter;
+	}
+
+	// @ts-expect-error - filter type is not properly exported from @mastra/pg
+	return getPgVector().query(queryOptions);
 }

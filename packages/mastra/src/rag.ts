@@ -12,6 +12,10 @@ export {
 	SLIDEHEROES_EMBEDDINGS_INDEX,
 } from "./rag/index";
 
+// Re-export filter types for metadata filtering
+export type { MetadataFilter, FilterOperator } from "./rag/types";
+export { isFilterOperator } from "./rag/types";
+
 // Re-export parser types and services for deep imports
 export {
 	type DocumentChunk,
@@ -37,3 +41,10 @@ export {
 	LlamaParseParserStrategy,
 	createLlamaParseParser,
 } from "./rag/parsers";
+
+// Re-export playbook seeding functions
+export {
+	seedPlaybooks,
+	reseedPlaybooks,
+	type PlaybookMetadata,
+} from "./rag/seed-playbooks";

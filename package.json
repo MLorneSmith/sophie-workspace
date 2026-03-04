@@ -37,8 +37,8 @@
 		"env:validate": "turbo gen validate-env",
 		"build:raw": "turbo build --cache-dir=.turbo",
 		"lint:yaml": "npx yaml-lint '**/*.{yml,yaml}' --ignore='**/node_modules/**' --ignore='**/.next/**' --ignore='**/dist/**'",
-		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!.ai/**' '!.old.claude/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!.agents/**' '!temp/**' '!**/playwright-report/**' '!**/reports/**' '!**/.reports/**' '!**/test-results/**' '!.vercel/**' '!CLAUDE.md'",
-		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!.ai/**' '!.old.claude/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!.agents/**' '!temp/**' '!**/playwright-report/**' '!**/reports/**' '!**/.reports/**' '!**/test-results/**' '!.vercel/**' '!CLAUDE.md'",
+		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!.ai/**' '!.old.claude/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!.agents/**' '!temp/**' '!**/playwright-report/**' '!**/reports/**' '!**/.reports/**' '!**/test-results/**' '!.vercel/**' '!CLAUDE.md' '!**/packages/mastra/src/rag/playbook-content/**'",
+		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!.ai/**' '!.old.claude/**' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!.agents/**' '!temp/**' '!**/playwright-report/**' '!**/reports/**' '!**/.reports/**' '!**/test-results/**' '!.vercel/**' '!CLAUDE.md' '!**/packages/mastra/src/rag/playbook-content/**'",
 		"codecheck": "./.claude/statusline/codecheck-wrapper.sh \"pnpm typecheck && pnpm lint && pnpm format\"",
 		"typecheck:raw": "turbo typecheck --affected --cache-dir=.turbo",
 		"test:unit": "turbo test --cache-dir=.turbo --filter=!web-e2e --continue",
@@ -75,7 +75,7 @@
 			"bash -c 'if [[ \"$0\" != */apps/payload/* ]] && [[ \"$0\" != */packages/* ]] && [[ \"$0\" != */.ai/alpha/progress/* ]] && [[ \"$0\" != */.ai/alpha/specs/* ]] && [[ \"$0\" != */.initiative-progress.json ]] && [[ \"$0\" != */spec-manifest.json ]]; then biome format --write \"$0\" && biome lint --write \"$0\"; fi'"
 		],
 		"**/*.{md,mdx}": [
-			"bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo|\\.ai|\\.agents)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
+			"bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo|\\.ai|\\.agents)/\" && ! echo \"$0\" | grep -q \"playbook-content\"; then markdownlint-cli2 --fix \"$0\"; fi'"
 		],
 		"**/*.{yaml,yml}": [
 			"bash -c 'if [[ \"$0\" != *\"pnpm-lock.yaml\"* ]]; then npx yamllint \"$0\"; fi'"
