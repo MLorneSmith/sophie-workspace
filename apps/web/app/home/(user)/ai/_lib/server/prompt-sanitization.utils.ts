@@ -44,6 +44,11 @@ export function sanitizeScrapedText(value: string): string {
 	// Remove markdown code blocks that could contain injected instructions
 	sanitized = sanitized.replace(CODE_BLOCK_PATTERN, "");
 
+	// Prevent breakout from structural untrusted-data delimiters
+	sanitized = sanitized
+		.replace(/<\/source_data>/gi, "&lt;/source_data&gt;")
+		.replace(/<source_data>/gi, "&lt;source_data&gt;");
+
 	// Strip common prompt injection patterns
 	for (const pattern of PROMPT_INJECTION_PATTERNS) {
 		sanitized = sanitized.replace(pattern, "");

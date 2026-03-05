@@ -171,7 +171,7 @@ function buildCompanyBriefPrompt(input: CompanyResearchInput): ChatMessage[] {
 ${input.newsResults
 	.map(
 		(r) =>
-			`- **${sanitizeScrapedText(r.title)}**: ${safeTruncate(sanitizeScrapedText(r.snippet), 300)}`,
+			`- **${safeTruncate(sanitizeScrapedText(r.title), 120)}**: ${safeTruncate(sanitizeScrapedText(r.snippet), 300)}`,
 	)
 	.join("\n")}`
 			: "## Recent News & Strategy\nNo recent news found.";
@@ -183,7 +183,7 @@ ${input.newsResults
 ${input.industryResults
 	.map(
 		(r) =>
-			`- **${sanitizeScrapedText(r.title)}**: ${safeTruncate(sanitizeScrapedText(r.snippet), 300)}`,
+			`- **${safeTruncate(sanitizeScrapedText(r.title), 120)}**: ${safeTruncate(sanitizeScrapedText(r.snippet), 300)}`,
 	)
 	.join("\n")}`
 			: "## Industry Context\nNo industry data found.";
@@ -217,7 +217,7 @@ ${safeTruncate(sanitizeScrapedText(aboutContent), 1000)}`);
 		if (careersContent || jobPostings.length > 0) {
 			const sanitizedJobPostings = jobPostings
 				.slice(0, 10)
-				.map((job) => sanitizeScrapedText(job))
+				.map((job) => safeTruncate(sanitizeScrapedText(job), 180))
 				.join("; ");
 			const careersSection = `
 ## Careers Page & Job Postings
@@ -229,7 +229,7 @@ ${jobPostings.length > 0 ? `Open Positions: ${sanitizedJobPostings}` : ""}`;
 		if (newsroomContent || recentPressReleases.length > 0) {
 			const sanitizedPressReleases = recentPressReleases
 				.slice(0, 8)
-				.map((press) => sanitizeScrapedText(press))
+				.map((press) => safeTruncate(sanitizeScrapedText(press), 180))
 				.join("; ");
 			const newsroomSection = `
 ## Newsroom & Press Releases
@@ -379,8 +379,8 @@ ${newsSection}
 ${industrySection}
 ${websiteSection}
 ${deepScrapeSection}
-${alphaVantageSection}
-${secEdgarSection}
+${safeTruncate(sanitizeScrapedText(alphaVantageSection), 1500)}
+${safeTruncate(sanitizeScrapedText(secEdgarSection), 2500)}
 </source_data>
 
 Respond with ONLY the JSON object, no markdown fences.`;
