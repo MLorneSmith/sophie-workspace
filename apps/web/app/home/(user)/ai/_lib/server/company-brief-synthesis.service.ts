@@ -60,6 +60,31 @@ export interface WebsiteDeepScrapeInput {
 	recentPressReleases: string[];
 }
 
+export interface SecFilingsInput {
+	latest10K: {
+		date: string;
+		accessionNumber: string;
+		businessSection: string | null;
+		riskFactorsSection: string | null;
+		mdaSection: string | null;
+	} | null;
+	latest10Q: {
+		date: string;
+		accessionNumber: string;
+	} | null;
+	materialEvents: Array<{
+		date: string;
+		formType: string;
+		summary: string;
+	}>;
+	financialFacts: {
+		revenue: Array<{ period: string; value: number }>;
+		netIncome: Array<{ period: string; value: number }>;
+		totalAssets: Array<{ period: string; value: number }>;
+		totalDebt: Array<{ period: string; value: number }>;
+	} | null;
+}
+
 export interface CompanyResearchInput {
 	companyName: string;
 	industry?: string;
@@ -77,6 +102,7 @@ export interface CompanyResearchInput {
 	industryResults?: Array<{ title: string; url: string; snippet: string }>;
 	websiteContent?: string | null;
 	websiteDeepScrape?: WebsiteDeepScrapeInput;
+	secFilings?: SecFilingsInput;
 }
 
 // ---------------------------------------------------------------------------

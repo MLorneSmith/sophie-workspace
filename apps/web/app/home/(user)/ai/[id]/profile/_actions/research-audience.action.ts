@@ -356,7 +356,7 @@ export const researchAudienceAction = enhanceAction(
 						)
 					: Promise.resolve(null);
 
-				const [webResearch, apolloResult, websiteDeepScrape] =
+				const [webResearch, apolloResult, websiteDeepScrape, secEdgarResult] =
 					await Promise.all([
 						withTimeout(
 							researchCompany(data.company, industry, domain),
@@ -379,9 +379,18 @@ export const researchAudienceAction = enhanceAction(
 							);
 							return null;
 						}),
+						secEdgarPromise.catch((secEdgarErr) => {
+							logger.warn(
+								ctx,
+								"SEC EDGAR enrichment failed (non-blocking): %o",
+								secEdgarErr,
+							);
+							return null;
+						}),
 					]);
 
 				apolloEnrichment = apolloResult;
+				secEdgarEnrichment = secEdgarResult;
 				if (apolloEnrichment?.success && apolloEnrichment.organization) {
 					logger.info(
 						ctx,
@@ -451,6 +460,14 @@ export const researchAudienceAction = enhanceAction(
 								investorsContent: websiteDeepScrape.pages.investors,
 								jobPostings: websiteDeepScrape.jobPostings,
 								recentPressReleases: websiteDeepScrape.recentPressReleases,
+							}
+						: undefined,
+					secFilings: secEdgarEnrichment?.success
+						? {
+								latest10K: secEdgarEnrichment.latest10K,
+								latest10Q: secEdgarEnrichment.latest10Q,
+								materialEvents: secEdgarEnrichment.materialEvents,
+								financialFacts: secEdgarEnrichment.financialFacts,
 							}
 						: undefined,
 				};

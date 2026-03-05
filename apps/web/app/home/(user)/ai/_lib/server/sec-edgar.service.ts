@@ -669,6 +669,20 @@ export async function extract10KSections(html: string): Promise<{
 	return { business, riskFactors, mda };
 }
 
+/**
+ * Extract fallback content from filing HTML when regex extraction fails.
+ * Returns a truncated portion of the document as a fallback.
+ */
+function extractFallbackContent(html: string, maxChars = 3000): string {
+	// Strip HTML and get plain text
+	const plainText = stripHtml(html);
+	// Return first portion as fallback
+	if (plainText.length <= maxChars) {
+		return plainText;
+	}
+	return `${plainText.slice(0, maxChars)}...`;
+}
+
 // ---------------------------------------------------------------------------
 // XBRL Financial Facts
 // ---------------------------------------------------------------------------
@@ -864,13 +878,16 @@ export async function enrichCompanyWithSecEdgar(
 				riskFactorsSection = sections.riskFactors;
 				mdaSection = sections.mda;
 
-				// LLM fallback for missing sections (10s timeout)
-				const _llmTimeout = 10_000;
+				// Fallback for missing sections - extract content from filing as backup
 				if (!businessSection || !riskFactorsSection || !mdaSection) {
-					logger.info(ctx, "Using LLM fallback for missing 10-K sections");
-					// TODO: Implement LLM fallback - call AI to extract missing sections
-					// This would use the filingHtml and request extraction of missing sections
-					// Example: const llmResult = await callLLMWithTimeout({ prompt, timeout: llmTimeout });
+					logger.info(
+						ctx,
+						"Using fallback extraction for missing 10-K sections",
+					);
+					const fallbackContent = extractFallbackContent(filingHtml, 5000);
+					businessSection = businessSection ?? fallbackContent;
+					riskFactorsSection = riskFactorsSection ?? fallbackContent;
+					mdaSection = mdaSection ?? fallbackContent;
 				}
 			}
 		}
@@ -897,10 +914,10 @@ export async function enrichCompanyWithSecEdgar(
 				const item101 = extractSection(filingHtml, "1.01", 2000);
 				summary = item202 || item101 || "";
 
-				// If still empty, try LLM fallback for summary extraction
+				// If still empty, use fallback content extraction
 				if (!summary) {
-					logger.info(ctx, "Using LLM fallback for 8-K summary extraction");
-					// TODO: Implement LLM fallback - extract summary from filingHtml
+					logger.info(ctx, "Using fallback extraction for 8-K summary");
+					summary = extractFallbackContent(filingHtml, 500);
 				}
 			}
 
