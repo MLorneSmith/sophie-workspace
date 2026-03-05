@@ -4,6 +4,12 @@
 language: en
 early_access: true
 
+# Focus on bugs, security, and logic — skip style nitpicks that CI catches
+tone_instructions: >-
+  Focus on bugs, security issues, logic errors, and missing error handling.
+  Skip style and formatting issues — CI handles those. Be concise.
+  Only comment when you're confident something is wrong or risky.
+
 chat:
   auto_reply: true
 
@@ -17,6 +23,9 @@ reviews:
     ignore_title_keywords:
       - "WIP"
       - "DO NOT REVIEW"
+    # Skip promoted PRs from Sophie on upstream — already reviewed on fork
+    ignore_usernames:
+      - "SophieLegerPA"
 
   # Review style - thorough but not nitpicky
   profile: chill
@@ -28,6 +37,15 @@ reviews:
   review_status: true
   collapse_walkthrough: false
   changed_files_summary: true
+
+  # Disable walkthrough noise
+  suggested_labels: false
+  suggested_reviewers: false
+  related_issues: false
+  related_prs: false
+  in_progress_fortune: false
+  estimate_code_review_effort: false
+  enable_prompt_for_ai_agents: false
 
   # Don't auto-approve once comments are resolved (Sophie iterates, Mike approves)
   request_changes_workflow: false
@@ -41,64 +59,58 @@ reviews:
     - "!**/package-lock.json"
     - "!**/pnpm-lock.yaml"
     - "!**/*.gen.ts"
-
     - "!**/.ai/**"
     - "!**/.claude/**"
 
-  # Stack-specific review instructions
+  # Focused review instructions — only what CR can catch that CI can't
   path_instructions:
-    # TypeScript/React - main application code
     - path: "**/*.{ts,tsx}"
       instructions: |
-        This is a Next.js 15 monorepo (Turborepo) with:
-        - Supabase (auth, database, RLS policies)
-        - Tailwind CSS v4
-        - Payload CMS
-        - Biome for linting/formatting
+        This is a Next.js 15 monorepo (Turborepo) with Supabase, Tailwind v4,
+        Payload CMS, and Biome for linting/formatting.
 
-        Review for:
-        - Server Components by default; 'use client' only when necessary
-        - Proper Supabase RLS — never bypass security policies
-        - No exposed API keys, secrets, or sensitive data
-        - TypeScript strict mode — avoid 'any', use explicit types
-        - Prefer 'import type' for type-only imports
-        - React best practices: proper use of hooks, memo, useCallback
-        - Proper error handling and loading states
-        - Accessibility basics (semantic HTML, aria labels)
+        Focus on:
+        - Logic errors and incorrect business logic
+        - Security: RLS bypass, exposed secrets, injection risks
+        - Missing error handling, uncaught promise rejections
+        - Architectural concerns (wrong abstractions, tight coupling)
+        - Race conditions and concurrency issues
+        - Server vs Client component misuse
 
-    # Supabase database files
+        Skip (CI handles these):
+        - Formatting, import ordering, unused imports
+        - Type narrowing that Biome catches
+        - Naming convention nitpicks
+
     - path: "packages/supabase/**/*.sql"
       instructions: |
-        Review SQL migrations and RLS policies for:
-        - Security: RLS policies must be present on all tables
-        - No overly permissive policies (avoid USING (true) on sensitive tables)
-        - Proper indexes for query performance
-        - Safe migration patterns (no data loss)
-        - Consistent naming conventions
+        CRITICAL: Verify RLS policies exist on all new tables.
+        Check for: SQL injection risk, missing indexes on filtered columns,
+        overly permissive policies (USING (true) on sensitive tables),
+        unsafe migration patterns that could lose data.
+        Skip: naming convention nitpicks, comment formatting.
 
-    # Package configurations
-    - path: "**/package.json"
-      instructions: |
-        Review for:
-        - Version consistency across the monorepo
-        - No unnecessary dependencies
-        - Proper workspace references (@kit/* packages)
-
-    # Environment and config files
     - path: "**/*.env*"
       instructions: |
         CRITICAL: Flag any real secrets, API keys, or credentials.
         Only .env.example files should be committed.
 
-    # Test files
     - path: "**/*.test.{ts,tsx}"
       instructions: |
-        Review tests for:
-        - Meaningful assertions (not just snapshot tests)
-        - Edge case coverage
-        - Proper mocking of Supabase and external services
-        - Async behavior properly handled
+        Check for: meaningful assertions, missing edge cases,
+        improper async handling, tests that always pass.
+        Skip: assertion style preferences, test naming nitpicks.
 
+  # Disable tools that overlap with CI (Biome lint/format runs in PR Validation)
+  tools:
+    biome:
+      enabled: false
+    eslint:
+      enabled: false
+    markdownlint:
+      enabled: false
+    languagetool:
+      enabled: false
 
 # Issue Planner - Rabbit Plan integration
 issue_enrichment:

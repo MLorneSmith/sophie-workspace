@@ -1,8 +1,11 @@
 import "server-only";
 
+import { nativeFetch } from "./fetch-native";
+
 // ---------------------------------------------------------------------------
 // Company Research Service – web search for company news, industry context
-// Uses Brave Search API for web results
+// Uses Brave Search API for web results + nativeFetch to bypass Next.js
+// fetch patching (see fetch-native.ts for rationale).
 // ---------------------------------------------------------------------------
 
 const BRAVE_BASE_URL = "https://api.search.brave.com/res/v1/web/search";
@@ -43,21 +46,21 @@ async function braveSearch(
 	query: string,
 	count = 5,
 ): Promise<WebSearchResult[]> {
-	const controller = new AbortController();
-	const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
 	try {
 		const url = new URL(BRAVE_BASE_URL);
 		url.searchParams.set("q", query);
 		url.searchParams.set("count", String(count));
 
-		const res = await fetch(url.toString(), {
-			headers: {
-				"X-Subscription-Token": getBraveApiKey(),
-				Accept: "application/json",
+		const res = await nativeFetch(
+			url.toString(),
+			{
+				headers: {
+					"X-Subscription-Token": getBraveApiKey(),
+					Accept: "application/json",
+				},
 			},
-			signal: controller.signal,
-		});
+			TIMEOUT_MS,
+		);
 
 		if (!res.ok) return [];
 
@@ -82,8 +85,6 @@ async function braveSearch(
 		}));
 	} catch {
 		return [];
-	} finally {
-		clearTimeout(timer);
 	}
 }
 
@@ -133,13 +134,8 @@ export async function searchIndustryContext(
 export async function fetchCompanyWebsite(
 	domain: string,
 ): Promise<string | null> {
-	const controller = new AbortController();
-	const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
 	try {
-		const res = await fetch(`https://${domain}`, {
-			signal: controller.signal,
-		});
+		const res = await nativeFetch(`https://${domain}`, {}, TIMEOUT_MS);
 		if (!res.ok) return null;
 
 		const html = await res.text();
@@ -151,8 +147,6 @@ export async function fetchCompanyWebsite(
 		return text.substring(0, 3000) || null;
 	} catch {
 		return null;
-	} finally {
-		clearTimeout(timer);
 	}
 }
 

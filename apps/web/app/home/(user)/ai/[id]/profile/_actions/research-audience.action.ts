@@ -33,6 +33,10 @@ import {
 	searchCompany,
 	searchPersonFuzzy,
 } from "../../../_lib/server/netrows.service";
+import {
+	enrichCompanyWithSecEdgar,
+	type SecEdgarResult,
+} from "../../../_lib/server/sec-edgar.service";
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -292,6 +296,26 @@ export const researchAudienceAction = enhanceAction(
 				})()
 			: Promise.resolve(null);
 
+		// Step 1.6: Start SEC EDGAR company enrichment (non-blocking, runs parallel with Step 2)
+		// SEC EDGAR provides public company filings (10-K, 10-Q, 8-K) and XBRL financial data
+		let secEdgarEnrichment: SecEdgarResult | null = null;
+		const secEdgarPromise: Promise<SecEdgarResult | null> = (async () => {
+			try {
+				logger.info(ctx, "Enriching company via SEC EDGAR: %s", data.company);
+				return enrichCompanyWithSecEdgar(
+					data.company,
+					companyDomain ?? undefined,
+				);
+			} catch (secErr) {
+				logger.warn(
+					ctx,
+					"SEC EDGAR enrichment failed (non-blocking): %o",
+					secErr,
+				);
+				return null;
+			}
+		})();
+
 		// Step 2: Company web research + brief synthesis (parallel with step 1)
 		// Uses Brave Search API + LLM to build a structured CompanyBrief
 		let companyBrief: CompanyBrief | null = null;
@@ -332,7 +356,7 @@ export const researchAudienceAction = enhanceAction(
 						)
 					: Promise.resolve(null);
 
-				const [webResearch, apolloResult, websiteDeepScrape] =
+				const [webResearch, apolloResult, websiteDeepScrape, secEdgarResult] =
 					await Promise.all([
 						withTimeout(
 							researchCompany(data.company, industry, domain),
@@ -355,9 +379,18 @@ export const researchAudienceAction = enhanceAction(
 							);
 							return null;
 						}),
+						secEdgarPromise.catch((secEdgarErr) => {
+							logger.warn(
+								ctx,
+								"SEC EDGAR enrichment failed (non-blocking): %o",
+								secEdgarErr,
+							);
+							return null;
+						}),
 					]);
 
 				apolloEnrichment = apolloResult;
+				secEdgarEnrichment = secEdgarResult;
 				if (apolloEnrichment?.success && apolloEnrichment.organization) {
 					logger.info(
 						ctx,
@@ -427,6 +460,14 @@ export const researchAudienceAction = enhanceAction(
 								investorsContent: websiteDeepScrape.pages.investors,
 								jobPostings: websiteDeepScrape.jobPostings,
 								recentPressReleases: websiteDeepScrape.recentPressReleases,
+							}
+						: undefined,
+					secFilings: secEdgarEnrichment?.success
+						? {
+								latest10K: secEdgarEnrichment.latest10K,
+								latest10Q: secEdgarEnrichment.latest10Q,
+								materialEvents: secEdgarEnrichment.materialEvents,
+								financialFacts: secEdgarEnrichment.financialFacts,
 							}
 						: undefined,
 				};
@@ -547,6 +588,23 @@ export const researchAudienceAction = enhanceAction(
 			}
 		}
 
+		// Ensure SEC EDGAR promise is settled
+		if (!secEdgarEnrichment) {
+			try {
+				secEdgarEnrichment = await withTimeout(
+					secEdgarPromise,
+					15_000,
+					"SEC EDGAR enrichment (final await)",
+				);
+			} catch (secEdgarErr) {
+				logger.warn(
+					ctx,
+					"SEC EDGAR enrichment failed (non-blocking): %o",
+					secEdgarErr,
+				);
+			}
+		}
+
 		// Step 4: Save to audience_profiles
 		// Only store allowed non-PII fields from Apollo enrichment
 		const sanitizedApolloData = apolloEnrichment?.organization
@@ -579,6 +637,29 @@ export const researchAudienceAction = enhanceAction(
 				companySearchResults: enrichment.companySearchResults,
 			},
 			apollo: sanitizedApolloData,
+			secEdgar: secEdgarEnrichment
+				? {
+						configured: secEdgarEnrichment.configured,
+						success: secEdgarEnrichment.success,
+						cik: secEdgarEnrichment.cik,
+						companyName: secEdgarEnrichment.companyName,
+						latest10K: secEdgarEnrichment.latest10K
+							? {
+									date: secEdgarEnrichment.latest10K.date,
+									accessionNumber: secEdgarEnrichment.latest10K.accessionNumber,
+								}
+							: null,
+						latest10Q: secEdgarEnrichment.latest10Q
+							? {
+									date: secEdgarEnrichment.latest10Q.date,
+									accessionNumber: secEdgarEnrichment.latest10Q.accessionNumber,
+								}
+							: null,
+						materialEvents: secEdgarEnrichment.materialEvents,
+						financialFacts: secEdgarEnrichment.financialFacts,
+						error: secEdgarEnrichment.error,
+					}
+				: null,
 			companyBrief: companyBrief ?? null,
 			researchedAt: new Date().toISOString(),
 		};
@@ -642,6 +723,46 @@ export const researchAudienceAction = enhanceAction(
 	},
 	{
 		schema: ResearchAudienceSchema,
+		auth: true,
+	},
+);
+
+// ---------------------------------------------------------------------------
+
+const PollCompanyBriefSchema = z.object({
+	presentationId: z.string().min(1),
+});
+
+/**
+ * Returns the company brief from the audience profile if the background
+ * synthesis has completed. Called by the client on a short poll interval.
+ */
+export const pollCompanyBriefAction = enhanceAction(
+	async (data) => {
+		const client = getSupabaseServerClient<Database>();
+		const profile = await getProfileByPresentationId(
+			client,
+			data.presentationId,
+		);
+
+		if (!profile) {
+			return { ready: false as const };
+		}
+
+		const enrichment = profile.enrichment_data as Record<
+			string,
+			unknown
+		> | null;
+		const brief = enrichment?.companyBrief as Record<string, unknown> | null;
+
+		if (!brief) {
+			return { ready: false as const };
+		}
+
+		return { ready: true as const, companyBrief: brief };
+	},
+	{
+		schema: PollCompanyBriefSchema,
 		auth: true,
 	},
 );

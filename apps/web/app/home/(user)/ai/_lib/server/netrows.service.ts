@@ -1,6 +1,9 @@
 import "server-only";
 
+import { getChatCompletion } from "@kit/ai-gateway";
 import { getLogger } from "@kit/shared/logger";
+
+import { nativeFetch } from "./fetch-native";
 
 // ---------------------------------------------------------------------------
 // Netrows API – server-only service for LinkedIn/company enrichment
@@ -149,16 +152,15 @@ async function netrowsFetch<T>(
 		if (v) url.searchParams.set(k, v);
 	}
 
-	const controller = new AbortController();
-	const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
 	try {
-		const res = await fetch(url.toString(), {
-			method: "GET",
-			headers: { "x-api-key": getApiKey() },
-			signal: controller.signal,
-			cache: "no-store",
-		});
+		const res = await nativeFetch(
+			url.toString(),
+			{
+				method: "GET",
+				headers: { "x-api-key": getApiKey() },
+			},
+			TIMEOUT_MS,
+		);
 
 		const body = (await res.json()) as Record<string, unknown>;
 
@@ -181,8 +183,6 @@ async function netrowsFetch<T>(
 			throw new Error(`Netrows API request timed out: ${path}`);
 		}
 		throw err;
-	} finally {
-		clearTimeout(timer);
 	}
 }
 
@@ -233,7 +233,7 @@ interface SearchVariant {
 async function expandSearchTerms(
 	name: string,
 	company: string,
-	_userId?: string,
+	userId?: string,
 	context?: string,
 ): Promise<SearchVariant[]> {
 	const logger = await getLogger();
@@ -247,53 +247,34 @@ async function expandSearchTerms(
 		},
 	];
 
-	const apiKey = process.env.OPENAI_API_KEY;
-	if (!apiKey) {
-		logger.warn(ctx, "OPENAI_API_KEY not set, using fallback");
-		return simpleFallback;
-	}
-
 	try {
-		const controller = new AbortController();
-		const timer = setTimeout(() => controller.abort(), 4_000);
-
-		const res = await fetch("https://api.openai.com/v1/chat/completions", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${apiKey}`,
-			},
-			body: JSON.stringify({
-				model: "gpt-4o-mini",
+		const response = await getChatCompletion(
+			[
+				{
+					role: "system",
+					content: `You generate search variations for finding a person on LinkedIn. Given a name, company, and optional context hints (role, location, background), return a JSON array of 2-3 objects with optional fields: firstName, lastName, keywords. Your MOST IMPORTANT job is to correct likely misspellings using your knowledge of well-known people at the given company. Also include formal/full name versions and the original spelling. Use context hints (title, location, etc.) in the keywords field to help disambiguate. For example: "Michael Meibach" at "Mastercard" → [{"firstName":"Michael","lastName":"Miebach"},{"firstName":"Michael","lastName":"Meibach"}]. "Ajay Banga" at "World Bank" → [{"firstName":"Ajaypal","lastName":"Banga"},{"firstName":"Ajay","lastName":"Banga"}]. "Sarah Chen" at "TD Bank" with context "VP of Engineering, Toronto" → [{"firstName":"Sarah","lastName":"Chen","keywords":"VP Engineering Toronto"}]. Put the most likely correct spelling FIRST. Only return the JSON array, nothing else.`,
+				},
+				{
+					role: "user",
+					content: `Name: "${name}"\nCompany: "${company}"${context ? `\nContext: "${context}"` : ""}`,
+				},
+			],
+			{
+				model:
+					process.env.BIFROST_MODEL_WORKFLOW_RESEARCH_FAST ??
+					process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
+				virtualKey: process.env.BIFROST_MODEL_WORKFLOW_RESEARCH_FAST
+					? (process.env.BIFROST_VK_WORKFLOW_RESEARCH_FAST ??
+						process.env.BIFROST_VK_WORKFLOW_RESEARCH)
+					: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
+				userId,
+				feature: "workflow-name-expansion",
 				temperature: 0.3,
-				max_tokens: 300,
-				messages: [
-					{
-						role: "system",
-						content: `You generate search variations for finding a person on LinkedIn. Given a name, company, and optional context hints (role, location, background), return a JSON array of 2-3 objects with optional fields: firstName, lastName, keywords. Your MOST IMPORTANT job is to correct likely misspellings using your knowledge of well-known people at the given company. Also include formal/full name versions and the original spelling. Use context hints (title, location, etc.) in the keywords field to help disambiguate. For example: "Michael Meibach" at "Mastercard" → [{"firstName":"Michael","lastName":"Miebach"},{"firstName":"Michael","lastName":"Meibach"}]. "Ajay Banga" at "World Bank" → [{"firstName":"Ajaypal","lastName":"Banga"},{"firstName":"Ajay","lastName":"Banga"}]. "Sarah Chen" at "TD Bank" with context "VP of Engineering, Toronto" → [{"firstName":"Sarah","lastName":"Chen","keywords":"VP Engineering Toronto"}]. Put the most likely correct spelling FIRST. Only return the JSON array, nothing else.`,
-					},
-					{
-						role: "user",
-						content: `Name: "${name}"\nCompany: "${company}"${context ? `\nContext: "${context}"` : ""}`,
-					},
-				],
-			}),
-			signal: controller.signal,
-			cache: "no-store",
-		});
+				timeout: 4_000,
+			},
+		);
 
-		clearTimeout(timer);
-
-		if (!res.ok) {
-			logger.warn(ctx, "OpenAI API returned %d, using fallback", res.status);
-			return simpleFallback;
-		}
-
-		const body = (await res.json()) as {
-			choices?: Array<{ message?: { content?: string } }>;
-		};
-		const content = body.choices?.[0]?.message?.content ?? "";
-		const jsonMatch = content.match(/\[[\s\S]*\]/);
+		const jsonMatch = response.content.match(/\[[\s\S]*\]/);
 		if (!jsonMatch) {
 			logger.warn(ctx, "No JSON array in LLM response, using fallback");
 			return simpleFallback;
@@ -532,53 +513,63 @@ export async function getCompanyDetails(
 
 /**
  * Full research flow: search person → get profile → search company → get company details.
- * Returns combined enrichment data for use in audience profiling.
+ * Person chain and company chain run in parallel since they're independent.
  */
 export async function researchPerson(
 	name: string,
 	company: string,
 ): Promise<NetrowsEnrichmentResult> {
-	// Step 1: Search for the person
 	const parts = name.trim().split(/\s+/);
 	const firstName = parts[0] ?? "";
 	const lastName = parts.length > 1 ? parts[parts.length - 1] : "";
-	const personSearchResults = await searchPerson({
-		firstName,
-		lastName,
-		company,
-	});
 
-	// Step 2: Get full profile of the first match (if any)
-	let personProfile: NetrowsPersonProfile | null = null;
-	if (personSearchResults && personSearchResults.length > 0) {
-		const firstMatch = personSearchResults[0];
-		const profileUrl =
-			firstMatch?.profileURL ??
-			(firstMatch?.username
-				? `https://www.linkedin.com/in/${firstMatch.username}/`
-				: null);
+	// Run person chain and company chain in parallel
+	const [personResult, companyResult] = await Promise.all([
+		// Person chain: search → profile
+		(async () => {
+			const searchResults = await searchPerson({
+				firstName,
+				lastName,
+				company,
+			});
 
-		if (profileUrl) {
-			personProfile = await getPersonProfile(profileUrl);
-		}
-	}
+			let profile: NetrowsPersonProfile | null = null;
+			if (searchResults && searchResults.length > 0) {
+				const firstMatch = searchResults[0];
+				const profileUrl =
+					firstMatch?.profileURL ??
+					(firstMatch?.username
+						? `https://www.linkedin.com/in/${firstMatch.username}/`
+						: null);
 
-	// Step 3: Search for the company
-	const companySearchResults = await searchCompany(company);
+				if (profileUrl) {
+					profile = await getPersonProfile(profileUrl);
+				}
+			}
 
-	// Step 4: Get full company details from first match
-	let companyDetails: NetrowsCompanyDetails | null = null;
-	if (companySearchResults && companySearchResults.length > 0) {
-		const firstCompany = companySearchResults[0];
-		if (firstCompany?.linkedinURL) {
-			companyDetails = await getCompanyDetails(firstCompany.linkedinURL);
-		}
-	}
+			return { searchResults, profile };
+		})(),
+
+		// Company chain: search → details
+		(async () => {
+			const searchResults = await searchCompany(company);
+
+			let details: NetrowsCompanyDetails | null = null;
+			if (searchResults && searchResults.length > 0) {
+				const firstCompany = searchResults[0];
+				if (firstCompany?.linkedinURL) {
+					details = await getCompanyDetails(firstCompany.linkedinURL);
+				}
+			}
+
+			return { searchResults, details };
+		})(),
+	]);
 
 	return {
-		personSearchResults,
-		personProfile,
-		companySearchResults,
-		companyDetails,
+		personSearchResults: personResult.searchResults,
+		personProfile: personResult.profile,
+		companySearchResults: companyResult.searchResults,
+		companyDetails: companyResult.details,
 	};
 }
