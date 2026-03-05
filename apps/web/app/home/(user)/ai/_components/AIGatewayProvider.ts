@@ -1,17 +1,15 @@
 "use server";
 
-import type { Config } from "@kit/ai-gateway";
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
 export type AIGatewayContext = {
 	userId: string;
-	config: Config;
 };
 
 /**
- * Provides the AI Gateway configuration and user context for AI features.
- * This is used across blocks, canvas, and publisher features for AI integration.
+ * Provides the AI Gateway user context for AI features.
+ * Model routing and config are now handled by Bifrost virtual keys.
  */
 export async function getAIGatewayContext(): Promise<AIGatewayContext> {
 	const client = getSupabaseServerClient();
@@ -21,35 +19,7 @@ export async function getAIGatewayContext(): Promise<AIGatewayContext> {
 		throw new Error("Unauthorized");
 	}
 
-	// Check for Bifrost configuration
-	if (!process.env.BIFROST_GATEWAY_URL) {
-		throw new Error("BIFROST_GATEWAY_URL environment variable is not set");
-	}
-
-	if (!process.env.BIFROST_CF_ACCESS_CLIENT_ID) {
-		throw new Error(
-			"BIFROST_CF_ACCESS_CLIENT_ID environment variable is not set",
-		);
-	}
-
-	if (!process.env.BIFROST_CF_ACCESS_CLIENT_SECRET) {
-		throw new Error(
-			"BIFROST_CF_ACCESS_CLIENT_SECRET environment variable is not set",
-		);
-	}
-
 	return {
 		userId: auth.data.id,
-		config: {
-			// Default settings that can be overridden by feature-specific configs
-			cache: {
-				mode: "simple",
-				max_age: 3600, // 1 hour
-			},
-			retry: {
-				attempts: 3,
-				on_status_codes: [429, 500, 502, 503, 504],
-			},
-		},
 	};
 }

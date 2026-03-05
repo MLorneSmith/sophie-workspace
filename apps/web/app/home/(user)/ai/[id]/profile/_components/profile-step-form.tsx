@@ -6,14 +6,31 @@ import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 import { Input } from "@kit/ui/input";
 import { Label } from "@kit/ui/label";
 import { Textarea } from "@kit/ui/textarea";
+import {
+	Building2,
+	LayoutTemplate,
+	Lightbulb,
+	MessageCircle,
+	Target,
+} from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useCallback, useId, useMemo, useState, useTransition } from "react";
+import {
+	useCallback,
+	useEffect,
+	useId,
+	useMemo,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
 
 import {
 	type AdaptiveQuestion,
 	generateAdaptiveQuestionsAction,
 } from "../_actions/generate-adaptive-questions.action";
 import {
+	pollCompanyBriefAction,
 	researchAudienceAction,
 	searchAudienceAction,
 } from "../_actions/research-audience.action";
@@ -104,7 +121,7 @@ interface PersonSearchResult {
 }
 
 const RESEARCH_STEPS = [
-	"Finding LinkedIn profile…",
+	"Building profile…",
 	"Analyzing career background…",
 	"Researching company…",
 	"Analyzing company news & strategy…",
@@ -132,6 +149,40 @@ function hasBriefContent(b: BriefStructured | null): boolean {
 		pf?.lengthRecommendation ||
 		b.briefSummary
 	);
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function extractDomainFromUrl(url: string): string {
+	try {
+		return new URL(url).hostname.replace(/^www\./, "");
+	} catch {
+		return (
+			url
+				.replace(/^https?:\/\//, "")
+				.replace(/^www\./, "")
+				.split("/")[0] ?? ""
+		);
+	}
+}
+
+function getCompanyLogoUrl(domain: string | null): string | null {
+	const clientId = process.env.NEXT_PUBLIC_BRANDFETCH_CLIENT_ID;
+	if (!clientId || !domain) return null;
+	return `https://cdn.brandfetch.io/domain/${domain}?c=${clientId}`;
+}
+
+function extractCompanyDomain(
+	enrichmentData: Record<string, unknown> | null,
+): string | null {
+	if (!enrichmentData) return null;
+	const netrows = enrichmentData.netrows as {
+		companyDetails?: { website?: string };
+	} | null;
+	const website = netrows?.companyDetails?.website;
+	return website ? extractDomainFromUrl(website) : null;
 }
 
 // ---------------------------------------------------------------------------
@@ -186,6 +237,9 @@ export function ProfileStepForm(props: {
 				} | null
 			)?.companyBrief ?? null,
 		);
+	const [companyDomain, setCompanyDomain] = useState<string | null>(
+		extractCompanyDomain(props.initialProfile?.enrichment_data ?? null),
+	);
 	const [searchResults, setSearchResults] = useState<PersonSearchResult[]>([]);
 	const [adaptiveQuestions, setAdaptiveQuestions] = useState<
 		AdaptiveQuestion[]
@@ -195,6 +249,50 @@ export function ProfileStepForm(props: {
 	>({});
 	const [showAdaptive, setShowAdaptive] = useState(false);
 	const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
+
+	// -----------------------------------------------------------------------
+	// Poll for background company brief
+	// -----------------------------------------------------------------------
+
+	const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+	useEffect(() => {
+		// Only poll when in brief state, no company brief yet, and research completed
+		if (formState !== "brief" || companyBrief || !hasCompanyData) {
+			return;
+		}
+
+		let attempts = 0;
+		const maxAttempts = 24; // 24 × 5s = 2 minutes max
+
+		pollRef.current = setInterval(async () => {
+			attempts++;
+			if (attempts > maxAttempts) {
+				if (pollRef.current) clearInterval(pollRef.current);
+				return;
+			}
+
+			try {
+				const result = await pollCompanyBriefAction({
+					presentationId: props.presentationId,
+				});
+
+				if (result.ready && result.companyBrief) {
+					setCompanyBrief(
+						result.companyBrief as unknown as CompanyBriefStructured,
+					);
+					setHasCompanyBrief(true);
+					if (pollRef.current) clearInterval(pollRef.current);
+				}
+			} catch {
+				// Polling errors are non-critical — silently retry
+			}
+		}, 5_000);
+
+		return () => {
+			if (pollRef.current) clearInterval(pollRef.current);
+		};
+	}, [formState, companyBrief, hasCompanyData, props.presentationId]);
 
 	// -----------------------------------------------------------------------
 	// Research handler
@@ -242,11 +340,15 @@ export function ProfileStepForm(props: {
 					!!(result as { hasCompanyBrief?: boolean }).hasCompanyBrief,
 				);
 
-				// Extract company brief from enrichment data
-				const enrichment = profile.enrichment_data as {
-					companyBrief?: CompanyBriefStructured;
-				} | null;
-				setCompanyBrief(enrichment?.companyBrief ?? null);
+				// Extract company brief and domain from enrichment data
+				const enrichment = profile.enrichment_data as Record<
+					string,
+					unknown
+				> | null;
+				setCompanyBrief(
+					(enrichment?.companyBrief as CompanyBriefStructured) ?? null,
+				);
+				setCompanyDomain(extractCompanyDomain(enrichment));
 				setFormState("brief");
 			} catch (err) {
 				clearInterval(stepTimer);
@@ -266,6 +368,7 @@ export function ProfileStepForm(props: {
 			const result = await searchAudienceAction({
 				personName,
 				company,
+				context: context || undefined,
 			});
 
 			if (!result.success) {
@@ -287,7 +390,7 @@ export function ProfileStepForm(props: {
 			setError(err instanceof Error ? err.message : "Search failed");
 			setFormState("input");
 		}
-	}, [personName, company, handleResearchWithSelection]);
+	}, [personName, company, context, handleResearchWithSelection]);
 
 	// -----------------------------------------------------------------------
 	// Adaptive questions handler
@@ -373,7 +476,9 @@ export function ProfileStepForm(props: {
 		return (
 			<div className="mx-auto w-full max-w-5xl space-y-8">
 				<div className="text-center">
-					<h2 className="text-app-h3 font-semibold">Searching for profiles…</h2>
+					<h2 className="text-app-h3 font-semibold">
+						Searching for your audience…
+					</h2>
 					<p className="mt-2 text-app-sm text-muted-foreground">
 						Looking up{" "}
 						<span className="font-medium text-foreground">{personName}</span>
@@ -416,8 +521,14 @@ export function ProfileStepForm(props: {
 					</p>
 				</div>
 
-				<div className="grid gap-3">
-					{searchResults.map((person, index) => {
+				{(() => {
+					const topResults = searchResults.slice(0, 3);
+					const moreResults = searchResults.slice(3);
+
+					const renderPersonCard = (
+						person: PersonSearchResult,
+						index: number,
+					) => {
 						const linkedinUrl =
 							person.profileURL ??
 							(person.username
@@ -462,61 +573,90 @@ export function ProfileStepForm(props: {
 								</Badge>
 							</button>
 						);
-					})}
-				</div>
+					};
 
-				<div className="space-y-3">
-					<div className="flex items-center gap-3">
-						<Button
-							variant="ghost"
-							onClick={() => {
-								setSearchResults([]);
-								setFormState("input");
-							}}
-						>
-							← Back
-						</Button>
-						<Button
-							variant="secondary"
-							onClick={() => handleResearchWithSelection(undefined)}
-						>
-							None of these — continue without LinkedIn
-						</Button>
-					</div>
+					return (
+						<div className="space-y-3">
+							<div className="grid gap-3">
+								{topResults.map((person, index) =>
+									renderPersonCard(person, index),
+								)}
+							</div>
 
-					<details className="rounded-lg border border-white/10 bg-white/5 p-3">
-						<summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
-							Know their LinkedIn URL? Paste it here
-						</summary>
-						<div className="mt-3 flex gap-2">
-							<input
-								type="url"
-								placeholder="https://www.linkedin.com/in/..."
-								className="flex-1 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
-								onKeyDown={(e) => {
-									if (e.key === "Enter") {
-										const url = (e.target as HTMLInputElement).value.trim();
+							{moreResults.length > 0 ? (
+								<details className="rounded-lg border border-white/10 bg-white/5 p-3">
+									<summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+										Show {moreResults.length} more result
+										{moreResults.length !== 1 ? "s" : ""}
+									</summary>
+									<div className="mt-3 grid gap-3">
+										{moreResults.map((person, index) =>
+											renderPersonCard(person, index + 3),
+										)}
+									</div>
+								</details>
+							) : null}
+						</div>
+					);
+				})()}
+
+				<details className="rounded-lg border border-white/10 bg-white/5 p-3">
+					<summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+						Don&apos;t see who you&apos;re looking for?
+					</summary>
+					<div className="mt-4 space-y-4">
+						<div className="space-y-2">
+							<p className="text-app-xs font-medium text-muted-foreground">
+								Know their LinkedIn URL?
+							</p>
+							<div className="flex gap-2">
+								<input
+									type="url"
+									placeholder="https://www.linkedin.com/in/..."
+									className="flex-1 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
+									onKeyDown={(e) => {
+										if (e.key === "Enter") {
+											const url = (e.target as HTMLInputElement).value.trim();
+											if (url) handleResearchWithSelection(url);
+										}
+									}}
+									id={`${reactId}-manual-linkedin-url`}
+								/>
+								<Button
+									variant="secondary"
+									size="sm"
+									onClick={() => {
+										const input = document.getElementById(
+											`${reactId}-manual-linkedin-url`,
+										) as HTMLInputElement;
+										const url = input?.value?.trim();
 										if (url) handleResearchWithSelection(url);
-									}
-								}}
-								id={`${reactId}-manual-linkedin-url`}
-							/>
+									}}
+								>
+									Use this profile
+								</Button>
+							</div>
+						</div>
+
+						<div className="flex flex-col gap-2 border-t border-white/5 pt-4 sm:flex-row">
 							<Button
 								variant="secondary"
-								size="sm"
+								onClick={() => handleResearchWithSelection(undefined)}
+							>
+								Continue without LinkedIn
+							</Button>
+							<Button
+								variant="ghost"
 								onClick={() => {
-									const input = document.getElementById(
-										`${reactId}-manual-linkedin-url`,
-									) as HTMLInputElement;
-									const url = input?.value?.trim();
-									if (url) handleResearchWithSelection(url);
+									setSearchResults([]);
+									setFormState("input");
 								}}
 							>
-								Use this profile
+								Refine your search
 							</Button>
 						</div>
-					</details>
-				</div>
+					</div>
+				</details>
 			</div>
 		);
 	}
@@ -601,79 +741,88 @@ export function ProfileStepForm(props: {
 
 	if (formState === "brief") {
 		const briefEmpty = !hasBriefContent(brief);
+		const logoUrl = getCompanyLogoUrl(companyDomain);
 
 		return (
-			<div className="mx-auto w-full max-w-5xl space-y-6">
-				<div>
-					<div className="flex items-center gap-3">
-						<h2 className="text-app-h3 font-semibold">Audience Brief</h2>
-						<div className="flex gap-1.5">
+			<div className="mx-auto w-full max-w-5xl space-y-8">
+				{/* Identity block */}
+				<div className="flex items-start gap-4">
+					{logoUrl ? (
+						<div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white/5 p-2">
+							<Image
+								src={logoUrl}
+								alt={`${company} logo`}
+								width={40}
+								height={40}
+								className="object-contain"
+								unoptimized
+							/>
+						</div>
+					) : (
+						<div className="flex size-14 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+							<Building2 className="size-6 text-muted-foreground" />
+						</div>
+					)}
+					<div className="min-w-0 flex-1">
+						<h2 className="text-app-h3 font-semibold">{personName}</h2>
+						<p className="text-app-body text-muted-foreground">
+							{company ? `${company} ` : ""}
+							<span className="text-muted-foreground/50">
+								— review and edit before continuing
+							</span>
+						</p>
+						<div className="mt-2 flex gap-1.5">
 							{hasPersonData ? (
 								<Badge variant="secondary" className="text-xs">
-									LinkedIn ✓
+									LinkedIn
 								</Badge>
-							) : (
-								<Badge
-									variant="outline"
-									className="text-xs text-muted-foreground"
-								>
-									No LinkedIn data
-								</Badge>
-							)}
+							) : null}
 							{hasCompanyData ? (
 								<Badge variant="secondary" className="text-xs">
-									Company ✓
+									Company
 								</Badge>
-							) : (
-								<Badge
-									variant="outline"
-									className="text-xs text-muted-foreground"
-								>
-									No company data
-								</Badge>
-							)}
+							) : null}
 							{hasCompanyBrief ? (
 								<Badge variant="secondary" className="text-xs">
-									Deep Research ✓
+									Deep Research
 								</Badge>
 							) : null}
 						</div>
 					</div>
-					<p className="mt-1 text-app-sm text-muted-foreground">
-						{personName}
-						{company ? ` at ${company}` : ""} — review and edit before
-						continuing.
-					</p>
 				</div>
 
 				{briefEmpty ? (
 					<div className="rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-6 text-center">
-						<p className="text-app-sm font-medium text-foreground">
+						<p className="text-app-body font-medium text-foreground">
 							Brief generation failed
 						</p>
-						<p className="mt-1 text-app-xs text-muted-foreground">
+						<p className="mt-1 text-app-sm text-muted-foreground">
 							We collected research data but couldn&apos;t generate the audience
 							brief. Click <strong>Re-research</strong> to try again.
 						</p>
 					</div>
 				) : null}
 
+				{/* Brief summary — hero callout */}
 				{brief?.briefSummary ? (
-					<p className="rounded-lg border bg-muted/30 p-4 text-app-sm italic text-muted-foreground">
-						{brief.briefSummary}
-					</p>
+					<div className="rounded-lg border-l-4 border-l-primary bg-primary/5 px-5 py-4">
+						<p className="text-app-body leading-relaxed text-foreground">
+							{brief.briefSummary}
+						</p>
+					</div>
 				) : null}
 
 				{brief && !briefEmpty ? (
-					<div className="grid gap-4 md:grid-cols-3">
+					<div className="grid gap-5 md:grid-cols-3">
 						{/* Communication Profile */}
-						<Card>
+						<Card className="border-l-4 border-l-blue-400">
 							<CardHeader className="pb-3">
-								<CardTitle className="text-app-sm font-semibold">
-									🎯 Communication Profile
+								<CardTitle className="flex items-center gap-2 text-app-body font-semibold">
+									<MessageCircle className="size-4 text-blue-400" />
+									Communication Profile
 								</CardTitle>
 							</CardHeader>
-							<CardContent className="space-y-2 text-app-xs">
+							<CardContent className="space-y-3 text-app-sm">
 								{brief.communicationProfile?.decisionMakingStyle ? (
 									<div>
 										<span className="font-medium text-muted-foreground">
@@ -710,13 +859,14 @@ export function ProfileStepForm(props: {
 						</Card>
 
 						{/* Strategic Recommendations */}
-						<Card>
+						<Card className="border-l-4 border-l-amber-400">
 							<CardHeader className="pb-3">
-								<CardTitle className="text-app-sm font-semibold">
-									💡 Strategic Recommendations
+								<CardTitle className="flex items-center gap-2 text-app-body font-semibold">
+									<Lightbulb className="size-4 text-amber-400" />
+									Strategic Recommendations
 								</CardTitle>
 							</CardHeader>
-							<CardContent className="space-y-2 text-app-xs">
+							<CardContent className="space-y-3 text-app-sm">
 								{brief.strategicRecommendations?.leadWith ? (
 									<div>
 										<span className="font-medium text-muted-foreground">
@@ -753,13 +903,14 @@ export function ProfileStepForm(props: {
 						</Card>
 
 						{/* Presentation Format */}
-						<Card>
+						<Card className="border-l-4 border-l-emerald-400">
 							<CardHeader className="pb-3">
-								<CardTitle className="text-app-sm font-semibold">
-									📊 Presentation Format
+								<CardTitle className="flex items-center gap-2 text-app-body font-semibold">
+									<LayoutTemplate className="size-4 text-emerald-400" />
+									Presentation Format
 								</CardTitle>
 							</CardHeader>
-							<CardContent className="space-y-2 text-app-xs">
+							<CardContent className="space-y-3 text-app-sm">
 								{brief.presentationFormat?.structure ? (
 									<div>
 										<span className="font-medium text-muted-foreground">
@@ -807,11 +958,12 @@ export function ProfileStepForm(props: {
 
 				{/* Company Context Section */}
 				{companyBrief ? (
-					<Card>
+					<Card className="border-l-4 border-l-violet-400">
 						<CardHeader className="pb-3">
 							<div className="flex items-center gap-2">
-								<CardTitle className="text-app-sm font-semibold">
-									🏢 Company Context
+								<CardTitle className="flex items-center gap-2 text-app-body font-semibold">
+									<Building2 className="size-4 text-violet-400" />
+									Company Context
 								</CardTitle>
 								{companyBrief.currentSituation?.archetype ? (
 									<Badge variant="outline" className="text-xs capitalize">
@@ -829,7 +981,7 @@ export function ProfileStepForm(props: {
 
 							<div className="grid gap-4 md:grid-cols-2">
 								{/* Strategic Focus & Challenges */}
-								<div className="space-y-2 text-app-xs">
+								<div className="space-y-3 text-app-sm">
 									{companyBrief.currentSituation?.strategicFocus ? (
 										<div>
 											<span className="font-medium text-muted-foreground">
@@ -859,7 +1011,7 @@ export function ProfileStepForm(props: {
 								</div>
 
 								{/* Presentation Implications */}
-								<div className="space-y-2 text-app-xs">
+								<div className="space-y-3 text-app-sm">
 									{companyBrief.presentationImplications?.framingAdvice ? (
 										<div>
 											<span className="font-medium text-muted-foreground">
@@ -886,11 +1038,11 @@ export function ProfileStepForm(props: {
 							{/* Recent News */}
 							{companyBrief.currentSituation?.recentNews &&
 							companyBrief.currentSituation.recentNews.length > 0 ? (
-								<div className="space-y-1 text-app-xs">
+								<div className="space-y-1.5 text-app-sm">
 									<span className="font-medium text-muted-foreground">
 										Recent developments:
 									</span>
-									<ul className="list-inside list-disc space-y-0.5 text-muted-foreground">
+									<ul className="list-inside list-disc space-y-1 text-muted-foreground">
 										{companyBrief.currentSituation.recentNews
 											.slice(0, 3)
 											.map((news) => (
@@ -905,12 +1057,13 @@ export function ProfileStepForm(props: {
 
 				{/* Adaptive Follow-up Questions */}
 				{showAdaptive && adaptiveQuestions.length > 0 ? (
-					<Card>
+					<Card className="border-l-4 border-l-primary">
 						<CardHeader className="pb-3">
-							<CardTitle className="text-app-sm font-semibold">
-								🎯 Refine Your Brief
+							<CardTitle className="flex items-center gap-2 text-app-body font-semibold">
+								<Target className="size-4 text-primary" />
+								Refine Your Brief
 							</CardTitle>
-							<p className="text-app-xs text-muted-foreground">
+							<p className="text-app-sm text-muted-foreground">
 								Answer these questions to sharpen the recommendations. Skip any
 								you don&apos;t know.
 							</p>
@@ -920,11 +1073,11 @@ export function ProfileStepForm(props: {
 								<div key={q.id} className="space-y-1.5">
 									<Label
 										htmlFor={`adaptive-${q.id}`}
-										className="text-app-xs font-medium"
+										className="text-app-sm font-medium"
 									>
 										{q.question}
 									</Label>
-									<p className="text-[11px] text-muted-foreground/70">
+									<p className="text-app-xs text-muted-foreground/70">
 										{q.why}
 									</p>
 									<Textarea
@@ -937,7 +1090,7 @@ export function ProfileStepForm(props: {
 											}))
 										}
 										placeholder="Optional — skip if unsure"
-										className="min-h-[60px] text-app-xs"
+										className="min-h-[60px] text-app-sm"
 									/>
 								</div>
 							))}
@@ -968,7 +1121,7 @@ export function ProfileStepForm(props: {
 								disabled={isSaving || isLoadingQuestions}
 								onClick={handleGenerateQuestions}
 							>
-								{isLoadingQuestions ? "Loading…" : "✨ Refine brief"}
+								{isLoadingQuestions ? "Loading…" : "Refine brief"}
 							</Button>
 						) : null}
 
@@ -1036,27 +1189,38 @@ export function ProfileStepForm(props: {
 					</div>
 				</div>
 
-				<div className="grid gap-2">
-					<Label htmlFor={`${reactId}-context`}>
-						Additional context{" "}
-						<span className="text-muted-foreground">(optional)</span>
-					</Label>
-					<Textarea
-						id={`${reactId}-context`}
-						value={context}
-						onChange={(e) => setContext(e.target.value)}
-						placeholder="e.g. Quarterly board review, she's skeptical about our cloud migration costs…"
-						className="min-h-[80px]"
-					/>
-				</div>
+				<details className="group rounded-lg border border-white/10 bg-white/5 p-3">
+					<summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+						Add search hints{" "}
+						<span className="text-xs text-muted-foreground/70">
+							(help us find the right person)
+						</span>
+					</summary>
+					<div className="mt-3 grid gap-2">
+						<Label htmlFor={`${reactId}-context`}>
+							What else do you know about them?
+						</Label>
+						<Textarea
+							id={`${reactId}-context`}
+							value={context}
+							onChange={(e) => setContext(e.target.value)}
+							placeholder="e.g. She's the VP of Engineering, based in Toronto, previously at McKinsey…"
+							className="min-h-[80px]"
+						/>
+					</div>
+				</details>
 
 				{error ? <p className="text-app-sm text-destructive">{error}</p> : null}
+			</div>
 
-				<div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+			<div className="mt-10 flex flex-col items-end gap-2 border-t border-white/5 pt-6">
+				<div className="flex gap-2">
 					<Button
 						variant="secondary"
 						disabled={
-							personName.trim().length === 0 || company.trim().length === 0
+							isSaving ||
+							personName.trim().length === 0 ||
+							company.trim().length === 0
 						}
 						onClick={() => {
 							// Skip research, just save and continue

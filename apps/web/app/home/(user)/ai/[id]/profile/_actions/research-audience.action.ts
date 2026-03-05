@@ -1,12 +1,6 @@
 "use server";
 
-import {
-	type ChatCompletionOptions,
-	type ChatMessage,
-	ConfigManager,
-	createOpenAIOnlyConfig,
-	getChatCompletion,
-} from "@kit/ai-gateway";
+import { type ChatMessage, getChatCompletion } from "@kit/ai-gateway";
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
@@ -25,6 +19,7 @@ import {
 	synthesizeCompanyBrief,
 } from "../../../_lib/server/company-brief-synthesis.service";
 import { researchCompany } from "../../../_lib/server/company-research.service";
+import { scrapeWebsiteDeep } from "../../../_lib/server/website-deep-scrape.service";
 import {
 	enrichCompany,
 	extractDomain,
@@ -38,6 +33,8 @@ import {
 	searchCompany,
 	searchPersonFuzzy,
 } from "../../../_lib/server/netrows.service";
+import { resolveCompanyTicker } from "../../../_lib/server/ticker-resolution.service";
+import { getFinancialSnapshot } from "../../../_lib/server/alpha-vantage.service";
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -46,6 +43,7 @@ import {
 const SearchAudienceSchema = z.object({
 	personName: z.string().min(1, "Person name is required"),
 	company: z.string().min(1, "Company is required"),
+	context: z.string().optional(),
 });
 
 const ResearchAudienceSchema = z.object({
@@ -181,7 +179,7 @@ Respond with ONLY the JSON object, no markdown fences.`;
 export const searchAudienceAction = enhanceAction(
 	async (data, user) => {
 		const [personSettled, companySettled] = await Promise.allSettled([
-			searchPersonFuzzy(data.personName, data.company, user.id),
+			searchPersonFuzzy(data.personName, data.company, user.id, data.context),
 			searchCompany(data.company),
 		]);
 
@@ -296,6 +294,45 @@ export const researchAudienceAction = enhanceAction(
 				})()
 			: Promise.resolve(null);
 
+		// Step 1.6: Ticker resolution (non-blocking)
+		// Resolve company name to ticker for financial data enrichment
+		let tickerResolution: {
+			ticker: string;
+			cik: string;
+			confidence: number;
+		} | null = null;
+		const tickerPromise: Promise<{
+			ticker: string;
+			cik: string;
+			confidence: number;
+		} | null> = (async () => {
+			try {
+				logger.info(ctx, "Resolving ticker for: %s", data.company);
+				const resolution = await resolveCompanyTicker(
+					client,
+					data.company,
+					user.id,
+				);
+				if (resolution) {
+					logger.info(
+						ctx,
+						"Ticker resolved: %s (CIK: %s, confidence: %s)",
+						resolution.ticker,
+						resolution.cik,
+						resolution.confidence,
+					);
+				}
+				return resolution;
+			} catch (tickerErr) {
+				logger.warn(
+					ctx,
+					"Ticker resolution failed (non-blocking): %o",
+					tickerErr,
+				);
+				return null;
+			}
+		})();
+
 		// Step 2: Company web research + brief synthesis (parallel with step 1)
 		// Uses Brave Search API + LLM to build a structured CompanyBrief
 		let companyBrief: CompanyBrief | null = null;
@@ -327,18 +364,93 @@ export const researchAudienceAction = enhanceAction(
 						?.replace(/^https?:\/\//, "")
 						.replace(/\/.*$/, "") ?? undefined;
 
-				// Run web research AND Apollo enrichment in parallel
-				const [webResearch, apolloResult] = await Promise.all([
-					withTimeout(
-						researchCompany(data.company, industry, domain),
-						15_000,
-						"Company web research",
-					),
+				// Start independent promises early - they run in parallel with ticker resolution
+				const websiteDeepScrapePromise = domain
+					? withTimeout(
+							scrapeWebsiteDeep(domain),
+							15_000,
+							"Website deep scrape",
+						)
+					: Promise.resolve(null);
+
+				// Start web research early (independent of ticker)
+				const webResearchPromise = withTimeout(
+					researchCompany(data.company, industry, domain),
+					15_000,
+					"Company web research",
+				);
+
+				// Await ticker resolution first (needed for Alpha Vantage)
+				const tickerResult = await tickerPromise.catch((tickerErr) => {
+					logger.warn(
+						ctx,
+						"Ticker resolution failed (non-blocking): %o",
+						tickerErr,
+					);
+					return null;
+				});
+				tickerResolution = tickerResult;
+
+				// Create Alpha Vantage promise (only if we have a ticker)
+				const alphaVantagePromise = tickerResolution
+					? (async () => {
+							try {
+								logger.info(
+									ctx,
+									"Fetching Alpha Vantage data for: %s",
+									tickerResolution?.ticker,
+								);
+								const result = tickerResolution?.ticker
+									? await getFinancialSnapshot(tickerResolution.ticker)
+									: null;
+								if (result?.success && result.data) {
+									logger.info(
+										ctx,
+										"Alpha Vantage success: revenue=%s, peRatio=%s",
+										result.data.revenue,
+										result.data.peRatio,
+									);
+								}
+								return result;
+							} catch (avErr) {
+								logger.warn(
+									ctx,
+									"Alpha Vantage enrichment failed (non-blocking): %o",
+									avErr,
+								);
+								return null;
+							}
+						})()
+					: Promise.resolve(null);
+
+				const [
+					webResearch,
+					apolloResult,
+					websiteDeepScrape,
+					alphaVantageResult,
+				] = await Promise.all([
+					webResearchPromise,
 					apolloPromise.catch((apolloErr) => {
 						logger.warn(
 							ctx,
 							"Apollo enrichment failed (non-blocking): %o",
 							apolloErr,
+						);
+						return null;
+					}),
+					websiteDeepScrapePromise.catch((deepScrapeErr) => {
+						logger.warn(
+							ctx,
+							"Website deep scrape failed (non-blocking): %o",
+							deepScrapeErr,
+						);
+						return null;
+					}),
+					alphaVantagePromise.catch((avErr) => {
+						logger.warn(
+							ctx,
+							"Alpha Vantage enrichment failed (non-blocking): %o",
+							avErr,
 						);
 						return null;
 					}),
@@ -405,11 +517,49 @@ export const researchAudienceAction = enhanceAction(
 					newsResults: webResearch.newsResults,
 					industryResults: webResearch.industryResults,
 					websiteContent: webResearch.websiteContent,
+					websiteDeepScrape: websiteDeepScrape
+						? {
+								aboutContent: websiteDeepScrape.pages.about,
+								newsroomContent: websiteDeepScrape.pages.newsroom,
+								careersContent: websiteDeepScrape.pages.careers,
+								blogContent: websiteDeepScrape.pages.blog,
+								investorsContent: websiteDeepScrape.pages.investors,
+								jobPostings: websiteDeepScrape.jobPostings,
+								recentPressReleases: websiteDeepScrape.recentPressReleases,
+							}
+						: undefined,
+					alphaVantageData:
+						alphaVantageResult?.success && alphaVantageResult?.data
+							? {
+									revenue: alphaVantageResult.data.revenue,
+									grossMargin: alphaVantageResult.data.grossMargin,
+									operatingMargin: alphaVantageResult.data.operatingMargin,
+									profitMargin: alphaVantageResult.data.profitMargin,
+									stockPrice: alphaVantageResult.data.stockPrice,
+									week52High: alphaVantageResult.data.week52High,
+									week52Low: alphaVantageResult.data.week52Low,
+									marketCap: alphaVantageResult.data.marketCap,
+									ebitda: alphaVantageResult.data.ebitda,
+									eps: alphaVantageResult.data.eps,
+									dividendYield: alphaVantageResult.data.dividendYield,
+									movingAvg50: alphaVantageResult.data.movingAvg50,
+									movingAvg200: alphaVantageResult.data.movingAvg200,
+									fiscalYearEnd: alphaVantageResult.data.fiscalYearEnd,
+									analystConsensus: alphaVantageResult.data.analystConsensus,
+									analystBuyCount: alphaVantageResult.data.analystBuyCount,
+									analystHoldCount: alphaVantageResult.data.analystHoldCount,
+									analystSellCount: alphaVantageResult.data.analystSellCount,
+									peRatio: alphaVantageResult.data.peRatio,
+									industryAvgPeRatio:
+										alphaVantageResult.data.industryAvgPeRatio,
+									beta: alphaVantageResult.data.beta,
+								}
+							: undefined,
 				};
 
 				companyBrief = await withTimeout(
 					synthesizeCompanyBrief(synthesisInput, user.id),
-					35_000,
+					120_000,
 					"Company brief synthesis",
 				);
 
@@ -430,12 +580,13 @@ export const researchAudienceAction = enhanceAction(
 				);
 			}
 		} catch (companyErr) {
+			const compErrMsg =
+				companyErr instanceof Error ? companyErr.message : String(companyErr);
 			logger.warn(
 				ctx,
-				"Company brief research failed (non-blocking): %o",
-				companyErr,
+				"Company brief research failed (non-blocking): %s",
+				compErrMsg,
 			);
-			// Non-blocking — audience brief will still be generated without company context
 		}
 
 		// Step 3: Generate Audience Brief via AI (now with company brief context)
@@ -449,29 +600,30 @@ export const researchAudienceAction = enhanceAction(
 			companyBrief,
 		);
 
-		const config = createOpenAIOnlyConfig({
-			userId: user.id,
-			context: "audience-brief-generation",
-		});
-		const normalizedConfig = ConfigManager.normalizeConfig(config);
-
-		if (!normalizedConfig) {
-			throw new Error("Failed to normalize AI config");
-		}
-
 		let briefStructured: Record<string, unknown> = {};
 		let briefText = "";
 
 		try {
+			const briefAbort = new AbortController();
+			const briefTimeoutId = setTimeout(
+				() => briefAbort.abort("AI brief generation timed out after 90s"),
+				90_000,
+			);
+
 			const response = await withTimeout(
 				getChatCompletion(messages, {
-					config: normalizedConfig,
+					model: process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
+					virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
 					userId: user.id,
 					feature: "workflow-audience-research",
-				} as ChatCompletionOptions),
-				30_000,
+					timeout: 90_000,
+					signal: briefAbort.signal,
+				}),
+				90_000,
 				"AI brief generation",
 			);
+
+			clearTimeout(briefTimeoutId);
 
 			const jsonMatch = response.content.match(/\{[\s\S]*\}/);
 			if (!jsonMatch) {
@@ -480,7 +632,24 @@ export const researchAudienceAction = enhanceAction(
 			briefStructured = JSON.parse(jsonMatch[0]);
 			briefText = (briefStructured.briefSummary as string) ?? "";
 		} catch (aiError) {
-			logger.error(ctx, "AI brief generation failed: %o", aiError);
+			const errMsg =
+				aiError instanceof Error ? aiError.message : String(aiError);
+			logger.error(ctx, "AI brief generation failed: %s", errMsg);
+			logger.error(ctx, "AI brief error details: %o", {
+				name: aiError instanceof Error ? aiError.name : "unknown",
+				message: errMsg,
+				stack: (aiError instanceof Error ? aiError.stack : "")?.substring(
+					0,
+					500,
+				),
+				virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH
+					? "SET"
+					: "NOT_SET",
+				bifrostUrl:
+					process.env.BIFROST_GATEWAY_URL ||
+					process.env.BIFROST_BASE_URL ||
+					"DEFAULT",
+			});
 			// Still save enrichment data — user can regenerate the brief later
 			briefText = enrichment.personProfile
 				? `${enrichment.personProfile.headline ?? ""} — ${enrichment.personProfile.summary?.substring(0, 200) ?? ""}`
@@ -490,7 +659,11 @@ export const researchAudienceAction = enhanceAction(
 		// Ensure Apollo promise is settled (may already be awaited in synthesis path)
 		if (!apolloEnrichment) {
 			try {
-				apolloEnrichment = await apolloPromise;
+				apolloEnrichment = await withTimeout(
+					apolloPromise,
+					15_000,
+					"Apollo enrichment (final await)",
+				);
 			} catch (apolloErr) {
 				logger.warn(
 					ctx,
@@ -595,6 +768,48 @@ export const researchAudienceAction = enhanceAction(
 	},
 	{
 		schema: ResearchAudienceSchema,
+		auth: true,
+	},
+);
+
+// ---------------------------------------------------------------------------
+// Poll Action — lightweight check for background company brief
+// ---------------------------------------------------------------------------
+
+const PollCompanyBriefSchema = z.object({
+	presentationId: z.string().min(1),
+});
+
+/**
+ * Returns the company brief from the audience profile if the background
+ * synthesis has completed. Called by the client on a short poll interval.
+ */
+export const pollCompanyBriefAction = enhanceAction(
+	async (data) => {
+		const client = getSupabaseServerClient<Database>();
+		const profile = await getProfileByPresentationId(
+			client,
+			data.presentationId,
+		);
+
+		if (!profile) {
+			return { ready: false as const };
+		}
+
+		const enrichment = profile.enrichment_data as Record<
+			string,
+			unknown
+		> | null;
+		const brief = enrichment?.companyBrief as Record<string, unknown> | null;
+
+		if (!brief) {
+			return { ready: false as const };
+		}
+
+		return { ready: true as const, companyBrief: brief };
+	},
+	{
+		schema: PollCompanyBriefSchema,
 		auth: true,
 	},
 );

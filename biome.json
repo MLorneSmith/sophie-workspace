@@ -53,7 +53,8 @@
 			"!**/.github/skills",
 			"!**/.agents/skills/nano-banana-pro-prompts-recommend-skill/references",
 			"!**/.claude/skills/nano-banana-pro-prompts-recommend-skill/references",
-			"!**/.claude/skills/artifacts-builder"
+			"!**/.claude/skills/artifacts-builder",
+			"!**/packages/mastra/src/rag/playbook-content"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },

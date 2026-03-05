@@ -54,6 +54,10 @@ const config = {
 		"thread-stream",
 		// Native addon from @mastra/core that can't be bundled
 		"@ast-grep/napi",
+		// Document parsing libraries with native dependencies (canvas)
+		"officeparser",
+		"pdf.js-extract",
+		"canvas",
 	],
 	// Bundle OpenTelemetry instrumentation packages instead of externalizing
 	webpack: (config, { isServer }) => {
@@ -160,6 +164,12 @@ function getImagesConfig() {
 	remotePatterns.push({
 		protocol: "https",
 		hostname: "media.slideheroes.com",
+	});
+
+	// Brandfetch CDN for company logos
+	remotePatterns.push({
+		protocol: "https",
+		hostname: "cdn.brandfetch.io",
 	});
 
 	if (IS_PRODUCTION) {

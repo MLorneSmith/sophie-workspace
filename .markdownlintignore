@@ -21,3 +21,7 @@ packages/cms/types/src/payload-types.ts
 coverage/
 test-results/
 playwright-report/
+
+# RAG playbook content (generated documentation)
+packages/mastra/src/rag/playbook-content/
+packages/mastra/src/rag/playbook-content/*.md

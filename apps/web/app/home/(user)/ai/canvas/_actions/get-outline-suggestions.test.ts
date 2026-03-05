@@ -6,10 +6,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createMockSupabaseClient } from "@/test/test-helpers";
 import type { ActionResult } from "@/test/test-types";
 
-// Mock AI Gateway - all exports should come from the main module
+// Mock AI Gateway
 vi.mock("@kit/ai-gateway", () => ({
 	getChatCompletion: vi.fn(),
-	createQualityOptimizedConfig: vi.fn(),
 	baseInstructions: "Base instructions for AI",
 	improvementFormat: "Improvement format guidelines",
 	outlineRewriteInstructions: "Outline rewrite instructions",
@@ -43,10 +42,7 @@ vi.mock("../_components/editor/tiptap/utils/format-conversion", () => ({
 	lexicalToTiptap: vi.fn(),
 }));
 
-import {
-	createQualityOptimizedConfig,
-	getChatCompletion,
-} from "@kit/ai-gateway";
+import { getChatCompletion } from "@kit/ai-gateway";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { lexicalToTiptap } from "../_components/editor/tiptap/utils/format-conversion";
 // Import after mocks
@@ -55,15 +51,6 @@ import { getOutlineSuggestionsAction } from "./get-outline-suggestions";
 describe("getOutlineSuggestionsAction", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-
-		// Setup mock implementations
-		vi.mocked(createQualityOptimizedConfig).mockReturnValue({
-			provider: "openai",
-			override_params: {
-				model: "gpt-4",
-				temperature: 0.7,
-			},
-		});
 
 		vi.mocked(getChatCompletion).mockResolvedValue({
 			content: JSON.stringify({

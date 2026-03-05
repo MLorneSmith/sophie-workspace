@@ -1,12 +1,6 @@
 "use server";
 
-import {
-	type ChatCompletionOptions,
-	type ChatMessage,
-	ConfigManager,
-	createOpenAIOnlyConfig,
-	getChatCompletion,
-} from "@kit/ai-gateway";
+import { type ChatMessage, getChatCompletion } from "@kit/ai-gateway";
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
@@ -299,21 +293,12 @@ Return one regenerated slide that fits the narrative flow and keeps the same id/
 			{ role: "user", content: userPrompt },
 		];
 
-		const config = createOpenAIOnlyConfig({
-			userId: user.id,
-			context: "storyboard-single-slide-regeneration",
-		});
-		const normalizedConfig = ConfigManager.normalizeConfig(config);
-
-		if (!normalizedConfig) {
-			throw new Error("Failed to normalize AI config");
-		}
-
 		const response = await getChatCompletion(messages, {
-			config: normalizedConfig,
+			model: process.env.BIFROST_MODEL_WORKFLOW_STORYBOARD,
+			virtualKey: process.env.BIFROST_VK_WORKFLOW_STORYBOARD,
 			userId: user.id,
 			feature: "workflow-storyboard-generation",
-		} as ChatCompletionOptions);
+		});
 
 		let regeneratedSlide: StoryboardSlide;
 		try {

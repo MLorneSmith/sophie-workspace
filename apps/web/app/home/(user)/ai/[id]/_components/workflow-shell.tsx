@@ -102,16 +102,18 @@ export function WorkflowShell(props: {
 					<div className="rounded-xl border border-white/10 bg-white/5 p-6 sm:p-8 backdrop-blur-xl">
 						{props.children}
 
-						<ContinueButton
-							enabled={props.completedSteps.includes(currentStep)}
-							hint={
-								STEP_HINTS[currentStep] ?? "Complete this step to continue."
-							}
-							onContinue={() => {
-								const next = getNextStep(currentStep);
-								router.push(`/home/ai/${props.presentationId}/${next}`);
-							}}
-						/>
+						{currentStep !== "profile" && (
+							<ContinueButton
+								enabled={props.completedSteps.includes(currentStep)}
+								hint={
+									STEP_HINTS[currentStep] ?? "Complete this step to continue."
+								}
+								onContinue={() => {
+									const next = getNextStep(currentStep);
+									router.push(`/home/ai/${props.presentationId}/${next}`);
+								}}
+							/>
+						)}
 					</div>
 				</div>
 

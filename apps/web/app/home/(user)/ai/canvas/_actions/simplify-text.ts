@@ -1,9 +1,7 @@
 "use server";
 
 import {
-	type ChatCompletionOptions,
 	type ChatMessage,
-	createReasoningOptimizedConfig,
 	getChatCompletion,
 	PromptManager,
 	textSimplificationTemplate,
@@ -22,13 +20,6 @@ const SimplifyTextSchema = z.object({
 export const simplifyTextAction = enhanceAction(
 	async (data, _user) => {
 		try {
-			// Create config with cache namespacing
-			const _config = createReasoningOptimizedConfig({
-				userId: data.userId,
-				presentationId: data.canvasId,
-				context: `simplify-${data.sectionType}`,
-			});
-
 			// Compile the template with variables
 			const compiledMessages = textSimplificationTemplate.map(
 				(message: ChatMessage) => ({
@@ -40,13 +31,10 @@ export const simplifyTextAction = enhanceAction(
 			);
 
 			// Get completion
-			const options: ChatCompletionOptions = {
-				model: "gpt-4",
-				temperature: 0.7,
-			};
-
 			const response = await getChatCompletion(compiledMessages, {
-				...options,
+				model: process.env.BIFROST_MODEL_CANVAS_QUALITY,
+				temperature: 0.4,
+				virtualKey: process.env.BIFROST_VK_CANVAS_QUALITY,
 			});
 
 			return {

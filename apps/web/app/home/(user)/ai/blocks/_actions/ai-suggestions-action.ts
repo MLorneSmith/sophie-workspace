@@ -1,12 +1,7 @@
 "use server";
 
 import {
-	type ChatCompletionOptions,
 	type ChatMessage,
-	ConfigManager,
-	createAudienceSuggestionsConfig,
-	createBalancedOptimizedConfig,
-	createTitleSuggestionsConfig,
 	getChatCompletion,
 	PromptManager,
 } from "@kit/ai-gateway";
@@ -131,28 +126,6 @@ export const getSuggestions = enhanceAction(
 				operation: "get_suggestions",
 			});
 
-			// Create and normalize config
-			const config =
-				data.field === "title"
-					? createTitleSuggestionsConfig({
-							userId: user.id,
-							context: "title-suggestions",
-						})
-					: data.field === "audience"
-						? createAudienceSuggestionsConfig({
-								userId: user.id,
-								context: "audience-suggestions",
-							})
-						: createBalancedOptimizedConfig({
-								userId: user.id,
-								context: `suggestions-${data.field}`,
-							});
-			const normalizedConfig = ConfigManager.normalizeConfig(config);
-
-			if (!normalizedConfig) {
-				throw new Error("Failed to normalize config");
-			}
-
 			// Generate messages based on field type
 			const messages = generateMessages(
 				data.field,
@@ -160,10 +133,16 @@ export const getSuggestions = enhanceAction(
 				data.presentationType,
 			);
 
+			// Temperature varies by field type
+			const temperature =
+				data.field === "title" ? 0.8 : data.field === "audience" ? 0.7 : 0.6;
+
 			// Get completion from AI Gateway
 			const response = await getChatCompletion(messages, {
-				config: normalizedConfig,
-			} as ChatCompletionOptions);
+				model: process.env.BIFROST_MODEL_CANVAS_SUGGESTIONS,
+				temperature,
+				virtualKey: process.env.BIFROST_VK_CANVAS_SUGGESTIONS,
+			});
 
 			// Calculate duration for monitoring
 			const duration = performance.now() - startTime;

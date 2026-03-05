@@ -9,6 +9,8 @@ import {
 	resolveModel,
 	type TaskType,
 } from "../config/model-routing";
+import { getRAGContextProvider } from "../rag/context-provider";
+import type { RAGAgentName } from "../rag/context-provider";
 import { CircuitBreaker } from "./circuit-breaker";
 import { RateLimiter } from "./rate-limiter";
 import { withRetry } from "./retry";
@@ -19,6 +21,8 @@ export interface RunAgentOptions {
 	messages: Array<{ role: string; content: string }>;
 	structuredOutput?: { schema: ZodSchema };
 	overrides?: ModelOverrides;
+	/** Account ID for multi-tenant RAG context retrieval */
+	accountId?: string;
 }
 
 export interface RunAgentResult<T> {
@@ -153,12 +157,30 @@ async function executeAgentCall<T>(params: {
 	modelId: string;
 	messages: RunAgentOptions["messages"];
 	structuredOutput?: RunAgentOptions["structuredOutput"];
+	agentId: AgentName;
+	taskType: TaskType;
+	sessionId: string;
 }): Promise<{ result: T; tokenUsage?: RunAgentResult<unknown>["tokenUsage"] }> {
 	const requestContext = new RequestContext();
 	requestContext.set("modelId", params.modelId);
 
+	// Set agent metadata for potential future Langfuse trace headers via gateway
+	requestContext.set("agentName", params.agentId);
+	requestContext.set("taskType", params.taskType);
+	requestContext.set("sessionId", params.sessionId);
+
 	const generationOptions: Record<string, unknown> = {
 		requestContext,
+	};
+
+	// Pass Langfuse trace headers through generation options for gateway
+	generationOptions.headers = {
+		"x-langfuse-trace-name": params.agentId,
+		"x-langfuse-session-id": params.sessionId,
+		"x-langfuse-metadata": JSON.stringify({
+			taskType: params.taskType,
+			agentName: params.agentId,
+		}),
 	};
 
 	if (params.structuredOutput) {
@@ -198,6 +220,45 @@ export async function runAgentWithResilience<T>(
 	const startedAtMs = Date.now();
 	const agent = resolveAgentRunner(options.agentId);
 
+	// Retrieve RAG context if accountId is provided
+	let messages = options.messages;
+	if (options.accountId) {
+		const ragProvider = getRAGContextProvider();
+
+		// Get the last user message to use as the query
+		const lastUserMessage = [...options.messages]
+			.reverse()
+			.find((m) => m.role === "user");
+
+		if (lastUserMessage) {
+			const ragContext = await ragProvider.getContext({
+				agentName: options.agentId as RAGAgentName,
+				query: lastUserMessage.content,
+				accountId: options.accountId,
+			});
+
+			// Inject RAG context into the user message
+			if (ragContext.success && ragContext.contextText) {
+				const updatedUserMessage = {
+					role: "user" as const,
+					content: [
+						"## Relevant Context",
+						ragContext.contextText,
+						"",
+						"## User Query",
+						lastUserMessage.content,
+					].join("\n\n"),
+				};
+
+				// Replace the last user message with the enhanced one
+				messages = [
+					...options.messages.slice(0, options.messages.length - 1),
+					updatedUserMessage,
+				];
+			}
+		}
+	}
+
 	const primaryModel = resolveModel(
 		options.agentId,
 		options.taskType,
@@ -209,9 +270,12 @@ export async function runAgentWithResilience<T>(
 	);
 	const modelChain = [...new Set([primaryModel, ...fallbackChain])];
 
-	const estimatedTokens = estimatePromptTokens(options.messages);
+	const estimatedTokens = estimatePromptTokens(messages);
 	let attempts = 0;
 	let lastError: unknown;
+
+	// Generate a session ID for this agent run (used for Langfuse traces via Bifrost)
+	const sessionId = `${options.agentId}-${startedAtMs}-${Math.random().toString(36).slice(2, 9)}`;
 
 	for (const modelId of modelChain) {
 		const circuitBreaker = getCircuitBreaker(modelId);
@@ -229,8 +293,11 @@ export async function runAgentWithResilience<T>(
 					executeAgentCall<T>({
 						agent,
 						modelId,
-						messages: options.messages,
+						messages,
 						structuredOutput: options.structuredOutput,
+						agentId: options.agentId,
+						taskType: options.taskType ?? "default",
+						sessionId,
 					}),
 				);
 			});
