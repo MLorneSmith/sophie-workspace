@@ -33,6 +33,8 @@ import {
 	searchCompany,
 	searchPersonFuzzy,
 } from "../../../_lib/server/netrows.service";
+import { resolveCompanyTicker } from "../../../_lib/server/ticker-resolution.service";
+import { getFinancialSnapshot } from "../../../_lib/server/alpha-vantage.service";
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -292,6 +294,45 @@ export const researchAudienceAction = enhanceAction(
 				})()
 			: Promise.resolve(null);
 
+		// Step 1.6: Ticker resolution (non-blocking)
+		// Resolve company name to ticker for financial data enrichment
+		let tickerResolution: {
+			ticker: string;
+			cik: string;
+			confidence: number;
+		} | null = null;
+		const tickerPromise: Promise<{
+			ticker: string;
+			cik: string;
+			confidence: number;
+		} | null> = (async () => {
+			try {
+				logger.info(ctx, "Resolving ticker for: %s", data.company);
+				const resolution = await resolveCompanyTicker(
+					client,
+					data.company,
+					user.id,
+				);
+				if (resolution) {
+					logger.info(
+						ctx,
+						"Ticker resolved: %s (CIK: %s, confidence: %s)",
+						resolution.ticker,
+						resolution.cik,
+						resolution.confidence,
+					);
+				}
+				return resolution;
+			} catch (tickerErr) {
+				logger.warn(
+					ctx,
+					"Ticker resolution failed (non-blocking): %o",
+					tickerErr,
+				);
+				return null;
+			}
+		})();
+
 		// Step 2: Company web research + brief synthesis (parallel with step 1)
 		// Uses Brave Search API + LLM to build a structured CompanyBrief
 		let companyBrief: CompanyBrief | null = null;
@@ -323,7 +364,7 @@ export const researchAudienceAction = enhanceAction(
 						?.replace(/^https?:\/\//, "")
 						.replace(/\/.*$/, "") ?? undefined;
 
-				// Run web research, Apollo enrichment, and website deep scrape in parallel
+				// Run web research, Apollo enrichment, website deep scrape, and Alpha Vantage in parallel
 				const websiteDeepScrapePromise = domain
 					? withTimeout(
 							scrapeWebsiteDeep(domain),
@@ -332,30 +373,85 @@ export const researchAudienceAction = enhanceAction(
 						)
 					: Promise.resolve(null);
 
-				const [webResearch, apolloResult, websiteDeepScrape] =
-					await Promise.all([
-						withTimeout(
-							researchCompany(data.company, industry, domain),
-							15_000,
-							"Company web research",
-						),
-						apolloPromise.catch((apolloErr) => {
-							logger.warn(
-								ctx,
-								"Apollo enrichment failed (non-blocking): %o",
-								apolloErr,
-							);
-							return null;
-						}),
-						websiteDeepScrapePromise.catch((deepScrapeErr) => {
-							logger.warn(
-								ctx,
-								"Website deep scrape failed (non-blocking): %o",
-								deepScrapeErr,
-							);
-							return null;
-						}),
-					]);
+				// Resolve ticker first (needed for Alpha Vantage)
+				const tickerResult = await tickerPromise.catch((tickerErr) => {
+					logger.warn(
+						ctx,
+						"Ticker resolution failed (non-blocking): %o",
+						tickerErr,
+					);
+					return null;
+				});
+				tickerResolution = tickerResult;
+
+				// Create Alpha Vantage promise (only if we have a ticker)
+				const alphaVantagePromise = tickerResolution
+					? (async () => {
+							try {
+								logger.info(
+									ctx,
+									"Fetching Alpha Vantage data for: %s",
+									tickerResolution?.ticker,
+								);
+								const result = tickerResolution?.ticker
+									? await getFinancialSnapshot(tickerResolution.ticker)
+									: null;
+								if (result?.success && result.data) {
+									logger.info(
+										ctx,
+										"Alpha Vantage success: revenue=%s, peRatio=%s",
+										result.data.revenue,
+										result.data.peRatio,
+									);
+								}
+								return result;
+							} catch (avErr) {
+								logger.warn(
+									ctx,
+									"Alpha Vantage enrichment failed (non-blocking): %o",
+									avErr,
+								);
+								return null;
+							}
+						})()
+					: Promise.resolve(null);
+
+				const [
+					webResearch,
+					apolloResult,
+					websiteDeepScrape,
+					alphaVantageResult,
+				] = await Promise.all([
+					withTimeout(
+						researchCompany(data.company, industry, domain),
+						15_000,
+						"Company web research",
+					),
+					apolloPromise.catch((apolloErr) => {
+						logger.warn(
+							ctx,
+							"Apollo enrichment failed (non-blocking): %o",
+							apolloErr,
+						);
+						return null;
+					}),
+					websiteDeepScrapePromise.catch((deepScrapeErr) => {
+						logger.warn(
+							ctx,
+							"Website deep scrape failed (non-blocking): %o",
+							deepScrapeErr,
+						);
+						return null;
+					}),
+					alphaVantagePromise.catch((avErr) => {
+						logger.warn(
+							ctx,
+							"Alpha Vantage enrichment failed (non-blocking): %o",
+							avErr,
+						);
+						return null;
+					}),
+				]);
 
 				apolloEnrichment = apolloResult;
 				if (apolloEnrichment?.success && apolloEnrichment.organization) {
@@ -429,6 +525,25 @@ export const researchAudienceAction = enhanceAction(
 								recentPressReleases: websiteDeepScrape.recentPressReleases,
 							}
 						: undefined,
+					alphaVantageData:
+						alphaVantageResult?.success && alphaVantageResult?.data
+							? {
+									revenue: alphaVantageResult.data.revenue,
+									grossMargin: alphaVantageResult.data.grossMargin,
+									operatingMargin: alphaVantageResult.data.operatingMargin,
+									stockPrice: alphaVantageResult.data.stockPrice,
+									week52High: alphaVantageResult.data.week52High,
+									week52Low: alphaVantageResult.data.week52Low,
+									analystConsensus: alphaVantageResult.data.analystConsensus,
+									analystBuyCount: alphaVantageResult.data.analystBuyCount,
+									analystHoldCount: alphaVantageResult.data.analystHoldCount,
+									analystSellCount: alphaVantageResult.data.analystSellCount,
+									peRatio: alphaVantageResult.data.peRatio,
+									industryAvgPeRatio:
+										alphaVantageResult.data.industryAvgPeRatio,
+									beta: alphaVantageResult.data.beta,
+								}
+							: undefined,
 				};
 
 				companyBrief = await withTimeout(

@@ -88,6 +88,7 @@
 		"agentation": "^1.3.2",
 		"clsx": "^2.1.1",
 		"date-fns": "^4.1.0",
+		"fastest-levenshtein": "^1.0.16",
 		"lodash": "^4.17.23",
 		"lucide-react": "^0.555.0",
 		"motion": "^12.34.0",
