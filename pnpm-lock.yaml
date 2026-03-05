@@ -677,6 +677,9 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
+      fastest-levenshtein:
+        specifier: ^1.0.16
+        version: 1.0.16
       lodash:
         specifier: ^4.17.23
         version: 4.17.23
@@ -8805,6 +8808,10 @@ packages:
   fast-xml-parser@5.4.1:
     resolution: {integrity: sha512-BQ30U1mKkvXQXXkAGcuyUA/GA26oEB7NzOtsxCDtyu62sjGw5QraKFhx2Em3WQNjPw9PG6MQ9yuIIgkSDfGu5A==}
     hasBin: true
+
+  fastest-levenshtein@1.0.16:
+    resolution: {integrity: sha512-eRnCtTTtGZFpQCwhJiUOuxPQWRXVKYDn0b2PeHfXL6/Zi53SLAzAHfVhVWK2AryC/WH05kGfxhFIPvTF0SXQzg==}
+    engines: {node: '>= 4.9.1'}
 
   fastq@1.20.1:
     resolution: {integrity: sha512-GGToxJ/w1x32s/D2EKND7kTil4n8OVk/9mycTc4VDza13lOvpUZTGX3mFSCtV9ksdGBVzvsyAVLM6mHFThxXxw==}
@@ -20465,6 +20472,8 @@ snapshots:
     dependencies:
       fast-xml-builder: 1.0.0
       strnum: 2.1.2
+
+  fastest-levenshtein@1.0.16: {}
 
   fastq@1.20.1:
     dependencies:

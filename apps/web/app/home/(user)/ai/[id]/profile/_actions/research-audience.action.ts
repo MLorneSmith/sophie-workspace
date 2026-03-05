@@ -33,10 +33,8 @@ import {
 	searchCompany,
 	searchPersonFuzzy,
 } from "../../../_lib/server/netrows.service";
-import {
-	enrichCompanyWithSecEdgar,
-	type SecEdgarResult,
-} from "../../../_lib/server/sec-edgar.service";
+import { resolveCompanyTicker } from "../../../_lib/server/ticker-resolution.service";
+import { getFinancialSnapshot } from "../../../_lib/server/alpha-vantage.service";
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -296,21 +294,40 @@ export const researchAudienceAction = enhanceAction(
 				})()
 			: Promise.resolve(null);
 
-		// Step 1.6: Start SEC EDGAR company enrichment (non-blocking, runs parallel with Step 2)
-		// SEC EDGAR provides public company filings (10-K, 10-Q, 8-K) and XBRL financial data
-		let secEdgarEnrichment: SecEdgarResult | null = null;
-		const secEdgarPromise: Promise<SecEdgarResult | null> = (async () => {
+		// Step 1.6: Ticker resolution (non-blocking)
+		// Resolve company name to ticker for financial data enrichment
+		let tickerResolution: {
+			ticker: string;
+			cik: string;
+			confidence: number;
+		} | null = null;
+		const tickerPromise: Promise<{
+			ticker: string;
+			cik: string;
+			confidence: number;
+		} | null> = (async () => {
 			try {
-				logger.info(ctx, "Enriching company via SEC EDGAR: %s", data.company);
-				return enrichCompanyWithSecEdgar(
+				logger.info(ctx, "Resolving ticker for: %s", data.company);
+				const resolution = await resolveCompanyTicker(
+					client,
 					data.company,
-					companyDomain ?? undefined,
+					user.id,
 				);
-			} catch (secErr) {
+				if (resolution) {
+					logger.info(
+						ctx,
+						"Ticker resolved: %s (CIK: %s, confidence: %s)",
+						resolution.ticker,
+						resolution.cik,
+						resolution.confidence,
+					);
+				}
+				return resolution;
+			} catch (tickerErr) {
 				logger.warn(
 					ctx,
-					"SEC EDGAR enrichment failed (non-blocking): %o",
-					secErr,
+					"Ticker resolution failed (non-blocking): %o",
+					tickerErr,
 				);
 				return null;
 			}
@@ -347,7 +364,7 @@ export const researchAudienceAction = enhanceAction(
 						?.replace(/^https?:\/\//, "")
 						.replace(/\/.*$/, "") ?? undefined;
 
-				// Run web research, Apollo enrichment, and website deep scrape in parallel
+				// Start independent promises early - they run in parallel with ticker resolution
 				const websiteDeepScrapePromise = domain
 					? withTimeout(
 							scrapeWebsiteDeep(domain),
@@ -356,41 +373,90 @@ export const researchAudienceAction = enhanceAction(
 						)
 					: Promise.resolve(null);
 
-				const [webResearch, apolloResult, websiteDeepScrape, secEdgarResult] =
-					await Promise.all([
-						withTimeout(
-							researchCompany(data.company, industry, domain),
-							15_000,
-							"Company web research",
-						),
-						apolloPromise.catch((apolloErr) => {
-							logger.warn(
-								ctx,
-								"Apollo enrichment failed (non-blocking): %o",
-								apolloErr,
-							);
-							return null;
-						}),
-						websiteDeepScrapePromise.catch((deepScrapeErr) => {
-							logger.warn(
-								ctx,
-								"Website deep scrape failed (non-blocking): %o",
-								deepScrapeErr,
-							);
-							return null;
-						}),
-						secEdgarPromise.catch((secEdgarErr) => {
-							logger.warn(
-								ctx,
-								"SEC EDGAR enrichment failed (non-blocking): %o",
-								secEdgarErr,
-							);
-							return null;
-						}),
-					]);
+				// Start web research early (independent of ticker)
+				const webResearchPromise = withTimeout(
+					researchCompany(data.company, industry, domain),
+					15_000,
+					"Company web research",
+				);
+
+				// Await ticker resolution first (needed for Alpha Vantage)
+				const tickerResult = await tickerPromise.catch((tickerErr) => {
+					logger.warn(
+						ctx,
+						"Ticker resolution failed (non-blocking): %o",
+						tickerErr,
+					);
+					return null;
+				});
+				tickerResolution = tickerResult;
+
+				// Create Alpha Vantage promise (only if we have a ticker)
+				const alphaVantagePromise = tickerResolution
+					? (async () => {
+							try {
+								logger.info(
+									ctx,
+									"Fetching Alpha Vantage data for: %s",
+									tickerResolution?.ticker,
+								);
+								const result = tickerResolution?.ticker
+									? await getFinancialSnapshot(tickerResolution.ticker)
+									: null;
+								if (result?.success && result.data) {
+									logger.info(
+										ctx,
+										"Alpha Vantage success: revenue=%s, peRatio=%s",
+										result.data.revenue,
+										result.data.peRatio,
+									);
+								}
+								return result;
+							} catch (avErr) {
+								logger.warn(
+									ctx,
+									"Alpha Vantage enrichment failed (non-blocking): %o",
+									avErr,
+								);
+								return null;
+							}
+						})()
+					: Promise.resolve(null);
+
+				const [
+					webResearch,
+					apolloResult,
+					websiteDeepScrape,
+					alphaVantageResult,
+				] = await Promise.all([
+					webResearchPromise,
+					apolloPromise.catch((apolloErr) => {
+						logger.warn(
+							ctx,
+							"Apollo enrichment failed (non-blocking): %o",
+							apolloErr,
+						);
+						return null;
+					}),
+					websiteDeepScrapePromise.catch((deepScrapeErr) => {
+						logger.warn(
+							ctx,
+							"Website deep scrape failed (non-blocking): %o",
+							deepScrapeErr,
+						);
+						return null;
+					}),
+					alphaVantagePromise.catch((avErr) => {
+						logger.warn(
+							ctx,
+							"Alpha Vantage enrichment failed (non-blocking): %o",
+							avErr,
+						);
+						return null;
+					}),
+				]);
 
 				apolloEnrichment = apolloResult;
-				secEdgarEnrichment = secEdgarResult;
 				if (apolloEnrichment?.success && apolloEnrichment.organization) {
 					logger.info(
 						ctx,
@@ -462,28 +528,33 @@ export const researchAudienceAction = enhanceAction(
 								recentPressReleases: websiteDeepScrape.recentPressReleases,
 							}
 						: undefined,
-					secEdgarData: secEdgarEnrichment?.success
-						? {
-								riskFactors: secEdgarEnrichment.latest10K?.riskFactorsSection
-									? [secEdgarEnrichment.latest10K.riskFactorsSection]
-									: undefined,
-								mdaSummary:
-									secEdgarEnrichment.latest10K?.mdaSection ?? undefined,
-								revenueByYear: secEdgarEnrichment.financialFacts?.revenue
-									?.map((r) => ({
-										year: Number.parseInt(r.period, 10),
-										amount: r.value,
-									}))
-									.filter((r) => !Number.isNaN(r.year)),
-								recentEightKEvents: secEdgarEnrichment.materialEvents?.map(
-									(e) => ({
-										date: e.date,
-										type: e.formType,
-										summary: e.summary,
-									}),
-								),
-							}
-						: undefined,
+					alphaVantageData:
+						alphaVantageResult?.success && alphaVantageResult?.data
+							? {
+									revenue: alphaVantageResult.data.revenue,
+									grossMargin: alphaVantageResult.data.grossMargin,
+									operatingMargin: alphaVantageResult.data.operatingMargin,
+									profitMargin: alphaVantageResult.data.profitMargin,
+									stockPrice: alphaVantageResult.data.stockPrice,
+									week52High: alphaVantageResult.data.week52High,
+									week52Low: alphaVantageResult.data.week52Low,
+									marketCap: alphaVantageResult.data.marketCap,
+									ebitda: alphaVantageResult.data.ebitda,
+									eps: alphaVantageResult.data.eps,
+									dividendYield: alphaVantageResult.data.dividendYield,
+									movingAvg50: alphaVantageResult.data.movingAvg50,
+									movingAvg200: alphaVantageResult.data.movingAvg200,
+									fiscalYearEnd: alphaVantageResult.data.fiscalYearEnd,
+									analystConsensus: alphaVantageResult.data.analystConsensus,
+									analystBuyCount: alphaVantageResult.data.analystBuyCount,
+									analystHoldCount: alphaVantageResult.data.analystHoldCount,
+									analystSellCount: alphaVantageResult.data.analystSellCount,
+									peRatio: alphaVantageResult.data.peRatio,
+									industryAvgPeRatio:
+										alphaVantageResult.data.industryAvgPeRatio,
+									beta: alphaVantageResult.data.beta,
+								}
+							: undefined,
 				};
 
 				companyBrief = await withTimeout(
@@ -602,23 +673,6 @@ export const researchAudienceAction = enhanceAction(
 			}
 		}
 
-		// Ensure SEC EDGAR promise is settled
-		if (!secEdgarEnrichment) {
-			try {
-				secEdgarEnrichment = await withTimeout(
-					secEdgarPromise,
-					15_000,
-					"SEC EDGAR enrichment (final await)",
-				);
-			} catch (secEdgarErr) {
-				logger.warn(
-					ctx,
-					"SEC EDGAR enrichment failed (non-blocking): %o",
-					secEdgarErr,
-				);
-			}
-		}
-
 		// Step 4: Save to audience_profiles
 		// Only store allowed non-PII fields from Apollo enrichment
 		const sanitizedApolloData = apolloEnrichment?.organization
@@ -651,29 +705,6 @@ export const researchAudienceAction = enhanceAction(
 				companySearchResults: enrichment.companySearchResults,
 			},
 			apollo: sanitizedApolloData,
-			secEdgar: secEdgarEnrichment
-				? {
-						configured: secEdgarEnrichment.configured,
-						success: secEdgarEnrichment.success,
-						cik: secEdgarEnrichment.cik,
-						companyName: secEdgarEnrichment.companyName,
-						latest10K: secEdgarEnrichment.latest10K
-							? {
-									date: secEdgarEnrichment.latest10K.date,
-									accessionNumber: secEdgarEnrichment.latest10K.accessionNumber,
-								}
-							: null,
-						latest10Q: secEdgarEnrichment.latest10Q
-							? {
-									date: secEdgarEnrichment.latest10Q.date,
-									accessionNumber: secEdgarEnrichment.latest10Q.accessionNumber,
-								}
-							: null,
-						materialEvents: secEdgarEnrichment.materialEvents,
-						financialFacts: secEdgarEnrichment.financialFacts,
-						error: secEdgarEnrichment.error,
-					}
-				: null,
 			companyBrief: companyBrief ?? null,
 			researchedAt: new Date().toISOString(),
 		};
@@ -741,6 +772,8 @@ export const researchAudienceAction = enhanceAction(
 	},
 );
 
+// ---------------------------------------------------------------------------
+// Poll Action — lightweight check for background company brief
 // ---------------------------------------------------------------------------
 
 const PollCompanyBriefSchema = z.object({
