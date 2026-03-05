@@ -111,7 +111,14 @@ export interface CompanyResearchInput {
 // ---------------------------------------------------------------------------
 
 /**
- * Check if Alpha Vantage data has at least one non-null field.
+ * Check if a value is a non-blank string (not empty after trimming).
+ */
+function hasNonBlankString(value: unknown): value is string {
+	return typeof value === "string" && value.trim().length > 0;
+}
+
+/**
+ * Check if Alpha Vantage data has at least one non-null/non-empty field.
  */
 function hasAlphaVantageData(data: AlphaVantageDataInput | undefined): boolean {
 	if (!data) return false;
@@ -130,7 +137,10 @@ function hasAlphaVantageData(data: AlphaVantageDataInput | undefined): boolean {
 		"industryAvgPeRatio",
 		"beta",
 	];
-	return fields.some((field) => data[field] != null);
+	return fields.some((field) => {
+		const value = data[field];
+		return typeof value === "string" ? value.trim().length > 0 : value != null;
+	});
 }
 
 /**
@@ -139,14 +149,23 @@ function hasAlphaVantageData(data: AlphaVantageDataInput | undefined): boolean {
 function hasSecEdgarData(data: SecEdgarDataInput | undefined): boolean {
 	if (!data) return false;
 	const hasRiskFactors =
-		Array.isArray(data.riskFactors) && data.riskFactors.length > 0;
+		Array.isArray(data.riskFactors) &&
+		data.riskFactors.some((risk) => hasNonBlankString(risk));
 	const hasMdaSummary =
 		typeof data.mdaSummary === "string" && data.mdaSummary.trim().length > 0;
 	const hasRevenueByYear =
-		Array.isArray(data.revenueByYear) && data.revenueByYear.length > 0;
+		Array.isArray(data.revenueByYear) &&
+		data.revenueByYear.some(
+			(revenue) => revenue.year != null && revenue.amount != null,
+		);
 	const hasEightKEvents =
 		Array.isArray(data.recentEightKEvents) &&
-		data.recentEightKEvents.length > 0;
+		data.recentEightKEvents.some(
+			(event) =>
+				hasNonBlankString(event.date) ||
+				hasNonBlankString(event.type) ||
+				hasNonBlankString(event.summary),
+		);
 	return hasRiskFactors || hasMdaSummary || hasRevenueByYear || hasEightKEvents;
 }
 
@@ -161,14 +180,37 @@ function hasApolloData(data: ApolloDataInput | undefined): boolean {
 	const hasEmployees =
 		typeof data.employeeCount === "string" &&
 		data.employeeCount.trim().length > 0;
+	const hasEmployeeGrowth = typeof data.employeeGrowth === "number";
+	const hasFundingStage =
+		typeof data.fundingStage === "string" &&
+		data.fundingStage.trim().length > 0;
 	const hasFunding =
 		typeof data.fundingTotal === "number" && data.fundingTotal > 0;
+	const hasKeyIndustries =
+		Array.isArray(data.keyIndustries) &&
+		data.keyIndustries.some(
+			(industry) => typeof industry === "string" && industry.trim().length > 0,
+		);
 	const hasTechStack =
-		Array.isArray(data.techStack) && data.techStack.length > 0;
+		Array.isArray(data.techStack) &&
+		data.techStack.some(
+			(tech) => typeof tech === "string" && tech.trim().length > 0,
+		);
 	const hasExecutives =
-		Array.isArray(data.keyExecutives) && data.keyExecutives.length > 0;
+		Array.isArray(data.keyExecutives) &&
+		data.keyExecutives.some(
+			(executive) =>
+				hasNonBlankString(executive.name) || hasNonBlankString(executive.title),
+		);
 	return (
-		hasRevenue || hasEmployees || hasFunding || hasTechStack || hasExecutives
+		hasRevenue ||
+		hasEmployees ||
+		hasEmployeeGrowth ||
+		hasFundingStage ||
+		hasFunding ||
+		hasKeyIndustries ||
+		hasTechStack ||
+		hasExecutives
 	);
 }
 
@@ -180,22 +222,57 @@ function hasNetrowsData(data: CompanyResearchInput["netrowsData"]): boolean {
 	const hasDescription =
 		typeof data.description === "string" && data.description.trim().length > 0;
 	const hasIndustries =
-		Array.isArray(data.industries) && data.industries.length > 0;
+		Array.isArray(data.industries) &&
+		data.industries.some(
+			(industry) => typeof industry === "string" && industry.trim().length > 0,
+		);
+	const hasSpecialities =
+		Array.isArray(data.specialities) &&
+		data.specialities.some(
+			(speciality) =>
+				typeof speciality === "string" && speciality.trim().length > 0,
+		);
 	const hasStaffCount =
 		typeof data.staffCount === "number" && data.staffCount > 0;
 	const hasWebsite =
 		typeof data.website === "string" && data.website.trim().length > 0;
 	const hasHeadquarter =
-		typeof data.headquarter?.city === "string" ||
-		typeof data.headquarter?.country === "string";
+		hasNonBlankString(data.headquarter?.city) ||
+		hasNonBlankString(data.headquarter?.country);
 	const hasFounded = typeof data.founded === "number" && data.founded > 0;
 	return (
 		hasDescription ||
 		hasIndustries ||
+		hasSpecialities ||
 		hasStaffCount ||
 		hasWebsite ||
 		hasHeadquarter ||
 		hasFounded
+	);
+}
+
+/**
+ * Check if website deep scrape data has meaningful content.
+ */
+function hasWebsiteDeepScrapeData(
+	data: WebsiteDeepScrapeInput | undefined,
+): boolean {
+	if (!data) return false;
+
+	const textFields = [
+		data.aboutContent,
+		data.newsroomContent,
+		data.careersContent,
+		data.blogContent,
+		data.investorsContent,
+	];
+
+	return (
+		textFields.some(
+			(value) => typeof value === "string" && value.trim().length > 0,
+		) ||
+		data.jobPostings.some((value) => value.trim().length > 0) ||
+		data.recentPressReleases.some((value) => value.trim().length > 0)
 	);
 }
 
@@ -561,7 +638,7 @@ export async function synthesizeCompanyBrief(
 	if (input.websiteContent?.trim()) {
 		dataSourcesUsed.push("websiteContent");
 	}
-	if (input.websiteDeepScrape) {
+	if (hasWebsiteDeepScrapeData(input.websiteDeepScrape)) {
 		dataSourcesUsed.push("websiteDeepScrape");
 	}
 	if (hasAlphaVantageData(alphaVantageData)) {
