@@ -462,12 +462,26 @@ export const researchAudienceAction = enhanceAction(
 								recentPressReleases: websiteDeepScrape.recentPressReleases,
 							}
 						: undefined,
-					secFilings: secEdgarEnrichment?.success
+					secEdgarData: secEdgarEnrichment?.success
 						? {
-								latest10K: secEdgarEnrichment.latest10K,
-								latest10Q: secEdgarEnrichment.latest10Q,
-								materialEvents: secEdgarEnrichment.materialEvents,
-								financialFacts: secEdgarEnrichment.financialFacts,
+								riskFactors: secEdgarEnrichment.latest10K?.riskFactorsSection
+									? [secEdgarEnrichment.latest10K.riskFactorsSection]
+									: undefined,
+								mdaSummary:
+									secEdgarEnrichment.latest10K?.mdaSection ?? undefined,
+								revenueByYear: secEdgarEnrichment.financialFacts?.revenue
+									?.map((r) => ({
+										year: Number.parseInt(r.period, 10),
+										amount: r.value,
+									}))
+									.filter((r) => !Number.isNaN(r.year)),
+								recentEightKEvents: secEdgarEnrichment.materialEvents?.map(
+									(e) => ({
+										date: e.date,
+										type: e.formType,
+										summary: e.summary,
+									}),
+								),
 							}
 						: undefined,
 				};

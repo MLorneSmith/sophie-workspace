@@ -2,6 +2,12 @@ import "server-only";
 
 import { type ChatMessage, getChatCompletion } from "@kit/ai-gateway";
 import { getLogger } from "@kit/shared/logger";
+import type { z } from "zod";
+
+import {
+	AlphaVantageDataSchema,
+	SecEdgarDataSchema,
+} from "../schemas/external-data.schema";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -37,6 +43,11 @@ export interface CompanyBrief {
 		relevantBenchmarks: string[];
 		avoidTopics: string[];
 	};
+	/**
+	 * List of data sources that contributed to this brief.
+	 * Expected values: "apollo", "netrows", "braveSearch", "websiteContent", "websiteDeepScrape", "alphaVantage", "secEdgar"
+	 */
+	dataSourcesUsed: string[];
 }
 
 export interface ApolloDataInput {
@@ -60,30 +71,17 @@ export interface WebsiteDeepScrapeInput {
 	recentPressReleases: string[];
 }
 
-export interface SecFilingsInput {
-	latest10K: {
-		date: string;
-		accessionNumber: string;
-		businessSection: string | null;
-		riskFactorsSection: string | null;
-		mdaSection: string | null;
-	} | null;
-	latest10Q: {
-		date: string;
-		accessionNumber: string;
-	} | null;
-	materialEvents: Array<{
-		date: string;
-		formType: string;
-		summary: string;
-	}>;
-	financialFacts: {
-		revenue: Array<{ period: string; value: number }>;
-		netIncome: Array<{ period: string; value: number }>;
-		totalAssets: Array<{ period: string; value: number }>;
-		totalDebt: Array<{ period: string; value: number }>;
-	} | null;
-}
+/**
+ * Financial data from Alpha Vantage API for public companies.
+ * All fields optional to handle partial API responses.
+ */
+export type AlphaVantageDataInput = z.infer<typeof AlphaVantageDataSchema>;
+
+/**
+ * Regulatory filing data from SEC EDGAR.
+ * All fields optional since not all companies have recent filings.
+ */
+export type SecEdgarDataInput = z.infer<typeof SecEdgarDataSchema>;
 
 export interface CompanyResearchInput {
 	companyName: string;
@@ -102,7 +100,180 @@ export interface CompanyResearchInput {
 	industryResults?: Array<{ title: string; url: string; snippet: string }>;
 	websiteContent?: string | null;
 	websiteDeepScrape?: WebsiteDeepScrapeInput;
-	secFilings?: SecFilingsInput;
+	/** Financial data from Alpha Vantage API (for public companies) */
+	alphaVantageData?: AlphaVantageDataInput;
+	/** Regulatory filing data from SEC EDGAR */
+	secEdgarData?: SecEdgarDataInput;
+}
+
+// ---------------------------------------------------------------------------
+// Semantic emptiness helpers - determine if data sources have meaningful content
+// ---------------------------------------------------------------------------
+
+/**
+ * Check if a value is a non-blank string (not empty after trimming).
+ */
+function hasNonBlankString(value: unknown): value is string {
+	return typeof value === "string" && value.trim().length > 0;
+}
+
+/**
+ * Check if Alpha Vantage data has at least one non-null/non-empty field.
+ */
+function hasAlphaVantageData(data: AlphaVantageDataInput | undefined): boolean {
+	if (!data) return false;
+	const fields: (keyof AlphaVantageDataInput)[] = [
+		"revenue",
+		"grossMargin",
+		"operatingMargin",
+		"stockPrice",
+		"week52High",
+		"week52Low",
+		"analystConsensus",
+		"analystBuyCount",
+		"analystHoldCount",
+		"analystSellCount",
+		"peRatio",
+		"industryAvgPeRatio",
+		"beta",
+	];
+	return fields.some((field) => {
+		const value = data[field];
+		return typeof value === "string" ? value.trim().length > 0 : value != null;
+	});
+}
+
+/**
+ * Check if SEC EDGAR data has meaningful content.
+ */
+function hasSecEdgarData(data: SecEdgarDataInput | undefined): boolean {
+	if (!data) return false;
+	const hasRiskFactors =
+		Array.isArray(data.riskFactors) &&
+		data.riskFactors.some((risk) => hasNonBlankString(risk));
+	const hasMdaSummary =
+		typeof data.mdaSummary === "string" && data.mdaSummary.trim().length > 0;
+	const hasRevenueByYear =
+		Array.isArray(data.revenueByYear) &&
+		data.revenueByYear.some(
+			(revenue) => revenue.year != null && revenue.amount != null,
+		);
+	const hasEightKEvents =
+		Array.isArray(data.recentEightKEvents) &&
+		data.recentEightKEvents.some(
+			(event) =>
+				hasNonBlankString(event.date) ||
+				hasNonBlankString(event.type) ||
+				hasNonBlankString(event.summary),
+		);
+	return hasRiskFactors || hasMdaSummary || hasRevenueByYear || hasEightKEvents;
+}
+
+/**
+ * Check if Apollo data has at least one meaningful field.
+ */
+function hasApolloData(data: ApolloDataInput | undefined): boolean {
+	if (!data) return false;
+	const hasRevenue =
+		typeof data.estimatedRevenue === "string" &&
+		data.estimatedRevenue.trim().length > 0;
+	const hasEmployees =
+		typeof data.employeeCount === "string" &&
+		data.employeeCount.trim().length > 0;
+	const hasEmployeeGrowth = typeof data.employeeGrowth === "number";
+	const hasFundingStage =
+		typeof data.fundingStage === "string" &&
+		data.fundingStage.trim().length > 0;
+	const hasFunding =
+		typeof data.fundingTotal === "number" && Number.isFinite(data.fundingTotal);
+	const hasKeyIndustries =
+		Array.isArray(data.keyIndustries) &&
+		data.keyIndustries.some(
+			(industry) => typeof industry === "string" && industry.trim().length > 0,
+		);
+	const hasTechStack =
+		Array.isArray(data.techStack) &&
+		data.techStack.some(
+			(tech) => typeof tech === "string" && tech.trim().length > 0,
+		);
+	const hasExecutives =
+		Array.isArray(data.keyExecutives) &&
+		data.keyExecutives.some(
+			(executive) =>
+				hasNonBlankString(executive.name) || hasNonBlankString(executive.title),
+		);
+	return (
+		hasRevenue ||
+		hasEmployees ||
+		hasEmployeeGrowth ||
+		hasFundingStage ||
+		hasFunding ||
+		hasKeyIndustries ||
+		hasTechStack ||
+		hasExecutives
+	);
+}
+
+/**
+ * Check if Netrows data has at least one meaningful field.
+ */
+function hasNetrowsData(data: CompanyResearchInput["netrowsData"]): boolean {
+	if (!data) return false;
+	const hasDescription =
+		typeof data.description === "string" && data.description.trim().length > 0;
+	const hasIndustries =
+		Array.isArray(data.industries) &&
+		data.industries.some(
+			(industry) => typeof industry === "string" && industry.trim().length > 0,
+		);
+	const hasSpecialities =
+		Array.isArray(data.specialities) &&
+		data.specialities.some(
+			(speciality) =>
+				typeof speciality === "string" && speciality.trim().length > 0,
+		);
+	const hasStaffCount =
+		typeof data.staffCount === "number" && data.staffCount > 0;
+	const hasWebsite =
+		typeof data.website === "string" && data.website.trim().length > 0;
+	const hasHeadquarter =
+		hasNonBlankString(data.headquarter?.city) ||
+		hasNonBlankString(data.headquarter?.country);
+	const hasFounded = typeof data.founded === "number" && data.founded > 0;
+	return (
+		hasDescription ||
+		hasIndustries ||
+		hasSpecialities ||
+		hasStaffCount ||
+		hasWebsite ||
+		hasHeadquarter ||
+		hasFounded
+	);
+}
+
+/**
+ * Check if website deep scrape data has meaningful content.
+ */
+function hasWebsiteDeepScrapeData(
+	data: WebsiteDeepScrapeInput | undefined,
+): boolean {
+	if (!data) return false;
+
+	const textFields = [
+		data.aboutContent,
+		data.newsroomContent,
+		data.careersContent,
+		data.blogContent,
+		data.investorsContent,
+	];
+
+	return (
+		textFields.some(
+			(value) => typeof value === "string" && value.trim().length > 0,
+		) ||
+		data.jobPostings.some((value) => value.trim().length > 0) ||
+		data.recentPressReleases.some((value) => value.trim().length > 0)
+	);
 }
 
 // ---------------------------------------------------------------------------
@@ -207,6 +378,61 @@ ${investorsContent.substring(0, 800)}`);
 	const deepScrapeSection =
 		deepScrapeSections.length > 0 ? deepScrapeSections.join("\n") : "";
 
+	// Alpha Vantage financial data section
+	const alphaVantageSection = input.alphaVantageData
+		? `
+## Financial Data (Alpha Vantage)
+- Revenue: ${input.alphaVantageData.revenue != null ? `$${input.alphaVantageData.revenue.toLocaleString()}` : "N/A"}
+- Gross Margin: ${input.alphaVantageData.grossMargin != null ? `${input.alphaVantageData.grossMargin}%` : "N/A"}
+- Operating Margin: ${input.alphaVantageData.operatingMargin != null ? `${input.alphaVantageData.operatingMargin}%` : "N/A"}
+- Stock Price: ${input.alphaVantageData.stockPrice != null ? `$${input.alphaVantageData.stockPrice}` : "N/A"}
+- 52-Week Range: ${input.alphaVantageData.week52Low != null && input.alphaVantageData.week52High != null ? `$${input.alphaVantageData.week52Low} - $${input.alphaVantageData.week52High}` : "N/A"}
+- Analyst Consensus: ${input.alphaVantageData.analystConsensus ?? "N/A"}
+  - Buy: ${input.alphaVantageData.analystBuyCount ?? "N/A"}, Hold: ${input.alphaVantageData.analystHoldCount ?? "N/A"}, Sell: ${input.alphaVantageData.analystSellCount ?? "N/A"}
+- P/E Ratio: ${input.alphaVantageData.peRatio ?? "N/A"} (Industry Avg: ${input.alphaVantageData.industryAvgPeRatio ?? "N/A"})
+- Beta: ${input.alphaVantageData.beta ?? "N/A"}`
+		: "";
+
+	// SEC EDGAR filing data section
+	const secEdgarSection = input.secEdgarData
+		? `
+## SEC Filings (EDGAR)
+${
+	input.secEdgarData.riskFactors && input.secEdgarData.riskFactors.length > 0
+		? `### Key Risk Factors
+${input.secEdgarData.riskFactors
+	.slice(0, 5)
+	.map((r) => `- ${r}`)
+	.join("\n")}`
+		: ""
+}
+${
+	input.secEdgarData.mdaSummary
+		? `### Management Discussion & Analysis
+${input.secEdgarData.mdaSummary.substring(0, 800)}`
+		: ""
+}
+${
+	input.secEdgarData.revenueByYear &&
+	input.secEdgarData.revenueByYear.length > 0
+		? `### Historical Revenue
+${input.secEdgarData.revenueByYear
+	.map((r) => `- ${r.year}: $${r.amount.toLocaleString()}`)
+	.join("\n")}`
+		: ""
+}
+${
+	input.secEdgarData.recentEightKEvents &&
+	input.secEdgarData.recentEightKEvents.length > 0
+		? `### Recent 8-K Events
+${input.secEdgarData.recentEightKEvents
+	.slice(0, 5)
+	.map((e) => `- **${e.date}** [${e.type}]: ${e.summary.substring(0, 150)}`)
+	.join("\n")}`
+		: ""
+}`
+		: "";
+
 	const systemPrompt = `You are an expert business analyst specializing in presentation strategy. Given research data about a company, generate a structured Company Brief that helps a presenter understand the organizational context.
 
 When interpreting website deep scrape data:
@@ -215,6 +441,22 @@ When interpreting website deep scrape data:
 - Newsroom/press releases are the PRIMARY source for recent company developments (prefer over Brave Search snippets)
 - Blog content shows thought leadership topics and public narrative
 - Investor relations content reveals strategic priorities and financial health
+
+When interpreting financial data (Alpha Vantage):
+- Use revenue trends and margins to assess company growth and profitability
+- Stock price and 52-week range indicate market confidence and volatility
+- Analyst consensus and P/E ratio help gauge market expectations relative to fundamentals
+- Beta measures stock volatility relative to the market — high beta = higher risk/reward
+
+When interpreting SEC filings (EDGAR):
+- Risk factors reveal what the company considers its biggest threats
+- MD&A provides management's perspective on performance and strategy
+- 8-K events show recent material developments requiring disclosure
+
+Synthesize across all available sources:
+- Cross-reference financial health from Alpha Vantage with strategic priorities from EDGAR filings
+- Look for corroborating signals (e.g., strong revenue + aggressive hiring = growth phase)
+- Flag disconnects (e.g., declining revenue but positive forward guidance)
 
 Output valid JSON matching this exact schema:
 {
@@ -241,7 +483,8 @@ Output valid JSON matching this exact schema:
     "topicsToAcknowledge": ["string — things the audience already knows about", "..."],
     "relevantBenchmarks": ["string — data points worth referencing", "..."],
     "avoidTopics": ["string — sensitive areas to steer clear of", "..."]
-  }
+  },
+  "dataSourcesUsed": ["string — source identifiers: 'apollo', 'netrows', 'braveSearch', 'websiteContent', 'websiteDeepScrape', 'alphaVantage', 'secEdgar'"]
 }
 
 Be specific and actionable. Draw inferences from the data available. If information is sparse, make reasonable inferences based on what you know and note them. Focus on what matters for someone preparing a presentation to people at this company.`;
@@ -257,6 +500,8 @@ ${newsSection}
 ${industrySection}
 ${websiteSection}
 ${deepScrapeSection}
+${alphaVantageSection}
+${secEdgarSection}
 
 Respond with ONLY the JSON object, no markdown fences.`;
 
@@ -306,7 +551,41 @@ export async function synthesizeCompanyBrief(
 
 	logger.info(ctx, "Synthesizing company brief for %s", input.companyName);
 
-	const messages = buildCompanyBriefPrompt(input);
+	// Validate external data inputs with Zod - treat invalid data as unavailable
+	const validatedAlphaVantage = input.alphaVantageData
+		? AlphaVantageDataSchema.safeParse(input.alphaVantageData)
+		: { success: true as const, data: undefined };
+	const validatedSecEdgar = input.secEdgarData
+		? SecEdgarDataSchema.safeParse(input.secEdgarData)
+		: { success: true as const, data: undefined };
+
+	// If validation fails, treat the data as unavailable
+	const alphaVantageData = validatedAlphaVantage.success
+		? validatedAlphaVantage.data
+		: undefined;
+	const secEdgarData = validatedSecEdgar.success
+		? validatedSecEdgar.data
+		: undefined;
+
+	if (!validatedAlphaVantage.success) {
+		logger.warn(
+			{ ...ctx, error: validatedAlphaVantage.error.format() },
+			"Alpha Vantage data failed validation",
+		);
+	}
+	if (!validatedSecEdgar.success) {
+		logger.warn(
+			{ ...ctx, error: validatedSecEdgar.error.format() },
+			"SEC EDGAR data failed validation",
+		);
+	}
+
+	// Use validated data for prompt building
+	const messages = buildCompanyBriefPrompt({
+		...input,
+		alphaVantageData,
+		secEdgarData,
+	});
 
 	const synthesisAbort = new AbortController();
 	const synthesisTimeoutId = setTimeout(
@@ -339,6 +618,37 @@ export async function synthesizeCompanyBrief(
 	}
 
 	const brief = JSON.parse(jsonMatch[0]) as CompanyBrief;
+
+	// Populate dataSourcesUsed based on which input data was provided
+	// Use semantic emptiness helpers to only count sources with meaningful data
+	const dataSourcesUsed: string[] = [];
+
+	if (hasApolloData(input.apolloData)) {
+		dataSourcesUsed.push("apollo");
+	}
+	if (hasNetrowsData(input.netrowsData)) {
+		dataSourcesUsed.push("netrows");
+	}
+	if (
+		(input.newsResults && input.newsResults.length > 0) ||
+		(input.industryResults && input.industryResults.length > 0)
+	) {
+		dataSourcesUsed.push("braveSearch");
+	}
+	if (input.websiteContent?.trim()) {
+		dataSourcesUsed.push("websiteContent");
+	}
+	if (hasWebsiteDeepScrapeData(input.websiteDeepScrape)) {
+		dataSourcesUsed.push("websiteDeepScrape");
+	}
+	if (hasAlphaVantageData(alphaVantageData)) {
+		dataSourcesUsed.push("alphaVantage");
+	}
+	if (hasSecEdgarData(secEdgarData)) {
+		dataSourcesUsed.push("secEdgar");
+	}
+
+	brief.dataSourcesUsed = dataSourcesUsed;
 
 	logger.info(
 		ctx,
