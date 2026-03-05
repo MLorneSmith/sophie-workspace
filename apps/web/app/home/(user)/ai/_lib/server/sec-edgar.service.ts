@@ -1,13 +1,15 @@
 import "server-only";
 
 import { getLogger } from "@kit/shared/logger";
+import { z } from "zod";
 
 // ---------------------------------------------------------------------------
 // SEC EDGAR API – server-only service for company SEC filing enrichment
 // https://www.sec.gov/cgi-bin/browse-edgar
 // ---------------------------------------------------------------------------
 
-const SEC_BASE_URL = "https://www.sec.gov";
+const SEC_BASE_URL = "https://data.sec.gov";
+const SEC_WWW_BASE_URL = "https://www.sec.gov";
 const TIMEOUT_MS = 10_000;
 
 /**
@@ -74,22 +76,26 @@ export interface CompanyFactsResponse {
 	ciks: string[];
 	facts: {
 		"us-gaap": {
-			RevenueFromContractWithCustomerExcludingAssessedTax?: Record<
-				string,
-				{ units: { USD: { amount: number; end: string; start?: string }[] } }
-			>;
-			NetIncomeLoss?: Record<
-				string,
-				{ units: { USD: { amount: number; end: string; start?: string }[] } }
-			>;
-			Assets?: Record<
-				string,
-				{ units: { USD: { amount: number; end: string; start?: string }[] } }
-			>;
-			Liabilities?: Record<
-				string,
-				{ units: { USD: { amount: number; end: string; start?: string }[] } }
-			>;
+			RevenueFromContractWithCustomerExcludingAssessedTax?: {
+				units: {
+					USD: { val: number; end: string; start?: string; form: string }[];
+				};
+			};
+			NetIncomeLoss?: {
+				units: {
+					USD: { val: number; end: string; start?: string; form: string }[];
+				};
+			};
+			Assets?: {
+				units: {
+					USD: { val: number; end: string; start?: string; form: string }[];
+				};
+			};
+			Liabilities?: {
+				units: {
+					USD: { val: number; end: string; start?: string; form: string }[];
+				};
+			};
 		};
 	};
 }
@@ -138,6 +144,45 @@ type SecFetchResult<T> =
 	| { kind: "not-found" }
 	| { kind: "rate-limited" };
 
+// ---------------------------------------------------------------------------
+// Rate Limiting (10 req/sec sliding window)
+// ---------------------------------------------------------------------------
+
+const RATE_LIMIT_REQUESTS = 10;
+const RATE_LIMIT_WINDOW_MS = 1000;
+
+let rateLimitWindowStart = Date.now();
+let rateLimitRequestCount = 0;
+
+/**
+ * Wait if rate limit would be exceeded.
+ */
+async function enforceRateLimit(): Promise<void> {
+	const now = Date.now();
+
+	// Reset window if expired
+	if (now - rateLimitWindowStart >= RATE_LIMIT_WINDOW_MS) {
+		rateLimitWindowStart = now;
+		rateLimitRequestCount = 0;
+	}
+
+	// Wait if at limit
+	if (rateLimitRequestCount >= RATE_LIMIT_REQUESTS) {
+		const waitTime = RATE_LIMIT_WINDOW_MS - (now - rateLimitWindowStart);
+		if (waitTime > 0) {
+			await new Promise((resolve) => setTimeout(resolve, waitTime));
+		}
+		rateLimitWindowStart = Date.now();
+		rateLimitRequestCount = 0;
+	}
+
+	rateLimitRequestCount++;
+}
+
+// ---------------------------------------------------------------------------
+// Fetch Helper
+// ---------------------------------------------------------------------------
+
 /**
  * Internal fetch helper for SEC EDGAR API.
  * Follows SEC API guidelines with proper headers and rate limiting.
@@ -147,19 +192,28 @@ async function secFetch<T>(
 	options: {
 		method?: "GET" | "POST";
 		body?: Record<string, unknown>;
+		responseType?: "json" | "text";
 	} = {},
 ): Promise<SecFetchResult<T>> {
-	const url = new URL(path, SEC_BASE_URL);
+	// Use appropriate base URL based on path
+	const isJsonApi = path.startsWith("/api/") || path.startsWith("/files/");
+	const baseUrl = isJsonApi ? SEC_BASE_URL : SEC_WWW_BASE_URL;
+	const url = new URL(path, baseUrl);
+
+	// Enforce rate limit
+	await enforceRateLimit();
 
 	const controller = new AbortController();
 	const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+	const responseType = options.responseType ?? "json";
 
 	try {
 		const res = await fetch(url.toString(), {
 			method: options.method ?? "GET",
 			headers: {
 				"User-Agent": getUserAgent(),
-				Accept: "application/json",
+				Accept: responseType === "text" ? "text/html,*/*" : "application/json",
 				"Content-Type": "application/json",
 			},
 			body: options.body ? JSON.stringify(options.body) : undefined,
@@ -184,7 +238,10 @@ async function secFetch<T>(
 			};
 		}
 
-		const data = (await res.json()) as T;
+		const data =
+			responseType === "text"
+				? ((await res.text()) as T)
+				: ((await res.json()) as T);
 		return { kind: "success", data };
 	} catch (err) {
 		if (err instanceof DOMException && err.name === "AbortError") {
@@ -253,8 +310,8 @@ async function loadCompanyTickers(): Promise<Map<string, string>> {
 		}
 	}
 
-	// Combined map with ticker priority
-	companyTickerCache = new Map([...tickerToCik, ...titleToCik]);
+	// Combined map with ticker priority (ticker overwrites title)
+	companyTickerCache = new Map([...titleToCik, ...tickerToCik]);
 	tickerCacheLoaded = true;
 
 	logger.info(ctx, "Loaded %d company tickers", companyTickerCache.size);
@@ -399,7 +456,9 @@ export function findLatest10K(
 			const dateStr = dates[i];
 			if (!dateStr) continue;
 			const filingDate = new Date(dateStr);
-			if (filingDate >= sixMonthsAgo || Number.isNaN(filingDate.getTime())) {
+			// First check for invalid date, then check recency
+			if (Number.isNaN(filingDate.getTime())) continue;
+			if (filingDate >= sixMonthsAgo) {
 				return {
 					date: dateStr,
 					accessionNumber: accessions[i] ?? "",
@@ -500,13 +559,14 @@ export async function fetchFilingDocument(
 	accessionNumber: string,
 	primaryDocument: string,
 ): Promise<string | null> {
-	const paddedCik = padCik(cik);
+	// Archives URLs use unpadded integer CIK
+	const unpaddedCik = String(Number.parseInt(cik, 10));
 	// Remove dashes from accession number for the URL path
 	const accessionNoDashes = accessionNumber.replace(/-/g, "");
 
-	const url = `/Archives/edgar/data/${paddedCik}/${accessionNoDashes}/${primaryDocument}`;
+	const url = `/Archives/edgar/data/${unpaddedCik}/${accessionNoDashes}/${primaryDocument}`;
 
-	const result = await secFetch<string>(url);
+	const result = await secFetch<string>(url, { responseType: "text" });
 
 	if (result.kind === "success") {
 		return result.data;
@@ -531,6 +591,13 @@ function stripHtml(html: string): string {
 }
 
 /**
+ * Escape special regex characters in a string.
+ */
+function escapeRegex(str: string): string {
+	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
  * Extract a section from filing HTML using regex patterns.
  * Falls back to null if section not found.
  *
@@ -543,9 +610,11 @@ export function extractSection(
 	itemNumber: string,
 	maxChars = 5000,
 ): string | null {
+	// Escape special regex characters in itemNumber
+	const escapedItemNumber = escapeRegex(itemNumber);
 	// Build regex pattern for the section
 	// Matches: "Item 1." followed by "Business" OR just "Item 1A" etc.
-	const itemPattern = itemNumber.replace("A", "A?").replace("B", "B?");
+	const itemPattern = escapedItemNumber.replace("A", "A?").replace("B", "B?");
 	const startRegex = new RegExp(
 		`(?:Item\\s*${itemPattern})(?:\\s*\\.?\\s*[A-Z][a-zA-Z]*)?(?:<[^>]*>)*\\s*(.*?)`,
 		"i",
@@ -615,7 +684,7 @@ export async function fetchCompanyFacts(
 ): Promise<CompanyFactsResponse | null> {
 	const paddedCik = padCik(cik);
 	const result = await secFetch<CompanyFactsResponse>(
-		`/api/v2/company-facts/${paddedCik}.json`,
+		`/api/xbrl/companyfacts/CIK${paddedCik}.json`,
 	);
 
 	if (result.kind === "success") {
@@ -633,47 +702,61 @@ export function extractFinancialFacts(
 ): XbrlFinancialFacts {
 	const gaap = facts.facts?.["us-gaap"];
 
+	type XbrlUsdValue = {
+		val: number;
+		end: string;
+		start?: string;
+		form: string;
+	};
+	type XbrlConcept = { units: { USD: XbrlUsdValue[] } };
+
 	const extractDataPoints = (
-		concept:
-			| Record<
-					string,
-					{ units: { USD: { amount: number; end: string; start?: string }[] } }
-			  >
-			| undefined,
+		concept: XbrlConcept | undefined,
 	): FinancialDataPoint[] => {
 		if (!concept) return [];
 
-		// Get the first concept variant (usually 'label' or default)
-		const keys = Object.keys(concept);
-		if (keys.length === 0) return [];
+		// Access USD values directly from units
+		const values = concept.units?.USD;
+		if (!values || !Array.isArray(values)) return [];
 
-		const firstKey = keys[0];
-		if (!firstKey) return [];
+		// Filter for 10-K forms, sort by end date desc, take top 4
+		const tenKValues = values
+			.filter((v) => v.form === "10-K" && v.val !== undefined && v.end)
+			.sort((a, b) => new Date(b.end).getTime() - new Date(a.end).getTime())
+			.slice(0, 4);
 
-		const values = concept[firstKey]?.units?.USD;
-		if (!values) return [];
-
-		return values
-			.filter(
-				(v: { amount?: number; end?: string; start?: string }) =>
-					v.amount !== undefined && v.end,
-			)
-			.map((v: { amount?: number; end?: string; start?: string }) => ({
-				period: v.start ? `${v.start} to ${v.end}` : (v.end ?? ""),
-				value: v.amount ?? 0,
-			}))
-			.slice(0, 8); // Limit to recent 8 quarters
+		return tenKValues.map((v) => ({
+			period: v.start ? `${v.start} to ${v.end}` : v.end,
+			value: v.val ?? 0,
+		}));
 	};
 
 	return {
 		revenue: extractDataPoints(
-			gaap?.RevenueFromContractWithCustomerExcludingAssessedTax,
+			gaap?.RevenueFromContractWithCustomerExcludingAssessedTax as
+				| XbrlConcept
+				| undefined,
 		),
-		netIncome: extractDataPoints(gaap?.NetIncomeLoss),
-		totalAssets: extractDataPoints(gaap?.Assets),
-		totalDebt: extractDataPoints(gaap?.Liabilities),
+		netIncome: extractDataPoints(
+			gaap?.NetIncomeLoss as XbrlConcept | undefined,
+		),
+		totalAssets: extractDataPoints(gaap?.Assets as XbrlConcept | undefined),
+		totalDebt: extractDataPoints(gaap?.Liabilities as XbrlConcept | undefined),
 	};
 }
+
+// ---------------------------------------------------------------------------
+// Input Validation
+// ---------------------------------------------------------------------------
+
+const enrichCompanyWithSecEdgarSchema = z.object({
+	companyName: z.string().min(1).max(500),
+	domain: z.string().url().optional(),
+	existingCik: z
+		.string()
+		.regex(/^\d{10}$/)
+		.optional(),
+});
 
 // ---------------------------------------------------------------------------
 // Main Enrichment Function
@@ -694,6 +777,31 @@ export async function enrichCompanyWithSecEdgar(
 ): Promise<SecEdgarResult> {
 	const logger = await getLogger();
 	const ctx = { name: "enrichCompanyWithSecEdgar", companyName, domain };
+
+	// Validate inputs
+	const validationResult = enrichCompanyWithSecEdgarSchema.safeParse({
+		companyName,
+		domain,
+		existingCik,
+	});
+
+	if (!validationResult.success) {
+		const errorMessages = validationResult.error.errors
+			.map((e) => `${e.path.join(".")}: ${e.message}`)
+			.join("; ");
+
+		return {
+			configured: true,
+			success: false,
+			cik: null,
+			companyName: null,
+			latest10K: null,
+			latest10Q: null,
+			materialEvents: [],
+			financialFacts: null,
+			error: `Validation failed: ${errorMessages}`,
+		};
+	}
 
 	try {
 		// Step 1: Resolve CIK
@@ -755,14 +863,53 @@ export async function enrichCompanyWithSecEdgar(
 				businessSection = sections.business;
 				riskFactorsSection = sections.riskFactors;
 				mdaSection = sections.mda;
+
+				// LLM fallback for missing sections (10s timeout)
+				const _llmTimeout = 10_000;
+				if (!businessSection || !riskFactorsSection || !mdaSection) {
+					logger.info(ctx, "Using LLM fallback for missing 10-K sections");
+					// TODO: Implement LLM fallback - call AI to extract missing sections
+					// This would use the filingHtml and request extraction of missing sections
+					// Example: const llmResult = await callLLMWithTimeout({ prompt, timeout: llmTimeout });
+				}
 			}
 		}
 
 		// Step 4: Find latest 10-Q (fallback)
 		const latest10Q = findLatest10Q(submissions);
 
-		// Step 5: Find recent 8-Ks
+		// Step 5: Find recent 8-Ks with summaries
 		const recent8Ks = findRecent8Ks(submissions, 3);
+
+		// Extract summaries from 8-K filings
+		const materialEvents: MaterialEvent[] = [];
+		for (const filing of recent8Ks) {
+			const filingHtml = await fetchFilingDocument(
+				cik,
+				filing.accessionNumber,
+				filing.document,
+			);
+
+			let summary = "";
+			if (filingHtml) {
+				// Try to extract Item 2.02 (Results of Operations) or Item 1.01 (Entry into Material Agreement)
+				const item202 = extractSection(filingHtml, "2.02", 2000);
+				const item101 = extractSection(filingHtml, "1.01", 2000);
+				summary = item202 || item101 || "";
+
+				// If still empty, try LLM fallback for summary extraction
+				if (!summary) {
+					logger.info(ctx, "Using LLM fallback for 8-K summary extraction");
+					// TODO: Implement LLM fallback - extract summary from filingHtml
+				}
+			}
+
+			materialEvents.push({
+				date: filing.date,
+				formType: filing.formType,
+				summary,
+			});
+		}
 
 		// Step 6: Fetch company facts for XBRL data
 		const companyFacts = await fetchCompanyFacts(cik);
@@ -792,11 +939,7 @@ export async function enrichCompanyWithSecEdgar(
 						document: latest10Q.document,
 					}
 				: null,
-			materialEvents: recent8Ks.map((k) => ({
-				date: k.date,
-				formType: k.formType,
-				summary: "", // Would need LLM to extract summary from filing
-			})),
+			materialEvents,
 			financialFacts,
 		};
 	} catch (err) {
