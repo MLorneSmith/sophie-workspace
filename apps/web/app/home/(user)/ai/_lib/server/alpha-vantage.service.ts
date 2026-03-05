@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getLogger } from "@kit/shared/logger";
+import { RateLimiter, CircuitBreaker } from "@kit/mastra";
 
 // ---------------------------------------------------------------------------
 // Alpha Vantage API – server-only service for financial data
@@ -9,6 +10,7 @@ import { getLogger } from "@kit/shared/logger";
 
 const BASE_URL = "https://www.alphavantage.co/query";
 const TIMEOUT_MS = 10_000;
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 /** Alpha Vantage API function types */
 const FUNCTION_OVERVIEW = "OVERVIEW";
@@ -75,9 +77,19 @@ export interface AlphaVantageData {
 	revenue: number | null;
 	grossMargin: number | null;
 	operatingMargin: number | null;
+	profitMargin: number | null;
 	stockPrice: number | null;
 	week52High: number | null;
 	week52Low: number | null;
+
+	// Market data
+	marketCap: number | null;
+	ebitda: number | null;
+	eps: number | null;
+	dividendYield: number | null;
+	movingAvg50: number | null;
+	movingAvg200: number | null;
+	fiscalYearEnd: string | null;
 
 	// Analyst ratings
 	analystConsensus: string | null;
@@ -92,72 +104,62 @@ export interface AlphaVantageData {
 }
 
 // ---------------------------------------------------------------------------
-// Rate Limiting (simple in-memory)
+// Rate Limiting and Circuit Breaker (using shared @mastra/resilience)
 // ---------------------------------------------------------------------------
 
-/** Simple rate limiter: 5 requests per minute for Alpha Vantage free tier */
-class RateLimiter {
-	private requestTimestamps: number[] = [];
-	private readonly maxRequests: number;
-	private readonly windowMs: number;
+// Rate limiter: 5 requests per minute for Alpha Vantage free tier
+const rateLimiter = new RateLimiter({
+	maxRequestsPerMinute: 5,
+});
 
-	constructor(maxRequests: number = 5, windowMs: number = 60_000) {
-		this.maxRequests = maxRequests;
-		this.windowMs = windowMs;
-	}
+// Circuit breaker to prevent cascading failures
+const circuitBreaker = new CircuitBreaker("alpha-vantage", {
+	failureThreshold: 3,
+	resetTimeMs: 60_000,
+});
 
-	/** Check if we can make a request without waiting */
-	canProceed(): boolean {
-		this.pruneOldRequests();
-		return this.requestTimestamps.length < this.maxRequests;
-	}
+// ---------------------------------------------------------------------------
+// 24-hour ticker-keyed caching
+// ---------------------------------------------------------------------------
 
-	/** Wait until we can proceed (or throw if too long) */
-	async waitForSlot(maxWaitMs: number = 60_000): Promise<void> {
-		const startTime = Date.now();
-
-		while (true) {
-			this.pruneOldRequests();
-
-			if (this.requestTimestamps.length < this.maxRequests) {
-				this.requestTimestamps.push(Date.now());
-				return;
-			}
-
-			// Calculate wait time
-			const oldestRequest = this.requestTimestamps[0];
-			if (!oldestRequest) {
-				// Should not happen but safety check
-				await new Promise((resolve) => setTimeout(resolve, 1000));
-				continue;
-			}
-			const waitTime = oldestRequest + this.windowMs - Date.now();
-
-			if (waitTime > maxWaitMs) {
-				throw new Error(
-					`Rate limit: would need to wait ${waitTime}ms, exceeding max ${maxWaitMs}ms`,
-				);
-			}
-
-			if (Date.now() - startTime >= maxWaitMs) {
-				throw new Error(`Rate limit: waited ${maxWaitMs}ms but still at limit`);
-			}
-
-			// Wait briefly and retry
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-		}
-	}
-
-	private pruneOldRequests(): void {
-		const now = Date.now();
-		this.requestTimestamps = this.requestTimestamps.filter(
-			(ts) => now - ts < this.windowMs,
-		);
-	}
+/** Cache entry with TTL */
+interface CacheEntry {
+	result: AlphaVantageEnrichmentResult;
+	expiresAt: number;
 }
 
-// Module-level rate limiter instance
-const rateLimiter = new RateLimiter(5, 60_000);
+/** In-memory cache for financial snapshots (24-hour TTL) */
+const financialSnapshotCache = new Map<string, CacheEntry>();
+
+/**
+ * Get cached result if not expired
+ */
+function getCachedSnapshot(
+	ticker: string,
+): AlphaVantageEnrichmentResult | null {
+	const entry = financialSnapshotCache.get(ticker.toUpperCase());
+	if (!entry) return null;
+
+	if (Date.now() > entry.expiresAt) {
+		financialSnapshotCache.delete(ticker.toUpperCase());
+		return null;
+	}
+
+	return entry.result;
+}
+
+/**
+ * Cache a financial snapshot result
+ */
+function cacheSnapshot(
+	ticker: string,
+	result: AlphaVantageEnrichmentResult,
+): void {
+	financialSnapshotCache.set(ticker.toUpperCase(), {
+		result,
+		expiresAt: Date.now() + CACHE_TTL_MS,
+	});
+}
 
 // ---------------------------------------------------------------------------
 // Internal helpers
@@ -181,11 +183,6 @@ async function alphaVantageFetch<T>(
 		return { kind: "no-key" };
 	}
 
-	// Check rate limit before proceeding
-	if (!rateLimiter.canProceed()) {
-		return { kind: "rate-limited" };
-	}
-
 	const url = new URL(BASE_URL);
 	url.searchParams.set("function", functionType);
 	url.searchParams.set("symbol", ticker);
@@ -195,37 +192,40 @@ async function alphaVantageFetch<T>(
 	const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
 	try {
-		// Wait for rate limit slot
-		await rateLimiter.waitForSlot(60_000);
+		// Use circuit breaker to wrap the external API call
+		return await circuitBreaker.execute(async () => {
+			// Wait for rate limit slot (shared RateLimiter)
+			await rateLimiter.acquire(0);
 
-		const res = await fetch(url.toString(), {
-			method: "GET",
-			headers: {
-				Accept: "application/json",
-			},
-			signal: controller.signal,
-			cache: "no-store" as RequestCache,
+			const res = await fetch(url.toString(), {
+				method: "GET",
+				headers: {
+					Accept: "application/json",
+				},
+				signal: controller.signal,
+				cache: "no-store" as RequestCache,
+			});
+
+			// Handle rate limiting (HTTP 429)
+			if (res.status === 429) {
+				return { kind: "rate-limited" } as AlphaVantageFetchResult<T>;
+			}
+
+			const data = (await res.json()) as Record<string, unknown>;
+
+			// Check for Alpha Vantage error messages
+			if ("Note" in data || "Information" in data) {
+				return { kind: "rate-limited" } as AlphaVantageFetchResult<T>;
+			}
+
+			if (!res.ok) {
+				const msg = `Alpha Vantage API error ${res.status}`;
+				return { kind: "error", message: msg } as AlphaVantageFetchResult<T>;
+			}
+
+			// Return the full response - empty object means "not found"
+			return { kind: "success", data: data as T };
 		});
-
-		// Handle rate limiting (HTTP 429)
-		if (res.status === 429) {
-			return { kind: "rate-limited" };
-		}
-
-		const data = (await res.json()) as Record<string, unknown>;
-
-		// Check for Alpha Vantage error messages
-		if ("Note" in data || "Information" in data) {
-			return { kind: "rate-limited" };
-		}
-
-		if (!res.ok) {
-			const msg = `Alpha Vantage API error ${res.status}`;
-			return { kind: "error", message: msg };
-		}
-
-		// Return the full response - empty object means "not found"
-		return { kind: "success", data: data as T };
 	} catch (err) {
 		if (err instanceof DOMException && err.name === "AbortError") {
 			return {
@@ -233,6 +233,7 @@ async function alphaVantageFetch<T>(
 				message: `Alpha Vantage API request timed out: ${ticker}`,
 			};
 		}
+		// Re-throw circuit breaker errors
 		throw err;
 	} finally {
 		clearTimeout(timer);
@@ -282,12 +283,26 @@ function parseOverviewResponse(data: AlphaVantageOverview): AlphaVantageData {
 		grossMargin: (() => {
 			const grossProfit = parseNumber(data.GrossProfitTTM);
 			const revenue = parseNumber(data.RevenueTTM);
-			return grossProfit && revenue ? (grossProfit / revenue) * 100 : null;
+			// Explicit null checks to handle zero values correctly
+			if (grossProfit === null || revenue === null || revenue === 0) {
+				return null;
+			}
+			return (grossProfit / revenue) * 100;
 		})(),
 		operatingMargin: parseNumber(data.OperatingMargin),
+		profitMargin: parseNumber(data.ProfitMargin),
 		stockPrice: parseNumber(data.AnalystTargetPrice), // Use target price as proxy
 		week52High: parseNumber(data["52WeekHigh"]),
 		week52Low: parseNumber(data["52WeekLow"]),
+
+		// Market data
+		marketCap: parseNumber(data.MarketCapitalization),
+		ebitda: parseNumber(data.EBITDA),
+		eps: parseNumber(data.EPS),
+		dividendYield: parseNumber(data.DividendYield),
+		movingAvg50: parseNumber(data["50DayMovingAverage"]),
+		movingAvg200: parseNumber(data["200DayMovingAverage"]),
+		fiscalYearEnd: data.FiscalYearEnd ?? null,
 
 		// Analyst ratings
 		analystConsensus,
@@ -308,8 +323,9 @@ function parseOverviewResponse(data: AlphaVantageOverview): AlphaVantageData {
 
 /**
  * Get financial snapshot for a public company using Alpha Vantage OVERVIEW.
+ * Uses 24-hour caching to preserve API quota.
  *
- * @param ticker - Stock ticker symbol (e.g., "MSFT", "AAPL")
+ * @param ticker - Stock ticker symbol (e.g., "MSFT", "AAPL", "BRK.B")
  * @returns AlphaVantageEnrichmentResult with financial data or null if unavailable
  */
 export async function getFinancialSnapshot(
@@ -317,8 +333,9 @@ export async function getFinancialSnapshot(
 ): Promise<AlphaVantageEnrichmentResult> {
 	const logger = await getLogger();
 
-	// Validate ticker format
-	if (!ticker || ticker.length > 5 || !/^[A-Z]+$/.test(ticker)) {
+	// Validate ticker format - allow uppercase letters, digits, dots, and hyphens
+	// This supports exchange-suffixed symbols like "TSCO.LON", "BRK.B", "AW-UN.TRT"
+	if (!ticker || ticker.length > 20 || !/^[A-Z0-9.-]+$/.test(ticker)) {
 		return {
 			data: null,
 			success: false,
@@ -327,68 +344,105 @@ export async function getFinancialSnapshot(
 		};
 	}
 
+	const upperTicker = ticker.toUpperCase();
+
+	// Check cache first
+	const cached = getCachedSnapshot(upperTicker);
+	if (cached) {
+		logger.info({ ticker: upperTicker }, "Returning cached financial snapshot");
+		return cached;
+	}
+
 	try {
 		const result = await alphaVantageFetch<AlphaVantageOverview>(
-			ticker,
+			upperTicker,
 			FUNCTION_OVERVIEW,
 		);
 
+		let finalResult: AlphaVantageEnrichmentResult;
+
 		switch (result.kind) {
 			case "no-key":
-				return {
+				finalResult = {
 					data: null,
 					success: true,
 					configured: false,
 					error: "Alpha Vantage API key not configured",
 				};
+				break;
 			case "rate-limited":
-				return {
+				// Don't cache rate limit errors - transient
+				finalResult = {
 					data: null,
 					success: false,
 					configured: true,
 					error: "Alpha Vantage API rate limit exceeded",
 				};
+				break;
 			case "error":
-				return {
+				// Don't cache transient errors
+				finalResult = {
 					data: null,
 					success: false,
 					configured: true,
 					error: result.message,
 				};
+				break;
 			case "success": {
 				// Check if response is empty (no data for this ticker)
 				if (!result.data || Object.keys(result.data).length === 0) {
-					logger.info({ ticker }, "No Alpha Vantage data found for ticker");
-					return {
+					logger.info(
+						{ ticker: upperTicker },
+						"No Alpha Vantage data found for ticker",
+					);
+					// Cache "no data" responses too (private company, no longer traded, etc.)
+					finalResult = {
 						data: null,
 						success: true,
 						configured: true,
 						error: "No data available for ticker",
 					};
+					cacheSnapshot(upperTicker, finalResult);
+					return finalResult;
 				}
 
 				const normalizedData = parseOverviewResponse(result.data);
 				logger.info(
 					{
-						ticker,
+						ticker: upperTicker,
 						revenue: normalizedData.revenue,
 						peRatio: normalizedData.peRatio,
 					},
 					"Alpha Vantage enrichment success",
 				);
 
-				return {
+				finalResult = {
 					data: normalizedData,
 					success: true,
 					configured: true,
 				};
+				break;
 			}
+			default:
+				finalResult = {
+					data: null,
+					success: false,
+					configured: true,
+					error: "Unknown error",
+				};
 		}
+
+		// Cache successful results (both success with data and "no data" cases)
+		if (finalResult.success) {
+			cacheSnapshot(upperTicker, finalResult);
+		}
+
+		return finalResult;
 	} catch (err) {
 		const message =
 			err instanceof Error ? err.message : "Unknown Alpha Vantage error";
 		logger.error(
-			{ ticker, error: err },
+			{ ticker: upperTicker, error: err },
 			"Alpha Vantage enrichment failed: %s",
 			message,
 		);

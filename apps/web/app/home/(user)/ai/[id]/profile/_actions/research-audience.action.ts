@@ -364,7 +364,7 @@ export const researchAudienceAction = enhanceAction(
 						?.replace(/^https?:\/\//, "")
 						.replace(/\/.*$/, "") ?? undefined;
 
-				// Run web research, Apollo enrichment, website deep scrape, and Alpha Vantage in parallel
+				// Start independent promises early - they run in parallel with ticker resolution
 				const websiteDeepScrapePromise = domain
 					? withTimeout(
 							scrapeWebsiteDeep(domain),
@@ -373,7 +373,14 @@ export const researchAudienceAction = enhanceAction(
 						)
 					: Promise.resolve(null);
 
-				// Resolve ticker first (needed for Alpha Vantage)
+				// Start web research early (independent of ticker)
+				const webResearchPromise = withTimeout(
+					researchCompany(data.company, industry, domain),
+					15_000,
+					"Company web research",
+				);
+
+				// Await ticker resolution first (needed for Alpha Vantage)
 				const tickerResult = await tickerPromise.catch((tickerErr) => {
 					logger.warn(
 						ctx,
@@ -422,11 +429,7 @@ export const researchAudienceAction = enhanceAction(
 					websiteDeepScrape,
 					alphaVantageResult,
 				] = await Promise.all([
-					withTimeout(
-						researchCompany(data.company, industry, domain),
-						15_000,
-						"Company web research",
-					),
+					webResearchPromise,
 					apolloPromise.catch((apolloErr) => {
 						logger.warn(
 							ctx,

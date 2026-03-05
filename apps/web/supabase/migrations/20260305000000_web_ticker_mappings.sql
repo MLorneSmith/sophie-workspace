@@ -10,6 +10,8 @@ create table if not exists
     cik text not null,
     confidence_score numeric not null default 0,
     user_id uuid references auth.users (id) on delete cascade not null,
+    created_at timestamptz not null default now (),
+    updated_at timestamptz not null default now (),
     resolved_at timestamptz not null default now (),
     expires_at timestamptz not null default (now() + interval '30 days')
   );
@@ -53,7 +55,7 @@ create policy ticker_mappings_read on public.ticker_mappings
   for select
   to authenticated
   using (
-    auth.uid () = user_id
+    user_id = (select auth.uid())
   );
 
 -- RLS: INSERT - Users can insert their own mappings
@@ -61,7 +63,7 @@ create policy ticker_mappings_insert on public.ticker_mappings
   for insert
   to authenticated
   with check (
-    auth.uid () = user_id
+    user_id = (select auth.uid())
   );
 
 -- RLS: UPDATE - Users can update their own mappings
@@ -69,10 +71,10 @@ create policy ticker_mappings_update on public.ticker_mappings
   for update
   to authenticated
   using (
-    auth.uid () = user_id
+    user_id = (select auth.uid())
   )
   with check (
-    auth.uid () = user_id
+    user_id = (select auth.uid())
   );
 
 -- RLS: DELETE - Users can delete their own mappings
@@ -80,5 +82,5 @@ create policy ticker_mappings_delete on public.ticker_mappings
   for delete
   to authenticated
   using (
-    auth.uid () = user_id
+    user_id = (select auth.uid())
   );

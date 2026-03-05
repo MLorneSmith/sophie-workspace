@@ -1,5 +1,9 @@
 # Langfuse Prompt Management Integration with Bifrost
 
+> **Note:** This spec is for a separate initiative (Langfuse migration) and is
+> NOT part of PR #2260 (ticker resolution + Alpha Vantage enrichment). This
+> document should be moved to its own PR.
+
 **Issue:** TBD (to be created after spec review)
 **Epic:** Langfuse Integration
 **Author:** Sophie + Mike
@@ -108,7 +112,7 @@ App → Bifrost (prompt_id + prompt_variables) → Bifrost fetches from Langfuse
 
 ### Phase 1: Migrate prompts to Langfuse Cloud (UI work, no code)
 
-Create all prompts in Langfuse UI as **chat** type prompts:
+Create all prompts in Langfuse UI as **chat-type** prompts:
 
 | Prompt Name | Type | Variables | Current File |
 |------------|------|-----------|--------------|
@@ -182,7 +186,6 @@ const response = await fetch(`${BIFROST_GATEWAY_URL}/chat/completions`, {
     }
   })
 });
-```typescript
 ```
 
 ### Phase 4: Update each workflow caller
@@ -266,7 +269,7 @@ litellm_settings:
 
 - [ ] Create all 6 prompts in Langfuse Cloud UI with `production` label
 - [ ] Create partial prompts (base-instructions, improvement-format, etc.)
-- [ ] Upgrade `@langfuse/client` to latest version
+- [ ] Upgrade `@langfuse/client` to ^3.0.0
 - [ ] Refactor `prompt-service.ts` with new `getPrompt()` function
 - [ ] Update `enhanced-gateway-client.ts` to pass prompt metadata
 - [ ] Update each template caller (6 workflows)

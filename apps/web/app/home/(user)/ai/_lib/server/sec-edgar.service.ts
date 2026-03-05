@@ -10,6 +10,7 @@ import { getLogger } from "@kit/shared/logger";
 const SEC_EDGAR_URL = "https://www.sec.gov/files/company_tickers.json";
 const TIMEOUT_MS = 15_000;
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const SHORT_RETRY_MS = 60 * 60 * 1000; // 1 hour retry on transient failure
 
 /** SEC EDGAR company ticker entry */
 export interface SecEdgarCompany {
@@ -105,26 +106,32 @@ async function fetchSecEdgarCompanies(): Promise<SecEdgarCompany[]> {
 /**
  * Get SEC EDGAR company list with process-level caching.
  * Returns cached data if still valid, otherwise fetches fresh data.
+ * On transient failure, keeps existing cache and sets shorter retry window.
  *
  * @returns Promise<SecEdgarCompaniesResponse> with companies array and lastUpdated timestamp
  */
 export async function getSecEdgarCompanies(): Promise<SecEdgarCompaniesResponse> {
-	// Return cached data if valid
-	if (isCacheValid() && cachedData) {
+	// Return cached data if valid (including short retry window)
+	if (isCacheValid() && cachedData && cachedData.companies.length > 0) {
 		return cachedData;
 	}
 
 	// Fetch fresh data
 	const companies = await fetchSecEdgarCompanies();
 
-	// Update cache
-	cachedData = {
-		companies,
-		lastUpdated: new Date(),
-	};
-	cacheTimestamp = Date.now();
+	// Only update cache if we got valid data
+	if (companies && companies.length > 0) {
+		cachedData = {
+			companies,
+			lastUpdated: new Date(),
+		};
+		cacheTimestamp = Date.now();
+	} else if (cachedData && cachedData.companies.length > 0) {
+		// Keep existing cache but set shorter retry window
+		cacheTimestamp = Date.now() - CACHE_TTL_MS + SHORT_RETRY_MS;
+	}
 
-	return cachedData;
+	return cachedData ?? { companies: [], lastUpdated: new Date() };
 }
 
 /**

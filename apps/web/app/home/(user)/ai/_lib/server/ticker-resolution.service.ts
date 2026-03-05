@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { distance } from "fastest-levenshtein";
 import { getLogger } from "@kit/shared/logger";
+import { z } from "zod";
 
 import { getSecEdgarCompanies } from "./sec-edgar.service";
 
@@ -16,6 +17,14 @@ export interface TickerResolution {
 	cik: string;
 	confidence: number;
 }
+
+/** Zod schema for ticker_mappings database row */
+const TickerMappingSchema = z.object({
+	ticker: z.string(),
+	cik: z.string(),
+	confidence_score: z.number(),
+	expires_at: z.string(),
+});
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -134,70 +143,86 @@ export async function resolveCompanyTicker(
 
 	logger.info({ companyName, normalizedName }, "Resolving company ticker");
 
-	// Use untyped client since ticker_mappings is not in generated types yet
-	// biome-ignore lint/suspicious/noExplicitAny: ticker_mappings not in generated types
-	const untypedClient = client as any;
-
-	// Step 1: Check database cache for non-expired mapping
-	const { data: cachedMapping } = await untypedClient
-		.from("ticker_mappings")
-		.select("ticker, cik, confidence_score, expires_at")
-		.ilike("company_name", normalizedName)
-		.eq("user_id", userId)
-		.gt("expires_at", new Date().toISOString())
-		.limit(1)
-		.maybeSingle();
-
-	if (cachedMapping) {
-		logger.info(
-			{ companyName, ticker: cachedMapping.ticker },
-			"Using cached ticker mapping",
-		);
-		return {
-			ticker: cachedMapping.ticker,
-			cik: cachedMapping.cik,
-			confidence: cachedMapping.confidence_score,
-		};
-	}
-
-	// Step 2: Fetch SEC EDGAR data and try to match
-	const { companies } = await getSecEdgarCompanies();
-
-	if (companies.length === 0) {
-		logger.warn({ companyName }, "No SEC EDGAR data available");
-		return null;
-	}
-
-	const match = findBestMatch(normalizedName, companies);
-
-	if (!match) {
-		logger.info(
-			{ companyName },
-			"No ticker match found (likely private company)",
-		);
-		return null;
-	}
-
-	// Step 3: Cache the result to database
 	try {
-		await untypedClient.from("ticker_mappings").insert({
-			company_name: normalizedName,
-			ticker: match.ticker,
-			cik: match.cik,
-			confidence_score: match.confidence,
-			user_id: userId,
-		});
+		// Step 1: Check database cache for non-expired mapping
+		const { data: rawMapping, error: cacheError } = await client
+			.from("ticker_mappings")
+			.select("ticker, cik, confidence_score, expires_at")
+			.ilike("company_name", normalizedName)
+			.eq("user_id", userId)
+			.gt("expires_at", new Date().toISOString())
+			.limit(1)
+			.maybeSingle();
 
-		logger.info(
-			{ companyName, ticker: match.ticker, confidence: match.confidence },
-			"Cached ticker mapping",
+		if (cacheError) {
+			logger.warn(
+				{ error: cacheError, companyName },
+				"Failed to read ticker mapping cache",
+			);
+			// Continue without cache - not a fatal error
+		} else if (rawMapping) {
+			// Validate the cached data with Zod
+			const validationResult = TickerMappingSchema.safeParse(rawMapping);
+			if (validationResult.success) {
+				const cachedMapping = validationResult.data;
+				logger.info(
+					{ companyName, ticker: cachedMapping.ticker },
+					"Using cached ticker mapping",
+				);
+				return {
+					ticker: cachedMapping.ticker,
+					cik: cachedMapping.cik,
+					confidence: cachedMapping.confidence_score,
+				};
+			}
+		}
+
+		// Step 2: Fetch SEC EDGAR data and try to match
+		const { companies } = await getSecEdgarCompanies();
+
+		if (companies.length === 0) {
+			logger.warn({ companyName }, "No SEC EDGAR data available");
+			return null;
+		}
+
+		const match = findBestMatch(normalizedName, companies);
+
+		if (!match) {
+			logger.info(
+				{ companyName },
+				"No ticker match found (likely private company)",
+			);
+			return null;
+		}
+
+		// Step 3: Cache the result to database
+		try {
+			await client.from("ticker_mappings").insert({
+				company_name: normalizedName,
+				ticker: match.ticker,
+				cik: match.cik,
+				confidence_score: match.confidence,
+				user_id: userId,
+			});
+
+			logger.info(
+				{ companyName, ticker: match.ticker, confidence: match.confidence },
+				"Cached ticker mapping",
+			);
+		} catch (cacheErr) {
+			// Non-blocking - log warning but don't fail
+			logger.warn({ error: cacheErr }, "Failed to cache ticker mapping");
+		}
+
+		return match;
+	} catch (err) {
+		// Degrade gracefully - log warning and return null
+		logger.warn(
+			{ error: err, companyName },
+			"Ticker resolution failed (non-blocking)",
 		);
-	} catch (cacheErr) {
-		// Non-blocking - log warning but don't fail
-		logger.warn({ error: cacheErr }, "Failed to cache ticker mapping");
+		return null;
 	}
-
-	return match;
 }
 
 /**
