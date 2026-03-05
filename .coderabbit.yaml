@@ -18,7 +18,7 @@ reviews:
       - "WIP"
       - "DO NOT REVIEW"
     # Skip promoted PRs from Sophie — already reviewed on fork
-    ignore_authors:
+    ignore_usernames:
       - "SophieLegerPA"
 
   # Review style - thorough but not nitpicky
