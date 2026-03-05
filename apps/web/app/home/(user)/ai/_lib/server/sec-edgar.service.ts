@@ -226,9 +226,9 @@ async function loadCompanyTickers(): Promise<Map<string, string>> {
 	if (result.kind !== "success") {
 		const errorMsg = result.kind === "error" ? result.message : result.kind;
 		logger.warn(ctx, "Failed to load company tickers: %s", errorMsg);
-		companyTickerCache = new Map();
+		const emptyCache = new Map<string, string>();
 		tickerCacheLoaded = true;
-		return companyTickerCache!;
+		return emptyCache;
 	}
 
 	// Build lookup maps
@@ -299,10 +299,15 @@ export async function resolveCik(
 	const nameLower = companyName.toLowerCase();
 
 	// Direct ticker match
-	if (tickers.has(nameLower)) {
-		const cik = tickers.get(nameLower)!;
-		logger.info(ctx, "Resolved via ticker: %s -> CIK %s", companyName, cik);
-		return cik;
+	const cikFromTicker = tickers.get(nameLower);
+	if (cikFromTicker) {
+		logger.info(
+			ctx,
+			"Resolved via ticker: %s -> CIK %s",
+			companyName,
+			cikFromTicker,
+		);
+		return cikFromTicker;
 	}
 
 	// Try title/company name match (normalized)
