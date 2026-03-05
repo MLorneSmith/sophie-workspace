@@ -2,6 +2,7 @@ import "server-only";
 
 import { CircuitBreaker, RateLimiter } from "@kit/mastra";
 import { getLogger } from "@kit/shared/logger";
+import { z } from "zod";
 
 // ---------------------------------------------------------------------------
 // Alpha Vantage API – server-only service for financial data
@@ -103,6 +104,22 @@ export interface AlphaVantageData {
 	industryAvgPeRatio: number | null;
 	beta: number | null;
 }
+
+// ---------------------------------------------------------------------------
+// Zod validation for Alpha Vantage API response
+// ---------------------------------------------------------------------------
+
+/**
+ * Schema to validate OVERVIEW response has the minimum required structure.
+ * Only checks for Symbol and Name (required identifiers); all other fields
+ * are optional strings handled gracefully by parseOverviewResponse.
+ */
+const AlphaVantageOverviewSchema = z
+	.object({
+		Symbol: z.string(),
+		Name: z.string(),
+	})
+	.catchall(z.unknown());
 
 // ---------------------------------------------------------------------------
 // Rate Limiting and Circuit Breaker (using shared @mastra/resilience)
@@ -454,7 +471,25 @@ export async function getFinancialSnapshot(
 					return finalResult;
 				}
 
-				const normalizedData = parseOverviewResponse(result.data);
+				// Validate response shape with Zod before normalization
+				const validated = AlphaVantageOverviewSchema.safeParse(result.data);
+				if (!validated.success) {
+					logger.warn(
+						{ ticker: upperTicker, errors: validated.error.issues },
+						"Alpha Vantage response failed schema validation",
+					);
+					finalResult = {
+						data: null,
+						success: false,
+						configured: true,
+						error: "Invalid API response structure",
+					};
+					break;
+				}
+
+				const normalizedData = parseOverviewResponse(
+					result.data as AlphaVantageOverview,
+				);
 				logger.info(
 					{
 						ticker: upperTicker,

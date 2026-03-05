@@ -66,12 +66,49 @@ function calculateSimilarity(str1: string, str2: string): number {
 }
 
 /**
- * Find best matching company in SEC EDGAR list using fuzzy matching
+ * Query Yahoo Finance autocomplete API as fallback for ambiguous matches.
+ * Returns the top result's ticker if found.
  */
-function findBestMatch(
+async function queryYahooFinanceAutocomplete(
+	query: string,
+): Promise<{ ticker: string } | null> {
+	try {
+		const url = new URL("https://query2.finance.yahoo.com/v1/finance/search");
+		url.searchParams.set("q", query);
+		url.searchParams.set("quotesCount", "1");
+		url.searchParams.set("newsCount", "0");
+
+		const res = await fetch(url.toString(), {
+			headers: { "User-Agent": "SlideHeroes Research" },
+			signal: AbortSignal.timeout(5_000),
+			cache: "no-store" as RequestCache,
+		});
+
+		if (!res.ok) return null;
+
+		const data = (await res.json()) as {
+			quotes?: Array<{ symbol?: string; quoteType?: string }>;
+		};
+
+		const equity = data.quotes?.find((q) => q.quoteType === "EQUITY");
+		if (equity?.symbol) {
+			return { ticker: equity.symbol };
+		}
+
+		return null;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Find best matching company in SEC EDGAR list using fuzzy matching.
+ * Falls back to Yahoo Finance autocomplete for ambiguous matches.
+ */
+async function findBestMatch(
 	normalizedName: string,
 	companies: Array<{ ticker: string; cik_str: string; title: string }>,
-): TickerResolution | null {
+): Promise<TickerResolution | null> {
 	// First try exact match on normalized name
 	for (const company of companies) {
 		const normalizedTitle = normalizeCompanyName(company.title);
@@ -109,6 +146,24 @@ function findBestMatch(
 			cik: best.cik_str,
 			confidence: best.similarity,
 		};
+	}
+
+	// Ambiguous match — try Yahoo Finance autocomplete as fallback
+	if (best && best.similarity > 0.4) {
+		const yahooResult = await queryYahooFinanceAutocomplete(normalizedName);
+		if (yahooResult) {
+			// Cross-reference Yahoo result with SEC data for CIK
+			const secMatch = companies.find(
+				(c) => c.ticker.toUpperCase() === yahooResult.ticker.toUpperCase(),
+			);
+			if (secMatch) {
+				return {
+					ticker: secMatch.ticker,
+					cik: secMatch.cik_str,
+					confidence: 0.75, // Yahoo-confirmed match
+				};
+			}
+		}
 	}
 
 	return null;
@@ -185,7 +240,7 @@ export async function resolveCompanyTicker(
 			return null;
 		}
 
-		const match = findBestMatch(normalizedName, companies);
+		const match = await findBestMatch(normalizedName, companies);
 
 		if (!match) {
 			logger.info(

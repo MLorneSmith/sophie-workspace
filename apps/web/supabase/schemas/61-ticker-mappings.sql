@@ -58,5 +58,10 @@ create index if not exists ix_ticker_mappings_user_id
 create index if not exists ix_ticker_mappings_expires_at
   on public.ticker_mappings (expires_at);
 
+-- Triggers
+create trigger ticker_mappings_set_timestamps
+  before insert or update on public.ticker_mappings
+  for each row execute function public.trigger_set_timestamps();
+
 -- Comments
 comment on table public.ticker_mappings is 'Cached company name to ticker/CIK mappings for financial data enrichment';
