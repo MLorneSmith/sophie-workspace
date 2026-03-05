@@ -572,7 +572,7 @@ export function extractSection(
 	}
 
 	// Return truncated with indicator
-	return plainText.slice(0, maxChars) + "...";
+	return `${plainText.slice(0, maxChars)}...`;
 }
 
 /**
