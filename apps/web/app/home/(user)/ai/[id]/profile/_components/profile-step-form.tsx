@@ -15,13 +15,22 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useCallback, useId, useMemo, useState, useTransition } from "react";
+import {
+	useCallback,
+	useEffect,
+	useId,
+	useMemo,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
 
 import {
 	type AdaptiveQuestion,
 	generateAdaptiveQuestionsAction,
 } from "../_actions/generate-adaptive-questions.action";
 import {
+	pollCompanyBriefAction,
 	researchAudienceAction,
 	searchAudienceAction,
 } from "../_actions/research-audience.action";
@@ -240,6 +249,50 @@ export function ProfileStepForm(props: {
 	>({});
 	const [showAdaptive, setShowAdaptive] = useState(false);
 	const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
+
+	// -----------------------------------------------------------------------
+	// Poll for background company brief
+	// -----------------------------------------------------------------------
+
+	const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+	useEffect(() => {
+		// Only poll when in brief state, no company brief yet, and research completed
+		if (formState !== "brief" || companyBrief || !hasCompanyData) {
+			return;
+		}
+
+		let attempts = 0;
+		const maxAttempts = 24; // 24 × 5s = 2 minutes max
+
+		pollRef.current = setInterval(async () => {
+			attempts++;
+			if (attempts > maxAttempts) {
+				if (pollRef.current) clearInterval(pollRef.current);
+				return;
+			}
+
+			try {
+				const result = await pollCompanyBriefAction({
+					presentationId: props.presentationId,
+				});
+
+				if (result.ready && result.companyBrief) {
+					setCompanyBrief(
+						result.companyBrief as unknown as CompanyBriefStructured,
+					);
+					setHasCompanyBrief(true);
+					if (pollRef.current) clearInterval(pollRef.current);
+				}
+			} catch {
+				// Polling errors are non-critical — silently retry
+			}
+		}, 5_000);
+
+		return () => {
+			if (pollRef.current) clearInterval(pollRef.current);
+		};
+	}, [formState, companyBrief, hasCompanyData, props.presentationId]);
 
 	// -----------------------------------------------------------------------
 	// Research handler

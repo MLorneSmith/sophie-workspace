@@ -415,12 +415,23 @@ export async function synthesizeCompanyBrief(
 		90_000,
 	);
 
+	// Use a fast model for company brief — this is structured data synthesis,
+	// not creative writing. Falls back to the standard research model if not set.
+	const useFastModel = !!process.env.BIFROST_MODEL_WORKFLOW_RESEARCH_FAST;
+	const model = useFastModel
+		? process.env.BIFROST_MODEL_WORKFLOW_RESEARCH_FAST
+		: process.env.BIFROST_MODEL_WORKFLOW_RESEARCH;
+	const virtualKey = useFastModel
+		? (process.env.BIFROST_VK_WORKFLOW_RESEARCH_FAST ??
+			process.env.BIFROST_VK_WORKFLOW_RESEARCH)
+		: process.env.BIFROST_VK_WORKFLOW_RESEARCH;
+
 	let response: Awaited<ReturnType<typeof getChatCompletion>>;
 	try {
 		response = await withTimeout(
 			getChatCompletion(messages, {
-				model: process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
-				virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
+				model,
+				virtualKey,
 				userId,
 				feature: "workflow-company-research",
 				timeout: 90_000,
