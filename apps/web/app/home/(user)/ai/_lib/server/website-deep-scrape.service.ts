@@ -1,5 +1,7 @@
 import "server-only";
 
+import { nativeFetch } from "./fetch-native";
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -79,8 +81,9 @@ function isAbortError(error: unknown): boolean {
 }
 
 /**
- * Creates an abort controller with timeout and workflow signal handling
- * Returns the controller and a cleanup function to clear timers
+ * Creates an AbortController with timeout + workflow signal handling.
+ * Uses plain setTimeout instead of AbortSignal.any([AbortSignal.timeout()])
+ * because that pattern is unreliable in Node.js (bug #57736).
  */
 function createRequestAbortController(
 	workflowSignal: AbortSignal,
@@ -224,10 +227,7 @@ async function checkRobotsTxt(
 			deadlineMs,
 		);
 
-		const res = await fetch(robotsUrl, {
-			signal: controller.signal,
-			cache: "no-store",
-		});
+		const res = await nativeFetch(robotsUrl, { signal: controller.signal }, 0);
 
 		cleanup();
 
@@ -427,10 +427,7 @@ async function fetchPage(
 			deadlineMs,
 		);
 
-		const res = await fetch(url, {
-			signal: controller.signal,
-			cache: "no-store",
-		});
+		const res = await nativeFetch(url, { signal: controller.signal }, 0);
 
 		cleanup();
 
@@ -500,73 +497,69 @@ export async function scrapeWebsiteDeep(
 
 		const internalLinks = extractInternalLinks(homepage.html, normalizedDomain);
 
-		// Step 2: Find matching links for each category
-		const pagePromises: Array<{
-			category: keyof WebsiteDeepScrapeResult["pages"];
-			promise: Promise<{
-				page: FetchedPage | null;
-				path: string;
-			}>;
-		}> = [];
+		// Step 2: Resolve target paths and check robots.txt for all categories in parallel
+		const categoryEntries = Object.entries(PATH_PATTERNS) as Array<
+			[keyof WebsiteDeepScrapeResult["pages"], string[]]
+		>;
 
-		for (const [category, patterns] of Object.entries(PATH_PATTERNS)) {
-			if (workflowAbortController.signal.aborted) {
-				throw new DOMException("Total scrape timed out", "AbortError");
-			}
+		const resolved = await Promise.all(
+			categoryEntries.map(async ([category, patterns]) => {
+				if (workflowAbortController.signal.aborted) return null;
 
-			// First try to find from extracted links
-			let targetPath = findMatchingLink(internalLinks, patterns);
+				// First try to find from extracted links
+				let targetPath = findMatchingLink(internalLinks, patterns);
 
-			// If no match, try common paths directly
-			if (!targetPath) {
-				for (const pattern of patterns) {
-					const allowed = await checkRobotsTxt(
-						normalizedDomain,
-						pattern,
-						workflowAbortController.signal,
-						deadlineMs,
+				// If no match, try common paths directly (first allowed one)
+				if (!targetPath) {
+					const robotsChecks = await Promise.all(
+						patterns.map(async (pattern) => ({
+							pattern,
+							allowed: await checkRobotsTxt(
+								normalizedDomain,
+								pattern,
+								workflowAbortController.signal,
+								deadlineMs,
+							),
+						})),
 					);
-					if (allowed) {
-						targetPath = pattern;
-						break;
-					}
+					targetPath = robotsChecks.find((r) => r.allowed)?.pattern ?? null;
 				}
-			}
 
-			// Check robots.txt before fetching
-			if (targetPath) {
+				if (!targetPath) return null;
+
+				// Check robots.txt for the resolved path
 				const allowed = await checkRobotsTxt(
 					normalizedDomain,
 					targetPath,
 					workflowAbortController.signal,
 					deadlineMs,
 				);
-				if (!allowed) {
-					continue;
-				}
+				if (!allowed) return null;
 
-				const pathToFetch = targetPath;
-				pagePromises.push({
-					category: category as keyof WebsiteDeepScrapeResult["pages"],
-					promise: (async () => {
-						const page = await fetchPage(
-							normalizedDomain,
-							pathToFetch,
-							workflowAbortController.signal,
-							deadlineMs,
-						);
-						return { page, path: pathToFetch };
-					})(),
-				});
-			}
-		}
-
-		// Step 3: Fetch all pages in parallel
-		const pageResults = await Promise.all(
-			pagePromises.map(async (p) => {
-				const pageResult = await p.promise;
-				return { category: p.category, ...pageResult };
+				return { category, path: targetPath };
 			}),
+		);
+
+		// Step 3: Fetch all allowed pages in parallel
+		const pageResults = await Promise.all(
+			resolved
+				.filter(
+					(
+						r,
+					): r is {
+						category: keyof WebsiteDeepScrapeResult["pages"];
+						path: string;
+					} => r !== null,
+				)
+				.map(async ({ category, path }) => {
+					const page = await fetchPage(
+						normalizedDomain,
+						path,
+						workflowAbortController.signal,
+						deadlineMs,
+					);
+					return { category, page, path };
+				}),
 		);
 
 		// Step 4: Populate results

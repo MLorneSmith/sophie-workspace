@@ -80,8 +80,18 @@ async function _createBifrostHeaders(options: {
 	feature?: string;
 	sessionId?: string;
 	virtualKey?: string;
+	promptName?: string;
+	promptVersion?: number;
 }) {
-	const { userId, teamId, feature, sessionId, virtualKey } = options;
+	const {
+		userId,
+		teamId,
+		feature,
+		sessionId,
+		virtualKey,
+		promptName,
+		promptVersion,
+	} = options;
 
 	const headers: Record<string, string> = {
 		"CF-Access-Client-Id": process.env.BIFROST_CF_ACCESS_CLIENT_ID || "",
@@ -98,6 +108,11 @@ async function _createBifrostHeaders(options: {
 	if (feature) headers["x-bifrost-feature"] = feature;
 	if (sessionId) headers["x-bifrost-session-id"] = sessionId;
 
+	// Add prompt metadata for Langfuse observability linkage
+	if (promptName) headers["x-bifrost-prompt-name"] = promptName;
+	if (promptVersion)
+		headers["x-bifrost-prompt-version"] = String(promptVersion);
+
 	return headers;
 }
 
@@ -113,6 +128,10 @@ interface BifrostClientOptions {
 	model?: string;
 	/** Per-request timeout in ms. Defaults to DEFAULT_REQUEST_TIMEOUT_MS. */
 	timeout?: number;
+	/** Prompt name for Langfuse observability linkage */
+	promptName?: string;
+	/** Prompt version for Langfuse observability linkage */
+	promptVersion?: number;
 }
 
 /**
@@ -130,6 +149,8 @@ export async function _createGatewayClient(options: BifrostClientOptions = {}) {
 		virtualKey,
 		model = "gpt-3.5-turbo",
 		timeout = DEFAULT_REQUEST_TIMEOUT_MS,
+		promptName,
+		promptVersion,
 	} = options;
 
 	// Determine the correct provider based on the model and get Bifrost-formatted model
@@ -180,6 +201,8 @@ export async function _createGatewayClient(options: BifrostClientOptions = {}) {
 		feature,
 		sessionId,
 		virtualKey,
+		promptName,
+		promptVersion,
 	});
 
 	// Log the complete headers for debugging
