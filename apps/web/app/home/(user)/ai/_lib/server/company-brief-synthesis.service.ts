@@ -39,7 +39,7 @@ export interface CompanyBrief {
 	};
 	/**
 	 * List of data sources that contributed to this brief.
-	 * Expected values: "apollo", "netrows", "braveSearch", "websiteDeepScrape", "alphaVantage", "secEdgar"
+	 * Expected values: "apollo", "netrows", "braveSearch", "websiteContent", "websiteDeepScrape", "alphaVantage", "secEdgar"
 	 */
 	dataSourcesUsed: string[];
 }
@@ -242,7 +242,7 @@ ${investorsContent.substring(0, 800)}`);
 - Gross Margin: ${input.alphaVantageData.grossMargin != null ? `${input.alphaVantageData.grossMargin}%` : "N/A"}
 - Operating Margin: ${input.alphaVantageData.operatingMargin != null ? `${input.alphaVantageData.operatingMargin}%` : "N/A"}
 - Stock Price: ${input.alphaVantageData.stockPrice != null ? `$${input.alphaVantageData.stockPrice}` : "N/A"}
-- 52-Week Range: $${input.alphaVantageData.week52Low ?? "N/A"} - $${input.alphaVantageData.week52High ?? "N/A"}
+- 52-Week Range: ${input.alphaVantageData.week52Low != null && input.alphaVantageData.week52High != null ? `$${input.alphaVantageData.week52Low} - $${input.alphaVantageData.week52High}` : "N/A"}
 - Analyst Consensus: ${input.alphaVantageData.analystConsensus ?? "N/A"}
   - Buy: ${input.alphaVantageData.analystBuyCount ?? "N/A"}, Hold: ${input.alphaVantageData.analystHoldCount ?? "N/A"}, Sell: ${input.alphaVantageData.analystSellCount ?? "N/A"}
 - P/E Ratio: ${input.alphaVantageData.peRatio ?? "N/A"} (Industry Avg: ${input.alphaVantageData.industryAvgPeRatio ?? "N/A"})
@@ -340,7 +340,7 @@ Output valid JSON matching this exact schema:
     "relevantBenchmarks": ["string — data points worth referencing", "..."],
     "avoidTopics": ["string — sensitive areas to steer clear of", "..."]
   },
-  "dataSourcesUsed": ["string — source identifiers: 'apollo', 'netrows', 'braveSearch', 'websiteDeepScrape', 'alphaVantage', 'secEdgar'"]
+  "dataSourcesUsed": ["string — source identifiers: 'apollo', 'netrows', 'braveSearch', 'websiteContent', 'websiteDeepScrape', 'alphaVantage', 'secEdgar'"]
 }
 
 Be specific and actionable. Draw inferences from the data available. If information is sparse, make reasonable inferences based on what you know and note them. Focus on what matters for someone preparing a presentation to people at this company.`;
@@ -450,8 +450,14 @@ export async function synthesizeCompanyBrief(
 	if (input.netrowsData) {
 		dataSourcesUsed.push("netrows");
 	}
-	if (input.newsResults && input.newsResults.length > 0) {
+	if (
+		(input.newsResults && input.newsResults.length > 0) ||
+		(input.industryResults && input.industryResults.length > 0)
+	) {
 		dataSourcesUsed.push("braveSearch");
+	}
+	if (input.websiteContent?.trim()) {
+		dataSourcesUsed.push("websiteContent");
 	}
 	if (input.websiteDeepScrape) {
 		dataSourcesUsed.push("websiteDeepScrape");
