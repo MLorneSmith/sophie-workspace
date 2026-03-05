@@ -68,7 +68,10 @@ async function fetchSecEdgarCompanies(): Promise<SecEdgarCompany[]> {
 			return [];
 		}
 
-		const data = (await res.json()) as Record<string, { cik_str: number; ticker: string; title: string }>;
+		const data = (await res.json()) as Record<
+			string,
+			{ cik_str: number; ticker: string; title: string }
+		>;
 
 		// Parse the response into our format
 		// SEC EDGAR returns { "0": { cik_str: 1, ticker: "A", title: "Agilent" }, ... }
@@ -78,7 +81,10 @@ async function fetchSecEdgarCompanies(): Promise<SecEdgarCompany[]> {
 			title: entry.title,
 		}));
 
-		logger.info({ count: companies.length }, "Fetched SEC EDGAR company tickers");
+		logger.info(
+			{ count: companies.length },
+			"Fetched SEC EDGAR company tickers",
+		);
 		return companies;
 	} catch (err) {
 		if (err instanceof DOMException && err.name === "AbortError") {

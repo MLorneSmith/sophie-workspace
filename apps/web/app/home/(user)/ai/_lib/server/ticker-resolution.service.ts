@@ -37,7 +37,10 @@ const MAX_MATCHES_TO_CONSIDER = 10;
 function normalizeCompanyName(name: string): string {
 	return name
 		.toLowerCase()
-		.replace(/\b(inc\.?|incorporated|corp\.?|corporation|llc|ltd\.?|co\.?|company|plc|holdings?|group|technologies?|systems?|solutions?|international)\b/gi, "")
+		.replace(
+			/\b(inc\.?|incorporated|corp\.?|corporation|llc|ltd\.?|co\.?|company|plc|holdings?|group|technologies?|systems?|solutions?|international)\b/gi,
+			"",
+		)
 		.replace(/[^a-z0-9\s]/g, "")
 		.replace(/\s+/g, " ")
 		.trim();
@@ -168,7 +171,10 @@ export async function resolveCompanyTicker(
 	const match = findBestMatch(normalizedName, companies);
 
 	if (!match) {
-		logger.info({ companyName }, "No ticker match found (likely private company)");
+		logger.info(
+			{ companyName },
+			"No ticker match found (likely private company)",
+		);
 		return null;
 	}
 
@@ -202,7 +208,9 @@ export async function resolveCompanyTicker(
  * @param companyName - Company name to check
  * @returns true if company might be public (has SEC EDGAR entry)
  */
-export async function mightBePublicCompany(companyName: string): Promise<boolean> {
+export async function mightBePublicCompany(
+	companyName: string,
+): Promise<boolean> {
 	const normalizedName = normalizeCompanyName(companyName);
 	const { companies } = await getSecEdgarCompanies();
 

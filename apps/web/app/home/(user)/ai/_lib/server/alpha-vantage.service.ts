@@ -31,34 +31,34 @@ export interface AlphaVantageOverview {
 	Country: string;
 	Sector: string;
 	Industry: string;
-	"MarketCapitalization": string;
-	"EBITDA": string;
-	"PERatio": string;
-	"PEGRatio": string;
-	"BookValue": string;
-	"DividendPerShare": string;
-	"DividendYield": string;
-	"EPS": string;
-	"RevenueTTM": string;
-	"GrossProfitTTM": string;
-	"ProfitMargin": string;
-	"OperatingMargin": string;
-	"ReturnOnAssetsTTM": string;
-	"ReturnOnEquityTTM": string;
+	MarketCapitalization: string;
+	EBITDA: string;
+	PERatio: string;
+	PEGRatio: string;
+	BookValue: string;
+	DividendPerShare: string;
+	DividendYield: string;
+	EPS: string;
+	RevenueTTM: string;
+	GrossProfitTTM: string;
+	ProfitMargin: string;
+	OperatingMargin: string;
+	ReturnOnAssetsTTM: string;
+	ReturnOnEquityTTM: string;
 	"52WeekHigh": string;
 	"52WeekLow": string;
 	"50DayMovingAverage": string;
 	"200DayMovingAverage": string;
-	"Beta": string;
-	"AnalystTargetPrice": string;
-	"AnalystRatingStrongBuy": string;
-	"AnalystRatingBuy": string;
-	"AnalystRatingHold": string;
-	"AnalystRatingSell": string;
-	"AnalystRatingStrongSell": string;
-	"FiscalYearEnd": string;
-	"LatestQuarterlyReportDate": string;
-	"LatestQuarterlyEarningsDate": string;
+	Beta: string;
+	AnalystTargetPrice: string;
+	AnalystRatingStrongBuy: string;
+	AnalystRatingBuy: string;
+	AnalystRatingHold: string;
+	AnalystRatingSell: string;
+	AnalystRatingStrongSell: string;
+	FiscalYearEnd: string;
+	LatestQuarterlyReportDate: string;
+	LatestQuarterlyEarningsDate: string;
 }
 
 /** Result from enriching company with Alpha Vantage data */
@@ -134,7 +134,9 @@ class RateLimiter {
 			const waitTime = oldestRequest + this.windowMs - Date.now();
 
 			if (waitTime > maxWaitMs) {
-				throw new Error(`Rate limit: would need to wait ${waitTime}ms, exceeding max ${maxWaitMs}ms`);
+				throw new Error(
+					`Rate limit: would need to wait ${waitTime}ms, exceeding max ${maxWaitMs}ms`,
+				);
 			}
 
 			if (Date.now() - startTime >= maxWaitMs) {
@@ -280,7 +282,7 @@ function parseOverviewResponse(data: AlphaVantageOverview): AlphaVantageData {
 		grossMargin: (() => {
 			const grossProfit = parseNumber(data.GrossProfitTTM);
 			const revenue = parseNumber(data.RevenueTTM);
-			return grossProfit && revenue ? grossProfit / revenue * 100 : null;
+			return grossProfit && revenue ? (grossProfit / revenue) * 100 : null;
 		})(),
 		operatingMargin: parseNumber(data.OperatingMargin),
 		stockPrice: parseNumber(data.AnalystTargetPrice), // Use target price as proxy
@@ -367,7 +369,11 @@ export async function getFinancialSnapshot(
 
 				const normalizedData = parseOverviewResponse(result.data);
 				logger.info(
-					{ ticker, revenue: normalizedData.revenue, peRatio: normalizedData.peRatio },
+					{
+						ticker,
+						revenue: normalizedData.revenue,
+						peRatio: normalizedData.peRatio,
+					},
 					"Alpha Vantage enrichment success",
 				);
 
@@ -379,7 +385,8 @@ export async function getFinancialSnapshot(
 			}
 		}
 	} catch (err) {
-		const message = err instanceof Error ? err.message : "Unknown Alpha Vantage error";
+		const message =
+			err instanceof Error ? err.message : "Unknown Alpha Vantage error";
 		logger.error(
 			{ ticker, error: err },
 			"Alpha Vantage enrichment failed: %s",
