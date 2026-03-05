@@ -3,6 +3,7 @@ import "server-only";
 import { type ChatMessage, getChatCompletion } from "@kit/ai-gateway";
 import { getLogger } from "@kit/shared/logger";
 
+import type { AlphaVantageDataInput } from "../schemas/external-data.schema";
 import { sanitizeScrapedText, safeTruncate } from "./prompt-sanitization.utils";
 
 // ---------------------------------------------------------------------------
@@ -67,40 +68,6 @@ export interface WebsiteDeepScrapeInput {
 	recentPressReleases: string[];
 }
 
-/**
- * Financial data from Alpha Vantage API for public companies.
- * All fields optional to handle partial API responses.
- */
-export interface AlphaVantageDataInput {
-	// Company overview
-	revenue?: number | null;
-	grossMargin?: number | null;
-	operatingMargin?: number | null;
-	profitMargin?: number | null;
-	stockPrice?: number | null;
-	week52High?: number | null;
-	week52Low?: number | null;
-
-	// Market data
-	marketCap?: number | null;
-	ebitda?: number | null;
-	eps?: number | null;
-	dividendYield?: number | null;
-	movingAvg50?: number | null;
-	movingAvg200?: number | null;
-	fiscalYearEnd?: string | null;
-
-	// Analyst ratings
-	analystConsensus?: string | null;
-	analystBuyCount?: number | null;
-	analystHoldCount?: number | null;
-	analystSellCount?: number | null;
-
-	// Valuation
-	peRatio?: number | null;
-	industryAvgPeRatio?: number | null;
-	beta?: number | null;
-}
 
 /**
  * Regulatory filing data from SEC EDGAR.
