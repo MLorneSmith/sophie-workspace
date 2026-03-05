@@ -176,6 +176,10 @@ export interface ChatCompletionOptions {
 	timeout?: number;
 	/** AbortSignal to cancel the request externally (e.g. from a timeout wrapper). */
 	signal?: AbortSignal;
+	/** Prompt name for Langfuse observability linkage */
+	promptName?: string;
+	/** Prompt version for Langfuse observability linkage */
+	promptVersion?: number;
 }
 
 export interface CompletionResult {
@@ -278,6 +282,8 @@ export async function getChatCompletion(
 			virtualKey,
 			model,
 			timeout: requestTimeout,
+			promptName: options.promptName,
+			promptVersion: options.promptVersion,
 		});
 
 		// Configure request options
@@ -496,6 +502,8 @@ export async function* getStreamingChatCompletion(
 			sessionId,
 			virtualKey,
 			model,
+			promptName: options.promptName,
+			promptVersion: options.promptVersion,
 		});
 
 		// Configure request options
