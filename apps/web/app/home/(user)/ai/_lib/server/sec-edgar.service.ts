@@ -786,8 +786,8 @@ export async function enrichCompanyWithSecEdgar(
 	});
 
 	if (!validationResult.success) {
-		const errorMessages = validationResult.error.errors
-			.map((e) => `${e.path.join(".")}: ${e.message}`)
+		const errorMessages = validationResult.error.issues
+			.map((e: import("zod").ZodIssue) => `${e.path.join(".")}: ${e.message}`)
 			.join("; ");
 
 		return {
