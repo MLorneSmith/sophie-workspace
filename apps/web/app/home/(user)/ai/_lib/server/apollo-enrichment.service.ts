@@ -2,6 +2,8 @@ import "server-only";
 
 import { getLogger } from "@kit/shared/logger";
 
+import { nativeFetch } from "./fetch-native";
+
 // ---------------------------------------------------------------------------
 // Apollo.io API – server-only service for company enrichment
 // https://apollo.io/api/v1/organizations/enrich
@@ -102,20 +104,19 @@ async function apolloFetch<T>(
 
 	const url = new URL(path, BASE_URL);
 
-	const controller = new AbortController();
-	const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
 	try {
-		const res = await fetch(url.toString(), {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"x-api-key": apiKey,
+		const res = await nativeFetch(
+			url.toString(),
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"x-api-key": apiKey,
+				},
+				body: JSON.stringify(body),
 			},
-			body: JSON.stringify(body),
-			signal: controller.signal,
-			cache: "no-store" as RequestCache,
-		});
+			TIMEOUT_MS,
+		);
 
 		// Handle rate limiting (HTTP 429)
 		if (res.status === 429) {
@@ -142,8 +143,6 @@ async function apolloFetch<T>(
 			};
 		}
 		throw err;
-	} finally {
-		clearTimeout(timer);
 	}
 }
 
