@@ -185,7 +185,7 @@ function hasApolloData(data: ApolloDataInput | undefined): boolean {
 		typeof data.fundingStage === "string" &&
 		data.fundingStage.trim().length > 0;
 	const hasFunding =
-		typeof data.fundingTotal === "number" && data.fundingTotal > 0;
+		typeof data.fundingTotal === "number" && Number.isFinite(data.fundingTotal);
 	const hasKeyIndustries =
 		Array.isArray(data.keyIndustries) &&
 		data.keyIndustries.some(
