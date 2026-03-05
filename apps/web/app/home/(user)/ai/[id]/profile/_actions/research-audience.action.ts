@@ -4,15 +4,10 @@ import { type ChatMessage, getChatCompletion } from "@kit/ai-gateway";
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
-import { after } from "next/server";
 import { z } from "zod";
 
 import type { Database } from "~/lib/database.types";
-import {
-	type ApolloEnrichmentResult,
-	enrichCompany,
-	extractDomain,
-} from "../../../_lib/server/apollo-enrichment.service";
+
 import {
 	createAudienceProfile,
 	getProfileByPresentationId,
@@ -24,6 +19,12 @@ import {
 	synthesizeCompanyBrief,
 } from "../../../_lib/server/company-brief-synthesis.service";
 import { researchCompany } from "../../../_lib/server/company-research.service";
+import { scrapeWebsiteDeep } from "../../../_lib/server/website-deep-scrape.service";
+import {
+	enrichCompany,
+	extractDomain,
+	type ApolloEnrichmentResult,
+} from "../../../_lib/server/apollo-enrichment.service";
 import {
 	getCompanyDetails,
 	getPersonProfile,
@@ -32,7 +33,10 @@ import {
 	searchCompany,
 	searchPersonFuzzy,
 } from "../../../_lib/server/netrows.service";
-import { scrapeWebsiteDeep } from "../../../_lib/server/website-deep-scrape.service";
+import {
+	enrichCompanyWithSecEdgar,
+	type SecEdgarResult,
+} from "../../../_lib/server/sec-edgar.service";
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -57,30 +61,14 @@ function withTimeout<T>(
 	ms: number,
 	label: string,
 ): Promise<T> {
-	// Use both setTimeout AND AbortSignal.timeout as redundant safety nets.
-	// Node.js bug #57736: AbortSignal.timeout() can silently fail to fire.
-	// Next.js fetch patching can also interfere with timer callbacks.
-	// Belt-and-suspenders: whichever fires first wins via Promise.race.
 	return Promise.race([
 		promise,
-		new Promise<never>((_, reject) => {
-			const timer = setTimeout(() => {
-				reject(new Error(`${label} timed out after ${ms}ms [setTimeout]`));
-			}, ms);
-			// Prevent the timer from keeping the process alive
-			if (typeof timer === "object" && "unref" in timer) {
-				timer.unref();
-			}
-			// Also try AbortSignal.timeout as a backup
-			try {
-				const signal = AbortSignal.timeout(ms);
-				signal.addEventListener("abort", () => {
-					reject(new Error(`${label} timed out after ${ms}ms [AbortSignal]`));
-				});
-			} catch {
-				// AbortSignal.timeout not available — setTimeout is enough
-			}
-		}),
+		new Promise<never>((_, reject) =>
+			setTimeout(
+				() => reject(new Error(`${label} timed out after ${ms}ms`)),
+				ms,
+			),
+		),
 	]);
 }
 
@@ -302,30 +290,42 @@ export const researchAudienceAction = enhanceAction(
 
 		let apolloEnrichment: ApolloEnrichmentResult | null = null;
 		const apolloPromise: Promise<ApolloEnrichmentResult | null> = companyDomain
-			? withTimeout(
-					(async () => {
-						logger.info(ctx, "Enriching company via Apollo: %s", companyDomain);
-						return enrichCompany(companyDomain);
-					})(),
-					15_000,
-					"Apollo enrichment",
-				)
+			? (async () => {
+					logger.info(ctx, "Enriching company via Apollo: %s", companyDomain);
+					return enrichCompany(companyDomain);
+				})()
 			: Promise.resolve(null);
 
-		// Step 2: Web research + deep scrape + Apollo (parallel)
-		const industry = enrichment.companyDetails?.industries?.[0] ?? undefined;
-		const domain =
-			enrichment.companyDetails?.website
-				?.replace(/^https?:\/\//, "")
-				.replace(/\/.*$/, "") ?? undefined;
+		// Step 1.6: Start SEC EDGAR company enrichment (non-blocking, runs parallel with Step 2)
+		// SEC EDGAR provides public company filings (10-K, 10-Q, 8-K) and XBRL financial data
+		let secEdgarEnrichment: SecEdgarResult | null = null;
+		const secEdgarPromise: Promise<SecEdgarResult | null> = (async () => {
+			try {
+				logger.info(ctx, "Enriching company via SEC EDGAR: %s", data.company);
+				return enrichCompanyWithSecEdgar(
+					data.company,
+					companyDomain ?? undefined,
+				);
+			} catch (secErr) {
+				logger.warn(
+					ctx,
+					"SEC EDGAR enrichment failed (non-blocking): %o",
+					secErr,
+				);
+				return null;
+			}
+		})();
 
-		// Check for cached company brief
-		// biome-ignore lint/suspicious/noExplicitAny: company_briefs not in generated types
-		const untypedClient = client as any;
+		// Step 2: Company web research + brief synthesis (parallel with step 1)
+		// Uses Brave Search API + LLM to build a structured CompanyBrief
 		let companyBrief: CompanyBrief | null = null;
-		let usedCachedBrief = false;
 
 		try {
+			// Check for a cached (non-expired) company brief first
+			// company_briefs table exists via migration but isn't in generated
+			// Database types yet — use untyped client for this table.
+			// biome-ignore lint/suspicious/noExplicitAny: company_briefs not in generated types
+			const untypedClient = client as any;
 			const { data: cachedBrief } = await untypedClient
 				.from("company_briefs")
 				.select("brief_structured, expires_at")
@@ -337,114 +337,272 @@ export const researchAudienceAction = enhanceAction(
 
 			if (cachedBrief?.brief_structured) {
 				companyBrief = cachedBrief.brief_structured as CompanyBrief;
-				usedCachedBrief = true;
 				logger.info(ctx, "Using cached company brief for %s", data.company);
-			}
-		} catch {
-			// Cache miss or table doesn't exist — continue without cache
-		}
+			} else {
+				// Run web research
+				const industry =
+					enrichment.companyDetails?.industries?.[0] ?? undefined;
+				const domain =
+					enrichment.companyDetails?.website
+						?.replace(/^https?:\/\//, "")
+						.replace(/\/.*$/, "") ?? undefined;
 
-		// Run web research, deep scrape, and Apollo in parallel
-		logger.info(
-			ctx,
-			"Starting parallel research (industry=%s, domain=%s)",
-			industry,
-			domain,
-		);
-
-		const [webResearchSettled, deepScrapeSettled, apolloSettled] =
-			await Promise.allSettled([
-				withTimeout(
-					researchCompany(data.company, industry, domain),
-					15_000,
-					"Company web research",
-				),
-				domain
+				// Run web research, Apollo enrichment, and website deep scrape in parallel
+				const websiteDeepScrapePromise = domain
 					? withTimeout(
 							scrapeWebsiteDeep(domain),
 							15_000,
 							"Website deep scrape",
 						)
-					: Promise.resolve(null),
-				apolloPromise,
-			]);
+					: Promise.resolve(null);
 
-		logger.info(
-			ctx,
-			"Research settled: web=%s deep=%s apollo=%s",
-			webResearchSettled.status,
-			deepScrapeSettled.status,
-			apolloSettled.status,
-		);
+				const [webResearch, apolloResult, websiteDeepScrape, secEdgarResult] =
+					await Promise.all([
+						withTimeout(
+							researchCompany(data.company, industry, domain),
+							15_000,
+							"Company web research",
+						),
+						apolloPromise.catch((apolloErr) => {
+							logger.warn(
+								ctx,
+								"Apollo enrichment failed (non-blocking): %o",
+								apolloErr,
+							);
+							return null;
+						}),
+						websiteDeepScrapePromise.catch((deepScrapeErr) => {
+							logger.warn(
+								ctx,
+								"Website deep scrape failed (non-blocking): %o",
+								deepScrapeErr,
+							);
+							return null;
+						}),
+						secEdgarPromise.catch((secEdgarErr) => {
+							logger.warn(
+								ctx,
+								"SEC EDGAR enrichment failed (non-blocking): %o",
+								secEdgarErr,
+							);
+							return null;
+						}),
+					]);
 
-		const webResearch =
-			webResearchSettled.status === "fulfilled"
-				? webResearchSettled.value
-				: {
-						companyName: data.company,
-						searchedAt: new Date(),
-						newsResults: [],
-						industryResults: [],
-						websiteContent: null,
-					};
-		const websiteDeepScrape =
-			deepScrapeSettled.status === "fulfilled" ? deepScrapeSettled.value : null;
+				apolloEnrichment = apolloResult;
+				secEdgarEnrichment = secEdgarResult;
+				if (apolloEnrichment?.success && apolloEnrichment.organization) {
+					logger.info(
+						ctx,
+						"Apollo enrichment success: revenue=%s, employees=%s",
+						apolloEnrichment.organization.annual_revenue_printed,
+						apolloEnrichment.organization.employee_count_range,
+					);
+				}
 
-		if (apolloSettled.status === "fulfilled") {
-			apolloEnrichment = apolloSettled.value;
+				// Synthesize into CompanyBrief via LLM
+				const synthesisInput: CompanyResearchInput = {
+					companyName: data.company,
+					industry,
+					apolloData: apolloEnrichment?.organization
+						? {
+								estimatedRevenue:
+									apolloEnrichment.organization.annual_revenue_printed ??
+									apolloEnrichment.organization.estimated_revenue_range ??
+									undefined,
+								employeeCount:
+									apolloEnrichment.organization.employee_count_range ??
+									undefined,
+								employeeGrowth:
+									apolloEnrichment.organization.employee_growth_rate ??
+									undefined,
+								fundingStage:
+									apolloEnrichment.organization.funding_stage ?? undefined,
+								fundingTotal:
+									apolloEnrichment.organization.total_funding ?? undefined,
+								techStack:
+									apolloEnrichment.organization.technology_names ?? undefined,
+								keyIndustries:
+									apolloEnrichment.organization.industries ?? undefined,
+								keyExecutives:
+									apolloEnrichment.organization.people
+										?.slice(0, 5)
+										.map((p: { name: string; title: string }) => ({
+											name: p.name,
+											title: p.title,
+										}))
+										.filter(
+											(p: { name: string; title: string }) => p.name && p.title,
+										) ?? undefined,
+							}
+						: undefined,
+					netrowsData: enrichment.companyDetails
+						? {
+								description: enrichment.companyDetails.description ?? undefined,
+								industries: enrichment.companyDetails.industries ?? undefined,
+								specialities:
+									enrichment.companyDetails.specialities ?? undefined,
+								staffCount: enrichment.companyDetails.staffCount ?? undefined,
+								website: enrichment.companyDetails.website ?? undefined,
+								headquarter: enrichment.companyDetails.headquarter ?? undefined,
+								founded: enrichment.companyDetails.founded ?? null,
+							}
+						: undefined,
+					newsResults: webResearch.newsResults,
+					industryResults: webResearch.industryResults,
+					websiteContent: webResearch.websiteContent,
+					websiteDeepScrape: websiteDeepScrape
+						? {
+								aboutContent: websiteDeepScrape.pages.about,
+								newsroomContent: websiteDeepScrape.pages.newsroom,
+								careersContent: websiteDeepScrape.pages.careers,
+								blogContent: websiteDeepScrape.pages.blog,
+								investorsContent: websiteDeepScrape.pages.investors,
+								jobPostings: websiteDeepScrape.jobPostings,
+								recentPressReleases: websiteDeepScrape.recentPressReleases,
+							}
+						: undefined,
+					secFilings: secEdgarEnrichment?.success
+						? {
+								latest10K: secEdgarEnrichment.latest10K,
+								latest10Q: secEdgarEnrichment.latest10Q,
+								materialEvents: secEdgarEnrichment.materialEvents,
+								financialFacts: secEdgarEnrichment.financialFacts,
+							}
+						: undefined,
+				};
+
+				companyBrief = await withTimeout(
+					synthesizeCompanyBrief(synthesisInput, user.id),
+					120_000,
+					"Company brief synthesis",
+				);
+
+				// Cache the company brief
+				await untypedClient.from("company_briefs").insert({
+					company_name: data.company,
+					company_domain: domain ?? null,
+					netrows_data: enrichment.companyDetails ?? null,
+					web_research: webResearch as unknown as Record<string, unknown>,
+					brief_structured: companyBrief as unknown as Record<string, unknown>,
+					created_by: user.id,
+				});
+
+				logger.info(
+					ctx,
+					"Company brief synthesized and cached — archetype: %s",
+					companyBrief.currentSituation?.archetype,
+				);
+			}
+		} catch (companyErr) {
+			const compErrMsg =
+				companyErr instanceof Error ? companyErr.message : String(companyErr);
+			logger.warn(
+				ctx,
+				"Company brief research failed (non-blocking): %s",
+				compErrMsg,
+			);
 		}
 
-		// Step 3: Generate audience brief via LLM (fast path)
-		// Use the fastest available model: haiku > fast > research
-		const audienceBriefModel =
-			process.env.BIFROST_MODEL_WORKFLOW_RESEARCH_HAIKU ??
-			process.env.BIFROST_MODEL_WORKFLOW_RESEARCH_FAST ??
-			process.env.BIFROST_MODEL_WORKFLOW_RESEARCH;
-		const audienceBriefVK =
-			process.env.BIFROST_VK_WORKFLOW_RESEARCH_HAIKU ??
-			process.env.BIFROST_VK_WORKFLOW_RESEARCH_FAST ??
-			process.env.BIFROST_VK_WORKFLOW_RESEARCH;
-
-		logger.info(
-			ctx,
-			"Generating audience brief (model=%s)",
-			audienceBriefModel,
-		);
+		// Step 3: Generate Audience Brief via AI (now with company brief context)
+		logger.info(ctx, "Generating Audience Brief via AI");
 
 		const messages = buildBriefPrompt(
 			enrichment,
 			data.personName,
 			data.company,
 			data.context,
-			usedCachedBrief ? companyBrief : null,
+			companyBrief,
 		);
 
 		let briefStructured: Record<string, unknown> = {};
 		let briefText = "";
 
 		try {
-			const result = await getChatCompletion(messages, {
-				model: audienceBriefModel,
-				virtualKey: audienceBriefVK,
-				userId: user.id,
-				feature: "workflow-audience-research",
-				timeout: 60_000,
-			});
+			const briefAbort = new AbortController();
+			const briefTimeoutId = setTimeout(
+				() => briefAbort.abort("AI brief generation timed out after 90s"),
+				90_000,
+			);
 
-			const jsonMatch = result.content.match(/\{[\s\S]*\}/);
+			const response = await withTimeout(
+				getChatCompletion(messages, {
+					model: process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
+					virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
+					userId: user.id,
+					feature: "workflow-audience-research",
+					timeout: 90_000,
+					signal: briefAbort.signal,
+				}),
+				90_000,
+				"AI brief generation",
+			);
+
+			clearTimeout(briefTimeoutId);
+
+			const jsonMatch = response.content.match(/\{[\s\S]*\}/);
 			if (!jsonMatch) {
 				throw new Error("No JSON found in AI response");
 			}
 			briefStructured = JSON.parse(jsonMatch[0]);
 			briefText = (briefStructured.briefSummary as string) ?? "";
-			logger.info(ctx, "Audience brief generated");
 		} catch (aiError) {
 			const errMsg =
 				aiError instanceof Error ? aiError.message : String(aiError);
 			logger.error(ctx, "AI brief generation failed: %s", errMsg);
+			logger.error(ctx, "AI brief error details: %o", {
+				name: aiError instanceof Error ? aiError.name : "unknown",
+				message: errMsg,
+				stack: (aiError instanceof Error ? aiError.stack : "")?.substring(
+					0,
+					500,
+				),
+				virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH
+					? "SET"
+					: "NOT_SET",
+				bifrostUrl:
+					process.env.BIFROST_GATEWAY_URL ||
+					process.env.BIFROST_BASE_URL ||
+					"DEFAULT",
+			});
+			// Still save enrichment data — user can regenerate the brief later
 			briefText = enrichment.personProfile
 				? `${enrichment.personProfile.headline ?? ""} — ${enrichment.personProfile.summary?.substring(0, 200) ?? ""}`
 				: "";
+		}
+
+		// Ensure Apollo promise is settled (may already be awaited in synthesis path)
+		if (!apolloEnrichment) {
+			try {
+				apolloEnrichment = await withTimeout(
+					apolloPromise,
+					15_000,
+					"Apollo enrichment (final await)",
+				);
+			} catch (apolloErr) {
+				logger.warn(
+					ctx,
+					"Apollo enrichment failed (non-blocking): %o",
+					apolloErr,
+				);
+			}
+		}
+
+		// Ensure SEC EDGAR promise is settled
+		if (!secEdgarEnrichment) {
+			try {
+				secEdgarEnrichment = await withTimeout(
+					secEdgarPromise,
+					15_000,
+					"SEC EDGAR enrichment (final await)",
+				);
+			} catch (secEdgarErr) {
+				logger.warn(
+					ctx,
+					"SEC EDGAR enrichment failed (non-blocking): %o",
+					secEdgarErr,
+				);
+			}
 		}
 
 		// Step 4: Save to audience_profiles
@@ -479,6 +637,29 @@ export const researchAudienceAction = enhanceAction(
 				companySearchResults: enrichment.companySearchResults,
 			},
 			apollo: sanitizedApolloData,
+			secEdgar: secEdgarEnrichment
+				? {
+						configured: secEdgarEnrichment.configured,
+						success: secEdgarEnrichment.success,
+						cik: secEdgarEnrichment.cik,
+						companyName: secEdgarEnrichment.companyName,
+						latest10K: secEdgarEnrichment.latest10K
+							? {
+									date: secEdgarEnrichment.latest10K.date,
+									accessionNumber: secEdgarEnrichment.latest10K.accessionNumber,
+								}
+							: null,
+						latest10Q: secEdgarEnrichment.latest10Q
+							? {
+									date: secEdgarEnrichment.latest10Q.date,
+									accessionNumber: secEdgarEnrichment.latest10Q.accessionNumber,
+								}
+							: null,
+						materialEvents: secEdgarEnrichment.materialEvents,
+						financialFacts: secEdgarEnrichment.financialFacts,
+						error: secEdgarEnrichment.error,
+					}
+				: null,
 			companyBrief: companyBrief ?? null,
 			researchedAt: new Date().toISOString(),
 		};
@@ -532,123 +713,6 @@ export const researchAudienceAction = enhanceAction(
 			profile.id,
 		);
 
-		// Step 5: Schedule company brief synthesis AFTER the response is sent.
-		// Once synthesized, update the audience profile so it's visible on refresh.
-		if (!usedCachedBrief) {
-			const profileId = profile.id as string;
-			after(async () => {
-				const afterLogger = await getLogger();
-				const afterCtx = { name: "companyBriefAfter", company: data.company };
-				try {
-					afterLogger.info(afterCtx, "Synthesizing company brief (background)");
-					const synthesisInput: CompanyResearchInput = {
-						companyName: data.company,
-						industry,
-						apolloData: apolloEnrichment?.organization
-							? {
-									estimatedRevenue:
-										apolloEnrichment.organization.annual_revenue_printed ??
-										apolloEnrichment.organization.estimated_revenue_range ??
-										undefined,
-									employeeCount:
-										apolloEnrichment.organization.employee_count_range ??
-										undefined,
-									employeeGrowth:
-										apolloEnrichment.organization.employee_growth_rate ??
-										undefined,
-									fundingStage:
-										apolloEnrichment.organization.funding_stage ?? undefined,
-									fundingTotal:
-										apolloEnrichment.organization.total_funding ?? undefined,
-									techStack:
-										apolloEnrichment.organization.technology_names ?? undefined,
-									keyIndustries:
-										apolloEnrichment.organization.industries ?? undefined,
-									keyExecutives:
-										apolloEnrichment.organization.people
-											?.slice(0, 5)
-											.map((p: { name: string; title: string }) => ({
-												name: p.name,
-												title: p.title,
-											}))
-											.filter(
-												(p: { name: string; title: string }) =>
-													p.name && p.title,
-											) ?? undefined,
-								}
-							: undefined,
-						netrowsData: enrichment.companyDetails
-							? {
-									description:
-										enrichment.companyDetails.description ?? undefined,
-									industries: enrichment.companyDetails.industries ?? undefined,
-									specialities:
-										enrichment.companyDetails.specialities ?? undefined,
-									staffCount: enrichment.companyDetails.staffCount ?? undefined,
-									website: enrichment.companyDetails.website ?? undefined,
-									headquarter:
-										enrichment.companyDetails.headquarter ?? undefined,
-									founded: enrichment.companyDetails.founded ?? null,
-								}
-							: undefined,
-						newsResults: webResearch.newsResults,
-						industryResults: webResearch.industryResults,
-						websiteContent: webResearch.websiteContent,
-						websiteDeepScrape: websiteDeepScrape
-							? {
-									aboutContent: websiteDeepScrape.pages.about,
-									newsroomContent: websiteDeepScrape.pages.newsroom,
-									careersContent: websiteDeepScrape.pages.careers,
-									blogContent: websiteDeepScrape.pages.blog,
-									investorsContent: websiteDeepScrape.pages.investors,
-									jobPostings: websiteDeepScrape.jobPostings,
-									recentPressReleases: websiteDeepScrape.recentPressReleases,
-								}
-							: undefined,
-					};
-
-					const brief = await synthesizeCompanyBrief(synthesisInput, user.id);
-
-					// Update the audience profile so the brief is visible on refresh
-					const afterClient = getSupabaseServerClient<Database>();
-					await updateAudienceProfile(afterClient, profileId, {
-						enrichmentData: {
-							...enrichmentData,
-							companyBrief: brief,
-						},
-					});
-
-					// Try to cache the company brief for future presentations
-					try {
-						// biome-ignore lint/suspicious/noExplicitAny: company_briefs not in generated types
-						await (afterClient as any).from("company_briefs").insert({
-							company_name: data.company,
-							company_domain: domain ?? null,
-							netrows_data: enrichment.companyDetails ?? null,
-							web_research: webResearch as unknown as Record<string, unknown>,
-							brief_structured: brief as unknown as Record<string, unknown>,
-							created_by: user.id,
-						});
-					} catch {
-						// Cache insert failed (table may not exist yet) — non-critical
-					}
-
-					afterLogger.info(
-						afterCtx,
-						"Company brief synthesized and saved to profile %s — archetype: %s",
-						profileId,
-						brief.currentSituation?.archetype,
-					);
-				} catch (err) {
-					afterLogger.warn(
-						afterCtx,
-						"Background company brief synthesis failed: %s",
-						err instanceof Error ? err.message : String(err),
-					);
-				}
-			});
-		}
-
 		return {
 			success: true,
 			profile,
@@ -663,8 +727,6 @@ export const researchAudienceAction = enhanceAction(
 	},
 );
 
-// ---------------------------------------------------------------------------
-// Poll Action — lightweight check for background company brief
 // ---------------------------------------------------------------------------
 
 const PollCompanyBriefSchema = z.object({
