@@ -581,6 +581,9 @@ importers:
       '@kit/mailers-shared':
         specifier: workspace:*
         version: link:../../packages/mailers/shared
+      '@kit/mastra':
+        specifier: workspace:*
+        version: link:../../packages/mastra
       '@kit/monitoring':
         specifier: workspace:*
         version: link:../../packages/monitoring/api
