@@ -241,6 +241,10 @@ export const researchAudienceAction = enhanceAction(
 		);
 
 		let enrichment: NetrowsEnrichmentResult;
+		let companyDetailsDeferred: Promise<
+			NetrowsEnrichmentResult["companyDetails"]
+		> = Promise.resolve(null);
+
 		try {
 			if (data.selectedLinkedinUrl) {
 				// User selected a specific person — fetch their profile directly
@@ -249,11 +253,12 @@ export const researchAudienceAction = enhanceAction(
 					searchCompany(data.company),
 				]);
 
-				let companyDetailsResult = null;
+				// Start company details fetch non-blocking — will be awaited
+				// in the parallel Promise.all alongside Apollo/ticker/web research
 				if (companySearchResults && companySearchResults.length > 0) {
 					const firstCompany = companySearchResults[0];
 					if (firstCompany?.linkedinURL) {
-						companyDetailsResult = await getCompanyDetails(
+						companyDetailsDeferred = getCompanyDetails(
 							firstCompany.linkedinURL,
 						);
 					}
@@ -263,7 +268,7 @@ export const researchAudienceAction = enhanceAction(
 					personSearchResults: null,
 					personProfile,
 					companySearchResults,
-					companyDetails: companyDetailsResult,
+					companyDetails: null, // filled after companyDetailsDeferred resolves
 				};
 			} else {
 				// No selection — use original full search flow
@@ -278,6 +283,20 @@ export const researchAudienceAction = enhanceAction(
 				companySearchResults: null,
 				companyDetails: null,
 			};
+		}
+
+		// Resolve deferred company details (runs concurrently with person profile fetch)
+		try {
+			const deferredDetails = await companyDetailsDeferred;
+			if (deferredDetails) {
+				enrichment.companyDetails = deferredDetails;
+			}
+		} catch (detailsErr) {
+			logger.warn(
+				ctx,
+				"Company details fetch failed (non-blocking): %o",
+				detailsErr,
+			);
 		}
 
 		// Step 1.5: Start Apollo company enrichment (non-blocking, runs parallel with Step 2)
@@ -681,26 +700,12 @@ export const researchAudienceAction = enhanceAction(
 			}
 		})();
 
-		// Await both in parallel: audience brief + company brief synthesis
-		const [audienceBriefResult, companyBriefResult] = await Promise.all([
-			audienceBriefPromise,
-			companyBriefPromise.catch((compBriefErr: unknown) => {
-				const errMsg =
-					compBriefErr instanceof Error
-						? compBriefErr.message
-						: String(compBriefErr);
-				logger.warn(
-					ctx,
-					"Company brief synthesis failed (non-blocking): %s",
-					errMsg,
-				);
-				return null;
-			}),
-		]);
+		// Await only the audience brief — don't block on company brief.
+		// Company brief saves asynchronously; the client polls via pollCompanyBriefAction.
+		const audienceBriefResult = await audienceBriefPromise;
 
 		briefStructured = audienceBriefResult.briefStructured;
 		briefText = audienceBriefResult.briefText;
-		companyBrief = companyBriefResult ?? companyBrief;
 
 		// Ensure Apollo promise is settled (may already be awaited in synthesis path)
 		if (!apolloEnrichment) {
@@ -719,7 +724,7 @@ export const researchAudienceAction = enhanceAction(
 			}
 		}
 
-		// Step 4: Save to audience_profiles
+		// Step 4: Save to audience_profiles (without company brief — it arrives async)
 		// Only store allowed non-PII fields from Apollo enrichment
 		const sanitizedApolloData = apolloEnrichment?.organization
 			? {
@@ -803,6 +808,51 @@ export const researchAudienceAction = enhanceAction(
 			"Audience research complete, profile %s saved",
 			profile.id,
 		);
+
+		// Fire-and-forget: company brief saves to profile when it completes.
+		// The client polls via pollCompanyBriefAction to pick it up.
+		companyBriefPromise
+			.then(async (brief) => {
+				if (!brief) return;
+				try {
+					const currentProfile = await getProfileByPresentationId(
+						client,
+						data.presentationId,
+					);
+					if (!currentProfile) return;
+
+					const currentEnrichment =
+						(currentProfile.enrichment_data as Record<string, unknown>) ?? {};
+					await updateAudienceProfile(client, currentProfile.id, {
+						enrichmentData: {
+							...currentEnrichment,
+							companyBrief: brief,
+						},
+					});
+					logger.info(
+						ctx,
+						"Company brief async update saved to profile %s",
+						currentProfile.id,
+					);
+				} catch (updateErr) {
+					logger.warn(
+						ctx,
+						"Failed to async-save company brief to profile: %o",
+						updateErr,
+					);
+				}
+			})
+			.catch((compBriefErr: unknown) => {
+				const errMsg =
+					compBriefErr instanceof Error
+						? compBriefErr.message
+						: String(compBriefErr);
+				logger.warn(
+					ctx,
+					"Company brief synthesis failed (non-blocking): %s",
+					errMsg,
+				);
+			});
 
 		return {
 			success: true,

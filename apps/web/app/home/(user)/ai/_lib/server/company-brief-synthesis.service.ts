@@ -420,9 +420,11 @@ export async function synthesizeCompanyBrief(
 		response = await withTimeout(
 			getChatCompletion(messages, {
 				model:
+					process.env.BIFROST_MODEL_WORKFLOW_RESEARCH_HAIKU ??
 					process.env.BIFROST_MODEL_WORKFLOW_RESEARCH_FAST ??
 					process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
 				virtualKey:
+					process.env.BIFROST_VK_WORKFLOW_RESEARCH_HAIKU ??
 					process.env.BIFROST_VK_WORKFLOW_RESEARCH_FAST ??
 					process.env.BIFROST_VK_WORKFLOW_RESEARCH,
 				userId,
