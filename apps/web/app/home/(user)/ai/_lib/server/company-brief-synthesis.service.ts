@@ -2,6 +2,12 @@ import "server-only";
 
 import { type ChatMessage, getChatCompletion } from "@kit/ai-gateway";
 import { getLogger } from "@kit/shared/logger";
+import type { z } from "zod";
+
+import {
+	AlphaVantageDataSchema,
+	SecEdgarDataSchema,
+} from "../schemas/external-data.schema";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -69,45 +75,13 @@ export interface WebsiteDeepScrapeInput {
  * Financial data from Alpha Vantage API for public companies.
  * All fields optional to handle partial API responses.
  */
-export interface AlphaVantageDataInput {
-	// Company overview
-	revenue?: number | null;
-	grossMargin?: number | null;
-	operatingMargin?: number | null;
-	stockPrice?: number | null;
-	week52High?: number | null;
-	week52Low?: number | null;
-
-	// Analyst ratings
-	analystConsensus?: string | null;
-	analystBuyCount?: number | null;
-	analystHoldCount?: number | null;
-	analystSellCount?: number | null;
-
-	// Valuation
-	peRatio?: number | null;
-	industryAvgPeRatio?: number | null;
-	beta?: number | null;
-}
+export type AlphaVantageDataInput = z.infer<typeof AlphaVantageDataSchema>;
 
 /**
  * Regulatory filing data from SEC EDGAR.
  * All fields optional since not all companies have recent filings.
  */
-export interface SecEdgarDataInput {
-	/** Risk factors from the most recent 10-K filing */
-	riskFactors?: string[];
-	/** Management Discussion & Analysis summary */
-	mdaSummary?: string;
-	/** Historical revenue by fiscal year */
-	revenueByYear?: Array<{ year: number; amount: number }>;
-	/** Recent 8-K events (filing date, event type, summary) */
-	recentEightKEvents?: Array<{
-		date: string;
-		type: string;
-		summary: string;
-	}>;
-}
+export type SecEdgarDataInput = z.infer<typeof SecEdgarDataSchema>;
 
 export interface CompanyResearchInput {
 	companyName: string;
@@ -130,6 +104,99 @@ export interface CompanyResearchInput {
 	alphaVantageData?: AlphaVantageDataInput;
 	/** Regulatory filing data from SEC EDGAR */
 	secEdgarData?: SecEdgarDataInput;
+}
+
+// ---------------------------------------------------------------------------
+// Semantic emptiness helpers - determine if data sources have meaningful content
+// ---------------------------------------------------------------------------
+
+/**
+ * Check if Alpha Vantage data has at least one non-null field.
+ */
+function hasAlphaVantageData(data: AlphaVantageDataInput | undefined): boolean {
+	if (!data) return false;
+	const fields: (keyof AlphaVantageDataInput)[] = [
+		"revenue",
+		"grossMargin",
+		"operatingMargin",
+		"stockPrice",
+		"week52High",
+		"week52Low",
+		"analystConsensus",
+		"analystBuyCount",
+		"analystHoldCount",
+		"analystSellCount",
+		"peRatio",
+		"industryAvgPeRatio",
+		"beta",
+	];
+	return fields.some((field) => data[field] != null);
+}
+
+/**
+ * Check if SEC EDGAR data has meaningful content.
+ */
+function hasSecEdgarData(data: SecEdgarDataInput | undefined): boolean {
+	if (!data) return false;
+	const hasRiskFactors =
+		Array.isArray(data.riskFactors) && data.riskFactors.length > 0;
+	const hasMdaSummary =
+		typeof data.mdaSummary === "string" && data.mdaSummary.trim().length > 0;
+	const hasRevenueByYear =
+		Array.isArray(data.revenueByYear) && data.revenueByYear.length > 0;
+	const hasEightKEvents =
+		Array.isArray(data.recentEightKEvents) &&
+		data.recentEightKEvents.length > 0;
+	return hasRiskFactors || hasMdaSummary || hasRevenueByYear || hasEightKEvents;
+}
+
+/**
+ * Check if Apollo data has at least one meaningful field.
+ */
+function hasApolloData(data: ApolloDataInput | undefined): boolean {
+	if (!data) return false;
+	const hasRevenue =
+		typeof data.estimatedRevenue === "string" &&
+		data.estimatedRevenue.trim().length > 0;
+	const hasEmployees =
+		typeof data.employeeCount === "string" &&
+		data.employeeCount.trim().length > 0;
+	const hasFunding =
+		typeof data.fundingTotal === "number" && data.fundingTotal > 0;
+	const hasTechStack =
+		Array.isArray(data.techStack) && data.techStack.length > 0;
+	const hasExecutives =
+		Array.isArray(data.keyExecutives) && data.keyExecutives.length > 0;
+	return (
+		hasRevenue || hasEmployees || hasFunding || hasTechStack || hasExecutives
+	);
+}
+
+/**
+ * Check if Netrows data has at least one meaningful field.
+ */
+function hasNetrowsData(data: CompanyResearchInput["netrowsData"]): boolean {
+	if (!data) return false;
+	const hasDescription =
+		typeof data.description === "string" && data.description.trim().length > 0;
+	const hasIndustries =
+		Array.isArray(data.industries) && data.industries.length > 0;
+	const hasStaffCount =
+		typeof data.staffCount === "number" && data.staffCount > 0;
+	const hasWebsite =
+		typeof data.website === "string" && data.website.trim().length > 0;
+	const hasHeadquarter =
+		typeof data.headquarter?.city === "string" ||
+		typeof data.headquarter?.country === "string";
+	const hasFounded = typeof data.founded === "number" && data.founded > 0;
+	return (
+		hasDescription ||
+		hasIndustries ||
+		hasStaffCount ||
+		hasWebsite ||
+		hasHeadquarter ||
+		hasFounded
+	);
 }
 
 // ---------------------------------------------------------------------------
@@ -407,7 +474,41 @@ export async function synthesizeCompanyBrief(
 
 	logger.info(ctx, "Synthesizing company brief for %s", input.companyName);
 
-	const messages = buildCompanyBriefPrompt(input);
+	// Validate external data inputs with Zod - treat invalid data as unavailable
+	const validatedAlphaVantage = input.alphaVantageData
+		? AlphaVantageDataSchema.safeParse(input.alphaVantageData)
+		: { success: true as const, data: undefined };
+	const validatedSecEdgar = input.secEdgarData
+		? SecEdgarDataSchema.safeParse(input.secEdgarData)
+		: { success: true as const, data: undefined };
+
+	// If validation fails, treat the data as unavailable
+	const alphaVantageData = validatedAlphaVantage.success
+		? validatedAlphaVantage.data
+		: undefined;
+	const secEdgarData = validatedSecEdgar.success
+		? validatedSecEdgar.data
+		: undefined;
+
+	if (!validatedAlphaVantage.success) {
+		logger.warn(
+			{ ...ctx, error: validatedAlphaVantage.error.format() },
+			"Alpha Vantage data failed validation",
+		);
+	}
+	if (!validatedSecEdgar.success) {
+		logger.warn(
+			{ ...ctx, error: validatedSecEdgar.error.format() },
+			"SEC EDGAR data failed validation",
+		);
+	}
+
+	// Use validated data for prompt building
+	const messages = buildCompanyBriefPrompt({
+		...input,
+		alphaVantageData,
+		secEdgarData,
+	});
 
 	const synthesisAbort = new AbortController();
 	const synthesisTimeoutId = setTimeout(
@@ -442,12 +543,13 @@ export async function synthesizeCompanyBrief(
 	const brief = JSON.parse(jsonMatch[0]) as CompanyBrief;
 
 	// Populate dataSourcesUsed based on which input data was provided
+	// Use semantic emptiness helpers to only count sources with meaningful data
 	const dataSourcesUsed: string[] = [];
 
-	if (input.apolloData) {
+	if (hasApolloData(input.apolloData)) {
 		dataSourcesUsed.push("apollo");
 	}
-	if (input.netrowsData) {
+	if (hasNetrowsData(input.netrowsData)) {
 		dataSourcesUsed.push("netrows");
 	}
 	if (
@@ -462,10 +564,10 @@ export async function synthesizeCompanyBrief(
 	if (input.websiteDeepScrape) {
 		dataSourcesUsed.push("websiteDeepScrape");
 	}
-	if (input.alphaVantageData) {
+	if (hasAlphaVantageData(alphaVantageData)) {
 		dataSourcesUsed.push("alphaVantage");
 	}
-	if (input.secEdgarData) {
+	if (hasSecEdgarData(secEdgarData)) {
 		dataSourcesUsed.push("secEdgar");
 	}
 
