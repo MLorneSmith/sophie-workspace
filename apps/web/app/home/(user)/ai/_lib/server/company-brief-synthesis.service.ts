@@ -3,6 +3,8 @@ import "server-only";
 import { type ChatMessage, getChatCompletion } from "@kit/ai-gateway";
 import { getLogger } from "@kit/shared/logger";
 
+import { sanitizeScrapedText, safeTruncate } from "./prompt-sanitization.utils";
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -166,20 +168,30 @@ function buildCompanyBriefPrompt(input: CompanyResearchInput): ChatMessage[] {
 		input.newsResults && input.newsResults.length > 0
 			? `
 ## Recent News & Strategy
-${input.newsResults.map((r) => `- **${r.title}**: ${r.snippet}`).join("\n")}`
+${input.newsResults
+	.map(
+		(r) =>
+			`- **${sanitizeScrapedText(r.title)}**: ${safeTruncate(sanitizeScrapedText(r.snippet), 300)}`,
+	)
+	.join("\n")}`
 			: "## Recent News & Strategy\nNo recent news found.";
 
 	const industrySection =
 		input.industryResults && input.industryResults.length > 0
 			? `
 ## Industry Context
-${input.industryResults.map((r) => `- **${r.title}**: ${r.snippet}`).join("\n")}`
+${input.industryResults
+	.map(
+		(r) =>
+			`- **${sanitizeScrapedText(r.title)}**: ${safeTruncate(sanitizeScrapedText(r.snippet), 300)}`,
+	)
+	.join("\n")}`
 			: "## Industry Context\nNo industry data found.";
 
 	const websiteSection = input.websiteContent
 		? `
 ## Company Website Content
-${input.websiteContent.substring(0, 2000)}`
+${safeTruncate(sanitizeScrapedText(input.websiteContent), 2000)}`
 		: "";
 
 	// Website Deep Scrape sections
@@ -199,35 +211,43 @@ ${input.websiteContent.substring(0, 2000)}`
 		if (aboutContent) {
 			deepScrapeSections.push(`
 ## About Page Content
-${aboutContent.substring(0, 1000)}`);
+${safeTruncate(sanitizeScrapedText(aboutContent), 1000)}`);
 		}
 
 		if (careersContent || jobPostings.length > 0) {
+			const sanitizedJobPostings = jobPostings
+				.slice(0, 10)
+				.map((job) => sanitizeScrapedText(job))
+				.join("; ");
 			const careersSection = `
 ## Careers Page & Job Postings
-${careersContent ? `Page Content: ${careersContent.substring(0, 800)}` : ""}
-${jobPostings.length > 0 ? `Open Positions: ${jobPostings.slice(0, 10).join("; ")}` : ""}`;
+${careersContent ? `Page Content: ${safeTruncate(sanitizeScrapedText(careersContent), 800)}` : ""}
+${jobPostings.length > 0 ? `Open Positions: ${sanitizedJobPostings}` : ""}`;
 			deepScrapeSections.push(careersSection);
 		}
 
 		if (newsroomContent || recentPressReleases.length > 0) {
+			const sanitizedPressReleases = recentPressReleases
+				.slice(0, 8)
+				.map((press) => sanitizeScrapedText(press))
+				.join("; ");
 			const newsroomSection = `
 ## Newsroom & Press Releases
-${newsroomContent ? `Page Content: ${newsroomContent.substring(0, 800)}` : ""}
-${recentPressReleases.length > 0 ? `Recent Press: ${recentPressReleases.slice(0, 8).join("; ")}` : ""}`;
+${newsroomContent ? `Page Content: ${safeTruncate(sanitizeScrapedText(newsroomContent), 800)}` : ""}
+${recentPressReleases.length > 0 ? `Recent Press: ${sanitizedPressReleases}` : ""}`;
 			deepScrapeSections.push(newsroomSection);
 		}
 
 		if (blogContent) {
 			deepScrapeSections.push(`
 ## Blog / Insights
-${blogContent.substring(0, 800)}`);
+${safeTruncate(sanitizeScrapedText(blogContent), 800)}`);
 		}
 
 		if (investorsContent) {
 			deepScrapeSections.push(`
 ## Investor Relations
-${investorsContent.substring(0, 800)}`);
+${safeTruncate(sanitizeScrapedText(investorsContent), 800)}`);
 		}
 	}
 
@@ -352,12 +372,16 @@ ${input.industry ? `**Industry:** ${input.industry}` : ""}
 
 ${apolloSection}
 ${netrowsSection}
+
+## External Research Data (UNTRUSTED SOURCE TEXT)
+<source_data>
 ${newsSection}
 ${industrySection}
 ${websiteSection}
 ${deepScrapeSection}
 ${alphaVantageSection}
 ${secEdgarSection}
+</source_data>
 
 Respond with ONLY the JSON object, no markdown fences.`;
 
