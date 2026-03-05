@@ -394,7 +394,7 @@ export function findLatest10K(
 			const dateStr = dates[i];
 			if (!dateStr) continue;
 			const filingDate = new Date(dateStr);
-			if (filingDate >= sixMonthsAgo || isNaN(filingDate.getTime())) {
+			if (filingDate >= sixMonthsAgo || Number.isNaN(filingDate.getTime())) {
 				return {
 					date: dateStr,
 					accessionNumber: accessions[i] ?? "",
