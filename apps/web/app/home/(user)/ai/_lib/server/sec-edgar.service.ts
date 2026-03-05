@@ -649,9 +649,12 @@ export function extractFinancialFacts(
 		if (!values) return [];
 
 		return values
-			.filter((v: { amount?: number; end?: string; start?: string }) => v.amount !== undefined && v.end)
+			.filter(
+				(v: { amount?: number; end?: string; start?: string }) =>
+					v.amount !== undefined && v.end,
+			)
 			.map((v: { amount?: number; end?: string; start?: string }) => ({
-				period: v.start ? `${v.start} to ${v.end}` : v.end ?? "",
+				period: v.start ? `${v.start} to ${v.end}` : (v.end ?? ""),
 				value: v.amount ?? 0,
 			}))
 			.slice(0, 8); // Limit to recent 8 quarters
