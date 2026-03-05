@@ -1,8 +1,21 @@
 import { createServiceLogger } from "@kit/shared/logger";
 import { getLangfuseClient, isLangfuseConfigured } from "./langfuse-client";
 import type { ChatMessage } from "../index";
+import { loadTemplate, compileTemplate } from "../prompts/prompt-manager";
 
 const { getLogger } = createServiceLogger("langfuse-prompt-service");
+
+/**
+ * Options for fetching a prompt from Langfuse
+ */
+export interface PromptOptions {
+	/** The label of the prompt version to fetch (default: "production") */
+	label?: string;
+	/** The specific version number to fetch (optional) */
+	version?: number;
+	/** Cache TTL in seconds (default: 60) */
+	cacheTTL?: number;
+}
 
 /**
  * Maps local template names to Langfuse prompt names
@@ -49,14 +62,143 @@ function convertToChatMessage(langfuseMessage: {
 }
 
 /**
- * Fetches a prompt from Langfuse Cloud by name
+ * Loads a local template and compiles it with variables
+ * Used as fallback when Langfuse is unavailable
+ * @param promptName The name of the prompt to load
+ * @param variables The variables to compile into the template
+ * @returns Compiled ChatMessage[]
+ */
+async function loadAndCompileLocalTemplate(
+	promptName: string,
+	variables: Record<string, string>,
+): Promise<ChatMessage[]> {
+	const logger = getLogger();
+
+	// Map the prompt name to local template name
+	const localTemplateName =
+		Object.entries(TEMPLATE_NAME_MAPPING).find(
+			([, langfuseName]) => langfuseName === promptName,
+		)?.[0] || promptName;
+
+	try {
+		const template = loadTemplate(localTemplateName);
+		const compiled = template.map((message) => ({
+			...message,
+			content: compileTemplate(message.content, variables),
+		}));
+
+		logger.info("Loaded local template as fallback", {
+			promptName,
+			localTemplateName,
+			messageCount: compiled.length,
+		});
+
+		return compiled;
+	} catch (error) {
+		logger.error("Failed to load local template fallback", {
+			promptName,
+			localTemplateName,
+			error: error instanceof Error ? error.message : String(error),
+		});
+		throw error;
+	}
+}
+
+/**
+ * Fetches a prompt from Langfuse Cloud by name and compiles it with variables
+ * @param promptName The name of the prompt to fetch
+ * @param variables The variables to compile into the prompt template
+ * @param options Optional configuration for the prompt fetch
+ * @returns Compiled ChatMessage[] or falls back to local template on error
+ */
+export async function getPrompt(
+	promptName: string,
+	variables: Record<string, string>,
+	options?: PromptOptions,
+): Promise<ChatMessage[]> {
+	const logger = getLogger();
+
+	if (!isLangfuseConfigured()) {
+		logger.debug("Langfuse not configured, using local template", {
+			promptName,
+		});
+		return loadAndCompileLocalTemplate(promptName, variables);
+	}
+
+	const langfuse = getLangfuseClient();
+	if (!langfuse) {
+		logger.warn("Langfuse client unavailable, using local template", {
+			promptName,
+		});
+		return loadAndCompileLocalTemplate(promptName, variables);
+	}
+
+	// Map local template name to Langfuse prompt name
+	const langfusePromptName = TEMPLATE_NAME_MAPPING[promptName] || promptName;
+
+	try {
+		logger.info("Fetching prompt from Langfuse", {
+			localName: promptName,
+			langfuseName: langfusePromptName,
+			label: options?.label ?? "production",
+			version: options?.version,
+		});
+
+		// Fetch the prompt from Langfuse using the SDK
+		// biome-ignore lint/suspicious/noExplicitAny: Langfuse SDK types are complex
+		const langfusePrompt: any = await langfuse.getPrompt(
+			langfusePromptName,
+			options?.version,
+			{
+				type: "chat",
+				label: options?.label ?? "production",
+				cacheTtlSeconds: options?.cacheTTL ?? 60,
+			},
+		);
+
+		if (!langfusePrompt) {
+			logger.warn("Prompt not found in Langfuse, using local template", {
+				promptName: langfusePromptName,
+			});
+			return loadAndCompileLocalTemplate(promptName, variables);
+		}
+
+		// Compile the prompt with variables
+		// biome-ignore lint/suspicious/noExplicitAny: Langfuse SDK compile returns compiled messages
+		const compiled: any = langfusePrompt.compile(variables);
+
+		// Convert to our ChatMessage format
+		const messages = compiled.map(convertToChatMessage);
+
+		logger.info("Fetched and compiled prompt from Langfuse", {
+			promptName: langfusePromptName,
+			messageCount: messages.length,
+			variableCount: Object.keys(variables).length,
+		});
+
+		return messages;
+	} catch (error) {
+		logger.warn(
+			"Langfuse prompt fetch failed, falling back to local template",
+			{
+				promptName: langfusePromptName,
+				error: error instanceof Error ? error.message : String(error),
+			},
+		);
+		return loadAndCompileLocalTemplate(promptName, variables);
+	}
+}
+
+/**
+ * Fetches a prompt from Langfuse Cloud by name (legacy function)
  * @param promptName The name of the prompt to fetch
  * @returns ChatMessage[] format or null if not found/not configured
+ * @deprecated Use getPrompt() instead which handles variable compilation
  */
 export async function fetchPromptFromLangfuse(
 	promptName: string,
 ): Promise<ChatMessage[] | null> {
-	const logger = await getLogger();
+	const logger = getLogger();
 
 	if (!isLangfuseConfigured()) {
 		logger.debug("Langfuse not configured, skipping prompt fetch", {
@@ -75,7 +217,7 @@ export async function fetchPromptFromLangfuse(
 	const langfusePromptName = TEMPLATE_NAME_MAPPING[promptName] || promptName;
 
 	try {
-		logger.info("Fetching prompt from Langfuse", {
+		logger.info("Fetching prompt from Langfuse (legacy)", {
 			localName: promptName,
 			langfuseName: langfusePromptName,
 		});
@@ -141,7 +283,7 @@ export async function fetchPromptFromLangfuse(
 export async function hasPromptInLangfuse(
 	promptName: string,
 ): Promise<boolean> {
-	const logger = await getLogger();
+	const logger = getLogger();
 
 	if (!isLangfuseConfigured()) {
 		return false;
