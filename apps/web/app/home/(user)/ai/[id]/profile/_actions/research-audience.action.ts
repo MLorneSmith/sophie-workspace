@@ -7,7 +7,12 @@ import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
 
 import type { Database } from "~/lib/database.types";
-
+import { getFinancialSnapshot } from "../../../_lib/server/alpha-vantage.service";
+import {
+	type ApolloEnrichmentResult,
+	enrichCompany,
+	extractDomain,
+} from "../../../_lib/server/apollo-enrichment.service";
 import {
 	createAudienceProfile,
 	getProfileByPresentationId,
@@ -19,12 +24,6 @@ import {
 	synthesizeCompanyBrief,
 } from "../../../_lib/server/company-brief-synthesis.service";
 import { researchCompany } from "../../../_lib/server/company-research.service";
-import { scrapeWebsiteDeep } from "../../../_lib/server/website-deep-scrape.service";
-import {
-	enrichCompany,
-	extractDomain,
-	type ApolloEnrichmentResult,
-} from "../../../_lib/server/apollo-enrichment.service";
 import {
 	getCompanyDetails,
 	getPersonProfile,
@@ -34,7 +33,7 @@ import {
 	searchPersonFuzzy,
 } from "../../../_lib/server/netrows.service";
 import { resolveCompanyTicker } from "../../../_lib/server/ticker-resolution.service";
-import { getFinancialSnapshot } from "../../../_lib/server/alpha-vantage.service";
+import { scrapeWebsiteDeep } from "../../../_lib/server/website-deep-scrape.service";
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -336,6 +335,8 @@ export const researchAudienceAction = enhanceAction(
 		// Step 2: Company web research + brief synthesis (parallel with step 1)
 		// Uses Brave Search API + LLM to build a structured CompanyBrief
 		let companyBrief: CompanyBrief | null = null;
+		let companyBriefPromise: Promise<CompanyBrief | null> =
+			Promise.resolve(null);
 
 		try {
 			// Check for a cached (non-expired) company brief first
@@ -557,27 +558,28 @@ export const researchAudienceAction = enhanceAction(
 							: undefined,
 				};
 
-				companyBrief = await withTimeout(
+				// Fire company brief synthesis as a non-blocking promise (35s timeout)
+				companyBriefPromise = withTimeout(
 					synthesizeCompanyBrief(synthesisInput, user.id),
-					120_000,
+					35_000,
 					"Company brief synthesis",
-				);
-
-				// Cache the company brief
-				await untypedClient.from("company_briefs").insert({
-					company_name: data.company,
-					company_domain: domain ?? null,
-					netrows_data: enrichment.companyDetails ?? null,
-					web_research: webResearch as unknown as Record<string, unknown>,
-					brief_structured: companyBrief as unknown as Record<string, unknown>,
-					created_by: user.id,
+				).then(async (brief) => {
+					// Cache on success
+					await untypedClient.from("company_briefs").insert({
+						company_name: data.company,
+						company_domain: domain ?? null,
+						netrows_data: enrichment.companyDetails ?? null,
+						web_research: webResearch as unknown as Record<string, unknown>,
+						brief_structured: brief as unknown as Record<string, unknown>,
+						created_by: user.id,
+					});
+					logger.info(
+						ctx,
+						"Company brief synthesized and cached — archetype: %s",
+						brief.currentSituation?.archetype,
+					);
+					return brief;
 				});
-
-				logger.info(
-					ctx,
-					"Company brief synthesized and cached — archetype: %s",
-					companyBrief.currentSituation?.archetype,
-				);
 			}
 		} catch (companyErr) {
 			const compErrMsg =
@@ -589,72 +591,116 @@ export const researchAudienceAction = enhanceAction(
 			);
 		}
 
-		// Step 3: Generate Audience Brief via AI (now with company brief context)
-		logger.info(ctx, "Generating Audience Brief via AI");
+		// Step 3: Generate audience brief via LLM (fast path, parallel with company brief)
+		// Use the fastest available model: haiku > fast > research.
+		// Audience brief is structured JSON extraction — doesn't need heavy reasoning.
+		const audienceBriefModel =
+			process.env.BIFROST_MODEL_WORKFLOW_RESEARCH_HAIKU ??
+			process.env.BIFROST_MODEL_WORKFLOW_RESEARCH_FAST ??
+			process.env.BIFROST_MODEL_WORKFLOW_RESEARCH;
+		const audienceBriefVK =
+			process.env.BIFROST_VK_WORKFLOW_RESEARCH_HAIKU ??
+			process.env.BIFROST_VK_WORKFLOW_RESEARCH_FAST ??
+			process.env.BIFROST_VK_WORKFLOW_RESEARCH;
+
+		logger.info(
+			ctx,
+			"Generating audience brief (model=%s, parallel with company brief)",
+			audienceBriefModel,
+		);
 
 		const messages = buildBriefPrompt(
 			enrichment,
 			data.personName,
 			data.company,
 			data.context,
+			// Use cached company brief if available, otherwise null (company brief synthesis is still running)
 			companyBrief,
 		);
 
 		let briefStructured: Record<string, unknown> = {};
 		let briefText = "";
 
-		try {
-			const briefAbort = new AbortController();
-			const briefTimeoutId = setTimeout(
-				() => briefAbort.abort("AI brief generation timed out after 90s"),
-				90_000,
-			);
+		// Run audience brief generation and company brief synthesis in parallel
+		const audienceBriefPromise = (async () => {
+			try {
+				const briefAbort = new AbortController();
+				const briefTimeoutId = setTimeout(
+					() => briefAbort.abort("AI brief generation timed out after 45s"),
+					45_000,
+				);
 
-			const response = await withTimeout(
-				getChatCompletion(messages, {
-					model: process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
-					virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
-					userId: user.id,
-					feature: "workflow-audience-research",
-					timeout: 90_000,
-					signal: briefAbort.signal,
-				}),
-				90_000,
-				"AI brief generation",
-			);
+				const response = await withTimeout(
+					getChatCompletion(messages, {
+						model: audienceBriefModel,
+						virtualKey: audienceBriefVK,
+						userId: user.id,
+						feature: "workflow-audience-research",
+						timeout: 45_000,
+						signal: briefAbort.signal,
+					}),
+					45_000,
+					"AI brief generation",
+				);
 
-			clearTimeout(briefTimeoutId);
+				clearTimeout(briefTimeoutId);
 
-			const jsonMatch = response.content.match(/\{[\s\S]*\}/);
-			if (!jsonMatch) {
-				throw new Error("No JSON found in AI response");
+				const jsonMatch = response.content.match(/\{[\s\S]*\}/);
+				if (!jsonMatch) {
+					throw new Error("No JSON found in AI response");
+				}
+				const parsed = JSON.parse(jsonMatch[0]);
+				return {
+					briefStructured: parsed as Record<string, unknown>,
+					briefText: (parsed.briefSummary as string) ?? "",
+				};
+			} catch (aiError) {
+				const errMsg =
+					aiError instanceof Error ? aiError.message : String(aiError);
+				logger.error(ctx, "AI brief generation failed: %s", errMsg);
+				logger.error(ctx, "AI brief error details: %o", {
+					name: aiError instanceof Error ? aiError.name : "unknown",
+					message: errMsg,
+					stack: (aiError instanceof Error ? aiError.stack : "")?.substring(
+						0,
+						500,
+					),
+					virtualKey: audienceBriefVK ? "SET" : "NOT_SET",
+					model: audienceBriefModel,
+					bifrostUrl:
+						process.env.BIFROST_GATEWAY_URL ||
+						process.env.BIFROST_BASE_URL ||
+						"DEFAULT",
+				});
+				return {
+					briefStructured: {} as Record<string, unknown>,
+					briefText: enrichment.personProfile
+						? `${enrichment.personProfile.headline ?? ""} — ${enrichment.personProfile.summary?.substring(0, 200) ?? ""}`
+						: "",
+				};
 			}
-			briefStructured = JSON.parse(jsonMatch[0]);
-			briefText = (briefStructured.briefSummary as string) ?? "";
-		} catch (aiError) {
-			const errMsg =
-				aiError instanceof Error ? aiError.message : String(aiError);
-			logger.error(ctx, "AI brief generation failed: %s", errMsg);
-			logger.error(ctx, "AI brief error details: %o", {
-				name: aiError instanceof Error ? aiError.name : "unknown",
-				message: errMsg,
-				stack: (aiError instanceof Error ? aiError.stack : "")?.substring(
-					0,
-					500,
-				),
-				virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH
-					? "SET"
-					: "NOT_SET",
-				bifrostUrl:
-					process.env.BIFROST_GATEWAY_URL ||
-					process.env.BIFROST_BASE_URL ||
-					"DEFAULT",
-			});
-			// Still save enrichment data — user can regenerate the brief later
-			briefText = enrichment.personProfile
-				? `${enrichment.personProfile.headline ?? ""} — ${enrichment.personProfile.summary?.substring(0, 200) ?? ""}`
-				: "";
-		}
+		})();
+
+		// Await both in parallel: audience brief + company brief synthesis
+		const [audienceBriefResult, companyBriefResult] = await Promise.all([
+			audienceBriefPromise,
+			companyBriefPromise.catch((compBriefErr: unknown) => {
+				const errMsg =
+					compBriefErr instanceof Error
+						? compBriefErr.message
+						: String(compBriefErr);
+				logger.warn(
+					ctx,
+					"Company brief synthesis failed (non-blocking): %s",
+					errMsg,
+				);
+				return null;
+			}),
+		]);
+
+		briefStructured = audienceBriefResult.briefStructured;
+		briefText = audienceBriefResult.briefText;
+		companyBrief = companyBriefResult ?? companyBrief;
 
 		// Ensure Apollo promise is settled (may already be awaited in synthesis path)
 		if (!apolloEnrichment) {

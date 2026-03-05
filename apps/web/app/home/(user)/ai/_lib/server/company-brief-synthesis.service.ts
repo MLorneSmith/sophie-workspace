@@ -4,7 +4,7 @@ import { type ChatMessage, getChatCompletion } from "@kit/ai-gateway";
 import { getLogger } from "@kit/shared/logger";
 
 import type { AlphaVantageDataInput } from "../schemas/external-data.schema";
-import { sanitizeScrapedText, safeTruncate } from "./prompt-sanitization.utils";
+import { safeTruncate, sanitizeScrapedText } from "./prompt-sanitization.utils";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -67,7 +67,6 @@ export interface WebsiteDeepScrapeInput {
 	jobPostings: string[];
 	recentPressReleases: string[];
 }
-
 
 /**
  * Regulatory filing data from SEC EDGAR.
@@ -412,22 +411,26 @@ export async function synthesizeCompanyBrief(
 
 	const synthesisAbort = new AbortController();
 	const synthesisTimeoutId = setTimeout(
-		() => synthesisAbort.abort("Company brief synthesis timed out after 90s"),
-		90_000,
+		() => synthesisAbort.abort("Company brief synthesis timed out after 35s"),
+		35_000,
 	);
 
 	let response: Awaited<ReturnType<typeof getChatCompletion>>;
 	try {
 		response = await withTimeout(
 			getChatCompletion(messages, {
-				model: process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
-				virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
+				model:
+					process.env.BIFROST_MODEL_WORKFLOW_RESEARCH_FAST ??
+					process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
+				virtualKey:
+					process.env.BIFROST_VK_WORKFLOW_RESEARCH_FAST ??
+					process.env.BIFROST_VK_WORKFLOW_RESEARCH,
 				userId,
 				feature: "workflow-company-research",
-				timeout: 90_000,
+				timeout: 35_000,
 				signal: synthesisAbort.signal,
 			}),
-			90_000,
+			35_000,
 			"Company brief synthesis",
 		);
 	} finally {
