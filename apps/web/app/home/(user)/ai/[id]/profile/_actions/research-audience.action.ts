@@ -726,3 +726,43 @@ export const researchAudienceAction = enhanceAction(
 		auth: true,
 	},
 );
+
+// ---------------------------------------------------------------------------
+
+const PollCompanyBriefSchema = z.object({
+	presentationId: z.string().min(1),
+});
+
+/**
+ * Returns the company brief from the audience profile if the background
+ * synthesis has completed. Called by the client on a short poll interval.
+ */
+export const pollCompanyBriefAction = enhanceAction(
+	async (data) => {
+		const client = getSupabaseServerClient<Database>();
+		const profile = await getProfileByPresentationId(
+			client,
+			data.presentationId,
+		);
+
+		if (!profile) {
+			return { ready: false as const };
+		}
+
+		const enrichment = profile.enrichment_data as Record<
+			string,
+			unknown
+		> | null;
+		const brief = enrichment?.companyBrief as Record<string, unknown> | null;
+
+		if (!brief) {
+			return { ready: false as const };
+		}
+
+		return { ready: true as const, companyBrief: brief };
+	},
+	{
+		schema: PollCompanyBriefSchema,
+		auth: true,
+	},
+);
