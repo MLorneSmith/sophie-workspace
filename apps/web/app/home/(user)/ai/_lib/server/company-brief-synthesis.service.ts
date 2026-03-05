@@ -74,9 +74,19 @@ export interface AlphaVantageDataInput {
 	revenue?: number | null;
 	grossMargin?: number | null;
 	operatingMargin?: number | null;
+	profitMargin?: number | null;
 	stockPrice?: number | null;
 	week52High?: number | null;
 	week52Low?: number | null;
+
+	// Market data
+	marketCap?: number | null;
+	ebitda?: number | null;
+	eps?: number | null;
+	dividendYield?: number | null;
+	movingAvg50?: number | null;
+	movingAvg200?: number | null;
+	fiscalYearEnd?: string | null;
 
 	// Analyst ratings
 	analystConsensus?: string | null;

@@ -20,6 +20,34 @@ create table if not exists
     expires_at timestamptz not null default (now() + interval '30 days')
   );
 
+-- Enable Row Level Security
+alter table public.ticker_mappings enable row level security;
+
+-- Revoke default permissions
+revoke all on table public.ticker_mappings from authenticated, service_role;
+
+-- Grant appropriate permissions
+grant select, insert, update, delete on table public.ticker_mappings to authenticated;
+grant all on table public.ticker_mappings to service_role;
+
+-- RLS Policies
+create policy ticker_mappings_select on public.ticker_mappings
+  for select to authenticated
+  using (user_id = (select auth.uid()));
+
+create policy ticker_mappings_insert on public.ticker_mappings
+  for insert to authenticated
+  with check (user_id = (select auth.uid()));
+
+create policy ticker_mappings_update on public.ticker_mappings
+  for update to authenticated
+  using (user_id = (select auth.uid()))
+  with check (user_id = (select auth.uid()));
+
+create policy ticker_mappings_delete on public.ticker_mappings
+  for delete to authenticated
+  using (user_id = (select auth.uid()));
+
 -- Indexes
 create index if not exists ix_ticker_mappings_company_name_lower
   on public.ticker_mappings (lower(company_name));

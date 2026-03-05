@@ -11,6 +11,7 @@ import { getLogger } from "@kit/shared/logger";
 const BASE_URL = "https://www.alphavantage.co/query";
 const TIMEOUT_MS = 10_000;
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+const DAILY_QUOTA_LIMIT = 25; // Free tier: 25 requests per day
 
 /** Alpha Vantage API function types */
 const FUNCTION_OVERVIEW = "OVERVIEW";
@@ -118,6 +119,31 @@ const circuitBreaker = new CircuitBreaker("alpha-vantage", {
 	resetTimeMs: 60_000,
 });
 
+// Daily quota tracking (in-memory, resets on server restart)
+let dailyRequestCount = 0;
+let dailyQuotaResetAt = getNextMidnightUTC();
+
+function getNextMidnightUTC(): number {
+	const now = new Date();
+	const midnight = new Date(now);
+	midnight.setUTCHours(24, 0, 0, 0);
+	return midnight.getTime();
+}
+
+function isWithinDailyQuota(): boolean {
+	const now = Date.now();
+	if (now >= dailyQuotaResetAt) {
+		// Reset for new day
+		dailyRequestCount = 0;
+		dailyQuotaResetAt = getNextMidnightUTC();
+	}
+	return dailyRequestCount < DAILY_QUOTA_LIMIT;
+}
+
+function incrementDailyQuota(): void {
+	dailyRequestCount++;
+}
+
 // ---------------------------------------------------------------------------
 // 24-hour ticker-keyed caching
 // ---------------------------------------------------------------------------
@@ -172,6 +198,21 @@ type AlphaVantageFetchResult<T> =
 	| { kind: "success"; data: T }
 	| { kind: "error"; message: string };
 
+/** Custom error classes for circuit breaker to catch */
+class RateLimitError extends Error {
+	constructor(message = "Alpha Vantage rate limit exceeded") {
+		super(message);
+		this.name = "RateLimitError";
+	}
+}
+
+class ApiError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "ApiError";
+	}
+}
+
 async function alphaVantageFetch<T>(
 	ticker: string,
 	functionType: string,
@@ -181,6 +222,11 @@ async function alphaVantageFetch<T>(
 	// If no API key, return distinct result (Alpha Vantage is optional)
 	if (!apiKey) {
 		return { kind: "no-key" };
+	}
+
+	// Check daily quota before making request
+	if (!isWithinDailyQuota()) {
+		throw new RateLimitError("Alpha Vantage daily quota exceeded");
 	}
 
 	const url = new URL(BASE_URL);
@@ -197,6 +243,9 @@ async function alphaVantageFetch<T>(
 			// Wait for rate limit slot (shared RateLimiter)
 			await rateLimiter.acquire(0);
 
+			// Increment daily quota counter
+			incrementDailyQuota();
+
 			const res = await fetch(url.toString(), {
 				method: "GET",
 				headers: {
@@ -206,21 +255,20 @@ async function alphaVantageFetch<T>(
 				cache: "no-store" as RequestCache,
 			});
 
-			// Handle rate limiting (HTTP 429)
+			// Handle rate limiting (HTTP 429) - throw to trigger circuit breaker
 			if (res.status === 429) {
-				return { kind: "rate-limited" } as AlphaVantageFetchResult<T>;
+				throw new RateLimitError("Alpha Vantage HTTP 429 rate limit");
 			}
 
 			const data = (await res.json()) as Record<string, unknown>;
 
-			// Check for Alpha Vantage error messages
+			// Check for Alpha Vantage error messages - throw to trigger circuit breaker
 			if ("Note" in data || "Information" in data) {
-				return { kind: "rate-limited" } as AlphaVantageFetchResult<T>;
+				throw new RateLimitError("Alpha Vantage API note: rate limit warning");
 			}
 
 			if (!res.ok) {
-				const msg = `Alpha Vantage API error ${res.status}`;
-				return { kind: "error", message: msg } as AlphaVantageFetchResult<T>;
+				throw new ApiError(`Alpha Vantage API error ${res.status}`);
 			}
 
 			// Return the full response - empty object means "not found"
@@ -432,8 +480,9 @@ export async function getFinancialSnapshot(
 				};
 		}
 
-		// Cache successful results (both success with data and "no data" cases)
-		if (finalResult.success) {
+		// Cache successful results with data OR "no data" responses
+		// Don't cache "no-key" (configured: false) since it may change if API key is added later
+		if (finalResult.success && finalResult.configured) {
 			cacheSnapshot(upperTicker, finalResult);
 		}
 
