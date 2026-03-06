@@ -1,7 +1,7 @@
 "use client";
 
 import { cva, type VariantProps } from "class-variance-authority";
-import { ChevronDown, PanelLeft } from "lucide-react";
+import { ChevronDown, PanelLeft, Pin } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Slot } from "radix-ui";
@@ -37,6 +37,7 @@ const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "4rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 const SIDEBAR_MINIMIZED_WIDTH = SIDEBAR_WIDTH_ICON;
+const SIDEBAR_PINNED_COOKIE_NAME = "sidebar:pinned";
 
 type SidebarContext = {
 	state: "expanded" | "collapsed";
@@ -46,6 +47,11 @@ type SidebarContext = {
 	setOpenMobile: (open: boolean) => void;
 	isMobile: boolean;
 	toggleSidebar: () => void;
+	pinned: boolean;
+	setPinned: (pinned: boolean) => void;
+	hoverExpanded: boolean;
+	handleMouseEnter: () => void;
+	handleMouseLeave: () => void;
 };
 
 export const SidebarContext = React.createContext<SidebarContext | null>(null);
@@ -63,12 +69,14 @@ function useSidebar() {
 const SidebarProvider: React.FC<
 	React.ComponentProps<"div"> & {
 		defaultOpen?: boolean;
+		defaultPinned?: boolean;
 		open?: boolean;
 		onOpenChange?: (open: boolean) => void;
 	}
 > = ({
 	ref,
 	defaultOpen = true,
+	defaultPinned = false,
 	open: openProp,
 	onOpenChange: setOpenProp,
 	className,
@@ -85,6 +93,23 @@ const SidebarProvider: React.FC<
 	const [_open, _setOpen] = React.useState(defaultOpen);
 	const open = openProp ?? _open;
 
+	// Pin state: when pinned, sidebar stays expanded and hover behavior is disabled
+	const [pinned, _setPinned] = React.useState(defaultPinned);
+	// Track whether the sidebar is temporarily expanded via hover
+	const [hoverExpanded, setHoverExpanded] = React.useState(false);
+	// Ref to track hover state changes without triggering cookie writes
+	const isHoverRef = React.useRef(false);
+	// Ref for the collapse timeout to prevent flickering
+	const collapseTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+		null,
+	);
+
+	const setPinned = React.useCallback((value: boolean) => {
+		_setPinned(value);
+		// biome-ignore lint/suspicious/noDocumentCookie: Pin state needs to persist across page reloads
+		document.cookie = `${SIDEBAR_PINNED_COOKIE_NAME}=${value}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+	}, []);
+
 	const setOpen = React.useCallback(
 		(value: boolean | ((value: boolean) => boolean)) => {
 			if (setOpenProp) {
@@ -93,17 +118,67 @@ const SidebarProvider: React.FC<
 
 			_setOpen(value);
 
-			// This sets the cookie to keep the sidebar state.
-			// biome-ignore lint/suspicious/noDocumentCookie: Sidebar state needs to persist across page reloads
-			document.cookie = `${SIDEBAR_COOKIE_NAME}=${open}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+			// Only write cookie for explicit user actions, not hover-triggered changes
+			if (!isHoverRef.current) {
+				// biome-ignore lint/suspicious/noDocumentCookie: Sidebar state needs to persist across page reloads
+				document.cookie = `${SIDEBAR_COOKIE_NAME}=${open}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+			}
 		},
 		[setOpenProp, open],
 	);
 
-	// Helper to toggle the sidebar.
+	// Helper to toggle the sidebar (explicit user action, also pins).
 	const toggleSidebar = React.useCallback(() => {
-		return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
-	}, [isMobile, setOpen]);
+		if (isMobile) {
+			setOpenMobile((open) => !open);
+			return;
+		}
+		// Clear any pending hover collapse
+		if (collapseTimeoutRef.current) {
+			clearTimeout(collapseTimeoutRef.current);
+			collapseTimeoutRef.current = null;
+		}
+		// If hover-expanded, clear hover state
+		if (hoverExpanded) {
+			isHoverRef.current = false;
+			setHoverExpanded(false);
+		}
+		const nextOpen = !open;
+		setOpen(nextOpen);
+		// Toggling open pins the sidebar; toggling closed unpins
+		setPinned(nextOpen);
+	}, [isMobile, setOpen, open, setPinned, hoverExpanded]);
+
+	// Hover handlers for desktop
+	const handleMouseEnter = React.useCallback(() => {
+		if (pinned || isMobile || open) return;
+		if (collapseTimeoutRef.current) {
+			clearTimeout(collapseTimeoutRef.current);
+			collapseTimeoutRef.current = null;
+		}
+		isHoverRef.current = true;
+		setHoverExpanded(true);
+		_setOpen(true);
+	}, [pinned, isMobile, open]);
+
+	const handleMouseLeave = React.useCallback(() => {
+		if (pinned || isMobile || !hoverExpanded) return;
+		collapseTimeoutRef.current = setTimeout(() => {
+			isHoverRef.current = false;
+			setHoverExpanded(false);
+			_setOpen(false);
+			collapseTimeoutRef.current = null;
+		}, 250);
+	}, [pinned, isMobile, hoverExpanded]);
+
+	// Cleanup timeout on unmount
+	React.useEffect(() => {
+		return () => {
+			if (collapseTimeoutRef.current) {
+				clearTimeout(collapseTimeoutRef.current);
+			}
+		};
+	}, []);
 
 	// Adds a keyboard shortcut to toggle the sidebar.
 	React.useEffect(() => {
@@ -134,8 +209,25 @@ const SidebarProvider: React.FC<
 			openMobile,
 			setOpenMobile,
 			toggleSidebar,
+			pinned,
+			setPinned,
+			hoverExpanded,
+			handleMouseEnter,
+			handleMouseLeave,
 		}),
-		[state, open, setOpen, isMobile, openMobile, toggleSidebar],
+		[
+			state,
+			open,
+			setOpen,
+			isMobile,
+			openMobile,
+			toggleSidebar,
+			pinned,
+			setPinned,
+			hoverExpanded,
+			handleMouseEnter,
+			handleMouseLeave,
+		],
 	);
 
 	const sidebarWidth = !open
@@ -187,7 +279,14 @@ const Sidebar: React.FC<
 	ref,
 	...props
 }) => {
-	const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+	const {
+		isMobile,
+		state,
+		openMobile,
+		setOpenMobile,
+		handleMouseEnter,
+		handleMouseLeave,
+	} = useSidebar();
 
 	if (collapsible === "none") {
 		return (
@@ -234,13 +333,15 @@ const Sidebar: React.FC<
 	}
 
 	return (
-		<div
+		<nav
 			ref={ref}
 			className="group peer hidden md:block"
 			data-state={state}
 			data-collapsible={state === "collapsed" ? collapsible : ""}
 			data-variant={variant}
 			data-side={side}
+			onMouseEnter={handleMouseEnter}
+			onMouseLeave={handleMouseLeave}
 		>
 			{/* This is what handles the sidebar gap on desktop */}
 			<div
@@ -282,7 +383,7 @@ const Sidebar: React.FC<
 					{children}
 				</div>
 			</div>
-		</div>
+		</nav>
 	);
 };
 
@@ -319,6 +420,56 @@ const SidebarTrigger: React.FC<React.ComponentProps<typeof Button>> = ({
 	);
 };
 SidebarTrigger.displayName = "SidebarTrigger";
+
+const SidebarPinButton: React.FC<React.ComponentProps<typeof Button>> = ({
+	className,
+	...props
+}) => {
+	const { pinned, setPinned, open, hoverExpanded, isMobile } = useSidebar();
+
+	if (isMobile || !open) return null;
+
+	return (
+		<TooltipProvider delayDuration={0}>
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<Button
+						data-sidebar="pin"
+						variant="ghost"
+						size="icon"
+						className={cn("hidden h-7 w-7 md:flex", className)}
+						onClick={() => {
+							if (pinned) {
+								setPinned(false);
+							} else {
+								setPinned(true);
+							}
+						}}
+						{...props}
+					>
+						<Pin
+							className={cn(
+								"h-4 w-4 transition-transform",
+								pinned ? "rotate-0" : "rotate-45",
+							)}
+						/>
+						<span className="sr-only">
+							{pinned ? "Unpin sidebar" : "Pin sidebar"}
+						</span>
+					</Button>
+				</TooltipTrigger>
+				<TooltipContent
+					side="right"
+					align="center"
+					hidden={!hoverExpanded && !pinned}
+				>
+					{pinned ? "Unpin sidebar" : "Pin sidebar"}
+				</TooltipContent>
+			</Tooltip>
+		</TooltipProvider>
+	);
+};
+SidebarPinButton.displayName = "SidebarPinButton";
 
 const SidebarRail: React.FC<React.ComponentProps<"button">> = ({
 	className,
@@ -1066,6 +1217,7 @@ export {
 	SidebarMenuSub,
 	SidebarMenuSubButton,
 	SidebarMenuSubItem,
+	SidebarPinButton,
 	SidebarProvider,
 	SidebarRail,
 	SidebarSeparator,

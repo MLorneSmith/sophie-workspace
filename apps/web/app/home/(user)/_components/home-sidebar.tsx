@@ -5,6 +5,7 @@ import {
 	SidebarFooter,
 	SidebarHeader,
 	SidebarNavigation,
+	SidebarPinButton,
 } from "@kit/ui/shadcn-sidebar";
 import type { SidebarConfig } from "@kit/ui/sidebar";
 import { cn } from "@kit/ui/utils";
@@ -45,7 +46,12 @@ export function HomeSidebar(props: HomeSidebarProps) {
 						<HomeAccountSelector userId={user.id} accounts={accounts} />
 					</If>
 
-					<div className={"group-data-[minimized=true]/sidebar:hidden"}>
+					<div
+						className={
+							"flex items-center gap-x-1 group-data-[minimized=true]/sidebar:hidden"
+						}
+					>
+						<SidebarPinButton />
 						<UserNotifications userId={user.id} />
 					</div>
 				</div>

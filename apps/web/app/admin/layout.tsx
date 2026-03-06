@@ -16,7 +16,7 @@ export default function AdminLayout(props: React.PropsWithChildren) {
 	const state = use(getLayoutState());
 
 	return (
-		<SidebarProvider defaultOpen={state.open}>
+		<SidebarProvider defaultOpen={state.open} defaultPinned={state.pinned}>
 			<Page style={"sidebar"}>
 				<PageNavigation>
 					<AdminSidebar />
@@ -35,8 +35,10 @@ export default function AdminLayout(props: React.PropsWithChildren) {
 async function getLayoutState() {
 	const cookieStore = await cookies();
 	const sidebarOpenCookie = cookieStore.get("sidebar:state");
+	const pinnedCookie = cookieStore.get("sidebar:pinned");
 
 	return {
 		open: sidebarOpenCookie?.value !== "true",
+		pinned: pinnedCookie?.value === "true",
 	};
 }

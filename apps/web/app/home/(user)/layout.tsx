@@ -42,7 +42,7 @@ function SidebarLayout({ children }: React.PropsWithChildren) {
 		<UserWorkspaceContextProvider value={workspace}>
 			<SkipToContent />
 
-			<SidebarProvider defaultOpen={state.open}>
+			<SidebarProvider defaultOpen={state.open} defaultPinned={state.pinned}>
 				<Page style={"sidebar"}>
 					<PageNavigation>
 						<HomeSidebar
@@ -124,6 +124,8 @@ async function getLayoutState() {
 	const layoutStyleCookie = cookieStore.get("layout-style");
 	const sidebarOpenCookie = cookieStore.get("sidebar:state");
 
+	const pinnedCookie = cookieStore.get("sidebar:pinned");
+
 	const sidebarOpen = sidebarOpenCookie
 		? sidebarOpenCookie.value === "false"
 		: !personalAccountNavigationConfig.sidebarCollapsed;
@@ -134,8 +136,11 @@ async function getLayoutState() {
 		? parsedStyle.data
 		: personalAccountNavigationConfig.style;
 
+	const pinned = pinnedCookie?.value === "true";
+
 	return {
 		open: sidebarOpen,
 		style,
+		pinned,
 	};
 }

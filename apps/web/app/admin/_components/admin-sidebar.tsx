@@ -10,6 +10,7 @@ import {
 	SidebarHeader,
 	SidebarMenu,
 	SidebarMenuButton,
+	SidebarPinButton,
 } from "@kit/ui/shadcn-sidebar";
 import { BarChart, LayoutDashboard, Settings, Users } from "lucide-react";
 import Link from "next/link";
@@ -24,7 +25,10 @@ export function AdminSidebar() {
 	return (
 		<Sidebar collapsible="icon">
 			<SidebarHeader className={"m-2"}>
-				<AppLogo href={"/admin"} className="max-w-full" />
+				<div className={"flex items-center justify-between"}>
+					<AppLogo href={"/admin"} className="max-w-full" />
+					<SidebarPinButton />
+				</div>
 			</SidebarHeader>
 
 			<SidebarContent>

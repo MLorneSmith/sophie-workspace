@@ -47,7 +47,7 @@ function SidebarLayout({
 
 	return (
 		<TeamAccountWorkspaceContextProvider value={data}>
-			<SidebarProvider defaultOpen={state.open}>
+			<SidebarProvider defaultOpen={state.open} defaultPinned={state.pinned}>
 				<Page style={"sidebar"}>
 					<PageNavigation>
 						<TeamAccountLayoutSidebar
@@ -126,6 +126,7 @@ async function getLayoutState(account: string) {
 
 	const sidebarOpenCookie = cookieStore.get("sidebar:state");
 	const layoutCookie = cookieStore.get("layout-style");
+	const pinnedCookie = cookieStore.get("sidebar:pinned");
 
 	const layoutStyle = LayoutStyleSchema.safeParse(layoutCookie?.value);
 
@@ -134,10 +135,12 @@ async function getLayoutState(account: string) {
 		: !config.sidebarCollapsed;
 
 	const style = layoutStyle.success ? layoutStyle.data : config.style;
+	const pinned = pinnedCookie?.value === "true";
 
 	return {
 		open: sidebarOpenCookieValue,
 		style,
+		pinned,
 	};
 }
 

@@ -4,6 +4,7 @@ import {
 	SidebarContent,
 	SidebarFooter,
 	SidebarHeader,
+	SidebarPinButton,
 } from "@kit/ui/shadcn-sidebar";
 
 import { ProfileAccountDropdownContainer } from "~/components//personal-account-dropdown-container";
@@ -57,7 +58,12 @@ function SidebarContainer(props: {
 						accounts={accounts}
 					/>
 
-					<div className={"group-data-[minimized=true]/sidebar:hidden"}>
+					<div
+						className={
+							"flex items-center gap-x-1 group-data-[minimized=true]/sidebar:hidden"
+						}
+					>
+						<SidebarPinButton />
 						<TeamAccountNotifications
 							userId={userId}
 							accountId={props.accountId}
