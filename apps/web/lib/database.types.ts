@@ -3093,6 +3093,176 @@ export type Database = {
 					},
 				];
 			};
+			agent_runs: {
+				Row: {
+					account_id: string;
+					agent_id: string;
+					created_at: string;
+					duration_ms: number | null;
+					error: string | null;
+					id: string;
+					input_snapshot: Json;
+					model_id: string | null;
+					presentation_id: string;
+					result: Json | null;
+					status: string;
+					storyboard_version: number;
+					token_usage: Json | null;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					account_id: string;
+					agent_id: string;
+					created_at?: string;
+					duration_ms?: number | null;
+					error?: string | null;
+					id?: string;
+					input_snapshot?: Json;
+					model_id?: string | null;
+					presentation_id: string;
+					result?: Json | null;
+					status?: string;
+					storyboard_version?: number;
+					token_usage?: Json | null;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					account_id?: string;
+					agent_id?: string;
+					created_at?: string;
+					duration_ms?: number | null;
+					error?: string | null;
+					id?: string;
+					input_snapshot?: Json;
+					model_id?: string | null;
+					presentation_id?: string;
+					result?: Json | null;
+					status?: string;
+					storyboard_version?: number;
+					token_usage?: Json | null;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "agent_runs_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "agent_runs_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_account_workspace";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "agent_runs_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "agent_runs_presentation_id_fkey";
+						columns: ["presentation_id"];
+						isOneToOne: false;
+						referencedRelation: "presentations";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			agent_suggestions: {
+				Row: {
+					account_id: string;
+					agent_id: string;
+					agent_run_id: string;
+					created_at: string;
+					detail: Json | null;
+					id: string;
+					presentation_id: string;
+					priority: string;
+					slide_id: string;
+					status: string;
+					summary: string;
+					type: string;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					account_id: string;
+					agent_id: string;
+					agent_run_id: string;
+					created_at?: string;
+					detail?: Json | null;
+					id?: string;
+					presentation_id: string;
+					priority?: string;
+					slide_id: string;
+					status?: string;
+					summary: string;
+					type: string;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					account_id?: string;
+					agent_id?: string;
+					agent_run_id?: string;
+					created_at?: string;
+					detail?: Json | null;
+					id?: string;
+					presentation_id?: string;
+					priority?: string;
+					slide_id?: string;
+					status?: string;
+					summary?: string;
+					type?: string;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "agent_suggestions_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "agent_suggestions_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_account_workspace";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "agent_suggestions_account_id_fkey";
+						columns: ["account_id"];
+						isOneToOne: false;
+						referencedRelation: "user_accounts";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "agent_suggestions_agent_run_id_fkey";
+						columns: ["agent_run_id"];
+						isOneToOne: false;
+						referencedRelation: "agent_runs";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "agent_suggestions_presentation_id_fkey";
+						columns: ["presentation_id"];
+						isOneToOne: false;
+						referencedRelation: "presentations";
+						referencedColumns: ["id"];
+					},
+				];
+			};
 			ai_cost_configuration: {
 				Row: {
 					created_at: string | null;
@@ -3663,6 +3833,48 @@ export type Database = {
 					file_path?: string;
 					id?: string;
 					user_id?: string;
+				};
+				Relationships: [];
+			};
+			company_briefs: {
+				Row: {
+					brief_structured: Json | null;
+					company_domain: string | null;
+					company_name: string;
+					created_at: string;
+					created_by: string | null;
+					expires_at: string;
+					id: string;
+					netrows_data: Json | null;
+					researched_at: string;
+					updated_at: string;
+					web_research: Json | null;
+				};
+				Insert: {
+					brief_structured?: Json | null;
+					company_domain?: string | null;
+					company_name: string;
+					created_at?: string;
+					created_by?: string | null;
+					expires_at?: string;
+					id?: string;
+					netrows_data?: Json | null;
+					researched_at?: string;
+					updated_at?: string;
+					web_research?: Json | null;
+				};
+				Update: {
+					brief_structured?: Json | null;
+					company_domain?: string | null;
+					company_name?: string;
+					created_at?: string;
+					created_by?: string | null;
+					expires_at?: string;
+					id?: string;
+					netrows_data?: Json | null;
+					researched_at?: string;
+					updated_at?: string;
+					web_research?: Json | null;
 				};
 				Relationships: [];
 			};
@@ -4831,6 +5043,45 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			ticker_mappings: {
+				Row: {
+					cik: string;
+					company_name: string;
+					confidence_score: number;
+					created_at: string;
+					expires_at: string;
+					id: string;
+					resolved_at: string;
+					ticker: string;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					cik: string;
+					company_name: string;
+					confidence_score?: number;
+					created_at?: string;
+					expires_at?: string;
+					id?: string;
+					resolved_at?: string;
+					ticker: string;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					cik?: string;
+					company_name?: string;
+					confidence_score?: number;
+					created_at?: string;
+					expires_at?: string;
+					id?: string;
+					resolved_at?: string;
+					ticker?: string;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [];
+			};
 		};
 		Views: {
 			timezone_cache: {
@@ -4838,7 +5089,7 @@ export type Database = {
 					abbrev: string | null;
 					is_dst: boolean | null;
 					name: string | null;
-					utc_offset: unknown;
+					utc_offset: string | null;
 				};
 				Relationships: [];
 			};
@@ -5084,6 +5335,21 @@ export type Database = {
 			revoke_nonce: {
 				Args: { p_id: string; p_reason?: string };
 				Returns: boolean;
+			};
+			search_embeddings_filtered: {
+				Args: {
+					filter_account_id: string;
+					filter_content_types: string[];
+					filter_user_id: string;
+					query_embedding: string;
+					top_k?: number;
+				};
+				Returns: {
+					id: string;
+					metadata: Json;
+					similarity: number;
+					text: string;
+				}[];
 			};
 			team_account_workspace: {
 				Args: { account_slug: string };
@@ -5388,7 +5654,6 @@ export type Database = {
 					created_at: string | null;
 					id: string;
 					last_accessed_at: string | null;
-					level: number | null;
 					metadata: Json | null;
 					name: string | null;
 					owner: string | null;
@@ -5403,7 +5668,6 @@ export type Database = {
 					created_at?: string | null;
 					id?: string;
 					last_accessed_at?: string | null;
-					level?: number | null;
 					metadata?: Json | null;
 					name?: string | null;
 					owner?: string | null;
@@ -5418,7 +5682,6 @@ export type Database = {
 					created_at?: string | null;
 					id?: string;
 					last_accessed_at?: string | null;
-					level?: number | null;
 					metadata?: Json | null;
 					name?: string | null;
 					owner?: string | null;
@@ -5431,38 +5694,6 @@ export type Database = {
 				Relationships: [
 					{
 						foreignKeyName: "objects_bucketId_fkey";
-						columns: ["bucket_id"];
-						isOneToOne: false;
-						referencedRelation: "buckets";
-						referencedColumns: ["id"];
-					},
-				];
-			};
-			prefixes: {
-				Row: {
-					bucket_id: string;
-					created_at: string | null;
-					level: number;
-					name: string;
-					updated_at: string | null;
-				};
-				Insert: {
-					bucket_id: string;
-					created_at?: string | null;
-					level?: number;
-					name: string;
-					updated_at?: string | null;
-				};
-				Update: {
-					bucket_id?: string;
-					created_at?: string | null;
-					level?: number;
-					name?: string;
-					updated_at?: string | null;
-				};
-				Relationships: [
-					{
-						foreignKeyName: "prefixes_bucketId_fkey";
 						columns: ["bucket_id"];
 						isOneToOne: false;
 						referencedRelation: "buckets";
@@ -5573,28 +5804,13 @@ export type Database = {
 			[_ in never]: never;
 		};
 		Functions: {
-			add_prefixes: {
-				Args: { _bucket_id: string; _name: string };
-				Returns: undefined;
-			};
 			can_insert_object: {
 				Args: { bucketid: string; metadata: Json; name: string; owner: string };
 				Returns: undefined;
 			};
-			delete_leaf_prefixes: {
-				Args: { bucket_ids: string[]; names: string[] };
-				Returns: undefined;
-			};
-			delete_prefix: {
-				Args: { _bucket_id: string; _name: string };
-				Returns: boolean;
-			};
 			extension: { Args: { name: string }; Returns: string };
 			filename: { Args: { name: string }; Returns: string };
 			foldername: { Args: { name: string }; Returns: string[] };
-			get_level: { Args: { name: string }; Returns: number };
-			get_prefix: { Args: { name: string }; Returns: string };
-			get_prefixes: { Args: { name: string }; Returns: string[] };
 			get_size_by_bucket: {
 				Args: never;
 				Returns: {
@@ -5633,92 +5849,45 @@ export type Database = {
 					updated_at: string;
 				}[];
 			};
-			lock_top_prefixes: {
-				Args: { bucket_ids: string[]; names: string[] };
-				Returns: undefined;
-			};
 			operation: { Args: never; Returns: string };
-			search: {
-				Args: {
-					bucketname: string;
-					levels?: number;
-					limits?: number;
-					offsets?: number;
-					prefix: string;
-					search?: string;
-					sortcolumn?: string;
-					sortorder?: string;
-				};
-				Returns: {
-					created_at: string;
-					id: string;
-					last_accessed_at: string;
-					metadata: Json;
-					name: string;
-					updated_at: string;
-				}[];
-			};
-			search_legacy_v1: {
-				Args: {
-					bucketname: string;
-					levels?: number;
-					limits?: number;
-					offsets?: number;
-					prefix: string;
-					search?: string;
-					sortcolumn?: string;
-					sortorder?: string;
-				};
-				Returns: {
-					created_at: string;
-					id: string;
-					last_accessed_at: string;
-					metadata: Json;
-					name: string;
-					updated_at: string;
-				}[];
-			};
-			search_v1_optimised: {
-				Args: {
-					bucketname: string;
-					levels?: number;
-					limits?: number;
-					offsets?: number;
-					prefix: string;
-					search?: string;
-					sortcolumn?: string;
-					sortorder?: string;
-				};
-				Returns: {
-					created_at: string;
-					id: string;
-					last_accessed_at: string;
-					metadata: Json;
-					name: string;
-					updated_at: string;
-				}[];
-			};
-			search_v2: {
-				Args: {
-					bucket_name: string;
-					levels?: number;
-					limits?: number;
-					prefix: string;
-					sort_column?: string;
-					sort_column_after?: string;
-					sort_order?: string;
-					start_after?: string;
-				};
-				Returns: {
-					created_at: string;
-					id: string;
-					key: string;
-					last_accessed_at: string;
-					metadata: Json;
-					name: string;
-					updated_at: string;
-				}[];
-			};
+			search:
+				| {
+						Args: {
+							bucketname: string;
+							levels?: number;
+							limits?: number;
+							offsets?: number;
+							prefix: string;
+						};
+						Returns: {
+							created_at: string;
+							id: string;
+							last_accessed_at: string;
+							metadata: Json;
+							name: string;
+							updated_at: string;
+						}[];
+				  }
+				| {
+						Args: {
+							bucketname: string;
+							levels?: number;
+							limits?: number;
+							offsets?: number;
+							prefix: string;
+							search?: string;
+							sortcolumn?: string;
+							sortorder?: string;
+						};
+						Returns: {
+							created_at: string;
+							id: string;
+							last_accessed_at: string;
+							metadata: Json;
+							name: string;
+							updated_at: string;
+						}[];
+				  };
 		};
 		Enums: {
 			buckettype: "STANDARD" | "ANALYTICS";
