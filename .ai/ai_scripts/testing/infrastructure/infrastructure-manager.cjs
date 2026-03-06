@@ -185,18 +185,13 @@ class InfrastructureManager {
 			const apiUrl =
 				supabaseConfig.API_URL ||
 				`http://127.0.0.1:${this.config.ports.supabase.api}`;
-			const anonKey =
-				process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || supabaseConfig.ANON_KEY;
 
-			const response = await fetch(`${apiUrl}/rest/v1/`, {
+			const response = await fetch(`${apiUrl}/auth/v1/health`, {
 				signal: AbortSignal.timeout(2000),
-				headers: {
-					apikey: anonKey,
-				},
 			});
 
-			// 200 means API is running, 401 means auth is required but API is responsive
-			if (response.status === 200 || response.status === 401) {
+			// 200 means API is running
+			if (response.ok) {
 				// Also check if we can get status (non-critical if it fails)
 				try {
 					const { stdout } = await execAsync(
@@ -311,18 +306,12 @@ class InfrastructureManager {
 			const apiUrl =
 				supabaseConfig.API_URL ||
 				`http://127.0.0.1:${this.config.ports.supabase.api}`;
-			const anonKey =
-				process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || supabaseConfig.ANON_KEY;
 
-			const response = await fetch(`${apiUrl}/rest/v1/`, {
+			const response = await fetch(`${apiUrl}/auth/v1/health`, {
 				signal: AbortSignal.timeout(2000),
-				headers: {
-					apikey: anonKey,
-				},
 			});
 
-			if (response.status === 401 || response.status === 200) {
-				// 401 is expected without proper auth, means DB is responding
+			if (response.ok) {
 				return "healthy";
 			}
 

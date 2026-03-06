@@ -261,17 +261,11 @@ class InfrastructureChecker {
 	async healthCheckSupabase() {
 		try {
 			// First check if database is responding on E2E port
-			const response = await fetch("http://127.0.0.1:54521/rest/v1/", {
+			const response = await fetch("http://127.0.0.1:54521/auth/v1/health", {
 				signal: AbortSignal.timeout(2000),
-				headers: {
-					apikey:
-						process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-						"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0",
-				},
 			});
 
-			// 200 means API is running, 401 means auth is required but API is responsive
-			if (response.status === 200 || response.status === 401) {
+			if (response.ok) {
 				// Also check if we can get status (non-critical if it fails)
 				try {
 					const { stdout } = await execAsync(
@@ -347,17 +341,11 @@ class InfrastructureChecker {
 	async healthCheckDatabase() {
 		try {
 			// Quick connectivity test to Supabase E2E instance
-			const response = await fetch("http://127.0.0.1:54521/rest/v1/", {
+			const response = await fetch("http://127.0.0.1:54521/auth/v1/health", {
 				signal: AbortSignal.timeout(2000),
-				headers: {
-					apikey:
-						process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-						"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0",
-				},
 			});
 
-			if (response.status === 401 || response.status === 200) {
-				// 401 is expected without proper auth, means DB is responding
+			if (response.ok) {
 				log("✅ Database: Healthy");
 				return "healthy";
 			}

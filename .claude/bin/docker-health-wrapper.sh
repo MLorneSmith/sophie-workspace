@@ -1219,7 +1219,7 @@ get_container_stats() {
                         # Apply external health check
                         if [ "$container_name" = "supabase_rest_2025slideheroes-db" ]; then
                             # Check PostgREST via Kong gateway
-                            if timeout 2s curl -s -f http://127.0.0.1:54521/rest/v1/ >/dev/null 2>&1; then
+                            if timeout 2s curl -s -f http://127.0.0.1:54521/auth/v1/health >/dev/null 2>&1; then
                                 health_status="healthy"
                                 debug "PostgREST health check: healthy"
                             else

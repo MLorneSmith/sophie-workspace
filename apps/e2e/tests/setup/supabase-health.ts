@@ -144,26 +144,23 @@ export async function checkPostgresHealth(
 /**
  * Stage 2: Check PostgREST API health
  * Verifies that PostgREST is responding (indirect Kong verification)
+ * Uses /auth/v1/health instead of /rest/v1/ root (removed by Supabase April 2026)
  */
 export async function checkPostgRESTHealth(
 	timeoutMs = 20000,
 ): Promise<HealthCheckResult> {
 	const startTime = Date.now();
-	const postgrestUrl = `${SUPABASE_URL}/rest/v1/`;
+	const healthUrl = `${SUPABASE_URL}/auth/v1/health`;
 
-	log("PostgREST", "Starting health check...", { url: postgrestUrl });
+	log("PostgREST", "Starting health check...", { url: healthUrl });
 
 	try {
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-		const response = await fetch(postgrestUrl, {
-			method: "HEAD",
+		const response = await fetch(healthUrl, {
+			method: "GET",
 			signal: controller.signal,
-			headers: {
-				apikey: SUPABASE_ANON_KEY,
-				Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-			},
 		});
 
 		clearTimeout(timeoutId);
@@ -217,7 +214,7 @@ export async function checkKongHealthWithBackoff(
 	};
 
 	const startTime = Date.now();
-	const kongUrl = `${SUPABASE_URL}/rest/v1/`;
+	const kongUrl = `${SUPABASE_URL}/auth/v1/health`;
 	let attempts = 0;
 
 	log("Kong", "Starting health check with exponential backoff...", {
@@ -241,10 +238,6 @@ export async function checkKongHealthWithBackoff(
 			const response = await fetch(kongUrl, {
 				method: "GET",
 				signal: controller.signal,
-				headers: {
-					apikey: SUPABASE_ANON_KEY,
-					Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-				},
 			});
 
 			clearTimeout(attemptTimeout);

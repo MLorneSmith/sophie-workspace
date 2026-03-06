@@ -33,13 +33,10 @@ export async function checkSupabaseHealth(): Promise<HealthCheckResult> {
 			HEALTH_CHECK_TIMEOUT,
 		);
 
-		// Check the REST API health endpoint
-		const response = await fetch(`${supabaseUrl}/rest/v1/`, {
-			method: "HEAD",
+		// Check the auth health endpoint (/rest/v1/ root removed by Supabase April 2026)
+		const response = await fetch(`${supabaseUrl}/auth/v1/health`, {
+			method: "GET",
 			signal: controller.signal,
-			headers: {
-				apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
-			},
 		});
 
 		clearTimeout(timeoutId);

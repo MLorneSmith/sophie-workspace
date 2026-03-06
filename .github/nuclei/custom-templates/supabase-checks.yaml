@@ -9,7 +9,7 @@ info:
 http:
   - method: GET
     path:
-      - "{{BaseURL}}/rest/v1/"
+      - "{{BaseURL}}/auth/v1/health"
       - "{{BaseURL}}/.supabase/"
       - "{{BaseURL}}/auth/v1/settings"
       - "{{BaseURL}}/storage/v1/bucket"

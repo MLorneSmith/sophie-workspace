@@ -418,9 +418,7 @@ jobs:
           # Wait for Supabase API to be responsive
           echo "⏳ Waiting for Supabase API to become responsive..."
           for i in {1..30}; do
-            if curl -sf http://127.0.0.1:54521/rest/v1/ \
-              -H "apikey: ${ANON_KEY}" \
-              -H "Authorization: Bearer ${ANON_KEY}" > /dev/null 2>&1; then
+            if curl -sf http://127.0.0.1:54521/auth/v1/health > /dev/null 2>&1; then
               echo "✅ Supabase API responding (attempt $i/30)"
               break
             fi

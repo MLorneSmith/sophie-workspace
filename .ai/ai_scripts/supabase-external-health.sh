@@ -17,7 +17,7 @@ check_postgrest_health() {
     fi
 
     # Check PostgREST via Kong gateway (accessible endpoint)
-    if curl -s -f -o /dev/null "http://localhost:54521/rest/v1/" 2>/dev/null; then
+    if curl -s -f -o /dev/null "http://localhost:54521/auth/v1/health" 2>/dev/null; then
         echo "healthy"
         return 0
     else
@@ -73,7 +73,7 @@ output_json() {
       "type": "PostgREST",
       "status": "$postgrest_status",
       "health_check_method": "kong_gateway",
-      "endpoint": "http://localhost:54521/rest/v1/"
+      "endpoint": "http://localhost:54521/auth/v1/health"
     },
     {
       "name": "supabase_edge_runtime_2025slideheroes-db",
@@ -104,7 +104,7 @@ case "${1:-status}" in
         echo "PostgREST (supabase_rest_2025slideheroes-db):"
         postgrest_status=$(check_postgrest_health)
         echo "  Status: $postgrest_status"
-        echo "  Kong gateway endpoint: http://localhost:54521/rest/v1/"
+        echo "  Kong gateway endpoint: http://localhost:54521/auth/v1/health"
 
         echo ""
         echo "Edge Runtime (supabase_edge_runtime_2025slideheroes-db):"
