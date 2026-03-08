@@ -9,11 +9,15 @@ export const AlphaVantageDataSchema = z.object({
 	revenue: z.number().nullable().optional(),
 	grossMargin: z.number().nullable().optional(),
 	operatingMargin: z.number().nullable().optional(),
+<<<<<<< HEAD
 	profitMargin: z.number().nullable().optional(),
+=======
+>>>>>>> origin/staging
 	stockPrice: z.number().nullable().optional(),
 	week52High: z.number().nullable().optional(),
 	week52Low: z.number().nullable().optional(),
 
+<<<<<<< HEAD
 	// Market data
 	marketCap: z.number().nullable().optional(),
 	ebitda: z.number().nullable().optional(),
@@ -23,6 +27,8 @@ export const AlphaVantageDataSchema = z.object({
 	movingAvg200: z.number().nullable().optional(),
 	fiscalYearEnd: z.string().nullable().optional(),
 
+=======
+>>>>>>> origin/staging
 	// Analyst ratings
 	analystConsensus: z.string().nullable().optional(),
 	analystBuyCount: z.number().nullable().optional(),
