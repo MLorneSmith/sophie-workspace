@@ -425,7 +425,8 @@ const SidebarPinButton: React.FC<React.ComponentProps<typeof Button>> = ({
 	className,
 	...props
 }) => {
-	const { pinned, setPinned, open, hoverExpanded, isMobile } = useSidebar();
+	const { pinned, setPinned, setOpen, open, hoverExpanded, isMobile } =
+		useSidebar();
 
 	if (isMobile || !open) return null;
 
@@ -441,8 +442,10 @@ const SidebarPinButton: React.FC<React.ComponentProps<typeof Button>> = ({
 						onClick={() => {
 							if (pinned) {
 								setPinned(false);
+								setOpen(false);
 							} else {
 								setPinned(true);
+								setOpen(true);
 							}
 						}}
 						{...props}
