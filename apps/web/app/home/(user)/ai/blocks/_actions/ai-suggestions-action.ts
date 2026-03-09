@@ -3,7 +3,7 @@
 import {
 	type ChatMessage,
 	getChatCompletion,
-	PromptManager,
+	getPrompt,
 } from "@kit/ai-gateway";
 import { enhanceAction } from "@kit/next/actions";
 import { createServiceLogger } from "@kit/shared/logger";
@@ -37,23 +37,19 @@ const SuggestionsSchema = z
 	);
 
 // Helper function to generate prompts based on field type
-function generateMessages(
+async function generateMessages(
 	field: string,
 	title: string | undefined,
 	presentationType?: string,
-): ChatMessage[] {
+): Promise<ChatMessage[]> {
 	// For title suggestions, we don't need the title parameter
 	if (field === "title") {
 		if (!presentationType)
 			throw new Error("Presentation type required for title suggestions");
 
-		const messages = PromptManager.loadTemplate("title-suggestions");
-		return messages.map((message: ChatMessage) => ({
-			...message,
-			content: PromptManager.compileTemplate(message.content, {
-				presentation_type: presentationType,
-			}),
-		}));
+		return await getPrompt("title-suggestions", {
+			presentation_type: presentationType,
+		});
 	}
 
 	// For audience suggestions, use the template
@@ -62,13 +58,7 @@ function generateMessages(
 			throw new Error("Title is required for audience suggestions");
 		}
 
-		const messages = PromptManager.loadTemplate("audience-suggestions");
-		return messages.map((message: ChatMessage) => ({
-			...message,
-			content: PromptManager.compileTemplate(message.content, {
-				title,
-			}),
-		}));
+		return await getPrompt("audience-suggestions", { title });
 	}
 
 	// For all other fields, we need the title parameter
@@ -127,7 +117,7 @@ export const getSuggestions = enhanceAction(
 			});
 
 			// Generate messages based on field type
-			const messages = generateMessages(
+			const messages = await generateMessages(
 				data.field,
 				data.title,
 				data.presentationType,
