@@ -37,8 +37,10 @@ async function getLayoutState() {
 	const sidebarOpenCookie = cookieStore.get("sidebar:state");
 	const pinnedCookie = cookieStore.get("sidebar:pinned");
 
+	const pinned = pinnedCookie ? pinnedCookie.value === "true" : true;
+
 	return {
-		open: sidebarOpenCookie?.value !== "true",
-		pinned: pinnedCookie?.value === "true",
+		open: sidebarOpenCookie ? sidebarOpenCookie.value !== "true" : pinned,
+		pinned,
 	};
 }

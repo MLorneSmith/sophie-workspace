@@ -130,12 +130,13 @@ async function getLayoutState(account: string) {
 
 	const layoutStyle = LayoutStyleSchema.safeParse(layoutCookie?.value);
 
+	const pinned = pinnedCookie ? pinnedCookie.value === "true" : true;
+
 	const sidebarOpenCookieValue = sidebarOpenCookie
 		? sidebarOpenCookie.value === "false"
-		: !config.sidebarCollapsed;
+		: pinned;
 
 	const style = layoutStyle.success ? layoutStyle.data : config.style;
-	const pinned = pinnedCookie?.value === "true";
 
 	return {
 		open: sidebarOpenCookieValue,

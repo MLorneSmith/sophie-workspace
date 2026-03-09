@@ -126,17 +126,17 @@ async function getLayoutState() {
 
 	const pinnedCookie = cookieStore.get("sidebar:pinned");
 
+	const pinned = pinnedCookie ? pinnedCookie.value === "true" : true;
+
 	const sidebarOpen = sidebarOpenCookie
 		? sidebarOpenCookie.value === "false"
-		: !personalAccountNavigationConfig.sidebarCollapsed;
+		: pinned;
 
 	const parsedStyle = LayoutStyleSchema.safeParse(layoutStyleCookie?.value);
 
 	const style = parsedStyle.success
 		? parsedStyle.data
 		: personalAccountNavigationConfig.style;
-
-	const pinned = pinnedCookie?.value === "true";
 
 	return {
 		open: sidebarOpen,

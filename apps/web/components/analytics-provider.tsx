@@ -95,10 +95,11 @@ export function AnalyticsProvider(props: React.PropsWithChildren) {
 function useReportPageView(reportAnalyticsFn: (url: string) => unknown) {
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
+	const searchParamsString = searchParams.toString();
 
 	useEffect(() => {
-		const url = [pathname, searchParams.toString()].filter(Boolean).join("?");
+		const url = [pathname, searchParamsString].filter(Boolean).join("?");
 
 		reportAnalyticsFn(url);
-	}, [pathname, reportAnalyticsFn, searchParams]);
+	}, [pathname, reportAnalyticsFn, searchParamsString]);
 }
