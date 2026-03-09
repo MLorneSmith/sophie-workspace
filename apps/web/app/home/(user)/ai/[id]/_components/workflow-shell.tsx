@@ -1,9 +1,8 @@
 "use client";
 
-import { SidebarContext } from "@kit/ui/shadcn-sidebar";
 import { cn } from "@kit/ui/utils";
 import { usePathname, useRouter } from "next/navigation";
-import { useContext, useEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 
 import { ContinueButton } from "../../_components/ContinueButton";
 import {
@@ -62,31 +61,6 @@ export function WorkflowShell(props: {
 		currentStep === "outline" ||
 		currentStep === "storyboard" ||
 		currentStep === "generate";
-
-	// Auto-collapse sidebar on workflow pages to maximize workspace
-	const sidebar = useContext(SidebarContext);
-	const sidebarRef = useRef(sidebar);
-	const previousOpenRef = useRef<boolean | null>(null);
-	sidebarRef.current = sidebar;
-
-	useEffect(() => {
-		const ctx = sidebarRef.current;
-		if (!ctx) return;
-
-		// Remember the sidebar state before we collapse it
-		previousOpenRef.current = ctx.open;
-
-		if (ctx.open) {
-			ctx.setOpen(false);
-		}
-
-		return () => {
-			// Restore sidebar state when leaving workflow
-			if (previousOpenRef.current) {
-				sidebarRef.current?.setOpen(true);
-			}
-		};
-	}, []);
 
 	return (
 		<div className="min-h-[calc(100vh-3.5rem)]">

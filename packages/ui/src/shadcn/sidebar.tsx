@@ -112,16 +112,19 @@ const SidebarProvider: React.FC<
 
 	const setOpen = React.useCallback(
 		(value: boolean | ((value: boolean) => boolean)) => {
+			const resolvedValue =
+				typeof value === "function" ? value(open) : value;
+
 			if (setOpenProp) {
-				return setOpenProp?.(typeof value === "function" ? value(open) : value);
+				return setOpenProp?.(resolvedValue);
 			}
 
-			_setOpen(value);
+			_setOpen(resolvedValue);
 
 			// Only write cookie for explicit user actions, not hover-triggered changes
 			if (!isHoverRef.current) {
 				// biome-ignore lint/suspicious/noDocumentCookie: Sidebar state needs to persist across page reloads
-				document.cookie = `${SIDEBAR_COOKIE_NAME}=${open}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+				document.cookie = `${SIDEBAR_COOKIE_NAME}=${resolvedValue}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
 			}
 		},
 		[setOpenProp, open],
