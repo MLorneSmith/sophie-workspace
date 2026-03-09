@@ -24,7 +24,6 @@ import {
 	synthesizeCompanyBrief,
 } from "../../../_lib/server/company-brief-synthesis.service";
 import { researchCompany } from "../../../_lib/server/company-research.service";
-import { scrapeWebsiteDeep } from "../../../_lib/server/website-deep-scrape.service";
 import {
 	getCompanyDetails,
 	getPersonProfile,
@@ -34,11 +33,7 @@ import {
 	searchPersonFuzzy,
 } from "../../../_lib/server/netrows.service";
 import { resolveCompanyTicker } from "../../../_lib/server/ticker-resolution.service";
-<<<<<<< HEAD
 import { scrapeWebsiteDeep } from "../../../_lib/server/website-deep-scrape.service";
-=======
-import { getFinancialSnapshot } from "../../../_lib/server/alpha-vantage.service";
->>>>>>> origin/staging
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -585,7 +580,7 @@ export const researchAudienceAction = enhanceAction(
 				// Fire company brief synthesis as a non-blocking promise (35s timeout)
 				companyBriefPromise = withTimeout(
 					synthesizeCompanyBrief(synthesisInput, user.id),
-					120_000,
+					35_000,
 					"Company brief synthesis",
 				).then(async (brief) => {
 					// Cache on success
@@ -645,7 +640,6 @@ export const researchAudienceAction = enhanceAction(
 		let briefStructured: Record<string, unknown> = {};
 		let briefText = "";
 
-<<<<<<< HEAD
 		// Run audience brief generation and company brief synthesis in parallel
 		const audienceBriefPromise = (async () => {
 			try {
@@ -712,60 +706,6 @@ export const researchAudienceAction = enhanceAction(
 
 		briefStructured = audienceBriefResult.briefStructured;
 		briefText = audienceBriefResult.briefText;
-=======
-		try {
-			const briefAbort = new AbortController();
-			const briefTimeoutId = setTimeout(
-				() => briefAbort.abort("AI brief generation timed out after 90s"),
-				90_000,
-			);
-
-			const response = await withTimeout(
-				getChatCompletion(messages, {
-					model: process.env.BIFROST_MODEL_WORKFLOW_RESEARCH,
-					virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH,
-					userId: user.id,
-					feature: "workflow-audience-research",
-					timeout: 90_000,
-					signal: briefAbort.signal,
-				}),
-				90_000,
-				"AI brief generation",
-			);
-
-			clearTimeout(briefTimeoutId);
-
-			const jsonMatch = response.content.match(/\{[\s\S]*\}/);
-			if (!jsonMatch) {
-				throw new Error("No JSON found in AI response");
-			}
-			briefStructured = JSON.parse(jsonMatch[0]);
-			briefText = (briefStructured.briefSummary as string) ?? "";
-		} catch (aiError) {
-			const errMsg =
-				aiError instanceof Error ? aiError.message : String(aiError);
-			logger.error(ctx, "AI brief generation failed: %s", errMsg);
-			logger.error(ctx, "AI brief error details: %o", {
-				name: aiError instanceof Error ? aiError.name : "unknown",
-				message: errMsg,
-				stack: (aiError instanceof Error ? aiError.stack : "")?.substring(
-					0,
-					500,
-				),
-				virtualKey: process.env.BIFROST_VK_WORKFLOW_RESEARCH
-					? "SET"
-					: "NOT_SET",
-				bifrostUrl:
-					process.env.BIFROST_GATEWAY_URL ||
-					process.env.BIFROST_BASE_URL ||
-					"DEFAULT",
-			});
-			// Still save enrichment data — user can regenerate the brief later
-			briefText = enrichment.personProfile
-				? `${enrichment.personProfile.headline ?? ""} — ${enrichment.personProfile.summary?.substring(0, 200) ?? ""}`
-				: "";
-		}
->>>>>>> origin/staging
 
 		// Ensure Apollo promise is settled (may already be awaited in synthesis path)
 		if (!apolloEnrichment) {
