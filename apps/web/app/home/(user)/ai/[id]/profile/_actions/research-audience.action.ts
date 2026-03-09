@@ -24,7 +24,6 @@ import {
 	synthesizeCompanyBrief,
 } from "../../../_lib/server/company-brief-synthesis.service";
 import { researchCompany } from "../../../_lib/server/company-research.service";
-import { scrapeWebsiteDeep } from "../../../_lib/server/website-deep-scrape.service";
 import {
 	getCompanyDetails,
 	getPersonProfile,
@@ -34,6 +33,7 @@ import {
 	searchPersonFuzzy,
 } from "../../../_lib/server/netrows.service";
 import { resolveCompanyTicker } from "../../../_lib/server/ticker-resolution.service";
+import { scrapeWebsiteDeep } from "../../../_lib/server/website-deep-scrape.service";
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -580,7 +580,7 @@ export const researchAudienceAction = enhanceAction(
 				// Fire company brief synthesis as a non-blocking promise (35s timeout)
 				companyBriefPromise = withTimeout(
 					synthesizeCompanyBrief(synthesisInput, user.id),
-					120_000,
+					35_000,
 					"Company brief synthesis",
 				).then(async (brief) => {
 					// Cache on success

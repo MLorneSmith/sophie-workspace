@@ -4,12 +4,14 @@
 	"description": "Scripts for SlideHeroes",
 	"type": "module",
 	"scripts": {
-		"update-test-user": "tsx testing/update-test-user-progress.ts"
+		"update-test-user": "tsx testing/update-test-user-progress.ts",
+		"langfuse:seed": "tsx langfuse/seed-langfuse-prompts.ts"
 	},
 	"dependencies": {
 		"@kit/shared": "workspace:*",
 		"@supabase/supabase-js": "2.86.2",
 		"dotenv": "17.2.3",
+		"langfuse": "3.37.0",
 		"node-fetch": "^3.3.2"
 	},
 	"devDependencies": {

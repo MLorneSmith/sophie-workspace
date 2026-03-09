@@ -22,15 +22,28 @@ export interface PromptOptions {
  * as per the coding plan design choice
  */
 const TEMPLATE_NAME_MAPPING: Record<string, string> = {
+	// Existing mappings
 	"title-creator": "title-creator",
 	"audience-creator": "audience-creator",
 	"ideas-creator": "ideas-creator",
 	"situation-improvements": "situation-improvements",
 	"text-simplifier": "text-simplifier",
 	"test-outline-creator": "test-outline-creator",
-	"title-suggestions": "title-creator",
-	"audience-suggestions": "audience-creator",
-	"test-outline": "test-outline-creator",
+	"title-suggestions": "title-suggestions",
+	"audience-suggestions": "audience-suggestions",
+	"test-outline": "test-outline",
+	// New mappings for inline prompts
+	"audience-brief-generation": "audience-brief-generation",
+	"company-brief-synthesis": "company-brief-synthesis",
+	"storyboard-generation": "storyboard-generation",
+	"field-suggestions-situation": "field-suggestions-situation",
+	"field-suggestions-complication": "field-suggestions-complication",
+	// Agent instruction mappings
+	"agent-editor": "agent-editor",
+	"agent-partner": "agent-partner",
+	"agent-validator": "agent-validator",
+	"agent-whisperer": "agent-whisperer",
+	"agent-research": "agent-research",
 };
 
 /**
