@@ -562,7 +562,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Find Dockerfiles
         id: dockerfiles
@@ -582,7 +582,7 @@ jobs:
 
       - name: Scan Dockerfile configurations
         if: steps.dockerfiles.outputs.files != ''
-        uses: aquasecurity/trivy-action@0.34.1
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           scan-type: 'config'
           scan-ref: '.'
