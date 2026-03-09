@@ -1,14 +1,36 @@
 import type { ChatMessage } from "../index";
 // Import templates
+import audienceBriefGenerationTemplate from "./templates/audience-brief-generation";
 import audienceSuggestionsTemplate from "./templates/audience-suggestions";
+import agentEditorTemplate from "./templates/agent-editor";
+import agentPartnerTemplate from "./templates/agent-partner";
+import agentResearchTemplate from "./templates/agent-research";
+import agentValidatorTemplate from "./templates/agent-validator";
+import agentWhispererTemplate from "./templates/agent-whisperer";
+import companyBriefSynthesisTemplate from "./templates/company-brief-synthesis";
+import fieldSuggestionsComplicationTemplate from "./templates/field-suggestions-complication";
+import fieldSuggestionsSituationTemplate from "./templates/field-suggestions-situation";
+import storyboardGenerationTemplate from "./templates/storyboard-generation";
 import testOutlineTemplate from "./templates/test-outline";
 import titleSuggestionsTemplate from "./templates/title-suggestions";
 
 // Template registry
 const templateRegistry: Record<string, ChatMessage[]> = {
+	// Existing templates
 	"title-suggestions": titleSuggestionsTemplate,
 	"audience-suggestions": audienceSuggestionsTemplate,
 	"test-outline": testOutlineTemplate,
+	// New templates
+	"audience-brief-generation": audienceBriefGenerationTemplate,
+	"company-brief-synthesis": companyBriefSynthesisTemplate,
+	"storyboard-generation": storyboardGenerationTemplate,
+	"field-suggestions-situation": fieldSuggestionsSituationTemplate,
+	"field-suggestions-complication": fieldSuggestionsComplicationTemplate,
+	"agent-editor": agentEditorTemplate,
+	"agent-partner": agentPartnerTemplate,
+	"agent-validator": agentValidatorTemplate,
+	"agent-whisperer": agentWhispererTemplate,
+	"agent-research": agentResearchTemplate,
 };
 
 /**

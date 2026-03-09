@@ -811,8 +811,8 @@ importers:
         specifier: workspace:*
         version: link:../supabase
       langfuse:
-        specifier: ^3.0.0
-        version: 3.38.6
+        specifier: 3.37.0
+        version: 3.37.0
       openai:
         specifier: ^6.9.1
         version: 6.25.0(ws@8.19.0)(zod@4.3.6)
@@ -2154,6 +2154,9 @@ importers:
       dotenv:
         specifier: 17.2.3
         version: 17.2.3
+      langfuse:
+        specifier: 3.37.0
+        version: 3.37.0
       node-fetch:
         specifier: ^3.3.2
         version: 3.3.2
@@ -9788,8 +9791,8 @@ packages:
     resolution: {integrity: sha512-EcZXa+DK9FJdi1I30+u19eKjuBJ04du6j2Nybk19KKCuraLczg/ppkTQcGvc4QOk//OAi3qUHrajUuV74RXsBQ==}
     engines: {node: '>=18'}
 
-  langfuse@3.38.6:
-    resolution: {integrity: sha512-mtwfsNGIYvObRh+NYNGlJQJDiBN+Wr3Hnr++wN25mxuOpSTdXX+JQqVCyAqGL5GD2TAXRZ7COsN42Vmp9krYmg==}
+  langfuse@3.37.0:
+    resolution: {integrity: sha512-NpemB+5i6VT9CXmBwQTE4q1DPOY/DH7OMxBJn8Rcirw+z2HYJpTRH8j48cBjzwqmYtqLdqyJMzAALa2ReQ50hQ==}
     engines: {node: '>=18'}
 
   leac@0.6.0:
@@ -21510,7 +21513,7 @@ snapshots:
     dependencies:
       mustache: 4.2.0
 
-  langfuse@3.38.6:
+  langfuse@3.37.0:
     dependencies:
       langfuse-core: 3.38.6
 

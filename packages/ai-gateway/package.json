@@ -13,7 +13,7 @@
 		"@hookform/resolvers": "5.2.2",
 		"@kit/shared": "workspace:*",
 		"@kit/supabase": "workspace:*",
-		"langfuse": "^3.0.0",
+		"langfuse": "3.37.0",
 		"openai": "^6.9.1",
 		"zod": "^4.1.13"
 	},

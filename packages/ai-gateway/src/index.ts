@@ -666,6 +666,17 @@ export {
 	loadTemplate,
 	PromptManager,
 } from "./prompts/prompt-manager";
+// Export prompt service and agent instructions
+export {
+	getPrompt,
+	fetchPromptFromLangfuse,
+	hasPromptInLangfuse,
+	type PromptOptions,
+} from "./langfuse/prompt-service";
+export {
+	getAgentInstructions,
+	preloadAgentInstructions,
+} from "./langfuse/agent-instructions";
 // Export templates
 export { textSimplificationTemplate } from "./prompts/templates/text-simplification";
 // Export types from prompts
