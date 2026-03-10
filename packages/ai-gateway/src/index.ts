@@ -656,9 +656,19 @@ export { baseInstructions } from "./prompts/partials/base-instructions";
 export { improvementFormat } from "./prompts/partials/improvement-format";
 export { improvementProcess } from "./prompts/partials/improvement-process";
 export { outlineRewriteInstructions } from "./prompts/partials/outline-rewrite";
-export { presentationContext } from "./prompts/partials/presentation-context";
 export { sectionAnalysis } from "./prompts/partials/section-analysis";
 export { simplifiedFormat } from "./prompts/partials/simplified-format";
+// Export context curation (includes backward-compatible presentationContext)
+export {
+	curatePresentationContext,
+	type CurationInput,
+	presentationContext,
+} from "./prompts/partials/curate-presentation-context";
+// Export stage types
+export type {
+	PresentationStage,
+	ContextDataSource,
+} from "./prompts/types/context-stages";
 // Export prompt manager
 export {
 	compileTemplate,

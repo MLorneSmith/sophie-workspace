@@ -6,12 +6,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 import { Input } from "@kit/ui/input";
 import { Label } from "@kit/ui/label";
 import { Textarea } from "@kit/ui/textarea";
+import { toast } from "@kit/ui/sonner";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@kit/ui/dialog";
 import {
 	Building2,
 	LayoutTemplate,
 	Lightbulb,
 	MessageCircle,
 	Target,
+	Library,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -35,6 +45,7 @@ import {
 	searchAudienceAction,
 } from "../_actions/research-audience.action";
 import { saveProfileStepAction } from "../_actions/save-profile-step.action";
+import { createSavedProfileAction } from "../../../../library/_lib/server/saved-profiles-actions";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -192,6 +203,17 @@ function extractCompanyDomain(
 export function ProfileStepForm(props: {
 	presentationId: string;
 	initialProfile: AudienceProfileRow | null;
+	savedProfiles?: Array<{
+		id: string;
+		name: string;
+		person_name: string;
+		company: string | null;
+		audience_data: Record<string, unknown> | null;
+		company_brief: Record<string, unknown> | null;
+		enrichment_inputs: Record<string, unknown> | null;
+		last_refreshed_at: string | null;
+	}>;
+	accountId: string;
 }) {
 	const router = useRouter();
 	const reactId = useId();
@@ -249,6 +271,10 @@ export function ProfileStepForm(props: {
 	>({});
 	const [showAdaptive, setShowAdaptive] = useState(false);
 	const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
+	const [showSaveDialog, setShowSaveDialog] = useState(false);
+	const [showLibraryDialog, setShowLibraryDialog] = useState(false);
+	const [profileName, setProfileName] = useState("");
+	const [isSavingToLibrary, setIsSavingToLibrary] = useState(false);
 
 	// -----------------------------------------------------------------------
 	// Poll for background company brief
@@ -467,6 +493,80 @@ export function ProfileStepForm(props: {
 		adaptiveQuestions,
 		adaptiveAnswers,
 	]);
+
+	// -----------------------------------------------------------------------
+	// Save to library handler
+	// -----------------------------------------------------------------------
+
+	const handleSaveToLibrary = useCallback(async () => {
+		if (!props.initialProfile?.id) return;
+
+		setIsSavingToLibrary(true);
+		try {
+			await createSavedProfileAction({
+				accountId: props.accountId,
+				name:
+					profileName ||
+					`${company || personName} - ${new Date().toLocaleDateString()}`,
+				sourceProfileId: props.initialProfile.id,
+			});
+			setShowSaveDialog(false);
+			setProfileName("");
+			toast.success("Profile saved to library");
+		} catch (err) {
+			setError(
+				err instanceof Error ? err.message : "Failed to save to library",
+			);
+		} finally {
+			setIsSavingToLibrary(false);
+		}
+	}, [props.initialProfile, props.accountId, profileName, company, personName]);
+
+	// -----------------------------------------------------------------------
+	// Use from library handler
+	// -----------------------------------------------------------------------
+
+	type SavedProfileType = {
+		id: string;
+		name: string;
+		person_name: string;
+		company: string | null;
+		audience_data: Record<string, unknown> | null;
+		company_brief: Record<string, unknown> | null;
+		enrichment_inputs: Record<string, unknown> | null;
+		last_refreshed_at: string | null;
+	};
+
+	const handleUseFromLibrary = useCallback(
+		async (savedProfile: SavedProfileType) => {
+			// Load the saved profile data into the form
+			setPersonName(savedProfile.person_name);
+			setCompany(savedProfile.company ?? "");
+
+			if (savedProfile.audience_data) {
+				setBrief(savedProfile.audience_data as BriefStructured);
+				// Extract briefSummary as briefText for persistence
+				const briefSummary = (savedProfile.audience_data as BriefStructured)
+					?.briefSummary;
+				if (briefSummary) {
+					setBriefText(briefSummary);
+				}
+				setHasPersonData(true);
+			}
+
+			if (savedProfile.company_brief) {
+				setCompanyBrief(
+					savedProfile.company_brief as unknown as CompanyBriefStructured,
+				);
+				setHasCompanyBrief(true);
+				setHasCompanyData(true);
+			}
+
+			setFormState("brief");
+			setShowLibraryDialog(false);
+		},
+		[],
+	);
 
 	// -----------------------------------------------------------------------
 	// Render: Searching for candidates
@@ -1101,18 +1201,34 @@ export function ProfileStepForm(props: {
 				{error ? <p className="text-app-sm text-destructive">{error}</p> : null}
 
 				<div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-					<Button
-						variant="ghost"
-						onClick={() => {
-							setBrief(null);
-							setShowAdaptive(false);
-							setAdaptiveQuestions([]);
-							setAdaptiveAnswers({});
-							setFormState("input");
-						}}
-					>
-						← Start over
-					</Button>
+					<div className="flex gap-2">
+						<Button
+							variant="ghost"
+							onClick={() => {
+								setBrief(null);
+								setShowAdaptive(false);
+								setAdaptiveQuestions([]);
+								setAdaptiveAnswers({});
+								setFormState("input");
+							}}
+						>
+							← Start over
+						</Button>
+						{props.initialProfile?.id && (
+							<Button
+								variant="outline"
+								onClick={() => {
+									setProfileName(
+										`${company || personName} - ${new Date().toLocaleDateString()}`,
+									);
+									setShowSaveDialog(true);
+								}}
+							>
+								<Library className="mr-2 h-4 w-4" />
+								Save to Library
+							</Button>
+						)}
+					</div>
 
 					<div className="flex gap-2">
 						{!showAdaptive && !briefEmpty ? (
@@ -1152,14 +1268,22 @@ export function ProfileStepForm(props: {
 
 	return (
 		<div className="mx-auto w-full max-w-5xl space-y-6">
-			<div>
-				<h2 className="text-app-h3 font-semibold">
-					Who are you presenting to?
-				</h2>
-				<p className="mt-1 text-app-sm text-muted-foreground">
-					Enter a name and company — we&apos;ll research them and build a
-					tailored audience profile.
-				</p>
+			<div className="flex items-start justify-between">
+				<div>
+					<h2 className="text-app-h3 font-semibold">
+						Who are you presenting to?
+					</h2>
+					<p className="mt-1 text-app-sm text-muted-foreground">
+						Enter a name and company — we&apos;ll research them and build a
+						tailored audience profile.
+					</p>
+				</div>
+				{props.savedProfiles && props.savedProfiles.length > 0 && (
+					<Button variant="outline" onClick={() => setShowLibraryDialog(true)}>
+						<Library className="mr-2 h-4 w-4" />
+						Use Saved Profile
+					</Button>
+				)}
 			</div>
 
 			<div className="space-y-4">
@@ -1267,6 +1391,75 @@ export function ProfileStepForm(props: {
 					</Button>
 				</div>
 			</div>
+
+			{/* Save to Library Dialog */}
+			<Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Save to Library</DialogTitle>
+						<DialogDescription>
+							Save this profile to reuse in future presentations.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="py-4">
+						<Label htmlFor={`${reactId}-profile-name`}>Profile name</Label>
+						<Input
+							id={`${reactId}-profile-name`}
+							value={profileName}
+							onChange={(e) => setProfileName(e.target.value)}
+							placeholder={`${company || personName} - ${new Date().toLocaleDateString()}`}
+							className="mt-2"
+						/>
+					</div>
+					<DialogFooter>
+						<Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+							Cancel
+						</Button>
+						<Button onClick={handleSaveToLibrary} disabled={isSavingToLibrary}>
+							{isSavingToLibrary ? "Saving..." : "Save Profile"}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* Use from Library Dialog */}
+			<Dialog open={showLibraryDialog} onOpenChange={setShowLibraryDialog}>
+				<DialogContent className="max-w-md">
+					<DialogHeader>
+						<DialogTitle>Use Saved Profile</DialogTitle>
+						<DialogDescription>
+							Select a profile from your library to use for this presentation.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="max-h-[300px] space-y-2 overflow-y-auto py-2">
+						{props.savedProfiles?.map((profile) => (
+							<button
+								key={profile.id}
+								type="button"
+								className="flex w-full items-center justify-between rounded-lg border p-3 text-left transition-colors hover:bg-muted"
+								onClick={() => handleUseFromLibrary(profile)}
+							>
+								<div>
+									<p className="font-medium">{profile.name}</p>
+									<p className="text-sm text-muted-foreground">
+										{profile.person_name}
+										{profile.company ? ` at ${profile.company}` : ""}
+									</p>
+								</div>
+								<Library className="h-4 w-4 text-muted-foreground" />
+							</button>
+						))}
+					</div>
+					<DialogFooter>
+						<Button
+							variant="outline"
+							onClick={() => setShowLibraryDialog(false)}
+						>
+							Cancel
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 }

@@ -1,4 +1,6 @@
+import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { createAccountsApi } from "@kit/accounts/api";
 import { Card } from "@kit/ui/card";
 import { PageBody } from "@kit/ui/page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@kit/ui/tabs";
@@ -11,7 +13,9 @@ import { withI18n } from "~/lib/i18n/with-i18n";
 import { CURATED_TEMPLATES } from "~/config/templates.config";
 import { HomeLayoutPageHeader } from "../_components/home-page-header";
 import { LibraryProfiles } from "./_components/library-profiles";
+import { LibrarySavedProfiles } from "./_components/library-saved-profiles";
 import { LibraryTemplates } from "./_components/library-templates";
+import { getSavedProfiles } from "./_lib/server/saved-profiles.service";
 
 export const generateMetadata = async () => {
 	const i18n = await createI18nServerInstance();
@@ -24,9 +28,18 @@ export const generateMetadata = async () => {
 
 async function LibraryPage() {
 	const client = getSupabaseServerClient<Database>();
-	const {
-		data: { user },
-	} = await client.auth.getUser();
+	const auth = await requireUser(client);
+
+	if (auth.error) {
+		throw new Error("Unauthorized");
+	}
+
+	const user = auth.data;
+
+	// Get the personal account's actual ID using the accounts API
+	const accountsApi = createAccountsApi(client);
+	const workspace = await accountsApi.getAccountWorkspace();
+	const personalAccountId = workspace?.id;
 
 	// Fetch audience profiles for the current user
 	const { data: profiles } = user?.id
@@ -36,6 +49,12 @@ async function LibraryPage() {
 				.eq("user_id", user.id)
 				.order("created_at", { ascending: false })
 		: { data: null };
+
+	// Fetch saved profiles for the current user using the service
+	const savedProfiles =
+		user?.id && personalAccountId
+			? await getSavedProfiles(client, user.id, personalAccountId)
+			: [];
 
 	return (
 		<>
@@ -50,16 +69,28 @@ async function LibraryPage() {
 						<TabsTrigger value="templates">
 							<Trans i18nKey={"common:library.templates"} />
 						</TabsTrigger>
+						<TabsTrigger value="saved-profiles">
+							<Trans i18nKey={"common:library.savedProfiles"} />
+						</TabsTrigger>
 						<TabsTrigger value="profiles">
 							<Trans i18nKey={"common:library.profiles"} />
-						</TabsTrigger>
-						<TabsTrigger value="company-profiles">
-							<Trans i18nKey={"common:library.companyProfiles"} />
 						</TabsTrigger>
 					</TabsList>
 
 					<TabsContent value="templates">
 						<LibraryTemplates templates={CURATED_TEMPLATES} />
+					</TabsContent>
+
+					<TabsContent value="saved-profiles">
+						{savedProfiles && savedProfiles.length > 0 ? (
+							<LibrarySavedProfiles profiles={savedProfiles} />
+						) : (
+							<Card className="p-8 text-center">
+								<p className="text-muted-foreground">
+									<Trans i18nKey={"common:library.emptySavedProfiles"} />
+								</p>
+							</Card>
+						)}
 					</TabsContent>
 
 					<TabsContent value="profiles">
@@ -72,14 +103,6 @@ async function LibraryPage() {
 								</p>
 							</Card>
 						)}
-					</TabsContent>
-
-					<TabsContent value="company-profiles">
-						<Card className="p-8 text-center">
-							<p className="text-muted-foreground">
-								<Trans i18nKey={"common:library.emptyCompanyProfiles"} />
-							</p>
-						</Card>
 					</TabsContent>
 				</Tabs>
 			</PageBody>
