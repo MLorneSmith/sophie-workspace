@@ -2,6 +2,8 @@ import { UserWorkspaceContextProvider } from "@kit/accounts/components";
 import { Page, PageMobileNavigation, PageNavigation } from "@kit/ui/page";
 import { SidebarProvider } from "@kit/ui/shadcn-sidebar";
 import { cookies } from "next/headers";
+
+export const dynamic = "force-dynamic";
 import { use } from "react";
 import { z } from "zod";
 
