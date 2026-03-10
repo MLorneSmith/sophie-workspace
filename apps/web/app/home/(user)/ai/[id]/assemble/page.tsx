@@ -7,6 +7,8 @@ import { getProfileByPresentationId } from "../../_lib/server/audience-profiles.
 import type { FormData } from "../../blocks/_components/BlocksFormContext";
 import BlocksMultistepForm from "../../blocks/BlocksMultistepForm";
 
+import { DeckUpload } from "./_components/deck-upload";
+
 export default async function AssembleStepPage({
 	params,
 }: {
@@ -76,7 +78,7 @@ export default async function AssembleStepPage({
 	const companyBrief = enrichment?.companyBrief ?? null;
 
 	return (
-		<div className="space-y-0">
+		<div className="space-y-6">
 			{companyBrief?.currentSituation?.summary ? (
 				<div className="mx-auto max-w-3xl px-6 pt-4 sm:px-8">
 					<div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-4">
@@ -100,6 +102,12 @@ export default async function AssembleStepPage({
 					</div>
 				</div>
 			) : null}
+
+			{/* Deck Upload Section */}
+			<div className="mx-auto max-w-3xl px-6 sm:px-8">
+				<DeckUpload presentationId={presentationId} />
+			</div>
+
 			<BlocksMultistepForm
 				userId={auth.data.id}
 				mode="assemble"
