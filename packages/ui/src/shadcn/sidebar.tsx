@@ -112,8 +112,7 @@ const SidebarProvider: React.FC<
 
 	const setOpen = React.useCallback(
 		(value: boolean | ((value: boolean) => boolean)) => {
-			const resolvedValue =
-				typeof value === "function" ? value(open) : value;
+			const resolvedValue = typeof value === "function" ? value(open) : value;
 
 			if (setOpenProp) {
 				return setOpenProp?.(resolvedValue);
