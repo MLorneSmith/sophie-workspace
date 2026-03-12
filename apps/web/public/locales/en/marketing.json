@@ -1,6 +1,11 @@
 {
 	"blog": "Blog",
 	"blogSubtitle": "News and updates about the platform",
+	"status": "System Status",
+	"statusSubtitle": "View the current status of our services",
+	"statusNotConfiguredTitle": "Status Page Not Configured",
+	"statusNotConfiguredDescription": "The status page has not been configured. Set BETTERSTACK_STATUS_URL in your environment to enable this feature.",
+	"statusOperational": "All systems operational",
 	"changelog": "Changelog",
 	"changelogSubtitle": "Latest updates and improvements to the platform",
 	"noChangelogEntries": "No changelog entries found",

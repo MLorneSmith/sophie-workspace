@@ -73,6 +73,10 @@ const COMPANY = [
 		href: "/sitemap",
 	},
 	{
+		title: "Status",
+		href: "/status",
+	},
+	{
 		title: "Twitter / X",
 		href: "/twitter",
 	},
