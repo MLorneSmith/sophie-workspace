@@ -366,7 +366,7 @@ export function SetupForm({
 			presentationType: value,
 			previousType: formData.presentation_type,
 		});
-		setFormData({ ...formData, presentation_type: value });
+		setFormData({ ...formData, presentation_type: value as "general" | "sales" | "consulting" | "fundraising" });
 		setTouchedFields(new Set(touchedFields).add("presentation_type"));
 
 		const isValid = validateField("presentation_type");
@@ -462,8 +462,8 @@ export function SetupForm({
 			const response = await submitBuildingBlocksAction({
 				title,
 				audience,
-				presentation_type: getPresentationTypeLabel(presentation_type),
-				question_type: getQuestionTypeLabel(question_type),
+				presentation_type: presentation_type,
+				question_type: question_type,
 				situation,
 				complication,
 				argument_map:

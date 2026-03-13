@@ -278,3 +278,20 @@ export const GenerateOutputSchema = z.object({
 	generatedAt: z.string().datetime().nullable(),
 });
 export type GenerateOutput = z.infer<typeof GenerateOutputSchema>;
+
+/**
+ * LLM outline response schema for validating RAG path output.
+ *
+ * Used to validate the JSON response from the LLM when generating outlines
+ * with deck content as context.
+ */
+export const LLMSectionSchema = z.object({
+	title: z.string(),
+	content: z.string(),
+});
+export type LLMSection = z.infer<typeof LLMSectionSchema>;
+
+export const LLMOutlineResponseSchema = z.object({
+	sections: z.array(LLMSectionSchema),
+});
+export type LLMOutlineResponse = z.infer<typeof LLMOutlineResponseSchema>;

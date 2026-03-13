@@ -3,7 +3,7 @@
 import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import type { Database } from "~/lib/database.types";
-import { SubmitBuildingBlocksSchema } from "../_lib/schemas/submit-building-blocks.schema";
+import { SubmitBuildingBlocksSchema } from "../_lib/schemas";
 import { createTiptapFromText } from "./tiptap-format-utils";
 
 function argumentMapToAnswerText(argumentMapJson: string): string {

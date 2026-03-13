@@ -60,7 +60,7 @@ const pathsConfig = PathsSchema.parse({
 		ai: "/home/ai",
 		library: "/home/library",
 		blocks: "/home/ai/blocks",
-		storyboard: "home/ai/storyboard",
+		storyboard: "/home/ai/storyboard",
 	},
 } satisfies z.infer<typeof PathsSchema>);
 

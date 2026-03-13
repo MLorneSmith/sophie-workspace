@@ -7,6 +7,10 @@ import {
 	type PresentationPathType,
 	type QuestionField,
 } from "../_config/formContent";
+import type {
+	PresentationType,
+	QuestionType,
+} from "~/home/(user)/ai/_lib/schemas/presentation-artifacts";
 
 // Create a client-safe logger wrapper
 const logger = {
@@ -39,8 +43,8 @@ const logger = {
 export interface FormData {
 	title: string;
 	audience: string;
-	presentation_type: string;
-	question_type: string;
+	presentation_type: PresentationType;
+	question_type: QuestionType;
 	situation: string;
 	complication: string;
 	// NOTE: Current flow uses `answer`. Upcoming Argument Map flow may replace this
@@ -76,8 +80,8 @@ export function SetupFormProvider({
 	const [formData, setFormData] = useState<FormData>({
 		title: "",
 		audience: "",
-		presentation_type: "",
-		question_type: "",
+		presentation_type: "general",
+		question_type: "strategy",
 		situation: "",
 		complication: "",
 		answer: "",
