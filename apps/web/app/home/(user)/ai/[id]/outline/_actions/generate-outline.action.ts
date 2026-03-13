@@ -6,6 +6,11 @@ import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "~/lib/database.types";
+import {
+	type ArgumentMapNode,
+	ArgumentMapNodeSchema,
+	LLMOutlineResponseSchema,
+} from "~/home/(user)/ai/_lib/schemas/presentation-artifacts";
 import { z } from "zod";
 
 interface TiptapNode {
@@ -232,28 +237,33 @@ export const generateOutlineAction = enhanceAction(
 			assembleOutput.complication || "",
 		);
 
-		// Parse argument_map to extract answer content
+		// Parse argument_map to extract answer content using ArgumentMapNodeSchema
 		let answerNodes: TiptapNode[] = [];
 		if (assembleOutput.argument_map) {
-			const argMap = assembleOutput.argument_map as Record<string, unknown>;
-			if (typeof argMap === "object" && argMap !== null) {
-				// Try to extract text from argument_map structure
-				const mainArg = (argMap.main_argument || argMap.answer || "") as string;
-				if (typeof mainArg === "string" && mainArg.trim()) {
-					answerNodes = textToTiptapNodes(mainArg);
+			const parseResult = ArgumentMapNodeSchema.safeParse(
+				assembleOutput.argument_map,
+			);
+
+			if (parseResult.success) {
+				const root = parseResult.data;
+				// Main argument comes from root.text (the top-level claim)
+				if (root.text?.trim()) {
+					answerNodes = textToTiptapNodes(root.text);
 				}
 
-				// Also include supporting points if available
-				const supporting = argMap.supporting_points as string[] | undefined;
-				if (Array.isArray(supporting) && supporting.length > 0) {
-					answerNodes.push({
-						type: "bulletList",
-						content: supporting
-							.filter(
-								(p): p is string =>
-									typeof p === "string" && p.trim().length > 0,
-							)
-							.map((point) => ({
+				// Supporting points come from root.children
+				if (root.children && root.children.length > 0) {
+					const supportingPoints = root.children
+						.map((child: ArgumentMapNode) => child.text)
+						.filter(
+							(text: string | undefined): text is string =>
+								typeof text === "string" && text.trim().length > 0,
+						);
+
+					if (supportingPoints.length > 0) {
+						answerNodes.push({
+							type: "bulletList",
+							content: supportingPoints.map((point: string) => ({
 								type: "listItem",
 								content: [
 									{
@@ -262,8 +272,14 @@ export const generateOutlineAction = enhanceAction(
 									},
 								],
 							})),
-					});
+						});
+					}
 				}
+			} else {
+				logger.warn("Failed to parse argument_map with ArgumentMapNodeSchema", {
+					presentationId: data.presentationId,
+					errors: (parseResult.error as { errors?: unknown }).errors,
+				});
 			}
 		}
 
@@ -425,7 +441,7 @@ async function generateOutlineWithRAG(
 
 The uploaded deck (${materials.name}) provides additional context. Reference its structure and content when creating the outline.
 
-Return ONLY valid JSON in this exact format:
+Do not wrap in markdown code fences. Return ONLY valid JSON in this exact format:
 {
   "sections": [
     {
@@ -470,19 +486,36 @@ Generate a presentation outline.`;
 		throw new Error("Failed to generate outline with LLM");
 	}
 
-	// Parse the JSON response
-	let parsed: { sections?: Array<{ title: string; content: string }> };
+	// Strip markdown code fences if present
+	const strippedContent = content
+		.replace(/^```(?:json)?\n?/, "")
+		.replace(/```$/, "")
+		.trim();
+
+	// Parse and validate the JSON response
+	let parsed: unknown;
 	try {
-		parsed = JSON.parse(content);
+		parsed = JSON.parse(strippedContent);
 	} catch {
 		logger.error("Failed to parse LLM response as JSON", {
 			presentationId,
-			response: content,
+			response: strippedContent,
 		});
 		throw new Error("Invalid response from AI");
 	}
 
-	const sections = parsed.sections ?? [];
+	// Validate response structure with Zod
+	const validationResult = LLMOutlineResponseSchema.safeParse(parsed);
+	if (!validationResult.success) {
+		logger.error("LLM response validation failed", {
+			presentationId,
+			errors: (validationResult.error as { errors?: unknown }).errors,
+			response: strippedContent,
+		});
+		throw new Error("Invalid outline structure from AI");
+	}
+
+	const sections = validationResult.data.sections;
 
 	// Convert sections to TipTap document format
 	const outlineContent: TiptapDocument = {

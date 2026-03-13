@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+	PresentationTypeSchema,
+	QuestionTypeSchema,
+} from "~/home/(user)/ai/_lib/schemas/presentation-artifacts";
 
 export const SubmitBuildingBlocksSchema = z.object({
 	title: z
@@ -9,8 +13,8 @@ export const SubmitBuildingBlocksSchema = z.object({
 		.string()
 		.min(1, "Audience is required")
 		.max(200, "Audience must be less than 200 characters"),
-	presentation_type: z.string().min(1, "Presentation type is required"),
-	question_type: z.string().min(1, "Question type is required"),
+	presentation_type: PresentationTypeSchema,
+	question_type: QuestionTypeSchema,
 	situation: z
 		.string()
 		.min(1, "Situation is required")
