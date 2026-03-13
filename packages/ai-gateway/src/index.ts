@@ -699,3 +699,7 @@ export type {
 	SimplifiedSection,
 } from "./utils/parse-simplified";
 export { parseSimplified } from "./utils/parse-simplified";
+// Export test-outline prompts
+export { default as testOutlineTemplate } from "./prompts/templates/test-outline";
+export { default as testOutlineCreatorSystem } from "./prompts/messages/system/test-outline-creator";
+export { default as testOutlineRequestUser } from "./prompts/messages/user/test-outline-request";

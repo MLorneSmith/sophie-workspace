@@ -481,10 +481,15 @@ Generate a presentation outline.`;
 		throw new Error("Failed to generate outline with LLM");
 	}
 
-	// Strip markdown code fences if present
+	// Strip markdown code fences if present - more robust handling
 	const strippedContent = content
-		.replace(/^```(?:json)?\n?/, "")
-		.replace(/```$/, "")
+		// Remove opening fence (```json or ``` at start of string)
+		.replace(/^```(?:json)?\s*\n?/, "")
+		// Remove closing fence (``` at end of string)
+		.replace(/```\s*$/, "")
+		// Also handle any stray fences in the middle of content
+		.replace(/```(?:json)?\s*\n/g, "")
+		.replace(/\n```$/g, "")
 		.trim();
 
 	// Parse and validate the JSON response
