@@ -247,7 +247,7 @@ export const generateOutlineAction = enhanceAction(
 			if (parseResult.success) {
 				const root = parseResult.data;
 				// Main argument comes from root.text (the top-level claim)
-				if (root.text && root.text.trim()) {
+				if (root.text?.trim()) {
 					answerNodes = textToTiptapNodes(root.text);
 				}
 
