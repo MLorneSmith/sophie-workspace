@@ -9,9 +9,9 @@ import type { Database, Json } from "~/lib/database.types";
 import {
 	type ArgumentMapNode,
 	ArgumentMapNodeSchema,
+	GenerateOutlineSchema,
 	LLMOutlineResponseSchema,
 } from "~/home/(user)/ai/_lib/schemas/presentation-artifacts";
-import { z } from "zod";
 
 interface TiptapNode {
 	type: string;
@@ -148,11 +148,6 @@ function textToTiptapNodes(text: string): TiptapNode[] {
 	}));
 }
 
-const GenerateOutlineSchema = z.object({
-	presentationId: z.string().min(1),
-	forceRegenerate: z.boolean().default(false),
-});
-
 export const generateOutlineAction = enhanceAction(
 	async (data, _user) => {
 		const logger = await getLogger();
@@ -278,7 +273,7 @@ export const generateOutlineAction = enhanceAction(
 			} else {
 				logger.warn("Failed to parse argument_map with ArgumentMapNodeSchema", {
 					presentationId: data.presentationId,
-					errors: (parseResult.error as { errors?: unknown }).errors,
+					errors: parseResult.error.issues,
 				});
 			}
 		}
@@ -509,7 +504,7 @@ Generate a presentation outline.`;
 	if (!validationResult.success) {
 		logger.error("LLM response validation failed", {
 			presentationId,
-			errors: (validationResult.error as { errors?: unknown }).errors,
+			errors: validationResult.error.issues,
 			response: strippedContent,
 		});
 		throw new Error("Invalid outline structure from AI");

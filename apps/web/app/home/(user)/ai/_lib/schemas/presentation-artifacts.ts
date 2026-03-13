@@ -212,6 +212,15 @@ export const OutlineContentSchema = z.object({
 export type OutlineContent = z.infer<typeof OutlineContentSchema>;
 
 /**
+ * Input schema for generate outline action.
+ */
+export const GenerateOutlineSchema = z.object({
+	presentationId: z.string().uuid(),
+	forceRegenerate: z.boolean().default(false),
+});
+export type GenerateOutline = z.infer<typeof GenerateOutlineSchema>;
+
+/**
  * 10) ContentBlock — a block of slide content within a storyboard slide.
  *
  * Produced/edited during Storyboard step.
@@ -286,12 +295,12 @@ export type GenerateOutput = z.infer<typeof GenerateOutputSchema>;
  * with deck content as context.
  */
 export const LLMSectionSchema = z.object({
-	title: z.string(),
-	content: z.string(),
+	title: z.string().min(1),
+	content: z.string().min(1),
 });
 export type LLMSection = z.infer<typeof LLMSectionSchema>;
 
 export const LLMOutlineResponseSchema = z.object({
-	sections: z.array(LLMSectionSchema),
+	sections: z.array(LLMSectionSchema).min(1),
 });
 export type LLMOutlineResponse = z.infer<typeof LLMOutlineResponseSchema>;

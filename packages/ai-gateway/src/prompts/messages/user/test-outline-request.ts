@@ -13,7 +13,7 @@ The outline must be structured with:
 1. Main sections (numbered)
    - Include time allocation for each section
    - Ensure logical progression
-   
+
 2. Subsections (lettered)
    - Support main section objectives
    - Provide detailed focus areas
@@ -44,6 +44,18 @@ Required Elements:
    - Discussion opportunities
    - Audience participation moments
 
-Please ensure all content aligns with the specified tone and incorporates the specific requirements provided.`;
+Please ensure all content aligns with the specified tone and incorporates the specific requirements provided.
+
+Output your outline as JSON in this exact format:
+{
+  "sections": [
+    {
+      "title": "Section Title",
+      "content": "Section content description"
+    }
+  ]
+}
+
+Output ONLY valid JSON with no markdown fences, no prose, using the exact structure above.`;
 
 export default testOutlineRequestUser;

@@ -24,6 +24,17 @@ Remember:
 - Business presentations require clear, actionable content
 - Structure should support easy navigation
 - Time allocations should be realistic and well-distributed
-- Consider audience engagement throughout`;
+- Consider audience engagement throughout
+
+Output Format:
+Respond ONLY with valid JSON, no markdown fences, no prose. Use this exact structure:
+{
+  "sections": [
+    {
+      "title": "Section Title",
+      "content": "Section content description"
+    }
+  ]
+}`;
 
 export default testOutlineCreatorSystem;
