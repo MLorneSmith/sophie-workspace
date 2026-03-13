@@ -42,6 +42,7 @@ import {
 	useOutlineContents,
 	useSaveOutlineContent,
 } from "../_lib/hooks/use-outline-contents";
+import { useCompletedSteps } from "../../_components/workflow-shell";
 
 interface OutlineEditorProps {
 	presentationId: string;
@@ -210,12 +211,16 @@ export function OutlineEditor({ presentationId }: OutlineEditorProps) {
 	}, [isLoading, outlineDoc, handleReset]);
 
 	// Save handler
+	const { markStepComplete } = useCompletedSteps();
+
 	const handleSave = useCallback(
 		(json: JSONContent) => {
 			setSaveStatus("saving");
 			saveContent(json, {
 				onSuccess: () => {
 					setSaveStatus("saved");
+					// Mark the outline step as complete in the context
+					markStepComplete("outline");
 					setTimeout(() => setSaveStatus("idle"), 2000);
 				},
 				onError: () => {
@@ -224,7 +229,7 @@ export function OutlineEditor({ presentationId }: OutlineEditorProps) {
 				},
 			});
 		},
-		[saveContent],
+		[saveContent, markStepComplete],
 	);
 
 	const debouncedSave = useMemo(() => debounce(handleSave, 1000), [handleSave]);

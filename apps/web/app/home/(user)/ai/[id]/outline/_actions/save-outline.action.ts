@@ -3,6 +3,7 @@
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { saveOutlineContent } from "../_lib/server/outline-contents-db.service";
@@ -73,6 +74,9 @@ export const saveOutlineAction = enhanceAction(
 			);
 			throw updatePresentationError;
 		}
+
+		// Revalidate the outline page path for consistency
+		revalidatePath(`/home/ai/${data.presentationId}/outline`);
 
 		logger.info(ctx, "Outline saved successfully");
 

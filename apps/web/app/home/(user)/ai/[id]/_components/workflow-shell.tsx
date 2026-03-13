@@ -2,7 +2,7 @@
 
 import { cn } from "@kit/ui/utils";
 import { usePathname, useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 
 import { ContinueButton } from "../../_components/ContinueButton";
 import {
@@ -10,6 +10,22 @@ import {
 	WORKFLOW_STEPS,
 } from "../../_components/mock-presentations";
 import { WorkflowStepBar } from "./WorkflowStepBar";
+
+// Context for managing completedSteps as reactive client state
+const CompletedStepsContext = createContext<{
+	completedSteps: string[];
+	markStepComplete: (step: string) => void;
+} | null>(null);
+
+export function useCompletedSteps() {
+	const context = useContext(CompletedStepsContext);
+	if (!context) {
+		throw new Error(
+			"useCompletedSteps must be used within CompletedStepsProvider",
+		);
+	}
+	return context;
+}
 
 function getStepFromPath(
 	pathname: string,
@@ -52,6 +68,22 @@ export function WorkflowShell(props: {
 	const pathname = usePathname();
 	const router = useRouter();
 
+	// Initialize completedSteps as reactive client state from SSR props
+	const [completedSteps, setCompletedSteps] = useState<string[]>(
+		props.completedSteps,
+	);
+
+	// Function to mark a step as complete
+	const markStepComplete = useMemo(
+		() => (step: string) => {
+			setCompletedSteps((prev) => {
+				if (prev.includes(step)) return prev;
+				return [...prev, step];
+			});
+		},
+		[],
+	);
+
 	const currentStep = useMemo(
 		() => getStepFromPath(pathname, props.presentationId),
 		[pathname, props.presentationId],
@@ -63,47 +95,51 @@ export function WorkflowShell(props: {
 		currentStep === "generate";
 
 	return (
-		<div className="min-h-[calc(100vh-3.5rem)]">
-			<WorkflowStepBar presentationId={props.presentationId} />
+		<CompletedStepsContext.Provider
+			value={{ completedSteps, markStepComplete }}
+		>
+			<div className="min-h-[calc(100vh-3.5rem)]">
+				<WorkflowStepBar presentationId={props.presentationId} />
 
-			<div
-				className={cn(
-					"mx-auto grid max-w-7xl gap-0 px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10",
-					showAgentRail ? "grid-cols-[1fr_48px]" : "grid-cols-1",
-				)}
-			>
-				<div className="min-w-0">
-					<div className="rounded-xl border border-white/10 bg-white/5 p-6 sm:p-8 backdrop-blur-xl">
-						{props.children}
+				<div
+					className={cn(
+						"mx-auto grid max-w-7xl gap-0 px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10",
+						showAgentRail ? "grid-cols-[1fr_48px]" : "grid-cols-1",
+					)}
+				>
+					<div className="min-w-0">
+						<div className="rounded-xl border border-white/10 bg-white/5 p-6 sm:p-8 backdrop-blur-xl">
+							{props.children}
 
-						{currentStep !== "profile" && (
-							<ContinueButton
-								enabled={props.completedSteps.includes(currentStep)}
-								hint={
-									STEP_HINTS[currentStep] ?? "Complete this step to continue."
-								}
-								onContinue={() => {
-									const next = getNextStep(currentStep);
-									router.push(`/home/ai/${props.presentationId}/${next}`);
-								}}
-							/>
-						)}
-					</div>
-				</div>
-
-				{showAgentRail ? (
-					<aside
-						className="ml-4 h-full rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl"
-						aria-label="Agent rail placeholder"
-					>
-						<div className="flex h-full flex-col items-center justify-start gap-3 py-4">
-							<div className="size-8 rounded-full bg-white/10" />
-							<div className="size-8 rounded-full bg-white/10" />
-							<div className="size-8 rounded-full bg-white/10" />
+							{currentStep !== "profile" && (
+								<ContinueButton
+									enabled={completedSteps.includes(currentStep)}
+									hint={
+										STEP_HINTS[currentStep] ?? "Complete this step to continue."
+									}
+									onContinue={() => {
+										const next = getNextStep(currentStep);
+										router.push(`/home/ai/${props.presentationId}/${next}`);
+									}}
+								/>
+							)}
 						</div>
-					</aside>
-				) : null}
+					</div>
+
+					{showAgentRail ? (
+						<aside
+							className="ml-4 h-full rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl"
+							aria-label="Agent rail placeholder"
+						>
+							<div className="flex h-full flex-col items-center justify-start gap-3 py-4">
+								<div className="size-8 rounded-full bg-white/10" />
+								<div className="size-8 rounded-full bg-white/10" />
+								<div className="size-8 rounded-full bg-white/10" />
+							</div>
+						</aside>
+					) : null}
+				</div>
 			</div>
-		</div>
+		</CompletedStepsContext.Provider>
 	);
 }
