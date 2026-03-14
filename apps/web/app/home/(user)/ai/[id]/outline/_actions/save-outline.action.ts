@@ -25,7 +25,7 @@ export const saveOutlineAction = enhanceAction(
 		// Fetch presentation to get account_id and current workflow state
 		const { data: presentation, error: presentationError } = await client
 			.from("presentations")
-			.select("id, user_id, account_id, completed_steps")
+			.select("id, user_id, account_id, current_step, completed_steps")
 			.eq("id", data.presentationId)
 			.eq("user_id", user.id)
 			.single();
@@ -57,10 +57,13 @@ export const saveOutlineAction = enhanceAction(
 			completedSteps.push("outline");
 		}
 
+		// Only rewind to storyboard if not already at generate step
+		const targetStep = presentation.current_step === "generate" ? "generate" : "storyboard";
+
 		const { error: updatePresentationError } = await client
 			.from("presentations")
 			.update({
-				current_step: "storyboard",
+				current_step: targetStep,
 				completed_steps: completedSteps,
 				updated_at: new Date().toISOString(),
 			})

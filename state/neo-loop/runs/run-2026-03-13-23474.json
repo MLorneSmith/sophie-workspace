@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23474",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2566,
+    "title": "feat: status page with Better Stack integration",
+    "url": "https://github.com/slideheroes/2025slideheroes/pull/2566",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-12T20:06:18Z",
+    "author": "SophieLegerPA",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes:2566"
+  },
+  "startedAt": "2026-03-13T23:36:08.719670+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:36:08.719672+00:00",
+  "completedAt": "2026-03-13T23:36:08.729715+00:00"
+}

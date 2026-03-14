@@ -1,0 +1,22 @@
+{
+  "runId": "run-2026-03-13-23262",
+  "workflowId": "review-response",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes-sophie",
+    "number": 38,
+    "title": "feat: content rewrite pipeline - transform deck content for presentations",
+    "url": "https://github.com/slideheroes/2025slideheroes-sophie/pull/38",
+    "labels": [],
+    "state": "open",
+    "review_decision": "",
+    "author": "SophieLegerPA",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes-sophie:38"
+  },
+  "startedAt": "2026-03-13T22:56:05.506211+00:00",
+  "status": "failed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:56:05.506214+00:00",
+  "completedAt": "2026-03-13T22:56:05.517668+00:00",
+  "error": "repo and pr_number required for has_new_review_comments condition"
+}

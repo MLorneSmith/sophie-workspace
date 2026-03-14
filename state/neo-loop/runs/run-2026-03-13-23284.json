@@ -1,0 +1,25 @@
+{
+  "runId": "run-2026-03-13-23284",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2265,
+    "title": "\ud83d\ude80 Promote Dev to Staging - 2026-03-05",
+    "url": "https://github.com/slideheroes/2025slideheroes/pull/2265",
+    "labels": [
+      "automated",
+      "staging",
+      "deployment"
+    ],
+    "state": "merged",
+    "merged_at": "2026-03-05T20:58:03Z",
+    "author": "app/slideheroes-bot",
+    "base_branch": "staging",
+    "pr_key": "slideheroes/2025slideheroes:2265"
+  },
+  "startedAt": "2026-03-13T22:56:09.437556+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:56:09.437558+00:00",
+  "completedAt": "2026-03-13T22:56:09.447372+00:00"
+}

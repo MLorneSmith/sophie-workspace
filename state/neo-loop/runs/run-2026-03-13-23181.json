@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23181",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2298,
+    "title": "feat: Deck Upload WOW#2 \u2014 upload and rewrite existing presentations",
+    "url": "https://github.com/slideheroes/2025slideheroes/pull/2298",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-10T17:32:22Z",
+    "author": "SophieLegerPA",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes:2298"
+  },
+  "startedAt": "2026-03-13T22:36:07.712074+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:36:07.712076+00:00",
+  "completedAt": "2026-03-13T22:36:07.722715+00:00"
+}

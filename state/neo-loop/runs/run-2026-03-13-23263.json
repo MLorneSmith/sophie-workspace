@@ -1,0 +1,22 @@
+{
+  "runId": "run-2026-03-13-23263",
+  "workflowId": "review-response",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes-sophie",
+    "number": 37,
+    "title": "feat: Deck processing engine - parse PPTX and extract content",
+    "url": "https://github.com/slideheroes/2025slideheroes-sophie/pull/37",
+    "labels": [],
+    "state": "open",
+    "review_decision": "",
+    "author": "SophieLegerPA",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes-sophie:37"
+  },
+  "startedAt": "2026-03-13T22:56:05.521861+00:00",
+  "status": "failed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:56:05.521864+00:00",
+  "completedAt": "2026-03-13T22:56:05.532748+00:00",
+  "error": "repo and pr_number required for has_new_review_comments condition"
+}

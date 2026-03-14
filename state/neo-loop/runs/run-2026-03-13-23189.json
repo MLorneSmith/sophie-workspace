@@ -1,0 +1,24 @@
+{
+  "runId": "run-2026-03-13-23189",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2277,
+    "title": "chore(deps): bump tar from 7.5.9 to 7.5.10 in /packages/e2b/e2b-template",
+    "url": "https://github.com/slideheroes/2025slideheroes/pull/2277",
+    "labels": [
+      "dependencies",
+      "javascript"
+    ],
+    "state": "merged",
+    "merged_at": "2026-03-06T19:46:51Z",
+    "author": "app/dependabot",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes:2277"
+  },
+  "startedAt": "2026-03-13T22:36:07.826737+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:36:07.826739+00:00",
+  "completedAt": "2026-03-13T22:36:07.837535+00:00"
+}

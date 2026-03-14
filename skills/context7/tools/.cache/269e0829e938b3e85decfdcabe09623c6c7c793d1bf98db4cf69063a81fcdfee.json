@@ -1,0 +1,20 @@
+{
+  "data": {
+    "library": "/openai/agents.md",
+    "version": "latest",
+    "topic": "orchestration patterns coordination",
+    "tokens": 328,
+    "content": "### Start Next.js Development Server\n\nSource: https://github.com/openai/agents.md/blob/main/AGENTS.md\n\nStarts the Next.js development server with Hot Module Replacement (HMR) enabled. This command should be used for all interactive development within agent sessions to ensure live code updates.\n\n```bash\nnpm run dev\n```\n\n```bash\npnpm dev\n```\n\n```bash\nyarn dev\n```\n\n--------------------------------\n\n### Package Manager Commands\n\nSource: https://github.com/openai/agents.md/blob/main/README.md\n\nProvides examples of using pnpm for various development tasks within the project, such as navigating to packages, installing dependencies, creating new packages, running tests, and linting.\n\n```bash\npnpm dlx turbo run where <project_name>\n```\n\n```bash\npnpm install --filter <project_name>\n```\n\n```bash\npnpm create vite@latest <project_name> -- --template react-ts\n```\n\n```bash\npnpm turbo run test --filter <project_name>\n```\n\n```bash\npnpm test\n```\n\n```bash\npnpm vitest run -t \"<test name>\"\n```\n\n```bash\npnpm lint --filter <project_name>\n```\n\n--------------------------------\n\n### Run ESLint Checks\n\nSource: https://github.com/openai/agents.md/blob/main/AGENTS.md\n\nExecutes ESLint to check for code style and potential errors according to the project's linting rules. This is a standard command for maintaining code quality.\n\n```bash\nnpm run lint\n```\n\n--------------------------------\n\n### Install Dependencies\n\nSource: https://github.com/openai/agents.md/blob/main/README.md\n\nInstalls the necessary dependencies for the project. This is a prerequisite for running the development server.\n\n```bash\nnpm install\n```\n\n--------------------------------\n\n### Run Production Build (Avoid during agent sessions)\n\nSource: https://github.com/openai/agents.md/blob/main/AGENTS.md\n\nGenerates production-ready assets for the Next.js application. This command should NOT be run inside an agent session as it disables hot-reloading and can lead to an inconsistent development server state.\n\n```bash\nnpm run build\n```\n\n--------------------------------\n\n### Start Development Server\n\nSource: https://github.com/openai/agents.md/blob/main/README.md\n\nStarts the local development server for the Next.js website. This command should be run after installing dependencies.\n\n```bash\nnpm run dev\n```\n\n--------------------------------\n\n### Execute Test Suite\n\nSource: https://github.com/openai/agents.md/blob/main/AGENTS.md\n\nRuns the project's test suite to verify the functionality of components and utilities. This command is essential for ensuring the stability and correctness of the application.\n\n```bash\nnpm run test\n```\n\n=== COMPLETE CONTENT === This response contains all available snippets from this library. No additional content exists. Do not make further requests.",
+    "chunks": null,
+    "metadata": {}
+  },
+  "cached_at": 1765393201.7187786,
+  "params": {
+    "owner": "openai",
+    "repo": "agents.md",
+    "version": "latest",
+    "topic": "orchestration patterns coordination",
+    "tokens": 5000,
+    "format": "txt"
+  }
+}

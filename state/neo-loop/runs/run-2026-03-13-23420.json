@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23420",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2572,
+    "title": "fix: Outline \u2192 Storyboard transition -- submit button greyed out (Issue #2571)",
+    "url": "https://github.com/slideheroes/2025slideheroes/pull/2572",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-13T19:04:02Z",
+    "author": "SophieLegerPA",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes:2572"
+  },
+  "startedAt": "2026-03-13T23:26:09.097237+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:26:09.097240+00:00",
+  "completedAt": "2026-03-13T23:26:09.107029+00:00"
+}

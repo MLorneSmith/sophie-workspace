@@ -1,0 +1,22 @@
+{
+  "runId": "run-2026-03-13-23459",
+  "workflowId": "review-response",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes-sophie",
+    "number": 39,
+    "title": "feat: brain dump to outline \u2014 address CodeRabbit feedback and re-promote",
+    "url": "https://github.com/slideheroes/2025slideheroes-sophie/pull/39",
+    "labels": [],
+    "state": "open",
+    "review_decision": "",
+    "author": "SophieLegerPA",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes-sophie:39"
+  },
+  "startedAt": "2026-03-13T23:36:05.552951+00:00",
+  "status": "failed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:36:05.552961+00:00",
+  "completedAt": "2026-03-13T23:36:05.557982+00:00",
+  "error": "repo and pr_number required for has_new_review_comments condition"
+}

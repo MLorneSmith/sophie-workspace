@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23491",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 499,
+    "title": "feat: Discord agent channel status system (Phases 1-4)",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/499",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-13T21:18:04Z",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:499"
+  },
+  "startedAt": "2026-03-13T23:36:08.961190+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:36:08.961193+00:00",
+  "completedAt": "2026-03-13T23:36:08.971600+00:00"
+}

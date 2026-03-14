@@ -1,0 +1,20 @@
+{
+  "data": {
+    "library": "/websites/agentation_dev_install",
+    "version": "latest",
+    "topic": null,
+    "tokens": 253,
+    "content": "### Install Agentation Package\n\nSource: https://agentation.dev/install/index\n\nInstalls the Agentation package using npm. This is the first step to integrate Agentation into your project. It can also be installed using yarn, pnpm, or bun.\n\n```bash\nnpm install agentation\n```\n\n--------------------------------\n\n### Install Agentation via Claude Code Skill\n\nSource: https://agentation.dev/install/index\n\nInstalls the Agentation skill within Claude Code using npx. This command adds the necessary integration for Agentation to be set up automatically.\n\n```bash\nnpx add-skill benjitaylor/agentation\n```\n\n--------------------------------\n\n### Programmatic Integration with Agentation\n\nSource: https://agentation.dev/install/index\n\nDemonstrates programmatic integration of Agentation using the `onAnnotationAdd` callback and `copyToClipboard` prop. The `onAnnotationAdd` callback provides structured annotation data, and `copyToClipboard` can be set to false to prevent automatic copying.\n\n```javascript\nimport { Agentation, type Annotation } from \"agentation\";\n\n\nfunction App() {\n  const handleAnnotation = (annotation: Annotation) => {\n    // Structured data - no parsing needed\n    console.log(annotation.element);\n    console.log(annotation.elementPath);\n    console.log(annotation.boundingBox);\n\n\n    // Send to your agent, API, etc.\n    sendToAgent(annotation);\n  };\n\n\n  return (\n    <>\n      <YourApp />\n      <Agentation\n        onAnnotationAdd={handleAnnotation}\n        copyToClipboard={false}  // Skip clipboard if handling via callback\n      />\n    </>\n  );\n}\n```\n\n--------------------------------\n\n### Add Agentation to React App\n\nSource: https://agentation.dev/install/index\n\nIntegrates the Agentation component into a React application. It's recommended to add it at the root level. The NODE_ENV check ensures it only loads during development.\n\n```javascript\nimport { Agentation } from \"agentation\";\n\n\nfunction App() {\n  return (\n    <>\n      <YourApp />\n      {process.env.NODE_ENV === \"development\" && <Agentation />}\n    </>\n  );\n}\n```\n\n=== COMPLETE CONTENT === This response contains all available snippets from this library. No additional content exists. Do not make further requests.",
+    "chunks": null,
+    "metadata": {}
+  },
+  "cached_at": 1769706586.2003608,
+  "params": {
+    "owner": "websites",
+    "repo": "agentation_dev_install",
+    "version": "latest",
+    "topic": "all",
+    "tokens": 5000,
+    "format": "txt"
+  }
+}

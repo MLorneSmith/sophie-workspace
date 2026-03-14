@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23502",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 487,
+    "title": "feat: feat: Morpheus code review agent \u2014 review prompt template + action node",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/487",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-12T19:48:53Z",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:487"
+  },
+  "startedAt": "2026-03-13T23:36:09.126619+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:36:09.126621+00:00",
+  "completedAt": "2026-03-13T23:36:09.136991+00:00"
+}

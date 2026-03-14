@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23507",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 478,
+    "title": "feat: archive/unarchive button on docs page",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/478",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-12T17:44:23Z",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:478"
+  },
+  "startedAt": "2026-03-13T23:36:09.196546+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:36:09.196549+00:00",
+  "completedAt": "2026-03-13T23:36:09.207750+00:00"
+}

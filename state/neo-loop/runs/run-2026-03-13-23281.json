@@ -1,0 +1,24 @@
+{
+  "runId": "run-2026-03-13-23281",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2290,
+    "title": "chore(deps): bump the github-actions group with 6 updates",
+    "url": "https://github.com/slideheroes/2025slideheroes/pull/2290",
+    "labels": [
+      "automated",
+      "dependencies"
+    ],
+    "state": "merged",
+    "merged_at": "2026-03-09T15:20:45Z",
+    "author": "app/dependabot",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes:2290"
+  },
+  "startedAt": "2026-03-13T22:56:09.396183+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:56:09.396186+00:00",
+  "completedAt": "2026-03-13T22:56:09.405778+00:00"
+}

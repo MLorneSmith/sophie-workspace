@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23103",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 494,
+    "title": "chore: update pipeline UI - change amber to orange, remove second Neo slot",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/494",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-13T18:17:58Z",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:494"
+  },
+  "startedAt": "2026-03-13T22:16:07.614868+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:16:07.614871+00:00",
+  "completedAt": "2026-03-13T22:16:07.624995+00:00"
+}

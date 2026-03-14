@@ -1,0 +1,20 @@
+{
+	"data": {
+		"library": "/axllent/mailpit",
+		"version": "latest",
+		"topic": "api endpoints testing smtp configuration",
+		"tokens": 326,
+		"content": "### Install Mailpit via Script (Linux & Mac)\n\nSource: https://github.com/axllent/mailpit/blob/develop/README.md\n\nCommands to install Mailpit directly to a specified path (defaulting to /usr/local/bin/mailpit) using a curl-based installation script. An option to change the installation path via an environment variable is also provided.\n\n```shell\nsudo sh < <(curl -sL https://raw.githubusercontent.com/axllent/mailpit/develop/install.sh)\n```\n\n```shell\nINSTALL_PATH=/usr/bin sudo sh < <(curl -sL https://raw.githubusercontent.com/axllent/mailpit/develop/install.sh)\n```\n\n--------------------------------\n\n### Mailpit General Usage Commands\n\nSource: https://github.com/axllent/mailpit/blob/develop/README.md\n\nBasic commands for interacting with Mailpit, including displaying help options and starting the service if installed via Homebrew.\n\n```shell\nmailpit -h\n```\n\n```shell\nbrew services start mailpit\n```\n\n--------------------------------\n\n### Install Mailpit via Package Managers\n\nSource: https://github.com/axllent/mailpit/blob/develop/README.md\n\nCommands to install Mailpit using common package managers like Homebrew for macOS and pkg for FreeBSD. This includes the initial installation and starting Mailpit as a background service.\n\n```shell\nbrew install mailpit\n```\n\n```shell\nbrew services start mailpit\n```\n\n```shell\npkg install mailpit\n```\n\n--------------------------------\n\n### Clone Your Forked Mailpit Repository\n\nSource: https://github.com/axllent/mailpit/blob/develop/CONTRIBUTING.md\n\nThis snippet provides the bash commands necessary to clone your forked Mailpit repository from GitHub to your local machine and then navigate into the newly created project directory.\n\n```bash\ngit clone https://github.com/your-username/mailpit.git\ncd mailpit\n```\n\n--------------------------------\n\n### Commit and Push Changes to Remote Repository\n\nSource: https://github.com/axllent/mailpit/blob/develop/CONTRIBUTING.md\n\nThese bash commands are used to stage all local changes, commit them with a clear and concise message, and then push the newly created branch to your remote GitHub repository, making your changes available for a pull request.\n\n```bash\ngit add .\ngit commit -m \"Describe your changes\"\ngit push origin feature/your-feature-name\n```\n\n--------------------------------\n\n### Create a New Git Branch for Features\n\nSource: https://github.com/axllent/mailpit/blob/develop/CONTRIBUTING.md\n\nThis command demonstrates how to create a new Git branch with a descriptive name. It's crucial for isolating your changes for a specific feature or bug fix, ensuring a clean development workflow.\n\n```bash\ngit checkout -b feature/your-feature-name\n```\n\n=== COMPLETE CONTENT === This response contains all available snippets from this library. No additional content exists. Do not make further requests.",
+		"chunks": null,
+		"metadata": {}
+	},
+	"cached_at": 1764270763.1784267,
+	"params": {
+		"owner": "axllent",
+		"repo": "mailpit",
+		"version": "latest",
+		"topic": "api endpoints testing smtp configuration",
+		"tokens": 4000,
+		"format": "txt"
+	}
+}

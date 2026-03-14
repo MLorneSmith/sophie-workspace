@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23238",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2264,
+    "title": "style: Linear-inspired dark mode color palette",
+    "url": "https://github.com/slideheroes/2025slideheroes/pull/2264",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-05T20:06:43Z",
+    "author": "SophieLegerPA",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes:2264"
+  },
+  "startedAt": "2026-03-13T22:46:08.939943+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:46:08.939946+00:00",
+  "completedAt": "2026-03-13T22:46:08.950060+00:00"
+}

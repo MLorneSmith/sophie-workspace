@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23328",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2296,
+    "title": "feat: Stage-aware context curation in presentation-context.ts",
+    "url": "https://github.com/slideheroes/2025slideheroes/pull/2296",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-10T16:23:02Z",
+    "author": "SophieLegerPA",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes:2296"
+  },
+  "startedAt": "2026-03-13T23:06:08.773379+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:06:08.773382+00:00",
+  "completedAt": "2026-03-13T23:06:08.783643+00:00"
+}

@@ -1,0 +1,20 @@
+{
+  "data": {
+    "library": "/websites/playwright_dev-docs-intro",
+    "version": "latest",
+    "topic": "ci sharding",
+    "tokens": 348,
+    "content": "### Playwright Project File Structure\n\nSource: https://playwright.dev/docs/intro/index\n\nIllustrates the typical file structure created after Playwright installation, including configuration, test files, and example tests.\n\n```plaintext\nplaywright.config.ts         # Test configuration  \npackage.json  \npackage-lock.json            # Or yarn.lock / pnpm-lock.yaml  \ntests/  \n  example.spec.ts            # Minimal example test  \ntests-examples/  \n  demo-todo-app.spec.ts      # Richer example tests  \n```\n\n--------------------------------\n\n### Update Playwright and Install Dependencies\n\nSource: https://playwright.dev/docs/intro/index\n\nCommands to update Playwright to the latest version and download necessary browser binaries and their dependencies.\n\n```bash\nnpm install -D @playwright/test@latest\nnpx playwright install --with-deps\n```\n\n```bash\nyarn add --dev @playwright/test@latest\nyarn playwright install --with-deps\n```\n\n```bash\npnpm install --save-dev @playwright/test@latest\npnpm exec playwright install --with-deps\n```\n\n--------------------------------\n\n### Check Playwright Version\n\nSource: https://playwright.dev/docs/intro/index\n\nCommands to check the currently installed version of Playwright.\n\n```bash\nnpx playwright --version\n```\n\n```bash\nyarn playwright --version\n```\n\n```bash\npnpm exec playwright --version\n```\n\n--------------------------------\n\n### Initialize Playwright Project with npm, yarn, or pnpm\n\nSource: https://playwright.dev/docs/intro/index\n\nCommands to initialize a new Playwright project or add it to an existing one. This sets up the necessary files and configurations for Playwright testing.\n\n```bash\nnpm init playwright@latest\n```\n\n```bash\nyarn create playwright\n```\n\n```bash\npnpm create playwright\n```\n\n--------------------------------\n\n### Run Playwright Tests in UI Mode\n\nSource: https://playwright.dev/docs/intro/index\n\nCommands to launch Playwright tests in UI Mode, which offers features like watch mode, live step viewing, and time-travel debugging.\n\n```bash\nnpx playwright test --ui\n```\n\n```bash\nyarn playwright test --ui\n```\n\n```bash\npnpm exec playwright test --ui\n```\n\n--------------------------------\n\n### Run Playwright Tests\n\nSource: https://playwright.dev/docs/intro/index\n\nCommands to execute Playwright tests. These commands run tests in parallel across supported browsers by default.\n\n```bash\nnpx playwright test\n```\n\n```bash\nyarn playwright test\n```\n\n```bash\npnpm exec playwright test\n```\n\n--------------------------------\n\n### Show Playwright HTML Test Report\n\nSource: https://playwright.dev/docs/intro/index\n\nCommands to manually open the HTML test report generated after test execution. This report provides a detailed view of test results, including failures and attachments.\n\n```bash\nnpx playwright show-report\n```\n\n```bash\nyarn playwright show-report\n```\n\n```bash\npnpm exec playwright show-report\n```\n\n=== COMPLETE CONTENT === This response contains all available snippets from this library. No additional content exists. Do not make further requests.",
+    "chunks": null,
+    "metadata": {}
+  },
+  "cached_at": 1768601459.1843188,
+  "params": {
+    "owner": "websites",
+    "repo": "playwright_dev-docs-intro",
+    "version": "latest",
+    "topic": "ci sharding",
+    "tokens": 4000,
+    "format": "txt"
+  }
+}

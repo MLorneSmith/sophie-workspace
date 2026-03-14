@@ -1,0 +1,20 @@
+{
+  "runId": "run-2026-03-13-23466",
+  "workflowId": "issue-to-pr",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2578,
+    "title": "Brain Dump to Outline - address CodeRabbit feedback and re-promote",
+    "url": "https://github.com/slideheroes/2025slideheroes/issues/2578",
+    "labels": [
+      "plan-me"
+    ],
+    "body": "## Context\nTask MC #66 from Build Product backlog.\n\n## Description\nAddress CodeRabbit's review feedback on the Brain Dump to Outline feature (PR #2274) and resolve the 6 blocking issues:\n\n1. Input bounds validation\n2. Fix broken JSON prompt\n3. Add Zod validation\n4. Button routing fixes\n5. Empty argument_map logic\n6. Missing re-export\n\nThen re-promote for review.\n\nLabel: plan-me",
+    "issue_key": "slideheroes/2025slideheroes:2578"
+  },
+  "startedAt": "2026-03-13T23:36:07.416242+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:36:07.416253+00:00",
+  "completedAt": "2026-03-13T23:36:07.425972+00:00"
+}

@@ -1,0 +1,22 @@
+{
+  "runId": "run-2026-03-13-23075",
+  "workflowId": "review-response",
+  "trigger": {
+    "repo": "slideheroes/roadmap",
+    "number": 2,
+    "title": "feat: Rewrite as static HTML + Cloudflare Worker to fit free tier",
+    "url": "https://github.com/slideheroes/roadmap/pull/2",
+    "labels": [],
+    "state": "open",
+    "review_decision": "",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/roadmap:2"
+  },
+  "startedAt": "2026-03-13T22:16:04.027417+00:00",
+  "status": "failed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:16:04.027420+00:00",
+  "completedAt": "2026-03-13T22:16:04.039668+00:00",
+  "error": "repo and pr_number required for has_new_review_comments condition"
+}

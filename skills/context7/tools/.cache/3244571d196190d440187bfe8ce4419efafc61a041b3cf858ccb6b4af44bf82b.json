@@ -1,0 +1,20 @@
+{
+  "data": {
+    "library": "/calcom/cal.com",
+    "version": "latest",
+    "topic": "webhook",
+    "tokens": 203,
+    "content": "### Subscribe to Webhooks\n\nSource: https://github.com/calcom/cal.com/blob/main/packages/app-store/zapier/README.md\n\nSubscribes to webhook events for real-time notifications.\n\n```APIDOC\n## POST /api/integrations/zapier/addSubscription\n\n### Description\nSubscribes to webhook events for real-time notifications.\n\n### Method\nPOST\n\n### Endpoint\n/api/integrations/zapier/addSubscription\n\n### Parameters\n#### Query Parameters\n- **apiKey** (string) - Required - API key for authentication.\n\n#### Request Body\n- **webhookUrl** (string) - Required - The URL to send webhook events to.\n- **eventTriggers** (array) - Optional - A list of event triggers to subscribe to (e.g., ['booking.created', 'booking.updated']).\n\n### Request Example\n```json\n{\n  \"webhookUrl\": \"https://example.com/webhook\",\n  \"eventTriggers\": [\"booking.created\"]\n}\n```\n\n### Response\n#### Success Response (200)\n- **subscriptionId** (string) - The ID of the created subscription.\n\n#### Response Example\n```json\n{\n  \"subscriptionId\": \"sub_abc123\"\n}\n```\n```\n\n--------------------------------\n\n### Unsubscribe from Webhooks\n\nSource: https://github.com/calcom/cal.com/blob/main/packages/app-store/zapier/README.md\n\nUnsubscribes from webhook events.\n\n```APIDOC\n## DELETE /api/integrations/zapier/deleteSubscription\n\n### Description\nUnsubscribes from webhook events.\n\n### Method\nDELETE\n\n### Endpoint\n/api/integrations/zapier/deleteSubscription\n\n### Parameters\n#### Query Parameters\n- **apiKey** (string) - Required - API key for authentication.\n- **subscriptionId** (string) - Required - The ID of the subscription to delete.\n\n### Request Example\n```\nDELETE /api/integrations/zapier/deleteSubscription?apiKey=YOUR_API_KEY&subscriptionId=sub_abc123\n```\n\n### Response\n#### Success Response (200)\n- **message** (string) - Confirmation message.\n\n#### Response Example\n```json\n{\n  \"message\": \"Subscription deleted successfully.\"\n}\n```\n```",
+    "chunks": null,
+    "metadata": {}
+  },
+  "cached_at": 1769441969.185834,
+  "params": {
+    "owner": "calcom",
+    "repo": "cal.com",
+    "version": "latest",
+    "topic": "webhook",
+    "tokens": 2000,
+    "format": "txt"
+  }
+}

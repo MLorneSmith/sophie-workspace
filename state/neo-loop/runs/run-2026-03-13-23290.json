@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23290",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 498,
+    "title": "feat: Competitive Intel Page Redesign - Incorporate Kvoth Weekly Scans",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/498",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-13T20:41:52Z",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:498"
+  },
+  "startedAt": "2026-03-13T22:56:09.521892+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:56:09.521895+00:00",
+  "completedAt": "2026-03-13T22:56:09.532279+00:00"
+}

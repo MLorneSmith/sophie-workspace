@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23400",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 488,
+    "title": "fix: harden auto-deploy \u2014 reset instead of ff-only, kill zombies, fix pm2 name",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/488",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-13T14:05:40Z",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:488"
+  },
+  "startedAt": "2026-03-13T23:16:08.669015+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:16:08.669017+00:00",
+  "completedAt": "2026-03-13T23:16:08.678490+00:00"
+}

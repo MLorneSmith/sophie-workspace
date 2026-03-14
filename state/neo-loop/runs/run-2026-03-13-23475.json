@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23475",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2565,
+    "title": "chore: add shadcn/ui skill for AI coding agents",
+    "url": "https://github.com/slideheroes/2025slideheroes/pull/2565",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-12T20:03:49Z",
+    "author": "SophieLegerPA",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes:2565"
+  },
+  "startedAt": "2026-03-13T23:36:08.733410+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:36:08.733413+00:00",
+  "completedAt": "2026-03-13T23:36:08.743875+00:00"
+}

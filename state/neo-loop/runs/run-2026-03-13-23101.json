@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23101",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 496,
+    "title": "MC UI fixes: sidebar reorder, calendar colors + legend, clickable job details",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/496",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-13T20:39:44Z",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:496"
+  },
+  "startedAt": "2026-03-13T22:16:07.584449+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:16:07.584452+00:00",
+  "completedAt": "2026-03-13T22:16:07.596009+00:00"
+}

@@ -1,0 +1,13 @@
+{
+  "runId": "run-2026-03-13-23028",
+  "workflowId": "stale-cleanup",
+  "trigger": {
+    "type": "cron"
+  },
+  "startedAt": "2026-03-13T22:06:05.371765+00:00",
+  "status": "failed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:06:05.371770+00:00",
+  "completedAt": "2026-03-13T22:06:05.379793+00:00",
+  "error": "'str' object has no attribute 'get'"
+}

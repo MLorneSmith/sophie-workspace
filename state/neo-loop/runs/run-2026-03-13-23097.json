@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23097",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2262,
+    "title": "chore: skip CodeRabbit on promoted fork PRs",
+    "url": "https://github.com/slideheroes/2025slideheroes/pull/2262",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-05T17:21:33Z",
+    "author": "SophieLegerPA",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes:2262"
+  },
+  "startedAt": "2026-03-13T22:16:07.525100+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:16:07.525102+00:00",
+  "completedAt": "2026-03-13T22:16:07.535369+00:00"
+}

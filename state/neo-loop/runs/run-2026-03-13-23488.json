@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23488",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2263,
+    "title": "chore: optimize CodeRabbit config for signal over noise",
+    "url": "https://github.com/slideheroes/2025slideheroes/pull/2263",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-05T19:52:22Z",
+    "author": "SophieLegerPA",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes:2263"
+  },
+  "startedAt": "2026-03-13T23:36:08.918269+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:36:08.918271+00:00",
+  "completedAt": "2026-03-13T23:36:08.928402+00:00"
+}

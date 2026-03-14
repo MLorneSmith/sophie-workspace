@@ -1,0 +1,20 @@
+{
+  "runId": "run-2026-03-13-23416",
+  "workflowId": "issue-to-pr",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2577,
+    "title": "Content rewrite pipeline - transform deck content for presentations",
+    "url": "https://github.com/slideheroes/2025slideheroes/issues/2577",
+    "labels": [
+      "plan-me"
+    ],
+    "body": "## Context\nTask MC #61 from Build Product backlog.\n\n## Description\nImplement the content rewrite pipeline that transforms raw deck content into polished presentation text using AI.\n\n## Requirements\n- Rewrite extracted deck content for clarity and impact\n- Apply presentation writing best practices\n- Generate speaker notes\n- Support different tones/styles based on audience brief\n\nLabel: plan-me",
+    "issue_key": "slideheroes/2025slideheroes:2577"
+  },
+  "startedAt": "2026-03-13T23:26:07.758074+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:26:07.758077+00:00",
+  "completedAt": "2026-03-13T23:26:07.770141+00:00"
+}

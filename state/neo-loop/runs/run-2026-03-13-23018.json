@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23018",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 483,
+    "title": "feat: Add tag editing UI to docs page",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/483",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-12T19:48:25Z",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:483"
+  },
+  "startedAt": "2026-03-13T21:56:08.920201+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T21:56:08.920204+00:00",
+  "completedAt": "2026-03-13T21:56:08.930210+00:00"
+}

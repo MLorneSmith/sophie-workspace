@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23229",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2297,
+    "title": "feat: Saved profiles and reuse system (profile library)",
+    "url": "https://github.com/slideheroes/2025slideheroes/pull/2297",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-10T16:37:26Z",
+    "author": "SophieLegerPA",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes:2297"
+  },
+  "startedAt": "2026-03-13T22:46:08.809731+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:46:08.809733+00:00",
+  "completedAt": "2026-03-13T22:46:08.818955+00:00"
+}

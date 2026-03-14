@@ -1,0 +1,20 @@
+{
+  "runId": "run-2026-03-13-23367",
+  "workflowId": "issue-to-pr",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2576,
+    "title": "Deck processing engine - parse PPTX and extract content",
+    "url": "https://github.com/slideheroes/2025slideheroes/issues/2576",
+    "labels": [
+      "plan-me"
+    ],
+    "body": "## Context\nTask MC #60 from Build Product backlog.\n\n## Description\nImplement the deck processing engine to parse uploaded PPTX files and extract content (slides, text, images, layout) for use in the SlideHeroes workflow.\n\n## Requirements\n- Parse PPTX files uploaded via the deck upload feature\n- Extract slide content (text, images, shapes)\n- Support template extraction for consistent styling\n- Output structured data for use in Outline \u2192 Storyboard workflow\n\nLabel: plan-me",
+    "issue_key": "slideheroes/2025slideheroes:2576"
+  },
+  "startedAt": "2026-03-13T23:16:06.916320+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:16:06.916322+00:00",
+  "completedAt": "2026-03-13T23:16:06.926207+00:00"
+}

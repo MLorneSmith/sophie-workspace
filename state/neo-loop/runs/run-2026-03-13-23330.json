@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23330",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2293,
+    "title": "feat: Migrate hardcoded prompts to Langfuse Prompt Management (Phase 1)",
+    "url": "https://github.com/slideheroes/2025slideheroes/pull/2293",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-09T18:31:00Z",
+    "author": "SophieLegerPA",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes:2293"
+  },
+  "startedAt": "2026-03-13T23:06:08.801783+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:06:08.801786+00:00",
+  "completedAt": "2026-03-13T23:06:08.811536+00:00"
+}

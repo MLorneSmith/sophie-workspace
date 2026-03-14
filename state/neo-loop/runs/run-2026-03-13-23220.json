@@ -1,0 +1,20 @@
+{
+  "runId": "run-2026-03-13-23220",
+  "workflowId": "issue-to-pr",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 501,
+    "title": "[Cockpit] Add Repo Status Dashboard Cards",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/issues/501",
+    "labels": [
+      "plan-me"
+    ],
+    "body": "## Summary\n\nReplace the top-level summary cards (Roadmap, Launch, Product Velocity) with three collapsible repo status cards showing active coding pipeline work.\n\n## Changes\n\n### 1. Remove Existing Cards\n- Remove \"Roadmap\" card\n- Remove \"Launch\" card  \n- Remove \"Product Velocity\" card\n\n### 2. Add Repo Status Cards (3 cards, full width, collapsible)\n\nEach repo card shows a table with active issues:\n\n| Column | Description |\n|--------|-------------|\n| Issue | Number + title (truncated) |\n| CodeRabbit | Status: \ud83d\udfe1 Waiting / \ud83d\udfe2 Plan created / \ud83d\udd35 Feedback provided / \u2705 Passed |\n| Neo | Status: \u26aa Waiting / \ud83d\udfe1 Coding / \ud83d\udfe2 PR Open / \ud83d\udd34 Blocked |\n| PR | PR number (link) or empty |\n| CI | \ud83d\udfe2 Passed / \ud83d\udd34 Errors / \u26aa Empty |\n| Merge | \ud83d\udfe2 Mergeable / \ud83d\udd34 Not mergeable / \u26aa No PR |\n| Age | Days since created (highlight if >7 days) |\n| Assignee | neo / manual / empty |\n\n### 3. Data Sources\n\n- **Issues**: GitHub API `GET /repos/{owner}/{repo}/issues?state=open&labels=plan-me,status:in-progress,status:blocked`\n- **CodeRabbit status**: Parse latest comment from `@coderabbitai` on each issue\n- **PR status**: `GET /repos/{owner}/{repo}/pulls?issue={issue_number}`\n- **CI status**: `GET /repos/{owner}/{repo}/commits/{sha}/status`\n- **Merge status**: From PR response `mergeable` field\n\n### 4. Repos to Track\n\n1. `slideheroes/2025slideheroes-sophie` (fork - show issues from this repo)\n2. `slideheroes/slideheroes-internal-tools`\n3. `slideheroes/roadmap`\n\n### 5. UX Details\n\n- Cards default to collapsed (show repo name + issue count)\n- Expand/collapse on click\n- Sort by Age descending (oldest first)\n- Traffic light colors:\n  - Green \ud83d\udfe2 = good\n  - Yellow \ud83d\udfe1 = in progress / needs attention\n  - Red \ud83d\udd34 = blocked / failed\n  - Gray \u26aa = not applicable / empty\n\n### 6. Empty State\n\nIf no active issues in a repo, show \"No active issues\" in the table area.\n\n## Acceptance Criteria\n\n- [ ] Roadmap/Launch/Product Velocity cards removed\n- [ ] 3 collapsible repo cards render\n- [ ] Each card shows table with active issues\n- [ ] All columns populate from GitHub API\n- [ ] Traffic lights display correctly\n- [ ] Expand/collapse works\n- [ ] Empty state shows when no issues\n\n## Priority\n\nMedium \u2014 useful for pipeline visibility but not blocking.\n\n---\n**Labels:** plan-me\n**Project:** Mission Control\n**Initiative:** Cockpit Improvements",
+    "issue_key": "slideheroes/slideheroes-internal-tools:501"
+  },
+  "startedAt": "2026-03-13T22:46:07.118699+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:46:07.118701+00:00",
+  "completedAt": "2026-03-13T22:46:07.128448+00:00"
+}

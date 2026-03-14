@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23343",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 495,
+    "title": "chore: remove unused Needs Approval and Failed columns from pipeline",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/495",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-13T18:24:40Z",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:495"
+  },
+  "startedAt": "2026-03-13T23:06:08.988724+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:06:08.988727+00:00",
+  "completedAt": "2026-03-13T23:06:08.998623+00:00"
+}

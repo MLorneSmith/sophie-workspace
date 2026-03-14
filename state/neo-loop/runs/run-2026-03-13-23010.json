@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23010",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 493,
+    "title": "chore: remove Add More Agents placeholder section",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/493",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-13T15:57:38Z",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:493"
+  },
+  "startedAt": "2026-03-13T21:56:08.808134+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T21:56:08.808138+00:00",
+  "completedAt": "2026-03-13T21:56:08.818446+00:00"
+}

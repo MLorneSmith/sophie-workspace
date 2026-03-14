@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23470",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/2025slideheroes",
+    "number": 2575,
+    "title": "feat: Brain Dump to Outline \u2014 fix CR feedback and re-promote (WOW #3)",
+    "url": "https://github.com/slideheroes/2025slideheroes/pull/2575",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-13T20:32:19Z",
+    "author": "SophieLegerPA",
+    "base_branch": "dev",
+    "pr_key": "slideheroes/2025slideheroes:2575"
+  },
+  "startedAt": "2026-03-13T23:36:08.664540+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:36:08.664550+00:00",
+  "completedAt": "2026-03-13T23:36:08.674585+00:00"
+}

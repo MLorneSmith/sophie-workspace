@@ -1,0 +1,20 @@
+{
+  "data": {
+    "library": "/damianricobelli/shadcn-cal-com",
+    "version": "latest",
+    "topic": null,
+    "tokens": 73,
+    "content": "### Start Development Server\n\nSource: https://github.com/damianricobelli/shadcn-cal-com/blob/master/README.md\n\nCommands to run the Next.js development server. These commands are executed in the terminal and will start a local server, typically at http://localhost:3000, allowing for hot-reloading and development.\n\n```bash\nnpm run dev\n# or\nyarn dev\n# or\npnpm dev\n# or\nbun dev\n```\n\n=== COMPLETE CONTENT === This response contains all available snippets from this library. No additional content exists. Do not make further requests.",
+    "chunks": null,
+    "metadata": {}
+  },
+  "cached_at": 1767236096.175444,
+  "params": {
+    "owner": "damianricobelli",
+    "repo": "shadcn-cal-com",
+    "version": "latest",
+    "topic": "all",
+    "tokens": 3000,
+    "format": "txt"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23304",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 479,
+    "title": "fix: dark theme for objective dropdown on docs page",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/479",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-12T17:56:39Z",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:479"
+  },
+  "startedAt": "2026-03-13T22:56:09.725515+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T22:56:09.725518+00:00",
+  "completedAt": "2026-03-13T22:56:09.736217+00:00"
+}

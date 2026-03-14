@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23399",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 489,
+    "title": "fix: preserve manually-edited tags during doc rescan",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/489",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-13T14:30:09Z",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:489"
+  },
+  "startedAt": "2026-03-13T23:16:08.654279+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:16:08.654282+00:00",
+  "completedAt": "2026-03-13T23:16:08.664041+00:00"
+}

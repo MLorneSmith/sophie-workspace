@@ -1,0 +1,20 @@
+{
+  "data": {
+    "library": "/shadcn-ui/ui",
+    "version": "latest",
+    "topic": "charts",
+    "tokens": 252,
+    "content": "### Define Chart Data for Recharts Bar Chart (TypeScript/TSX)\n\nSource: https://github.com/shadcn-ui/ui/blob/main/apps/v4/content/docs/components/chart.mdx\n\nThis snippet defines the `chartData` array, representing monthly desktop and mobile user statistics. It serves as the primary data source for rendering a Recharts bar chart, where each object contains a `month`, `desktop`, and `mobile` property.\n\n```tsx\nconst chartData = [\n  { month: \"January\", desktop: 186, mobile: 80 },\n  { month: \"February\", desktop: 305, mobile: 200 },\n  { month: \"March\", desktop: 237, mobile: 120 },\n  { month: \"April\", desktop: 73, mobile: 190 },\n  { month: \"May\", desktop: 209, mobile: 130 },\n  { month: \"June\", desktop: 214, mobile: 140 },\n]\n```\n\n--------------------------------\n\n### Enable Accessibility Layer for Charts\n\nSource: https://github.com/shadcn-ui/ui/blob/main/apps/v4/content/docs/components/chart.mdx\n\nDemonstrates how to add an accessibility layer to a chart component, such as `LineChart`, using the `accessibilityLayer` prop. This feature enhances keyboard navigation and screen reader support for the chart.\n\n```tsx\n<LineChart accessibilityLayer />\n```\n\n--------------------------------\n\n### Define a Chart Configuration Object in TypeScript\n\nSource: https://github.com/shadcn-ui/ui/blob/main/apps/v4/content/docs/components/chart.mdx\n\nIllustrates the structure of a `chartConfig` object for shadcn-ui charts, used to define labels, icons, and color themes for different data keys. This configuration is decoupled from the chart data, allowing for shared styling and flexible data integration.\n\n```tsx\nimport { Monitor } from \"lucide-react\"\n\nimport { type ChartConfig } from \"@/components/ui/chart\"\n\nconst chartConfig = {\n  desktop: {\n    label: \"Desktop\",\n    icon: Monitor,\n    // A color like 'hsl(220, 98%, 61%)' or 'var(--color-name)'\n    color: \"#2563eb\",\n    // OR a theme object with 'light' and 'dark' keys\n    theme: {\n      light: \"#2563eb\",\n      dark: \"#dc2626\",\n    },\n  },\n} satisfies ChartConfig\n```",
+    "chunks": null,
+    "metadata": {}
+  },
+  "cached_at": 1765987232.5922403,
+  "params": {
+    "owner": "shadcn-ui",
+    "repo": "ui",
+    "version": "latest",
+    "topic": "charts",
+    "tokens": 500,
+    "format": "txt"
+  }
+}

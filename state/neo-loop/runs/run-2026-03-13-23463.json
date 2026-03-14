@@ -1,0 +1,22 @@
+{
+  "runId": "run-2026-03-13-23463",
+  "workflowId": "review-response",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 502,
+    "title": "feat: [Cockpit] Add Repo Status Dashboard Cards",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/502",
+    "labels": [],
+    "state": "open",
+    "review_decision": "",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:502"
+  },
+  "startedAt": "2026-03-13T23:36:05.588388+00:00",
+  "status": "failed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:36:05.588390+00:00",
+  "completedAt": "2026-03-13T23:36:05.596674+00:00",
+  "error": "repo and pr_number required for has_new_review_comments condition"
+}

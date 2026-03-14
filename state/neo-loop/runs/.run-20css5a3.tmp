@@ -1,0 +1,22 @@
+{
+  "runId": "run-2026-03-11-7293",
+  "workflowId": "review-response",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 216,
+    "title": "feat: feat: Add thread ID and createdAt to GraphQL query in neo-pr-promote.py",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/216",
+    "labels": [],
+    "state": "open",
+    "review_decision": "",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:216"
+  },
+  "startedAt": "2026-03-11T18:19:50.708671+00:00",
+  "status": "failed",
+  "nodes": {},
+  "createdAt": "2026-03-11T18:19:50.708682+00:00",
+  "completedAt": "2026-03-11T18:19:50.791430+00:00",
+  "error": "repo and pr_number required for has_new_review_comments condition"
+}

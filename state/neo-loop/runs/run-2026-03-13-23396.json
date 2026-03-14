@@ -1,0 +1,21 @@
+{
+  "runId": "run-2026-03-13-23396",
+  "workflowId": "pr-merge-sync",
+  "trigger": {
+    "repo": "slideheroes/slideheroes-internal-tools",
+    "number": 492,
+    "title": "chore: route Morpheus notifications to #morpheus channel",
+    "url": "https://github.com/slideheroes/slideheroes-internal-tools/pull/492",
+    "labels": [],
+    "state": "merged",
+    "merged_at": "2026-03-13T15:52:39Z",
+    "author": "SophieLegerPA",
+    "base_branch": "main",
+    "pr_key": "slideheroes/slideheroes-internal-tools:492"
+  },
+  "startedAt": "2026-03-13T23:16:08.612057+00:00",
+  "status": "completed",
+  "nodes": {},
+  "createdAt": "2026-03-13T23:16:08.612060+00:00",
+  "completedAt": "2026-03-13T23:16:08.621441+00:00"
+}
